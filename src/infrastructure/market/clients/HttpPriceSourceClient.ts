@@ -3,6 +3,9 @@ import {
     RawMarketPrice
 } from "./PriceSourceClient";
 
+import { MarketPriceResponseSchema } 
+from "../schemas/MarketPriceResponseSchema";
+
 
 export class HttpPriceSourceClient
 implements PriceSourceClient {
@@ -21,17 +24,39 @@ implements PriceSourceClient {
 
 
         if (!response.ok) {
+
             throw new Error(
                 "Failed to fetch market price"
             );
+
         }
 
 
-        const data =
-            await response.json() as RawMarketPrice;
+        const json =
+            await response.json();
 
 
-        return data;
+        const validated =
+            MarketPriceResponseSchema.parse(json);
+
+
+
+        return {
+
+            gold18Price:
+                validated.gold18Price,
+
+
+            currencyPrice:
+                validated.currencyPrice,
+
+
+            updatedAt:
+                new Date(
+                    validated.updatedAt
+                )
+
+        };
 
     }
 
