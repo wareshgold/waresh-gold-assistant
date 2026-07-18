@@ -1,17 +1,23 @@
-import { TelegramCommandService } from "./services/TelegramCommandService";
+import { TelegramCommandExecutor } from "./interfaces/TelegramCommandExecutor";
+
 
 export class TelegramMessageHandler {
 
+
     constructor(
-        private readonly commandService: TelegramCommandService
+        private readonly commandService: TelegramCommandExecutor
     ) {}
+
 
     async handle(
         message: string
     ): Promise<string> {
 
+
         const normalized =
-            message.trim().toLowerCase();
+            message.trim()
+            .toLowerCase();
+
 
 
         if (
@@ -19,13 +25,19 @@ export class TelegramMessageHandler {
             normalized === "price"
         ) {
 
-            return this.commandService.execute("/price");
+            return this.commandService.execute(
+                "/price"
+            );
 
         }
 
 
-        return this.commandService.execute(normalized);
+
+        return this.commandService.execute(
+            normalized
+        );
 
     }
+
 
 }
