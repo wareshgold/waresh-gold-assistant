@@ -1,10 +1,13 @@
 import { Hono } from "hono";
 import { requestLogger } from "../shared/middleware/requestLogger";
+import { errorHandler } from "../presentation/middleware/errorHandler";
 
 export function createApp() {
   const app = new Hono();
 
   app.use("*", requestLogger);
+
+  app.onError(errorHandler);
 
   app.get("/health", (c) => {
     return c.json({
