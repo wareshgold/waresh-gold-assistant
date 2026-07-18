@@ -1,45 +1,27 @@
-import { TelegramCommandExecutor } from "./interfaces/TelegramCommandExecutor";
+import { TelegramCommandExecutor } from "./services/TelegramCommandService";
 import { TelegramResponseFormatter } from "./TelegramResponseFormatter";
+import { IncomingMessage } from "../common/models/IncomingMessage";
 
 
 export class TelegramMessageHandler {
 
 
-    private readonly formatter:
-        TelegramResponseFormatter;
-
-
-
     constructor(
-        private readonly commandService: TelegramCommandExecutor
-    ) {
-
-        this.formatter =
-            new TelegramResponseFormatter();
-
-    }
+        private readonly commandService: TelegramCommandExecutor,
+        private readonly formatter: TelegramResponseFormatter
+    ) {}
 
 
 
     async handle(
-        message: string
+        message: IncomingMessage
     ): Promise<string> {
-
-
-        const normalized =
-            message.trim()
-            .toLowerCase();
-
 
 
         const response =
             await this.commandService.execute(
-                normalized === "قیمت طلا" ||
-                normalized === "price"
-                    ? "/price"
-                    : normalized
+                message.text
             );
-
 
 
         return this.formatter.format(

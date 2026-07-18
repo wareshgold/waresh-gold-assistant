@@ -1,71 +1,107 @@
-import { ApplicationResponse } from "../../common/models/ApplicationResponse";
 import { GetGoldPriceUseCase } from "../../usecases/GetGoldPriceUseCase";
-import { TelegramCommandExecutor } from "../interfaces/TelegramCommandExecutor";
 
 
-export class TelegramCommandService implements TelegramCommandExecutor {
+export interface TelegramCommandExecutor {
+
+    execute(
+        command:string
+    ):Promise<any>;
+
+}
+
+
+
+export class TelegramCommandService
+implements TelegramCommandExecutor {
 
 
     constructor(
-        private readonly getGoldPriceUseCase: GetGoldPriceUseCase
-    ) {}
+        private readonly getGoldPriceUseCase?: GetGoldPriceUseCase
+    ){}
 
 
 
     async execute(
-        command: string
-    ): Promise<ApplicationResponse> {
+        command:string
+    ){
 
 
         const normalizedCommand =
-            command.trim().toLowerCase();
+            command.trim();
 
 
 
-        switch (normalizedCommand) {
+        switch(normalizedCommand){
 
 
             case "/start":
 
                 return {
-                    type: "text",
+
                     content:
-                        "به وارش گلد خوش آمدید ✨"
+                    "سلام به وارش گلد خوش آمدید"
+
                 };
-
-
-
-            case "/price":
-
-                return await this.getGoldPriceUseCase.execute();
 
 
 
             case "/help":
 
                 return {
-                    type: "text",
+
                     content:
-                    [
-                        "دستورات موجود:",
-                        "/start - شروع ربات",
-                        "/price - قیمت لحظه‌ای طلا",
-                        "/help - راهنما",
-                    ].join("\n")
+                    "دستورات:\n/price"
+
+                };
+
+
+
+            case "/price":
+
+            case "قیمت طلا":
+
+            case "قیمت":
+
+                if(this.getGoldPriceUseCase){
+
+                    const result =
+                        await this.getGoldPriceUseCase.execute();
+
+
+                    return {
+
+                        content:
+                        `قیمت طلا: ${result.gold18Price}`
+
+                    };
+
+                }
+
+
+                return {
+
+                    content:
+                    "قیمت طلا در حال دریافت است..."
+
                 };
 
 
 
             default:
 
+
                 return {
-                    type: "text",
+
                     content:
-                        "دستور شناخته نشد. /help را ارسال کنید."
+                    "دستور نامعتبر است"
+
                 };
+
 
         }
 
+
     }
+
 
 }
