@@ -1,8 +1,12 @@
+import { TelegramOutgoingMessage } from "./models/TelegramOutgoingMessage";
+
+
 export interface TelegramBotClient {
 
+
     sendMessage(
-        chatId: string,
-        message: string
+        message: TelegramOutgoingMessage
     ): Promise<void>;
+
 
 }

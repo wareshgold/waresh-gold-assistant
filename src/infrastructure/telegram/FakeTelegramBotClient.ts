@@ -1,4 +1,5 @@
 import { TelegramBotClient } from "./TelegramBotClient";
+import { TelegramOutgoingMessage } from "./models/TelegramOutgoingMessage";
 
 
 export class FakeTelegramBotClient
@@ -6,19 +7,17 @@ implements TelegramBotClient {
 
 
     async sendMessage(
-        chatId: string,
-        message: string
+        message: TelegramOutgoingMessage
     ): Promise<void> {
 
 
         console.log(
             "Fake Telegram Message",
-            {
-                chatId,
-                message
-            }
+            message
         );
 
+
     }
+
 
 }

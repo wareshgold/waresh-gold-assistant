@@ -1,22 +1,30 @@
 import { TelegramUpdateMapper } from "../../../infrastructure/telegram/TelegramUpdateMapper";
 import { TelegramMessageHandler } from "../TelegramMessageHandler";
 import { TelegramResponseFormatter } from "../TelegramResponseFormatter";
-import { TelegramBotApiClient } from "../../../infrastructure/telegram/TelegramBotClient";
+import { TelegramBotClient } from "../../../infrastructure/telegram/TelegramBotClient";
 
 
 export class TelegramUpdateProcessor {
 
 
     constructor(
+
         private readonly mapper: TelegramUpdateMapper,
+
         private readonly handler: TelegramMessageHandler,
+
         private readonly formatter: TelegramResponseFormatter,
-        private readonly botClient: TelegramBotApiClient
+
+        private readonly botClient: TelegramBotClient
+
     ){}
 
 
 
-    async process(update: any): Promise<void> {
+    async process(
+        update: any
+    ): Promise<void> {
+
 
 
         const mapped =
@@ -27,22 +35,28 @@ export class TelegramUpdateProcessor {
         const response =
             await this.handler.handle({
 
-                userId: String(mapped.chatId),
+                userId:
+                    String(mapped.chatId),
 
-                text: mapped.text
+                text:
+                    mapped.text
 
             });
 
 
 
-        await this.botClient.sendMessage(
+        await this.botClient.sendMessage({
 
-            String(mapped.chatId),
+            chatId:
+                String(mapped.chatId),
 
-            response
+            text:
+                response
 
-        );
+        });
+
 
     }
+
 
 }

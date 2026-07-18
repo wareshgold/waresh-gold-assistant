@@ -4,43 +4,75 @@ import { TelegramUpdateProcessor } from "../../../src/application/telegram/servi
 import { TelegramUpdateMapper } from "../../../src/infrastructure/telegram/TelegramUpdateMapper";
 import { TelegramResponseFormatter } from "../../../src/application/telegram/TelegramResponseFormatter";
 import { TelegramMessageHandler } from "../../../src/application/telegram/TelegramMessageHandler";
-import { FakeTelegramBotApiClient } from "../../../src/infrastructure/telegram/clients/FakeTelegramBotApiClient";
+
+
+class TestTelegramBotClient {
+
+
+    messages: any[] = [];
+
+
+    async sendMessage(
+        message: any
+    ): Promise<void> {
+
+
+        this.messages.push(
+            message
+        );
+
+    }
+
+
+}
+
 
 
 describe(
     "TelegramUpdateProcessor",
-    ()=>{
+    () => {
 
 
         it(
             "should process telegram update flow",
-            async()=>{
+            async () => {
 
 
                 const botClient =
-                    new FakeTelegramBotApiClient();
+                    new TestTelegramBotClient();
+
 
 
                 const commandService = {
 
-                    async execute(){
+
+                    async execute() {
+
 
                         return {
 
-                            content:"قیمت طلا آماده است"
+                            content:
+                                "قیمت طلا آماده است"
 
                         };
 
+
                     }
+
 
                 };
 
 
+
                 const handler =
                     new TelegramMessageHandler(
+
                         commandService as any,
+
                         new TelegramResponseFormatter()
+
                     );
+
 
 
                 const processor =
@@ -52,26 +84,39 @@ describe(
 
                         new TelegramResponseFormatter(),
 
-                        botClient
+                        botClient as any
 
                     );
 
 
+
                 await processor.process({
 
-                    update_id:1,
 
-                    message:{
+                    update_id:
+                        1,
 
-                        from:{
-                            id:456
+
+                    message: {
+
+
+                        from: {
+
+                            id:
+                                456
+
                         },
 
-                        text:"قیمت طلا"
+
+                        text:
+                            "قیمت طلا"
+
 
                     }
 
+
                 });
+
 
 
                 expect(
@@ -79,14 +124,20 @@ describe(
                 )
                 .toEqual({
 
-                    chatId:"456",
 
-                    text:"قیمت طلا آماده است"
+                    chatId:
+                        "456",
+
+
+                    text:
+                        "قیمت طلا آماده است"
+
 
                 });
 
 
             }
+
         );
 
 
