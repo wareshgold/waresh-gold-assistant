@@ -1,49 +1,52 @@
+import { Context } from "hono";
 import { TelegramUpdateProcessor } from "../../application/telegram/services/TelegramUpdateProcessor";
 
 
 export class TelegramWebhookController {
 
-
     constructor(
         private readonly processor: TelegramUpdateProcessor
-    ){}
-
+    ) {}
 
 
     async handle(
-        request: Request
-    ): Promise<Response> {
+        c: Context
+    ) {
+
+        try {
+
+            const update =
+                await c.req.json();
 
 
-        const update =
-            await request.json();
+            await this.processor.process(
+                update
+            );
 
 
-
-        await this.processor.process(
-            update
-        );
-
-
-
-        return new Response(
-
-            JSON.stringify({
-
+            return c.json({
                 ok: true
+            });
 
-            }),
 
-            {
-                status: 200,
-                headers:{
-                    "content-type":"application/json"
-                }
-            }
+        } catch (error) {
 
-        );
+            console.error(
+                "Telegram webhook error",
+                error
+            );
+
+
+            return c.json(
+                {
+                    ok: false,
+                    error: "Webhook processing failed"
+                },
+                500
+            );
+
+        }
 
     }
-
 
 }
