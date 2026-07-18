@@ -22,6 +22,7 @@
 	],
 
 	"vars": {
+		"ENVIRONMENT": "production",
 		"MARKET_PRICE_API_URL": "https://example.com/api/price"
 	},
 
