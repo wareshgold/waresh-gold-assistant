@@ -10,13 +10,19 @@ import worker from "../src/index";
 
 const IncomingRequest = Request<unknown, IncomingRequestCfProperties>;
 
+
 describe("Waresh Gold Assistant API", () => {
+
+
   it("should return health status (unit style)", async () => {
+
     const request = new IncomingRequest(
       "http://example.com/health"
     );
 
+
     const ctx = createExecutionContext();
+
 
     const response = await worker.fetch(
       request,
@@ -24,29 +30,153 @@ describe("Waresh Gold Assistant API", () => {
       ctx
     );
 
+
     await waitOnExecutionContext(ctx);
 
-    expect(response.status).toBe(200);
 
-    const body = await response.json();
+    expect(response.status)
+      .toBe(200);
 
-    expect(body).toEqual({
-      status: "ok",
-      service: "waresh-gold-assistant",
-      version: "0.1.0",
-    });
+
+    const body =
+      await response.json();
+
+
+    expect(body)
+      .toEqual({
+
+        status: "ok",
+
+        service:
+          "waresh-gold-assistant",
+
+        version:
+          "0.1.0",
+
+      });
+
   });
+
 
 
   it("should return health status (integration style)", async () => {
-    const response = await SELF.fetch(
-      "https://example.com/health"
-    );
 
-    expect(response.status).toBe(200);
 
-    const body = await response.json();
+    const response =
+      await SELF.fetch(
+        "https://example.com/health"
+      );
 
-    expect(body.status).toBe("ok");
+
+    expect(response.status)
+      .toBe(200);
+
+
+
+    const body =
+      await response.json();
+
+
+
+    expect(body.status)
+      .toBe("ok");
+
+
   });
+
+
+
+  it("should process telegram webhook", async () => {
+
+
+    const request =
+      new IncomingRequest(
+
+        "http://example.com/telegram/webhook",
+
+        {
+
+          method: "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json",
+
+          },
+
+
+          body: JSON.stringify({
+
+            update_id:
+              10000,
+
+
+            message: {
+
+              chat: {
+
+                id:
+                  12345,
+
+              },
+
+
+              text:
+                "/start",
+
+            },
+
+          }),
+
+        }
+
+      );
+
+
+
+    const ctx =
+      createExecutionContext();
+
+
+
+    const response =
+      await worker.fetch(
+
+        request,
+
+        env,
+
+        ctx
+
+      );
+
+
+
+    await waitOnExecutionContext(ctx);
+
+
+
+    expect(response.status)
+      .toBe(200);
+
+
+
+    const body =
+      await response.json();
+
+
+
+    expect(body)
+      .toEqual({
+
+        ok:
+          true,
+
+      });
+
+
+  });
+
+
 });
