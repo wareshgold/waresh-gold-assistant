@@ -1,15 +1,7 @@
-import {
-    CloudflareKVCacheStore,
-    KVNamespaceLike
-} from "./CloudflareKVCacheStore";
+import { CloudflareKVCacheStore } from "./CloudflareKVCacheStore";
 
-
-export function createCloudflareKVCache(
-    kv: KVNamespaceLike
-) {
-
-    return new CloudflareKVCacheStore(
-        kv
-    );
-
+export function createCloudflareKVCacheStore(
+  kv: KVNamespace
+): CloudflareKVCacheStore {
+  return new CloudflareKVCacheStore(kv);
 }
