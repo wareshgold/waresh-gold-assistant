@@ -8,6 +8,8 @@ export interface AppEnv {
 
   TELEGRAM_BOT_TOKEN: string;
 
+  TELEGRAM_WEBHOOK_SECRET: string;
+
 }
 
 
@@ -32,6 +34,10 @@ export function getEnv(
 
     telegramBotToken:
       env.TELEGRAM_BOT_TOKEN,
+
+
+    telegramWebhookSecret:
+      env.TELEGRAM_WEBHOOK_SECRET,
 
   };
 

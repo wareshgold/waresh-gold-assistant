@@ -1,34 +1,52 @@
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "waresh-gold-assistant",
-	"main": "src/index.ts",
-	"compatibility_date": "2026-07-17",
+        "$schema": "node_modules/wrangler/config-schema.json",
 
-	"observability": {
-		"enabled": true
-	},
+        "name": "waresh-gold-assistant",
 
-	"upload_source_maps": true,
+        "main": "src/index.ts",
 
-	"compatibility_flags": [
-		"nodejs_compat"
-	],
+        "compatibility_date": "2026-07-17",
 
-	"kv_namespaces": [
-		{
-			"binding": "MARKET_CACHE",
-			"id": "5b44d51427934e729dc0372d198487eb"
-		}
-	],
 
-	"vars": {
-		"ENVIRONMENT": "production",
-		"MARKET_PRICE_API_URL": "https://example.com/api/price"
-	},
+        "observability": {
+                "enabled": true
+        },
 
-	"triggers": {
-		"crons": [
-			"*/30 * * * *"
-		]
-	}
+
+        "upload_source_maps": true,
+
+
+        "compatibility_flags": [
+                "nodejs_compat"
+        ],
+
+
+
+        "kv_namespaces": [
+                {
+                        "binding": "MARKET_CACHE",
+                        "id": "5b44d51427934e729dc0372d198487eb"
+                }
+        ],
+
+
+
+        "vars": {
+
+                "ENVIRONMENT": "production",
+
+                "MARKET_PRICE_API_URL": "https://example.com/api/price"
+
+        },
+
+
+
+        "triggers": {
+
+                "crons": [
+                        "*/30 * * * *"
+                ]
+
+        }
+
 }
