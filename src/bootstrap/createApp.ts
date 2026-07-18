@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { requestLogger } from "../shared/middleware/requestLogger";
 import { errorHandler } from "../presentation/middleware/errorHandler";
 
-export function createApp() {
+export function createApp(container?: unknown) {
   const app = new Hono();
 
   app.use("*", requestLogger);

@@ -1,5 +1,12 @@
 import { createApp } from "./bootstrap/createApp";
+import { createContainer } from "./bootstrap/createContainer";
 
-const app = createApp();
+export default {
+  fetch(request: Request, env: Env, ctx: ExecutionContext) {
+    const container = createContainer(env);
 
-export default app;
+    const app = createApp(container);
+
+    return app.fetch(request, env, ctx);
+  },
+};
