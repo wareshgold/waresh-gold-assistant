@@ -7,11 +7,8 @@ export interface GetCurrentGoldPriceOutput {
 
   price: number;
 
-  currency: string;
-
-  updatedAt: Date;
-
 }
+
 
 
 export class GetCurrentGoldPriceUseCase {
@@ -36,15 +33,7 @@ export class GetCurrentGoldPriceUseCase {
     return {
 
       price:
-        marketPrice.gold18Price,
-
-
-      currency:
-        "IRR",
-
-
-      updatedAt:
-        marketPrice.updatedAt
+        marketPrice.gold18Price
 
     };
 

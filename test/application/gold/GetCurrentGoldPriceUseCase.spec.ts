@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   GetCurrentGoldPriceUseCase
-} from "../../../src/application/market/GetCurrentGoldPriceUseCase";
+} from "../../../src/application/gold/GetCurrentGoldPriceUseCase";
 
 
 import {
@@ -12,12 +12,12 @@ import {
 
 describe(
   "Get Current Gold Price Use Case",
-  () => {
+  ()=>{
 
 
     it(
-      "should return current market price",
-      async () => {
+      "should return current gold price",
+      async ()=>{
 
 
         const fakeProvider: MarketPriceProvider = {
@@ -44,10 +44,12 @@ describe(
         };
 
 
+
         const useCase =
           new GetCurrentGoldPriceUseCase(
             fakeProvider
           );
+
 
 
         const result =
@@ -58,9 +60,6 @@ describe(
         expect(result.price)
           .toBe(18000000);
 
-
-        expect(result.currency)
-          .toBe("IRR");
 
 
       }
