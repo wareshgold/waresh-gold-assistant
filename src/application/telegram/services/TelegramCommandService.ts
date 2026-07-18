@@ -1,3 +1,4 @@
+import { ApplicationResponse } from "../../common/models/ApplicationResponse";
 import { GetGoldPriceUseCase } from "../../usecases/GetGoldPriceUseCase";
 import { TelegramCommandExecutor } from "../interfaces/TelegramCommandExecutor";
 
@@ -10,9 +11,10 @@ export class TelegramCommandService implements TelegramCommandExecutor {
     ) {}
 
 
+
     async execute(
         command: string
-    ): Promise<string> {
+    ): Promise<ApplicationResponse> {
 
 
         const normalizedCommand =
@@ -25,36 +27,42 @@ export class TelegramCommandService implements TelegramCommandExecutor {
 
             case "/start":
 
-                return "به وارش گلد خوش آمدید ✨";
+                return {
+                    type: "text",
+                    content:
+                        "به وارش گلد خوش آمدید ✨"
+                };
 
 
 
-            case "/price": {
+            case "/price":
 
-                const response =
-                    await this.getGoldPriceUseCase.execute();
-
-
-                return response.content;
-
-            }
+                return await this.getGoldPriceUseCase.execute();
 
 
 
             case "/help":
 
-                return [
-                    "دستورات موجود:",
-                    "/start - شروع ربات",
-                    "/price - قیمت لحظه‌ای طلا",
-                    "/help - راهنما",
-                ].join("\n");
+                return {
+                    type: "text",
+                    content:
+                    [
+                        "دستورات موجود:",
+                        "/start - شروع ربات",
+                        "/price - قیمت لحظه‌ای طلا",
+                        "/help - راهنما",
+                    ].join("\n")
+                };
 
 
 
             default:
 
-                return "دستور شناخته نشد. /help را ارسال کنید.";
+                return {
+                    type: "text",
+                    content:
+                        "دستور شناخته نشد. /help را ارسال کنید."
+                };
 
         }
 

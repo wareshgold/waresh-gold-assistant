@@ -1,12 +1,24 @@
 import { TelegramCommandExecutor } from "./interfaces/TelegramCommandExecutor";
+import { TelegramResponseFormatter } from "./TelegramResponseFormatter";
 
 
 export class TelegramMessageHandler {
 
 
+    private readonly formatter:
+        TelegramResponseFormatter;
+
+
+
     constructor(
         private readonly commandService: TelegramCommandExecutor
-    ) {}
+    ) {
+
+        this.formatter =
+            new TelegramResponseFormatter();
+
+    }
+
 
 
     async handle(
@@ -20,24 +32,20 @@ export class TelegramMessageHandler {
 
 
 
-        if (
-            normalized === "قیمت طلا" ||
-            normalized === "price"
-        ) {
-
-            return this.commandService.execute(
-                "/price"
+        const response =
+            await this.commandService.execute(
+                normalized === "قیمت طلا" ||
+                normalized === "price"
+                    ? "/price"
+                    : normalized
             );
 
-        }
 
 
-
-        return this.commandService.execute(
-            normalized
+        return this.formatter.format(
+            response
         );
 
     }
-
 
 }

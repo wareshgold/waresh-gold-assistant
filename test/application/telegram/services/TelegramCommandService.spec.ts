@@ -1,20 +1,57 @@
 import { describe, expect, it } from "vitest";
 import { TelegramCommandService } from "../../../../src/application/telegram/services/TelegramCommandService";
+import { GetGoldPriceUseCase } from "../../../../src/application/usecases/GetGoldPriceUseCase";
+import { FakePriceSourceClient } from "../../../../src/infrastructure/market/clients/FakePriceSourceClient";
 
-describe("TelegramCommandService", () => {
-  it("should handle start command", async () => {
-    const service = new TelegramCommandService();
 
-    const result = await service.execute("/start");
+describe(
+    "TelegramCommandService",
+    () => {
 
-    expect(result).toContain("وارش گلد");
-  });
 
-  it("should handle help command", async () => {
-    const service = new TelegramCommandService();
+        const service =
+            new TelegramCommandService(
+                new GetGoldPriceUseCase(
+                    new FakePriceSourceClient()
+                )
+            );
 
-    const result = await service.execute("/help");
 
-    expect(result).toContain("/price");
-  });
-});
+
+        it(
+            "should handle start command",
+            async () => {
+
+                const result =
+                    await service.execute("/start");
+
+
+                expect(result.content)
+                    .toContain(
+                        "وارش گلد"
+                    );
+
+            }
+        );
+
+
+
+        it(
+            "should handle help command",
+            async () => {
+
+                const result =
+                    await service.execute("/help");
+
+
+                expect(result.content)
+                    .toContain(
+                        "/price"
+                    );
+
+            }
+        );
+
+
+    }
+);

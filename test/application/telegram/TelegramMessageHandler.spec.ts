@@ -1,28 +1,29 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { TelegramMessageHandler } from "../../../src/application/telegram/TelegramMessageHandler";
+import { TelegramCommandService } from "../../../src/application/telegram/services/TelegramCommandService";
+import { GetGoldPriceUseCase } from "../../../src/application/usecases/GetGoldPriceUseCase";
+import { FakePriceSourceClient } from "../../../src/infrastructure/market/clients/FakePriceSourceClient";
 
 
 describe(
     "TelegramMessageHandler",
-    ()=>{
+    () => {
+
+
+        const handler =
+            new TelegramMessageHandler(
+                new TelegramCommandService(
+                    new GetGoldPriceUseCase(
+                        new FakePriceSourceClient()
+                    )
+                )
+            );
+
 
 
         it(
             "should handle gold price command",
-            async()=>{
-
-                const commandService = {
-                    execute: vi.fn()
-                        .mockResolvedValue(
-                            "قیمت طلا در حال دریافت است..."
-                        )
-                };
-
-
-                const handler =
-                    new TelegramMessageHandler(
-                        commandService as any
-                    );
+            async () => {
 
 
                 const result =
@@ -31,15 +32,9 @@ describe(
                     );
 
 
-                expect(commandService.execute)
-                    .toHaveBeenCalledWith(
-                        "/price"
-                    );
-
-
                 expect(result)
-                    .toBe(
-                        "قیمت طلا در حال دریافت است..."
+                    .toContain(
+                        "قیمت"
                     );
 
             }
@@ -49,20 +44,7 @@ describe(
 
         it(
             "should reject unknown command",
-            async()=>{
-
-                const commandService = {
-                    execute: vi.fn()
-                        .mockResolvedValue(
-                            "دستور نامعتبر است"
-                        )
-                };
-
-
-                const handler =
-                    new TelegramMessageHandler(
-                        commandService as any
-                    );
+            async () => {
 
 
                 const result =
@@ -71,15 +53,9 @@ describe(
                     );
 
 
-                expect(commandService.execute)
-                    .toHaveBeenCalledWith(
-                        "hello"
-                    );
-
-
                 expect(result)
-                    .toBe(
-                        "دستور نامعتبر است"
+                    .toContain(
+                        "دستور شناخته نشد"
                     );
 
             }
