@@ -40,7 +40,6 @@ export class CalculateGoldPriceUseCase {
   ): CalculateGoldPriceOutput {
 
 
-
     const result =
       this.engine.execute(input);
 
