@@ -34,13 +34,34 @@ export default {
     ctx: ExecutionContext
   ) {
 
-    const container =
-      createContainer(env);
+    try {
+
+      const container =
+        createContainer(env);
 
 
-    await container
-      .priceRefreshService
-      .refresh();
+      const price =
+        await container
+          .priceRefreshService
+          .refresh();
+
+
+      console.log(
+        "Price refreshed:",
+        price
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Price refresh failed:",
+        error
+      );
+
+      throw error;
+
+    }
 
   }
 
