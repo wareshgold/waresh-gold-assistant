@@ -1,4 +1,10 @@
+import { GetGoldPriceUseCase } from "../../usecases/GetGoldPriceUseCase";
+
 export class TelegramCommandService {
+  constructor(
+    private readonly getGoldPriceUseCase: GetGoldPriceUseCase
+  ) {}
+
   async execute(command: string): Promise<string> {
     const normalizedCommand = command.trim().toLowerCase();
 
@@ -6,8 +12,17 @@ export class TelegramCommandService {
       case "/start":
         return "به وارش گلد خوش آمدید ✨";
 
-      case "/price":
-        return "قیمت طلا در حال دریافت است...";
+      case "/price": {
+        const result = await this.getGoldPriceUseCase.execute();
+
+        return [
+          "🟡 قیمت طلا",
+          "",
+          `قیمت: ${result.price}`,
+          `واحد: ${result.currency}`,
+          `زمان: ${result.updatedAt.toISOString()}`
+        ].join("\n");
+      }
 
       case "/help":
         return [

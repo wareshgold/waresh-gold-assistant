@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { TelegramMessageHandler } from "../../../src/application/telegram/TelegramMessageHandler";
 
 
@@ -11,10 +11,18 @@ describe(
             "should handle gold price command",
             async()=>{
 
+                const commandService = {
+                    execute: vi.fn()
+                        .mockResolvedValue(
+                            "قیمت طلا در حال دریافت است..."
+                        )
+                };
+
 
                 const handler =
-                    new TelegramMessageHandler();
-
+                    new TelegramMessageHandler(
+                        commandService as any
+                    );
 
 
                 const result =
@@ -23,12 +31,16 @@ describe(
                     );
 
 
+                expect(commandService.execute)
+                    .toHaveBeenCalledWith(
+                        "/price"
+                    );
+
 
                 expect(result)
                     .toBe(
-                        "قیمت طلا در حال دریافت است"
+                        "قیمت طلا در حال دریافت است..."
                     );
-
 
             }
         );
@@ -39,10 +51,18 @@ describe(
             "should reject unknown command",
             async()=>{
 
+                const commandService = {
+                    execute: vi.fn()
+                        .mockResolvedValue(
+                            "دستور نامعتبر است"
+                        )
+                };
+
 
                 const handler =
-                    new TelegramMessageHandler();
-
+                    new TelegramMessageHandler(
+                        commandService as any
+                    );
 
 
                 const result =
@@ -51,12 +71,16 @@ describe(
                     );
 
 
+                expect(commandService.execute)
+                    .toHaveBeenCalledWith(
+                        "hello"
+                    );
+
 
                 expect(result)
                     .toBe(
                         "دستور نامعتبر است"
                     );
-
 
             }
         );

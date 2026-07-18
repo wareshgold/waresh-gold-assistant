@@ -1,32 +1,31 @@
+import { TelegramCommandService } from "./services/TelegramCommandService";
+
 export class TelegramMessageHandler {
 
+    constructor(
+        private readonly commandService: TelegramCommandService
+    ) {}
 
     async handle(
-        message:string
-    ):Promise<string>{
-
+        message: string
+    ): Promise<string> {
 
         const normalized =
-            message.trim()
-            .toLowerCase();
+            message.trim().toLowerCase();
 
 
-
-        if(
+        if (
             normalized === "قیمت طلا" ||
             normalized === "price"
-        ){
+        ) {
 
-            return "قیمت طلا در حال دریافت است";
+            return this.commandService.execute("/price");
 
         }
 
 
-
-        return "دستور نامعتبر است";
-
+        return this.commandService.execute(normalized);
 
     }
-
 
 }
