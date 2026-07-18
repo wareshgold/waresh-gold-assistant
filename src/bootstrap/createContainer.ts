@@ -10,10 +10,13 @@ import { PriceRefreshService } from "../application/market/services/PriceRefresh
 import { GetGoldPriceUseCase } from "../application/usecases/GetGoldPriceUseCase";
 
 import { TelegramUpdateMapper } from "../infrastructure/telegram/TelegramUpdateMapper";
+
 import { FakeTelegramBotClient } from "../infrastructure/telegram/FakeTelegramBotClient";
+import { TelegramHttpBotClient } from "../infrastructure/telegram/clients/TelegramHttpBotClient";
 
 import { TelegramResponseFormatter } from "../application/telegram/TelegramResponseFormatter";
 import { TelegramMessageHandler } from "../application/telegram/TelegramMessageHandler";
+
 import { TelegramCommandService } from "../application/telegram/services/TelegramCommandService";
 import { TelegramUpdateProcessor } from "../application/telegram/services/TelegramUpdateProcessor";
 
@@ -22,13 +25,16 @@ import { TelegramWebhookController } from "../interfaces/telegram/TelegramWebhoo
 import { AppEnv } from "../shared/config/env";
 
 
-export function createContainer(env: AppEnv) {
+export function createContainer(
+  env: AppEnv
+) {
 
 
   const cache =
     createCloudflareKVCacheStore(
       env.MARKET_CACHE
     );
+
 
 
   const priceSourceClient =
@@ -52,6 +58,7 @@ export function createContainer(env: AppEnv) {
       marketProvider,
       cache
     );
+
 
 
   const getGoldPriceUseCase =
@@ -86,8 +93,25 @@ export function createContainer(env: AppEnv) {
 
 
 
+  /**
+   * Telegram Client Selection
+   *
+   * Production:
+   * Telegram HTTP API Client
+   *
+   * Development/Test:
+   * Fake Client
+   *
+   * We require the bot token explicitly
+   * to avoid accidental external API calls.
+   */
   const telegramBotClient =
-    new FakeTelegramBotClient();
+    env.ENVIRONMENT === "production" &&
+    env.TELEGRAM_BOT_TOKEN
+      ? new TelegramHttpBotClient(
+          env.TELEGRAM_BOT_TOKEN
+        )
+      : new FakeTelegramBotClient();
 
 
 

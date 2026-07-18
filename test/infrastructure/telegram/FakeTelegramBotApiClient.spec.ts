@@ -1,33 +1,46 @@
-import { describe,expect,it } from "vitest";
-import { FakeTelegramBotApiClient } from "../../../src/infrastructure/telegram/clients/FakeTelegramBotApiClient";
+import { describe, expect, it } from "vitest";
+
+import { FakeTelegramBotClient } from "../../../src/infrastructure/telegram/clients/FakeTelegramBotClient";
 
 
 describe(
-    "FakeTelegramBotApiClient",
-    ()=>{
+    "FakeTelegramBotClient",
+    () => {
 
 
         it(
-            "should store sent messages",
-            async()=>{
+            "should store telegram messages",
+            async () => {
 
 
                 const client =
-                    new FakeTelegramBotApiClient();
+                    new FakeTelegramBotClient();
 
 
-                await client.sendMessage(
-                    "123",
-                    "قیمت طلا"
-                );
+
+                await client.sendMessage({
+
+                    chatId:
+                        "123",
+
+                    text:
+                        "hello"
+
+                });
+
 
 
                 expect(
                     client.messages[0]
                 )
                 .toEqual({
-                    chatId:"123",
-                    text:"قیمت طلا"
+
+                    chatId:
+                        "123",
+
+                    text:
+                        "hello"
+
                 });
 
 
