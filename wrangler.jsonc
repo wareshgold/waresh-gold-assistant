@@ -13,6 +13,12 @@
 	"upload_source_maps": true,
 	"compatibility_flags": [
 		"nodejs_compat"
+	],
+	"kv_namespaces": [
+		{
+			"binding": "MARKET_CACHE",
+			"id": "5b44d51427934e729dc0372d198487eb"
+		}
 	]
 	/**
 	 * Smart Placement
