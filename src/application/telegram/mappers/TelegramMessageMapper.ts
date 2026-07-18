@@ -5,21 +5,13 @@ export class TelegramMessageMapper {
 
 
     map(
-        telegramMessage: {
-            userId: number;
-            text?: string;
-        }
+        update: any
     ): IncomingMessage {
 
 
         return {
-
-            userId:
-                String(telegramMessage.userId),
-
-            text:
-                telegramMessage.text ?? ""
-
+            userId: String(update.message.from.id),
+            text: update.message.text ?? ""
         };
 
     }
