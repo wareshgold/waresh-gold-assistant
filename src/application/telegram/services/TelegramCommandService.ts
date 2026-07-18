@@ -1,0 +1,24 @@
+export class TelegramCommandService {
+  async execute(command: string): Promise<string> {
+    const normalizedCommand = command.trim().toLowerCase();
+
+    switch (normalizedCommand) {
+      case "/start":
+        return "به وارش گلد خوش آمدید ✨";
+
+      case "/price":
+        return "قیمت طلا در حال دریافت است...";
+
+      case "/help":
+        return [
+          "دستورات موجود:",
+          "/start - شروع ربات",
+          "/price - قیمت لحظه‌ای طلا",
+          "/help - راهنما",
+        ].join("\n");
+
+      default:
+        return "دستور شناخته نشد. /help را ارسال کنید.";
+    }
+  }
+}
