@@ -4,6 +4,7 @@ import { TelegramCommandExecutor } from "../interfaces/TelegramCommandExecutor";
 
 export class TelegramCommandService implements TelegramCommandExecutor {
 
+
     constructor(
         private readonly getGoldPriceUseCase: GetGoldPriceUseCase
     ) {}
@@ -13,31 +14,31 @@ export class TelegramCommandService implements TelegramCommandExecutor {
         command: string
     ): Promise<string> {
 
+
         const normalizedCommand =
             command.trim().toLowerCase();
 
 
+
         switch (normalizedCommand) {
 
+
             case "/start":
+
                 return "به وارش گلد خوش آمدید ✨";
+
 
 
             case "/price": {
 
-                const result =
+                const response =
                     await this.getGoldPriceUseCase.execute();
 
 
-                return [
-                    "🟡 قیمت طلا",
-                    "",
-                    `قیمت: ${result.price}`,
-                    `واحد: ${result.currency}`,
-                    `زمان: ${result.updatedAt.toISOString()}`
-                ].join("\n");
+                return response.content;
 
             }
+
 
 
             case "/help":
@@ -48,6 +49,7 @@ export class TelegramCommandService implements TelegramCommandExecutor {
                     "/price - قیمت لحظه‌ای طلا",
                     "/help - راهنما",
                 ].join("\n");
+
 
 
             default:
