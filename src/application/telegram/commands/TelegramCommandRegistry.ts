@@ -27,15 +27,19 @@ export class TelegramCommandRegistry {
             TelegramCommandHandler[] = [
 
 
+
                 new StartCommandHandler(),
+
 
 
                 new HelpCommandHandler(),
 
 
+
                 new GoldPriceCommandHandler(
                     getGoldPriceUseCase
                 ),
+
 
 
                 new GetGoldBubbleCommandHandler(
