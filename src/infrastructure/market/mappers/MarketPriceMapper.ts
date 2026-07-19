@@ -11,11 +11,18 @@ export class MarketPriceMapper {
 
 
         return new MarketPrice(
+
             raw.gold18Price,
+
             raw.currencyPrice,
+
+            raw.ouncePrice,
+
             raw.updatedAt
+
         );
 
     }
+
 
 }

@@ -7,6 +7,7 @@ import { MarketPriceResponseSchema }
 from "../schemas/MarketPriceResponseSchema";
 
 
+
 export class HttpPriceSourceClient
 implements PriceSourceClient {
 
@@ -16,6 +17,7 @@ implements PriceSourceClient {
     ) {}
 
 
+
     async fetchPrice(): Promise<RawMarketPrice> {
 
 
@@ -23,17 +25,23 @@ implements PriceSourceClient {
             await fetch(this.url);
 
 
+
         if (!response.ok) {
+
 
             throw new Error(
                 "Failed to fetch market price"
             );
 
+
         }
+
 
 
         const json =
             await response.json();
+
+
 
 
         const validated =
@@ -41,14 +49,23 @@ implements PriceSourceClient {
 
 
 
+
         return {
+
 
             gold18Price:
                 validated.gold18Price,
 
 
+
             currencyPrice:
                 validated.currencyPrice,
+
+
+
+            ouncePrice:
+                validated.ouncePrice,
+
 
 
             updatedAt:
@@ -56,8 +73,11 @@ implements PriceSourceClient {
                     validated.updatedAt
                 )
 
+
         };
 
+
     }
+
 
 }

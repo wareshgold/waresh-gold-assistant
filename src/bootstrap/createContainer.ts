@@ -8,6 +8,9 @@ import { HttpMarketPriceProvider } from "../infrastructure/market/providers/Http
 import { PriceRefreshService } from "../application/market/services/PriceRefreshService";
 
 import { GetGoldPriceUseCase } from "../application/usecases/GetGoldPriceUseCase";
+import { GetGoldBubbleUseCase } from "../application/market/GetGoldBubbleUseCase";
+
+import { GoldBubbleCalculator } from "../domain/market/services/GoldBubbleCalculator";
 
 import { TelegramUpdateMapper } from "../infrastructure/telegram/TelegramUpdateMapper";
 
@@ -77,9 +80,23 @@ export function createContainer(
 
 
 
+    const goldBubbleCalculator =
+        new GoldBubbleCalculator();
+
+
+
+    const getGoldBubbleUseCase =
+        new GetGoldBubbleUseCase(
+            marketProvider,
+            goldBubbleCalculator
+        );
+
+
+
     const commandHandlers =
         TelegramCommandRegistry.create(
-            getGoldPriceUseCase
+            getGoldPriceUseCase,
+            getGoldBubbleUseCase
         );
 
 

@@ -1,10 +1,11 @@
-import {
-  MarketPrice
-} from "../entities/MarketPrice";
+import { MarketPrice } from "../entities/MarketPrice";
 
 
 export interface MarketPriceProvider {
 
-  getCurrentPrice(): MarketPrice;
+
+  getCurrentPrice():
+    Promise<MarketPrice>;
+
 
 }
