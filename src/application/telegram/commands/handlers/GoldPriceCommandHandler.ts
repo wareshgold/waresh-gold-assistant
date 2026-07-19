@@ -47,20 +47,42 @@ implements TelegramCommandHandler {
     ): Promise<any> {
 
 
-        const result =
-            await this.getGoldPriceUseCase.execute();
+        try {
+
+
+            const result =
+                await this.getGoldPriceUseCase.execute();
 
 
 
-        return {
+            return {
 
-            content:
-                "🟡 قیمت طلا\n\n" +
-                `قیمت: ${result.gold18Price}\n` +
-                `واحد: ${result.currency ?? "IRR"}\n` +
-                `زمان: ${result.timestamp ?? new Date().toISOString()}`
+                content:
+                    result.content
 
-        };
+            };
+
+
+        }
+        catch(error){
+
+
+            console.error(
+                "Gold price command failed:",
+                error
+            );
+
+
+
+            return {
+
+                content:
+                    "⚠️ دریافت قیمت طلا در حال حاضر امکان‌پذیر نیست.\nلطفاً چند لحظه بعد دوباره تلاش کنید."
+
+            };
+
+
+        }
 
 
     }

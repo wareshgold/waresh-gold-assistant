@@ -21,38 +21,40 @@ export class TelegramCommandContextBuilder {
 
 
 
-        if(
-            normalized.includes("قیمت") ||
-            normalized.includes("طلا") ||
-            normalized.includes("gold")
-        ){
+        if (
+            normalized.startsWith("/")
+        ) {
 
             command =
-                "/price";
+                normalized.split(" ")[0];
 
         }
-
-
-
-        if(
+        else if (
             normalized.includes("شروع") ||
             normalized.includes("start")
-        ){
+        ) {
 
             command =
                 "/start";
 
         }
-
-
-
-        if(
+        else if (
             normalized.includes("راهنما") ||
             normalized.includes("help")
-        ){
+        ) {
 
             command =
                 "/help";
+
+        }
+        else if (
+            normalized.includes("قیمت") ||
+            normalized.includes("طلا") ||
+            normalized.includes("gold")
+        ) {
+
+            command =
+                "/price";
 
         }
 

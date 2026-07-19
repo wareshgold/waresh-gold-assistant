@@ -41,14 +41,30 @@ export class TelegramWebhookController {
 
 
 
-        const update =
-            await c.req.json();
+        try {
+
+
+            const update =
+                await c.req.json();
 
 
 
-        await this.processor.process(
-            update
-        );
+            await this.processor.process(
+                update
+            );
+
+
+        }
+        catch(error){
+
+
+            console.error(
+                "Telegram webhook processing failed:",
+                error
+            );
+
+
+        }
 
 
 
