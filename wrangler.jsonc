@@ -1,56 +1,53 @@
 {
-        "$schema": "node_modules/wrangler/config-schema.json",
+	"$schema": "node_modules/wrangler/config-schema.json",
 
-        "name": "waresh-gold-assistant",
+	"name": "waresh-gold-assistant",
 
-        "main": "src/index.ts",
+	"main": "src/index.ts",
 
-        "compatibility_date": "2026-07-17",
-
-
-        "observability": {
-                "enabled": true
-        },
+	"compatibility_date": "2026-07-17",
 
 
-        "upload_source_maps": true,
+	"observability": {
+		"enabled": true
+	},
 
 
-        "compatibility_flags": [
-                "nodejs_compat"
-        ],
+	"upload_source_maps": true,
 
 
-
-        "kv_namespaces": [
-                {
-                        "binding": "MARKET_CACHE",
-                        "id": "5b44d51427934e729dc0372d198487eb"
-                }
-        ],
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
 
 
 
-        "vars": {
-
-                "ENVIRONMENT": "production",
-
-                "MARKET_PRICE_API_URL":
-                  "https://example.com/api/price",
-
-                "TELEGRAM_WEBHOOK_SECRET":
-                  "development-secret"
-
-        },
+	"kv_namespaces": [
+		{
+			"binding": "MARKET_CACHE",
+			"id": "5b44d51427934e729dc0372d198487eb"
+		}
+	],
 
 
 
-        "triggers": {
+	"vars": {
 
-                "crons": [
-                        "*/30 * * * *"
-                ]
+		"ENVIRONMENT": "production",
 
-        }
+		"MARKET_PRICE_API_URL":
+			"https://example.com/api/price"
+
+	},
+
+
+
+	"triggers": {
+
+		"crons": [
+			"*/30 * * * *"
+		]
+
+	}
 
 }

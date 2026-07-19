@@ -6,9 +6,9 @@ export interface AppEnv {
 
   MARKET_PRICE_API_URL: string;
 
-  TELEGRAM_BOT_TOKEN: string;
+  TELEGRAM_BOT_TOKEN?: string;
 
-  TELEGRAM_WEBHOOK_SECRET: string;
+  TELEGRAM_WEBHOOK_SECRET?: string;
 
 }
 
@@ -37,7 +37,8 @@ export function getEnv(
 
 
     telegramWebhookSecret:
-      env.TELEGRAM_WEBHOOK_SECRET
+      env.TELEGRAM_WEBHOOK_SECRET ??
+      "development-secret"
 
   };
 

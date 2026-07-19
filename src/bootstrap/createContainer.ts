@@ -28,11 +28,11 @@ import { TelegramWebhookSecurityGuard } from "../interfaces/telegram/TelegramWeb
 
 import { FakeTelegramBotClient } from "../infrastructure/telegram/FakeTelegramBotClient";
 
+import { TelegramHttpBotClient } from "../infrastructure/telegram/clients/TelegramHttpBotClient";
+
 import { AppEnv } from "../shared/config/env";
 
 import { TelegramCommandRegistry } from "../application/telegram/commands/TelegramCommandRegistry";
-
-import { TelegramCommandRouter } from "../application/telegram/commands/TelegramCommandRouter";
 
 
 export function createContainer(
@@ -93,17 +93,10 @@ export function createContainer(
 
 
 
-    const commandHandlers =
+    const commandRouter =
         TelegramCommandRegistry.create(
             getGoldPriceUseCase,
             getGoldBubbleUseCase
-        );
-
-
-
-    const commandRouter =
-        new TelegramCommandRouter(
-            commandHandlers
         );
 
 
@@ -134,7 +127,14 @@ export function createContainer(
 
 
     const telegramBotClient =
-        new FakeTelegramBotClient();
+
+        env.TELEGRAM_BOT_TOKEN
+
+            ? new TelegramHttpBotClient(
+                env.TELEGRAM_BOT_TOKEN
+            )
+
+            : new FakeTelegramBotClient();
 
 
 

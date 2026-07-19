@@ -6,7 +6,8 @@ export class FakeTelegramBotClient
 implements TelegramBotClient {
 
 
-    public messages: TelegramOutgoingMessage[] = [];
+    public messages:
+        TelegramOutgoingMessage[] = [];
 
 
 
@@ -24,10 +25,7 @@ implements TelegramBotClient {
 
 
 
-    getLastMessage():
-
-        TelegramOutgoingMessage | undefined {
-
+    getLastMessage(){
 
         return this.messages[
             this.messages.length - 1
