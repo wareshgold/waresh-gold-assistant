@@ -1,45 +1,77 @@
-import { TelegramPriceParser } from "../../parsers/TelegramPriceParser";
-import { PriceSourceClient, RawMarketPrice } from "../PriceSourceClient";
+import {
+    TelegramPriceParser
+} from "../../parsers/TelegramPriceParser";
+
+
+import {
+    PriceSourceClient,
+    RawMarketPrice
+} from "../PriceSourceClient";
+
+
 
 
 export class TelegramPriceSourceClient
 implements PriceSourceClient {
 
 
-  constructor(
-    private readonly messageProvider: () => Promise<string>
-  ) {}
+
+    constructor(
+
+        private readonly messageProvider:
+            () => Promise<string>
+
+    ) {}
 
 
 
-  async fetchPrice(): Promise<RawMarketPrice> {
 
 
-    const message =
-      await this.messageProvider();
+    async fetchPrice():
 
-
-
-    const parsed =
-      TelegramPriceParser.parse(message);
+        Promise<RawMarketPrice> {
 
 
 
-    return {
-
-      gold18Price:
-        parsed.gold18Price,
+        const message =
+            await this.messageProvider();
 
 
-      currencyPrice:
-        parsed.currencyPrice,
 
 
-      updatedAt:
-        new Date()
+        const parsed =
+            TelegramPriceParser.parse(
+                message
+            );
 
-    };
 
-  }
+
+
+
+        return {
+
+            gold18Price:
+                parsed.gold18Price,
+
+
+
+            currencyPrice:
+                parsed.currencyPrice,
+
+
+
+            ouncePrice:
+                parsed.ouncePrice,
+
+
+
+            updatedAt:
+                parsed.updatedAt
+
+        };
+
+
+    }
+
 
 }
