@@ -17,70 +17,49 @@ export class TelegramUpdateProcessor {
 
         private readonly botClient: TelegramBotClient
 
-    ){}
+    ) {}
 
 
 
     async process(
-        update: any
+        update: unknown
     ): Promise<void> {
 
 
-        console.log("PROCESS START");
-
-
-        const mapped =
+        const message =
             this.mapper.map(update);
 
 
-        console.log(
-            "MAPPED",
-            mapped
-        );
+
+        if (!message) {
+
+            return;
+
+        }
 
 
 
         const response =
-            await this.handler.handle({
+            await this.handler.handle(
+                message
+            );
 
-                userId:
-                    String(mapped.chatId),
 
-                text:
-                    mapped.text
 
+        const formattedResponse =
+            this.formatter.format({
+                content: response
             });
-
-
-
-        console.log(
-            "HANDLED",
-            response
-        );
-
-
-
-        console.log(
-            "BEFORE SEND"
-        );
 
 
 
         await this.botClient.sendMessage({
 
-            chatId:
-                String(mapped.chatId),
+            chatId: String(message.chatId),
 
-            text:
-                response
+            text: formattedResponse
 
         });
-
-
-
-        console.log(
-            "AFTER SEND"
-        );
 
 
     }

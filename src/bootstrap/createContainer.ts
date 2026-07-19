@@ -27,14 +27,9 @@ import { FakeTelegramBotClient } from "../infrastructure/telegram/FakeTelegramBo
 
 import { AppEnv } from "../shared/config/env";
 
+import { TelegramCommandRegistry } from "../application/telegram/commands/TelegramCommandRegistry";
+
 import { TelegramCommandRouter } from "../application/telegram/commands/TelegramCommandRouter";
-
-import { StartCommandHandler } from "../application/telegram/commands/handlers/StartCommandHandler";
-
-import { HelpCommandHandler } from "../application/telegram/commands/handlers/HelpCommandHandler";
-
-import { GetGoldPriceCommandHandler } from "../application/telegram/commands/handlers/GetGoldPriceCommandHandler";
-
 
 
 export function createContainer(
@@ -82,6 +77,27 @@ export function createContainer(
 
 
 
+    const commandHandlers =
+        TelegramCommandRegistry.create(
+            getGoldPriceUseCase
+        );
+
+
+
+    const commandRouter =
+        new TelegramCommandRouter(
+            commandHandlers
+        );
+
+
+
+    const telegramCommandService =
+        new TelegramCommandService(
+            commandRouter
+        );
+
+
+
     const telegramMapper =
         new TelegramUpdateMapper();
 
@@ -89,32 +105,6 @@ export function createContainer(
 
     const telegramFormatter =
         new TelegramResponseFormatter();
-
-
-
-    const telegramCommandRouter =
-        new TelegramCommandRouter(
-
-            [
-
-                new StartCommandHandler(),
-
-                new HelpCommandHandler(),
-
-                new GetGoldPriceCommandHandler(
-                    getGoldPriceUseCase
-                )
-
-            ]
-
-        );
-
-
-
-    const telegramCommandService =
-        new TelegramCommandService(
-            telegramCommandRouter
-        );
 
 
 
@@ -133,53 +123,38 @@ export function createContainer(
 
     const telegramProcessor =
         new TelegramUpdateProcessor(
-
             telegramMapper,
-
             telegramHandler,
-
             telegramFormatter,
-
             telegramBotClient
-
         );
 
 
 
     const telegramSecurityGuard =
         new TelegramWebhookSecurityGuard(
-
             env.TELEGRAM_WEBHOOK_SECRET
-
         );
 
 
 
     const telegramWebhookController =
         new TelegramWebhookController(
-
             telegramProcessor,
-
             telegramSecurityGuard
-
         );
 
 
 
     return {
 
-
         cache,
-
 
         marketProvider,
 
-
         priceRefreshService,
 
-
         telegramWebhookController
-
 
     };
 
