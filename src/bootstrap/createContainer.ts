@@ -1,58 +1,58 @@
-import { createCloudflareKVCacheStore } 
+import { createCloudflareKVCacheStore }
 from "../infrastructure/cache/CloudflareKVCacheFactory";
 
-import { HttpPriceSourceClient } 
+import { HttpPriceSourceClient }
 from "../infrastructure/market/clients/HttpPriceSourceClient";
 
-import { FakePriceSourceClient } 
+import { FakePriceSourceClient }
 from "../infrastructure/market/clients/FakePriceSourceClient";
 
-import { HttpMarketPriceProvider } 
+import { HttpMarketPriceProvider }
 from "../infrastructure/market/providers/HttpMarketPriceProvider";
 
-import { PriceRefreshService } 
+import { PriceRefreshService }
 from "../application/market/services/PriceRefreshService";
 
-import { GetGoldPriceUseCase } 
+import { GetGoldPriceUseCase }
 from "../application/usecases/GetGoldPriceUseCase";
 
-import { GetGoldBubbleUseCase } 
+import { GetGoldBubbleUseCase }
 from "../application/market/GetGoldBubbleUseCase";
 
-import { GoldBubbleCalculator } 
+import { GoldBubbleCalculator }
 from "../domain/market/services/GoldBubbleCalculator";
 
-import { TelegramUpdateMapper } 
+import { TelegramUpdateMapper }
 from "../infrastructure/telegram/TelegramUpdateMapper";
 
-import { TelegramResponseFormatter } 
+import { TelegramResponseFormatter }
 from "../application/telegram/TelegramResponseFormatter";
 
-import { TelegramMessageHandler } 
+import { TelegramMessageHandler }
 from "../application/telegram/TelegramMessageHandler";
 
-import { TelegramCommandService } 
+import { TelegramCommandService }
 from "../application/telegram/services/TelegramCommandService";
 
-import { TelegramUpdateProcessor } 
+import { TelegramUpdateProcessor }
 from "../application/telegram/services/TelegramUpdateProcessor";
 
-import { TelegramWebhookController } 
+import { TelegramWebhookController }
 from "../interfaces/telegram/TelegramWebhookController";
 
-import { TelegramWebhookSecurityGuard } 
+import { TelegramWebhookSecurityGuard }
 from "../interfaces/telegram/TelegramWebhookSecurityGuard";
 
-import { FakeTelegramBotClient } 
+import { FakeTelegramBotClient }
 from "../infrastructure/telegram/FakeTelegramBotClient";
 
-import { TelegramHttpBotClient } 
+import { TelegramHttpBotClient }
 from "../infrastructure/telegram/clients/TelegramHttpBotClient";
 
-import { AppEnv } 
+import { AppEnv }
 from "../shared/config/env";
 
-import { TelegramCommandRegistry } 
+import { TelegramCommandRegistry }
 from "../application/telegram/commands/TelegramCommandRegistry";
 
 
@@ -83,10 +83,12 @@ export function createContainer(
 
 
 
+
     const marketProvider =
         new HttpMarketPriceProvider(
             priceSourceClient
         );
+
 
 
 
@@ -100,16 +102,19 @@ export function createContainer(
 
 
 
+
     const getGoldPriceUseCase =
         new GetGoldPriceUseCase(
-            priceSourceClient
+            marketProvider
         );
+
 
 
 
 
     const goldBubbleCalculator =
         new GoldBubbleCalculator();
+
 
 
 
@@ -123,11 +128,13 @@ export function createContainer(
 
 
 
+
     const commandRouter =
         TelegramCommandRegistry.create(
             getGoldPriceUseCase,
             getGoldBubbleUseCase
         );
+
 
 
 
@@ -140,8 +147,10 @@ export function createContainer(
 
 
 
+
     const telegramMapper =
         new TelegramUpdateMapper();
+
 
 
 
@@ -152,11 +161,13 @@ export function createContainer(
 
 
 
+
     const telegramHandler =
         new TelegramMessageHandler(
             telegramCommandService,
             telegramFormatter
         );
+
 
 
 
@@ -174,6 +185,7 @@ export function createContainer(
 
 
 
+
     const telegramProcessor =
         new TelegramUpdateProcessor(
             telegramMapper,
@@ -181,6 +193,7 @@ export function createContainer(
             telegramFormatter,
             telegramBotClient
         );
+
 
 
 
@@ -193,11 +206,13 @@ export function createContainer(
 
 
 
+
     const telegramWebhookController =
         new TelegramWebhookController(
             telegramProcessor,
             telegramSecurityGuard
         );
+
 
 
 
