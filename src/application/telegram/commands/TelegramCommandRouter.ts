@@ -5,23 +5,16 @@ import { TelegramCommandHandler } from "./TelegramCommandHandler";
 export class TelegramCommandRouter {
 
 
-    private readonly handlers: TelegramCommandHandler[];
+    private readonly handlers:
+        TelegramCommandHandler[];
 
 
 
     constructor(
-        handlers: TelegramCommandHandler[] | TelegramCommandHandler
+        handlers: TelegramCommandHandler[]
     ) {
 
-        if (Array.isArray(handlers)) {
-
-            this.handlers = handlers;
-
-        } else {
-
-            this.handlers = [];
-
-        }
+        this.handlers = handlers;
 
     }
 
@@ -32,12 +25,21 @@ export class TelegramCommandRouter {
     ): Promise<any> {
 
 
+        const command =
+            context.command
+                .trim()
+                .toLowerCase();
+
+
+
         const handler =
             this.handlers.find(
+
                 item =>
                     item.canHandle(
-                        context.command
+                        command
                     )
+
             );
 
 
@@ -58,6 +60,7 @@ export class TelegramCommandRouter {
         return handler.execute(
             context
         );
+
 
     }
 
