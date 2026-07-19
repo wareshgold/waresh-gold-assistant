@@ -8,13 +8,12 @@ import { FakePriceSourceClient } from "../infrastructure/market/clients/FakePric
 
 import { TelegramCommandRegistry } from "../application/telegram/commands/TelegramCommandRegistry";
 
-import { TelegramCommandRouter } from "../application/telegram/commands/TelegramCommandRouter";
-
 
 export class ApplicationContainer {
 
 
-    public readonly telegramMessageHandler: TelegramMessageHandler;
+    public readonly telegramMessageHandler:
+        TelegramMessageHandler;
 
 
 
@@ -33,16 +32,9 @@ export class ApplicationContainer {
 
 
 
-        const handlers =
+        const router =
             TelegramCommandRegistry.create(
                 getGoldPriceUseCase
-            );
-
-
-
-        const router =
-            new TelegramCommandRouter(
-                handlers
             );
 
 
@@ -67,6 +59,5 @@ export class ApplicationContainer {
 
 
     }
-
 
 }

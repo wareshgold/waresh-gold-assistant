@@ -5,9 +5,25 @@ import { TelegramCommandHandler } from "./TelegramCommandHandler";
 export class TelegramCommandRouter {
 
 
+    private readonly handlers: TelegramCommandHandler[];
+
+
+
     constructor(
-        private readonly handlers: TelegramCommandHandler[]
-    ) {}
+        handlers: TelegramCommandHandler[] | TelegramCommandHandler
+    ) {
+
+        if (Array.isArray(handlers)) {
+
+            this.handlers = handlers;
+
+        } else {
+
+            this.handlers = [];
+
+        }
+
+    }
 
 
 
@@ -26,12 +42,12 @@ export class TelegramCommandRouter {
 
 
 
-        if(!handler){
+        if (!handler) {
 
             return {
 
                 content:
-                "دستور نامعتبر است"
+                    "دستور نامعتبر است"
 
             };
 

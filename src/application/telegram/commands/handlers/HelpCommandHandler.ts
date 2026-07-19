@@ -1,28 +1,48 @@
+import { TelegramCommandContext } from "../TelegramCommandContext";
 import { TelegramCommandHandler } from "../TelegramCommandHandler";
 
 
 export class HelpCommandHandler
-implements TelegramCommandHandler {
+    implements TelegramCommandHandler {
+
 
 
     canHandle(
         command: string
     ): boolean {
 
-
-        return command === "/help";
+        return (
+            command === "/help" ||
+            command === "help" ||
+            command === "/start"
+        );
 
     }
 
 
 
-    async execute(): Promise<any> {
+    async execute(
+        context: TelegramCommandContext
+    ) {
 
 
         return {
 
             content:
-            "دستورات:\n/price"
+`🟡 وارش گلد
+
+ربات هوشمند طلا
+
+دستورات:
+
+/price
+قیمت لحظه‌ای طلا
+
+/help
+راهنما
+
+/start
+شروع کار با ربات`
 
         };
 

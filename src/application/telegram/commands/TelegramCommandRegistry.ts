@@ -1,8 +1,9 @@
+import { TelegramCommandRouter } from "./TelegramCommandRouter";
 import { TelegramCommandHandler } from "./TelegramCommandHandler";
 
 import { StartCommandHandler } from "./handlers/StartCommandHandler";
 import { HelpCommandHandler } from "./handlers/HelpCommandHandler";
-import { GetGoldPriceCommandHandler } from "./handlers/GetGoldPriceCommandHandler";
+import { GoldPriceCommandHandler } from "./handlers/GoldPriceCommandHandler";
 
 import { GetGoldPriceUseCase } from "../../usecases/GetGoldPriceUseCase";
 
@@ -11,22 +12,38 @@ export class TelegramCommandRegistry {
 
 
     static create(
-        getGoldPriceUseCase:GetGoldPriceUseCase
-    ):TelegramCommandHandler[] {
+
+        getGoldPriceUseCase: GetGoldPriceUseCase
+
+    ): TelegramCommandRouter {
 
 
-        return [
 
-            new StartCommandHandler(),
+        const handlers:
+            TelegramCommandHandler[] = [
 
-            new HelpCommandHandler(),
 
-            new GetGoldPriceCommandHandler(
-                getGoldPriceUseCase
-            )
+                new StartCommandHandler(),
 
-        ];
+
+                new HelpCommandHandler(),
+
+
+                new GoldPriceCommandHandler(
+                    getGoldPriceUseCase
+                )
+
+
+            ];
+
+
+
+        return new TelegramCommandRouter(
+            handlers
+        );
+
 
     }
+
 
 }

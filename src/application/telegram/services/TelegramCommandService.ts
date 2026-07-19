@@ -1,6 +1,6 @@
 import { TelegramCommandExecutor } from "../interfaces/TelegramCommandExecutor";
 import { TelegramCommandRouter } from "../commands/TelegramCommandRouter";
-import { TelegramCommandContext } from "../commands/TelegramCommandContext";
+import { TelegramCommandContextBuilder } from "../commands/TelegramCommandContextBuilder";
 import { GetGoldPriceUseCase } from "../../usecases/GetGoldPriceUseCase";
 
 
@@ -8,39 +8,50 @@ export class TelegramCommandService
 implements TelegramCommandExecutor {
 
 
+    private readonly contextBuilder:
+        TelegramCommandContextBuilder;
+
+
+
     constructor(
 
-        private readonly dependency?:
-        TelegramCommandRouter | GetGoldPriceUseCase
+        private readonly router:
+            TelegramCommandRouter |
+            GetGoldPriceUseCase,
 
-    ) {}
+
+        contextBuilder?:
+            TelegramCommandContextBuilder
+
+    ) {
+
+        this.contextBuilder =
+            contextBuilder ??
+            new TelegramCommandContextBuilder();
+
+    }
 
 
 
     async execute(
-        input: string | TelegramCommandContext
+
+        command: string
+
     ): Promise<any> {
 
 
 
-        if (
-
-            this.dependency &&
-            this.dependency instanceof TelegramCommandRouter
-
-        ) {
-
+        if(
+            this.router instanceof TelegramCommandRouter
+        ){
 
             const context =
-                typeof input === "string"
-
-                    ? this.createContext(input)
-
-                    : input;
+                this.contextBuilder.build(
+                    command
+                );
 
 
-
-            return this.dependency.execute(
+            return this.router.execute(
                 context
             );
 
@@ -48,128 +59,32 @@ implements TelegramCommandExecutor {
 
 
 
-        return this.executeLegacy(
-            typeof input === "string"
-                ? input
-                : input.command
-        );
+        if(
+            this.router instanceof GetGoldPriceUseCase
+        ){
 
-
-    }
+            const result =
+                await this.router.execute();
 
 
 
-    private createContext(
-        command: string
-    ): TelegramCommandContext {
+            return {
 
+                content:
+                `🟡 وارش گلد\n\nقیمت طلا: ${result.gold18Price}`
 
-        const parts =
-            command.trim().split(" ");
+            };
+
+        }
 
 
 
         return {
 
-            chatId: "",
-
-            command: parts[0],
-
-            arguments: parts.slice(1)
+            content:
+            "دستور نامعتبر است"
 
         };
-
-
-    }
-
-
-
-    private async executeLegacy(
-        command: string
-    ): Promise<any> {
-
-
-        const normalizedCommand =
-            command.trim();
-
-
-
-        switch(normalizedCommand){
-
-
-            case "/start":
-
-                return {
-
-                    content:
-                    "سلام به وارش گلد خوش آمدید"
-
-                };
-
-
-
-            case "/help":
-
-                return {
-
-                    content:
-                    "دستورات:\n/price"
-
-                };
-
-
-
-            case "/price":
-
-            case "قیمت طلا":
-
-            case "قیمت":
-
-
-                if (
-                    this.dependency
-                    instanceof GetGoldPriceUseCase
-                ) {
-
-
-                    const result =
-                        await this.dependency.execute();
-
-
-
-                    return {
-
-                        content:
-                        `قیمت طلا: ${result.gold18Price}`
-
-                    };
-
-
-                }
-
-
-
-                return {
-
-                    content:
-                    "قیمت طلا در حال دریافت است..."
-
-                };
-
-
-
-            default:
-
-                return {
-
-                    content:
-                    "دستور نامعتبر است"
-
-                };
-
-
-        }
-
 
     }
 

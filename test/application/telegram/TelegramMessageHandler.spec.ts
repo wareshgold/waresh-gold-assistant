@@ -1,7 +1,22 @@
 import { describe, expect, it } from "vitest";
-import { TelegramMessageHandler } from "../../../src/application/telegram/TelegramMessageHandler";
-import { TelegramCommandService } from "../../../src/application/telegram/services/TelegramCommandService";
-import { TelegramResponseFormatter } from "../../../src/application/telegram/TelegramResponseFormatter";
+
+import { TelegramMessageHandler } 
+from "../../../src/application/telegram/TelegramMessageHandler";
+
+import { TelegramCommandService } 
+from "../../../src/application/telegram/services/TelegramCommandService";
+
+import { TelegramResponseFormatter } 
+from "../../../src/application/telegram/TelegramResponseFormatter";
+
+import { TelegramCommandRegistry } 
+from "../../../src/application/telegram/commands/TelegramCommandRegistry";
+
+import { GetGoldPriceUseCase } 
+from "../../../src/application/usecases/GetGoldPriceUseCase";
+
+import { FakePriceSourceClient } 
+from "../../../src/infrastructure/market/clients/FakePriceSourceClient";
 
 
 describe(
@@ -11,12 +26,31 @@ describe(
 
         const createHandler = ()=>{
 
+
+            const useCase =
+                new GetGoldPriceUseCase(
+                    new FakePriceSourceClient()
+                );
+
+
+            const router =
+                TelegramCommandRegistry.create(
+                    useCase
+                );
+
+
             return new TelegramMessageHandler(
-                new TelegramCommandService(),
+
+                new TelegramCommandService(
+                    router
+                ),
+
                 new TelegramResponseFormatter()
+
             );
 
         };
+
 
 
         it(
@@ -32,6 +66,7 @@ describe(
                     await handler.handle({
 
                         userId:"1",
+
                         text:"قیمت طلا"
 
                     });
@@ -62,6 +97,7 @@ describe(
                     await handler.handle({
 
                         userId:"1",
+
                         text:"hello"
 
                     });
