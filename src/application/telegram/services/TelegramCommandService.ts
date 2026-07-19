@@ -1,5 +1,6 @@
 import { TelegramCommandExecutor } from "../interfaces/TelegramCommandExecutor";
 import { TelegramCommandRouter } from "../commands/TelegramCommandRouter";
+import { TelegramCommandContext } from "../commands/TelegramCommandContext";
 import { GetGoldPriceUseCase } from "../../usecases/GetGoldPriceUseCase";
 
 
@@ -17,23 +18,75 @@ implements TelegramCommandExecutor {
 
 
     async execute(
-        command: string
+        input: string | TelegramCommandContext
     ): Promise<any> {
 
 
+
         if (
+
             this.dependency &&
             this.dependency instanceof TelegramCommandRouter
+
         ) {
 
-            return this.dependency.execute({
 
-                command
+            const context =
+                typeof input === "string"
 
-            });
+                    ? this.createContext(input)
+
+                    : input;
+
+
+
+            return this.dependency.execute(
+                context
+            );
 
         }
 
+
+
+        return this.executeLegacy(
+            typeof input === "string"
+                ? input
+                : input.command
+        );
+
+
+    }
+
+
+
+    private createContext(
+        command: string
+    ): TelegramCommandContext {
+
+
+        const parts =
+            command.trim().split(" ");
+
+
+
+        return {
+
+            chatId: "",
+
+            command: parts[0],
+
+            arguments: parts.slice(1)
+
+        };
+
+
+    }
+
+
+
+    private async executeLegacy(
+        command: string
+    ): Promise<any> {
 
 
         const normalizedCommand =
@@ -90,6 +143,7 @@ implements TelegramCommandExecutor {
                         `قیمت طلا: ${result.gold18Price}`
 
                     };
+
 
                 }
 

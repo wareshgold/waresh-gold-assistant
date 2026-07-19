@@ -1,9 +1,19 @@
 export interface TelegramCommandContext {
 
-    command: string;
 
-    chatId?: string;
+    chatId: string;
+
 
     userId?: string;
+
+
+    username?: string;
+
+
+    command: string;
+
+
+    arguments: string[];
+
 
 }
