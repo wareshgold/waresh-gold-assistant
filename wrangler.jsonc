@@ -35,7 +35,11 @@
 
                 "ENVIRONMENT": "production",
 
-                "MARKET_PRICE_API_URL": "https://example.com/api/price"
+                "MARKET_PRICE_API_URL":
+                  "https://example.com/api/price",
+
+                "TELEGRAM_WEBHOOK_SECRET":
+                  "development-secret"
 
         },
 

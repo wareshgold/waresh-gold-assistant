@@ -1,51 +1,56 @@
 import { Context } from "hono";
 import { TelegramUpdateProcessor } from "../../application/telegram/services/TelegramUpdateProcessor";
+import { TelegramWebhookSecurityGuard } from "./TelegramWebhookSecurityGuard";
 
 
 export class TelegramWebhookController {
 
+
     constructor(
-        private readonly processor: TelegramUpdateProcessor
-    ) {}
+        private readonly processor: TelegramUpdateProcessor,
+        private readonly securityGuard: TelegramWebhookSecurityGuard
+    ){}
+
 
 
     async handle(
         c: Context
     ) {
 
-        try {
 
-            const update =
-                await c.req.json();
-
-
-            await this.processor.process(
-                update
-            );
+        const isValid =
+            this.securityGuard.validate(c);
 
 
-            return c.json({
-                ok: true
-            });
 
-
-        } catch (error) {
-
-            console.error(
-                "Telegram webhook error",
-                error
-            );
-
+        if(!isValid){
 
             return c.json(
                 {
-                    ok: false,
-                    error: "Webhook processing failed"
+                    ok:false,
+                    error:"Unauthorized"
                 },
-                500
+                401
             );
 
         }
+
+
+
+        const update =
+            await c.req.json();
+
+
+
+        await this.processor.process(
+            update
+        );
+
+
+
+        return c.json({
+            ok:true
+        });
 
     }
 

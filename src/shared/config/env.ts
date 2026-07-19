@@ -37,7 +37,7 @@ export function getEnv(
 
 
     telegramWebhookSecret:
-      env.TELEGRAM_WEBHOOK_SECRET,
+      env.TELEGRAM_WEBHOOK_SECRET
 
   };
 
