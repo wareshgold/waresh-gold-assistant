@@ -11,8 +11,8 @@ export class TelegramCommandRegistry {
 
 
     static create(
-        getGoldPriceUseCase: GetGoldPriceUseCase
-    ): TelegramCommandHandler[] {
+        getGoldPriceUseCase:GetGoldPriceUseCase
+    ):TelegramCommandHandler[] {
 
 
         return [
@@ -28,6 +28,5 @@ export class TelegramCommandRegistry {
         ];
 
     }
-
 
 }

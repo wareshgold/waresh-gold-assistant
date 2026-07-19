@@ -10,22 +10,27 @@ implements TelegramCommandExecutor {
     constructor(
 
         private readonly dependency?:
-            TelegramCommandRouter | GetGoldPriceUseCase
+        TelegramCommandRouter | GetGoldPriceUseCase
 
     ) {}
 
 
 
     async execute(
-        command:string
-    ):Promise<any>{
+        command: string
+    ): Promise<any> {
 
 
-        if(this.dependency instanceof TelegramCommandRouter){
+        if (
+            this.dependency &&
+            this.dependency instanceof TelegramCommandRouter
+        ) {
 
-            return this.dependency.execute(
+            return this.dependency.execute({
+
                 command
-            );
+
+            });
 
         }
 
@@ -68,7 +73,11 @@ implements TelegramCommandExecutor {
             case "قیمت":
 
 
-                if(this.dependency){
+                if (
+                    this.dependency
+                    instanceof GetGoldPriceUseCase
+                ) {
+
 
                     const result =
                         await this.dependency.execute();
@@ -96,7 +105,6 @@ implements TelegramCommandExecutor {
 
 
             default:
-
 
                 return {
 

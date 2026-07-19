@@ -1,12 +1,18 @@
+import { TelegramCommandContext } from "./TelegramCommandContext";
+
+
 export interface TelegramCommandHandler {
+
 
     canHandle(
         command: string
     ): boolean;
 
 
+
     execute(
-        command: string
+        context: TelegramCommandContext
     ): Promise<any>;
+
 
 }

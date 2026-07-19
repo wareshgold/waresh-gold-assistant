@@ -1,3 +1,4 @@
+import { TelegramCommandContext } from "./TelegramCommandContext";
 import { TelegramCommandHandler } from "./TelegramCommandHandler";
 
 
@@ -11,26 +12,21 @@ export class TelegramCommandRouter {
 
 
     async execute(
-        command: string
+        context: TelegramCommandContext
     ): Promise<any> {
-
-
-        const normalizedCommand =
-            command.trim();
-
 
 
         const handler =
             this.handlers.find(
                 item =>
                     item.canHandle(
-                        normalizedCommand
+                        context.command
                     )
             );
 
 
 
-        if (!handler) {
+        if(!handler){
 
             return {
 
@@ -44,7 +40,7 @@ export class TelegramCommandRouter {
 
 
         return handler.execute(
-            normalizedCommand
+            context
         );
 
     }
