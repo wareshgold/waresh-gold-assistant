@@ -38,6 +38,9 @@ export class HelpCommandHandler
 /price
 قیمت لحظه‌ای طلا
 
+/bubble
+محاسبه حباب طلا
+
 /help
 راهنما
 
