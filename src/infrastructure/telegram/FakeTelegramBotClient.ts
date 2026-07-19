@@ -12,9 +12,12 @@ implements TelegramBotClient {
 
 
         console.log(
-            "Fake Telegram Message",
+            "FAKE TELEGRAM SEND START",
             message
         );
+
+
+        return Promise.resolve();
 
 
     }

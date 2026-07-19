@@ -1,4 +1,5 @@
 import { Context } from "hono";
+
 import { TelegramUpdateProcessor } from "../../application/telegram/services/TelegramUpdateProcessor";
 import { TelegramWebhookSecurityGuard } from "./TelegramWebhookSecurityGuard";
 
@@ -7,8 +8,11 @@ export class TelegramWebhookController {
 
 
     constructor(
+
         private readonly processor: TelegramUpdateProcessor,
+
         private readonly securityGuard: TelegramWebhookSecurityGuard
+
     ){}
 
 
@@ -49,9 +53,13 @@ export class TelegramWebhookController {
 
 
         return c.json({
+
             ok:true
+
         });
 
+
     }
+
 
 }

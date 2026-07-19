@@ -9,7 +9,6 @@ import { PriceRefreshService } from "../application/market/services/PriceRefresh
 
 import { GetGoldPriceUseCase } from "../application/usecases/GetGoldPriceUseCase";
 
-
 import { TelegramUpdateMapper } from "../infrastructure/telegram/TelegramUpdateMapper";
 
 import { TelegramResponseFormatter } from "../application/telegram/TelegramResponseFormatter";
@@ -20,23 +19,18 @@ import { TelegramCommandService } from "../application/telegram/services/Telegra
 
 import { TelegramUpdateProcessor } from "../application/telegram/services/TelegramUpdateProcessor";
 
-
 import { TelegramWebhookController } from "../interfaces/telegram/TelegramWebhookController";
 
 import { TelegramWebhookSecurityGuard } from "../interfaces/telegram/TelegramWebhookSecurityGuard";
 
-
 import { FakeTelegramBotClient } from "../infrastructure/telegram/FakeTelegramBotClient";
 
-
 import { AppEnv } from "../shared/config/env";
-
 
 
 export function createContainer(
   env: AppEnv
 ) {
-
 
 
   const cache =
@@ -58,12 +52,10 @@ export function createContainer(
 
 
 
-
   const marketProvider =
     new HttpMarketPriceProvider(
       priceSourceClient
     );
-
 
 
 
@@ -77,12 +69,10 @@ export function createContainer(
 
 
 
-
   const getGoldPriceUseCase =
     new GetGoldPriceUseCase(
       priceSourceClient
     );
-
 
 
 
@@ -93,10 +83,8 @@ export function createContainer(
 
 
 
-
   const telegramFormatter =
     new TelegramResponseFormatter();
-
 
 
 
@@ -105,7 +93,6 @@ export function createContainer(
     new TelegramCommandService(
       getGoldPriceUseCase
     );
-
 
 
 
@@ -119,10 +106,8 @@ export function createContainer(
 
 
 
-
   const telegramBotClient =
     new FakeTelegramBotClient();
-
 
 
 
@@ -143,14 +128,12 @@ export function createContainer(
 
 
 
-
   const telegramSecurityGuard =
     new TelegramWebhookSecurityGuard(
 
       env.TELEGRAM_WEBHOOK_SECRET
 
     );
-
 
 
 
@@ -163,7 +146,6 @@ export function createContainer(
       telegramSecurityGuard
 
     );
-
 
 
 

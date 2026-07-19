@@ -50,8 +50,13 @@ export function createApp(
     app.post(
       "/telegram/webhook",
 
-      (c) =>
-        container.telegramWebhookController.handle(c)
+      async (c) => {
+
+        return await container
+          .telegramWebhookController
+          .handle(c);
+
+      }
 
     );
 

@@ -26,9 +26,17 @@ export class TelegramUpdateProcessor {
     ): Promise<void> {
 
 
+        console.log("PROCESS START");
+
 
         const mapped =
             this.mapper.map(update);
+
+
+        console.log(
+            "MAPPED",
+            mapped
+        );
 
 
 
@@ -45,6 +53,19 @@ export class TelegramUpdateProcessor {
 
 
 
+        console.log(
+            "HANDLED",
+            response
+        );
+
+
+
+        console.log(
+            "BEFORE SEND"
+        );
+
+
+
         await this.botClient.sendMessage({
 
             chatId:
@@ -54,6 +75,12 @@ export class TelegramUpdateProcessor {
                 response
 
         });
+
+
+
+        console.log(
+            "AFTER SEND"
+        );
 
 
     }

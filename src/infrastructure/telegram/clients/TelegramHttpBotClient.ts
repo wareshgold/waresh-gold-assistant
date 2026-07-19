@@ -8,7 +8,7 @@ implements TelegramBotClient {
 
     constructor(
         private readonly botToken: string
-    ) {}
+    ){}
 
 
 
@@ -19,20 +19,14 @@ implements TelegramBotClient {
 
         const response =
             await fetch(
-
                 `https://api.telegram.org/bot${this.botToken}/sendMessage`,
-
                 {
 
-                    method:
-                        "POST",
+                    method:"POST",
 
-
-                    headers: {
-
+                    headers:{
                         "Content-Type":
                             "application/json"
-
                     },
 
 
@@ -49,12 +43,11 @@ implements TelegramBotClient {
                         })
 
                 }
-
             );
 
 
 
-        if (!response.ok) {
+        if(!response.ok){
 
             throw new Error(
                 "Telegram API request failed"
@@ -64,6 +57,5 @@ implements TelegramBotClient {
 
 
     }
-
 
 }
