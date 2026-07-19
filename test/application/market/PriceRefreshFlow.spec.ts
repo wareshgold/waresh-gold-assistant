@@ -21,6 +21,14 @@ import { FakeTelegramChannelMessageProvider }
 from "../../../src/infrastructure/market/sources/FakeTelegramChannelMessageProvider";
 
 
+import { MemoryMarketSnapshotRepository }
+from "../../../src/infrastructure/market/repositories/MemoryMarketSnapshotRepository";
+
+
+import { MarketSnapshotService }
+from "../../../src/application/market/services/MarketSnapshotService";
+
+
 
 describe(
     "Price Refresh Flow",
@@ -28,7 +36,7 @@ describe(
 
 
         it(
-            "should refresh price and store it in cache",
+            "should refresh price, cache it and create snapshot",
             async()=>{
 
 
@@ -37,9 +45,21 @@ describe(
 
 
 
+                const snapshotRepository =
+                    new MemoryMarketSnapshotRepository();
+
+
+
+                const snapshotService =
+                    new MarketSnapshotService(
+                        snapshotRepository
+                    );
+
+
+
                 const telegramClient =
                     new TelegramPriceSourceClient(
-                        ()=> 
+                        () =>
                             new FakeTelegramChannelMessageProvider()
                                 .getLatestMessage()
                     );
@@ -55,8 +75,13 @@ describe(
 
                 const refreshService =
                     new PriceRefreshService(
+
                         provider,
-                        cache
+
+                        cache,
+
+                        snapshotService
+
                     );
 
 
@@ -86,10 +111,23 @@ describe(
 
 
 
-                expect(cached.gold18Price)
-                    .toBe(
-                        18780155
-                    );
+                const snapshot =
+                    await snapshotService.getLatest();
+
+
+
+                expect(snapshot)
+                    .not
+                    .toBeNull();
+
+
+
+                expect(
+                    snapshot?.gold18Price
+                )
+                .toBe(
+                    18780155
+                );
 
 
             }
