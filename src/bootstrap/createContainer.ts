@@ -1,43 +1,66 @@
-import { createCloudflareKVCacheStore } from "../infrastructure/cache/CloudflareKVCacheFactory";
+import { createCloudflareKVCacheStore } 
+from "../infrastructure/cache/CloudflareKVCacheFactory";
 
-import { HttpPriceSourceClient } from "../infrastructure/market/clients/HttpPriceSourceClient";
-import { FakePriceSourceClient } from "../infrastructure/market/clients/FakePriceSourceClient";
+import { HttpPriceSourceClient } 
+from "../infrastructure/market/clients/HttpPriceSourceClient";
 
-import { HttpMarketPriceProvider } from "../infrastructure/market/providers/HttpMarketPriceProvider";
+import { FakePriceSourceClient } 
+from "../infrastructure/market/clients/FakePriceSourceClient";
 
-import { PriceRefreshService } from "../application/market/services/PriceRefreshService";
+import { HttpMarketPriceProvider } 
+from "../infrastructure/market/providers/HttpMarketPriceProvider";
 
-import { GetGoldPriceUseCase } from "../application/usecases/GetGoldPriceUseCase";
-import { GetGoldBubbleUseCase } from "../application/market/GetGoldBubbleUseCase";
+import { PriceRefreshService } 
+from "../application/market/services/PriceRefreshService";
 
-import { GoldBubbleCalculator } from "../domain/market/services/GoldBubbleCalculator";
+import { GetGoldPriceUseCase } 
+from "../application/usecases/GetGoldPriceUseCase";
 
-import { TelegramUpdateMapper } from "../infrastructure/telegram/TelegramUpdateMapper";
+import { GetGoldBubbleUseCase } 
+from "../application/market/GetGoldBubbleUseCase";
 
-import { TelegramResponseFormatter } from "../application/telegram/TelegramResponseFormatter";
+import { GoldBubbleCalculator } 
+from "../domain/market/services/GoldBubbleCalculator";
 
-import { TelegramMessageHandler } from "../application/telegram/TelegramMessageHandler";
+import { TelegramUpdateMapper } 
+from "../infrastructure/telegram/TelegramUpdateMapper";
 
-import { TelegramCommandService } from "../application/telegram/services/TelegramCommandService";
+import { TelegramResponseFormatter } 
+from "../application/telegram/TelegramResponseFormatter";
 
-import { TelegramUpdateProcessor } from "../application/telegram/services/TelegramUpdateProcessor";
+import { TelegramMessageHandler } 
+from "../application/telegram/TelegramMessageHandler";
 
-import { TelegramWebhookController } from "../interfaces/telegram/TelegramWebhookController";
+import { TelegramCommandService } 
+from "../application/telegram/services/TelegramCommandService";
 
-import { TelegramWebhookSecurityGuard } from "../interfaces/telegram/TelegramWebhookSecurityGuard";
+import { TelegramUpdateProcessor } 
+from "../application/telegram/services/TelegramUpdateProcessor";
 
-import { FakeTelegramBotClient } from "../infrastructure/telegram/FakeTelegramBotClient";
+import { TelegramWebhookController } 
+from "../interfaces/telegram/TelegramWebhookController";
 
-import { TelegramHttpBotClient } from "../infrastructure/telegram/clients/TelegramHttpBotClient";
+import { TelegramWebhookSecurityGuard } 
+from "../interfaces/telegram/TelegramWebhookSecurityGuard";
 
-import { AppEnv } from "../shared/config/env";
+import { FakeTelegramBotClient } 
+from "../infrastructure/telegram/FakeTelegramBotClient";
 
-import { TelegramCommandRegistry } from "../application/telegram/commands/TelegramCommandRegistry";
+import { TelegramHttpBotClient } 
+from "../infrastructure/telegram/clients/TelegramHttpBotClient";
+
+import { AppEnv } 
+from "../shared/config/env";
+
+import { TelegramCommandRegistry } 
+from "../application/telegram/commands/TelegramCommandRegistry";
+
 
 
 export function createContainer(
     env: AppEnv
 ) {
+
 
 
     const cache =
@@ -48,7 +71,8 @@ export function createContainer(
 
 
     const priceSourceClient =
-        env.ENVIRONMENT === "production"
+
+        env.MARKET_PRICE_API_URL
 
             ? new HttpPriceSourceClient(
                 env.MARKET_PRICE_API_URL
@@ -58,10 +82,12 @@ export function createContainer(
 
 
 
+
     const marketProvider =
         new HttpMarketPriceProvider(
             priceSourceClient
         );
+
 
 
 
@@ -73,6 +99,7 @@ export function createContainer(
 
 
 
+
     const getGoldPriceUseCase =
         new GetGoldPriceUseCase(
             priceSourceClient
@@ -80,8 +107,10 @@ export function createContainer(
 
 
 
+
     const goldBubbleCalculator =
         new GoldBubbleCalculator();
+
 
 
 
@@ -93,11 +122,13 @@ export function createContainer(
 
 
 
+
     const commandRouter =
         TelegramCommandRegistry.create(
             getGoldPriceUseCase,
             getGoldBubbleUseCase
         );
+
 
 
 
@@ -108,8 +139,10 @@ export function createContainer(
 
 
 
+
     const telegramMapper =
         new TelegramUpdateMapper();
+
 
 
 
@@ -118,11 +151,13 @@ export function createContainer(
 
 
 
+
     const telegramHandler =
         new TelegramMessageHandler(
             telegramCommandService,
             telegramFormatter
         );
+
 
 
 
@@ -138,6 +173,7 @@ export function createContainer(
 
 
 
+
     const telegramProcessor =
         new TelegramUpdateProcessor(
             telegramMapper,
@@ -148,10 +184,12 @@ export function createContainer(
 
 
 
+
     const telegramSecurityGuard =
         new TelegramWebhookSecurityGuard(
             env.TELEGRAM_WEBHOOK_SECRET
         );
+
 
 
 
@@ -160,6 +198,7 @@ export function createContainer(
             telegramProcessor,
             telegramSecurityGuard
         );
+
 
 
 
