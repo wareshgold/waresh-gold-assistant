@@ -27,145 +27,161 @@ import { FakeTelegramBotClient } from "../infrastructure/telegram/FakeTelegramBo
 
 import { AppEnv } from "../shared/config/env";
 
+import { TelegramCommandRouter } from "../application/telegram/commands/TelegramCommandRouter";
+
+import { StartCommandHandler } from "../application/telegram/commands/handlers/StartCommandHandler";
+
+import { HelpCommandHandler } from "../application/telegram/commands/handlers/HelpCommandHandler";
+
+import { GetGoldPriceCommandHandler } from "../application/telegram/commands/handlers/GetGoldPriceCommandHandler";
+
+
 
 export function createContainer(
-  env: AppEnv
+    env: AppEnv
 ) {
 
 
-  const cache =
-    createCloudflareKVCacheStore(
-      env.MARKET_CACHE
-    );
+    const cache =
+        createCloudflareKVCacheStore(
+            env.MARKET_CACHE
+        );
 
 
 
-  const priceSourceClient =
-    env.ENVIRONMENT === "production"
+    const priceSourceClient =
+        env.ENVIRONMENT === "production"
 
-      ? new HttpPriceSourceClient(
-          env.MARKET_PRICE_API_URL
-        )
+            ? new HttpPriceSourceClient(
+                env.MARKET_PRICE_API_URL
+            )
 
-      : new FakePriceSourceClient();
+            : new FakePriceSourceClient();
 
 
 
+    const marketProvider =
+        new HttpMarketPriceProvider(
+            priceSourceClient
+        );
 
-  const marketProvider =
-    new HttpMarketPriceProvider(
-      priceSourceClient
-    );
 
 
+    const priceRefreshService =
+        new PriceRefreshService(
+            marketProvider,
+            cache
+        );
 
 
-  const priceRefreshService =
-    new PriceRefreshService(
-      marketProvider,
-      cache
-    );
 
+    const getGoldPriceUseCase =
+        new GetGoldPriceUseCase(
+            priceSourceClient
+        );
 
 
 
-  const getGoldPriceUseCase =
-    new GetGoldPriceUseCase(
-      priceSourceClient
-    );
+    const telegramMapper =
+        new TelegramUpdateMapper();
 
 
 
+    const telegramFormatter =
+        new TelegramResponseFormatter();
 
-  const telegramMapper =
-    new TelegramUpdateMapper();
 
 
+    const telegramCommandRouter =
+        new TelegramCommandRouter(
 
+            [
 
-  const telegramFormatter =
-    new TelegramResponseFormatter();
+                new StartCommandHandler(),
 
+                new HelpCommandHandler(),
 
+                new GetGoldPriceCommandHandler(
+                    getGoldPriceUseCase
+                )
 
+            ]
 
-  const telegramCommandService =
-    new TelegramCommandService(
-      getGoldPriceUseCase
-    );
+        );
 
 
 
+    const telegramCommandService =
+        new TelegramCommandService(
+            telegramCommandRouter
+        );
 
-  const telegramHandler =
-    new TelegramMessageHandler(
-      telegramCommandService,
-      telegramFormatter
-    );
 
 
+    const telegramHandler =
+        new TelegramMessageHandler(
+            telegramCommandService,
+            telegramFormatter
+        );
 
 
-  const telegramBotClient =
-    new FakeTelegramBotClient();
 
+    const telegramBotClient =
+        new FakeTelegramBotClient();
 
 
 
-  const telegramProcessor =
-    new TelegramUpdateProcessor(
+    const telegramProcessor =
+        new TelegramUpdateProcessor(
 
-      telegramMapper,
+            telegramMapper,
 
-      telegramHandler,
+            telegramHandler,
 
-      telegramFormatter,
+            telegramFormatter,
 
-      telegramBotClient
+            telegramBotClient
 
-    );
+        );
 
 
 
+    const telegramSecurityGuard =
+        new TelegramWebhookSecurityGuard(
 
-  const telegramSecurityGuard =
-    new TelegramWebhookSecurityGuard(
+            env.TELEGRAM_WEBHOOK_SECRET
 
-      env.TELEGRAM_WEBHOOK_SECRET
+        );
 
-    );
 
 
+    const telegramWebhookController =
+        new TelegramWebhookController(
 
+            telegramProcessor,
 
-  const telegramWebhookController =
-    new TelegramWebhookController(
+            telegramSecurityGuard
 
-      telegramProcessor,
+        );
 
-      telegramSecurityGuard
 
-    );
 
+    return {
 
 
+        cache,
 
-  return {
 
+        marketProvider,
 
-    cache,
 
+        priceRefreshService,
 
-    marketProvider,
 
+        telegramWebhookController
 
-    priceRefreshService,
 
-
-    telegramWebhookController
-
-
-  };
+    };
 
 
 }

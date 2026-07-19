@@ -1,14 +1,6 @@
+import { TelegramCommandExecutor } from "../interfaces/TelegramCommandExecutor";
+import { TelegramCommandRouter } from "../commands/TelegramCommandRouter";
 import { GetGoldPriceUseCase } from "../../usecases/GetGoldPriceUseCase";
-
-
-export interface TelegramCommandExecutor {
-
-    execute(
-        command:string
-    ):Promise<any>;
-
-}
-
 
 
 export class TelegramCommandService
@@ -16,14 +8,27 @@ implements TelegramCommandExecutor {
 
 
     constructor(
-        private readonly getGoldPriceUseCase?: GetGoldPriceUseCase
-    ){}
+
+        private readonly dependency?:
+            TelegramCommandRouter | GetGoldPriceUseCase
+
+    ) {}
 
 
 
     async execute(
         command:string
-    ){
+    ):Promise<any>{
+
+
+        if(this.dependency instanceof TelegramCommandRouter){
+
+            return this.dependency.execute(
+                command
+            );
+
+        }
+
 
 
         const normalizedCommand =
@@ -62,10 +67,12 @@ implements TelegramCommandExecutor {
 
             case "قیمت":
 
-                if(this.getGoldPriceUseCase){
+
+                if(this.dependency){
 
                     const result =
-                        await this.getGoldPriceUseCase.execute();
+                        await this.dependency.execute();
+
 
 
                     return {
@@ -76,6 +83,7 @@ implements TelegramCommandExecutor {
                     };
 
                 }
+
 
 
                 return {
