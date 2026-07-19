@@ -1,40 +1,33 @@
 import { TelegramBotClient } from "./TelegramBotClient";
+import { TelegramOutgoingMessage } from "./models/TelegramOutgoingMessage";
 
 
 export class FakeTelegramBotClient
 implements TelegramBotClient {
 
 
-    public messages: {
-        chatId: string;
-        text: string;
-    }[] = [];
+    public messages: TelegramOutgoingMessage[] = [];
 
 
 
     async sendMessage(
-
-        chatId: string,
-
-        text: string
-
+        message: TelegramOutgoingMessage
     ): Promise<void> {
 
 
-        this.messages.push({
-
-            chatId,
-
-            text
-
-        });
+        this.messages.push(
+            message
+        );
 
 
     }
 
 
 
-    getLastMessage(){
+    getLastMessage():
+
+        TelegramOutgoingMessage | undefined {
+
 
         return this.messages[
             this.messages.length - 1

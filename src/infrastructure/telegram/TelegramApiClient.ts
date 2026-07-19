@@ -2,6 +2,10 @@ import {
     TelegramBotClient
 } from "./TelegramBotClient";
 
+import {
+    TelegramOutgoingMessage
+} from "./models/TelegramOutgoingMessage";
+
 
 export class TelegramApiClient
 implements TelegramBotClient {
@@ -9,35 +13,60 @@ implements TelegramBotClient {
 
     constructor(
         private readonly botToken: string
-    ){}
+    ) {}
 
 
 
     async sendMessage(
-        chatId: string,
-        message: string
+
+        message: TelegramOutgoingMessage
+
     ): Promise<void> {
 
 
-        const url =
-            `https://api.telegram.org/bot${this.botToken}/sendMessage`;
+        const response =
+            await fetch(
+
+                `https://api.telegram.org/bot${this.botToken}/sendMessage`,
+
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+
+                    body: JSON.stringify({
+
+                        chat_id:
+                            message.chatId,
+
+
+                        text:
+                            message.text
+
+                    })
+
+                }
+
+            );
 
 
 
-        await fetch(
-            url,
-            {
-                method: "POST",
-                headers:{
-                    "Content-Type":"application/json"
-                },
-                body: JSON.stringify({
-                    chat_id: chatId,
-                    text: message
-                })
-            }
-        );
+        if (!response.ok) {
+
+            throw new Error(
+                "Telegram API request failed"
+            );
+
+        }
 
     }
+
 
 }
