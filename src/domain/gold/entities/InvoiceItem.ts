@@ -59,4 +59,82 @@ export class InvoiceItem {
   }
 
 
+
+  getTotal(): { amount: number } {
+
+
+    const weight =
+      this.gold
+        .getWeight()
+        .getGrams();
+
+
+
+    const goldValue =
+
+      this.gold
+        .getPrice()
+        .calculate(weight)
+        .getAmount();
+
+
+
+    const laborValue =
+
+      this.labor
+        .calculate(
+          this.gold
+            .getPrice()
+            .calculate(weight)
+        )
+        .getAmount();
+
+
+
+    const profitValue =
+
+      this.profit.calculate(
+        goldValue +
+        laborValue
+      );
+
+
+
+    const taxValue =
+
+      this.tax.calculate(
+        goldValue +
+        laborValue +
+        profitValue
+      );
+
+
+
+    const discountValue =
+
+      this.discount.calculate(
+        goldValue +
+        laborValue +
+        profitValue +
+        taxValue
+      );
+
+
+
+    return {
+
+      amount:
+
+        goldValue +
+        laborValue +
+        profitValue +
+        taxValue -
+        discountValue
+
+    };
+
+
+  }
+
+
 }

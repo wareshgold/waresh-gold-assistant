@@ -7,7 +7,10 @@ export interface MappedTelegramMessage {
 
     text: string;
 
+    userId: string;
+
 }
+
 
 
 export class TelegramUpdateMapper {
@@ -16,16 +19,35 @@ export class TelegramUpdateMapper {
     map(update: TelegramUpdate): MappedTelegramMessage {
 
 
+        const id =
+            update.message?.chat?.id ??
+            update.message?.from?.id;
+
+
+
+        if (!id) {
+
+            throw new Error(
+                "Telegram chat id missing"
+            );
+
+        }
+
+
+
         return {
 
-            chatId:
-                update.message?.chat?.id ??
-                update.message?.from?.id,
+            chatId: id,
+
+            userId: String(
+                update.message?.from?.id ?? id
+            ),
 
             text:
                 update.message?.text ?? ""
 
         };
+
 
     }
 

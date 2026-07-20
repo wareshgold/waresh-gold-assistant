@@ -16,15 +16,10 @@ implements TelegramCommandHandler {
         command: string
     ): boolean {
 
-
         return (
-
             command === "/price" ||
-
             command === "قیمت طلا" ||
-
             command === "قیمت"
-
         );
 
     }
@@ -39,12 +34,7 @@ implements TelegramCommandHandler {
 
 
 
-        return {
-
-            content:
-            `قیمت طلا: ${result.gold18Price}`
-
-        };
+        return result;
 
     }
 

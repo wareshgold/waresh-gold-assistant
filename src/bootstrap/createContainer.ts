@@ -14,6 +14,10 @@ import { MemoryMarketSnapshotRepository }
 from "../infrastructure/market/repositories/MemoryMarketSnapshotRepository";
 
 
+import { D1MarketSnapshotRepository }
+from "../infrastructure/market/repositories/d1/D1MarketSnapshotRepository";
+
+
 
 import { GetGoldPriceUseCase }
 from "../application/usecases/GetGoldPriceUseCase";
@@ -90,6 +94,7 @@ from "../shared/config/env";
 
 
 
+
 export function createContainer(
     env: AppEnv
 ) {
@@ -106,7 +111,16 @@ export function createContainer(
 
 
     const snapshotRepository =
-        new MemoryMarketSnapshotRepository();
+
+        env.ENVIRONMENT === "production"
+
+            ? new D1MarketSnapshotRepository(
+                env.waresh_gold_db
+            )
+
+            : new MemoryMarketSnapshotRepository();
+
+
 
 
 
@@ -122,8 +136,12 @@ export function createContainer(
 
 
 
+
+
     const messageProvider =
         new FakeTelegramChannelMessageProvider();
+
+
 
 
 
@@ -140,11 +158,14 @@ export function createContainer(
 
 
 
+
+
     const marketProvider =
         new CachedMarketPriceProvider(
             telegramMarketProvider,
             cache
         );
+
 
 
 
@@ -181,8 +202,11 @@ export function createContainer(
 
 
 
+
     const goldBubbleCalculator =
         new GoldBubbleCalculator();
+
+
 
 
 
@@ -194,6 +218,7 @@ export function createContainer(
             marketProvider,
             goldBubbleCalculator
         );
+
 
 
 
@@ -213,10 +238,12 @@ export function createContainer(
 
 
 
+
     const telegramCommandService =
         new TelegramCommandService(
             commandRouter
         );
+
 
 
 
@@ -233,6 +260,7 @@ export function createContainer(
 
 
 
+
     const telegramFormatter =
         new TelegramResponseFormatter();
 
@@ -242,11 +270,12 @@ export function createContainer(
 
 
 
+
     const telegramHandler =
         new TelegramMessageHandler(
-            telegramCommandService,
-            telegramFormatter
+            telegramCommandService
         );
+
 
 
 
@@ -270,6 +299,7 @@ export function createContainer(
 
 
 
+
     const telegramProcessor =
         new TelegramUpdateProcessor(
             telegramMapper,
@@ -277,6 +307,7 @@ export function createContainer(
             telegramFormatter,
             telegramBotClient
         );
+
 
 
 
@@ -295,11 +326,13 @@ export function createContainer(
 
 
 
+
     const telegramWebhookController =
         new TelegramWebhookController(
             telegramProcessor,
             telegramSecurityGuard
         );
+
 
 
 

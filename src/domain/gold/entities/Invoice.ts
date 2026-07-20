@@ -40,6 +40,7 @@ export class Invoice {
 
 
 
+
   getTotalAmount(): number {
 
 
@@ -47,13 +48,49 @@ export class Invoice {
 
       (total, item) => {
 
-        return total + item.total.amount;
+
+        const invoiceItem =
+          item as any;
+
+
+
+        if (
+          typeof invoiceItem.getTotal === "function"
+        ) {
+
+          return (
+            total +
+            invoiceItem
+              .getTotal()
+              .amount
+          );
+
+        }
+
+
+
+        if (
+          invoiceItem.total
+        ) {
+
+          return (
+            total +
+            invoiceItem.total.amount
+          );
+
+        }
+
+
+
+        return total;
+
 
       },
 
       0
 
     );
+
 
   }
 

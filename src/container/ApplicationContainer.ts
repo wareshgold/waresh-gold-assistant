@@ -1,12 +1,27 @@
-import { TelegramMessageHandler } from "../application/telegram/TelegramMessageHandler";
-import { TelegramCommandService } from "../application/telegram/services/TelegramCommandService";
-import { TelegramResponseFormatter } from "../application/telegram/TelegramResponseFormatter";
+import { TelegramMessageHandler }
+from "../application/telegram/TelegramMessageHandler";
 
-import { GetGoldPriceUseCase } from "../application/usecases/GetGoldPriceUseCase";
+import { TelegramCommandService }
+from "../application/telegram/services/TelegramCommandService";
 
-import { FakePriceSourceClient } from "../infrastructure/market/clients/FakePriceSourceClient";
+import { TelegramResponseFormatter }
+from "../application/telegram/TelegramResponseFormatter";
 
-import { TelegramCommandRegistry } from "../application/telegram/commands/TelegramCommandRegistry";
+import { GetGoldPriceUseCase }
+from "../application/usecases/GetGoldPriceUseCase";
+
+import { FakeMarketPriceProvider }
+from "../infrastructure/market/FakeMarketPriceProvider";
+
+import { TelegramCommandRegistry }
+from "../application/telegram/commands/TelegramCommandRegistry";
+
+import { GetGoldBubbleUseCase }
+from "../application/market/GetGoldBubbleUseCase";
+
+import { GoldBubbleCalculator }
+from "../domain/market/services/GoldBubbleCalculator";
+
 
 
 export class ApplicationContainer {
@@ -20,21 +35,35 @@ export class ApplicationContainer {
     constructor() {
 
 
-        const priceSourceClient =
-            new FakePriceSourceClient();
+        const marketProvider =
+            new FakeMarketPriceProvider();
 
 
 
         const getGoldPriceUseCase =
             new GetGoldPriceUseCase(
-                priceSourceClient
+                marketProvider
+            );
+
+
+
+        const goldBubbleCalculator =
+            new GoldBubbleCalculator();
+
+
+
+        const getGoldBubbleUseCase =
+            new GetGoldBubbleUseCase(
+                marketProvider,
+                goldBubbleCalculator
             );
 
 
 
         const router =
             TelegramCommandRegistry.create(
-                getGoldPriceUseCase
+                getGoldPriceUseCase,
+                getGoldBubbleUseCase
             );
 
 
@@ -46,15 +75,9 @@ export class ApplicationContainer {
 
 
 
-        const formatter =
-            new TelegramResponseFormatter();
-
-
-
         this.telegramMessageHandler =
             new TelegramMessageHandler(
-                commandService,
-                formatter
+                commandService
             );
 
 

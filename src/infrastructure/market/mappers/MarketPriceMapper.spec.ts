@@ -11,7 +11,11 @@ describe("MarketPriceMapper",()=>{
         const raw = {
 
             gold18Price: 18306478,
+
             currencyPrice: 187790,
+
+            ouncePrice: 3350,
+
             updatedAt: new Date()
 
         };
@@ -21,8 +25,10 @@ describe("MarketPriceMapper",()=>{
             MarketPriceMapper.toDomain(raw);
 
 
+
         expect(result.gold18Price)
             .toBe(18306478);
+
 
 
         expect(result.currencyPrice)

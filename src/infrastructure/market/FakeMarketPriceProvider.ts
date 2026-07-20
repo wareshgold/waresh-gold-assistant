@@ -13,24 +13,24 @@ export class FakeMarketPriceProvider
 implements MarketPriceProvider {
 
 
-
-  getCurrentPrice(): MarketPrice {
-
-
-    return new MarketPrice(
-
-      18000000,
-
-      187000,
-
-      3350,
-
-      new Date()
-
-    );
+    async getCurrentPrice():
+        Promise<MarketPrice> {
 
 
-  }
+        return new MarketPrice(
+
+            18000000,
+
+            187000,
+
+            3350,
+
+            new Date()
+
+        );
+
+
+    }
 
 
 }

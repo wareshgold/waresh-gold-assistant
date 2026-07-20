@@ -5,7 +5,9 @@ export class TelegramCommandContextBuilder {
 
 
     build(
-        message: string
+        message: string,
+        chatId: string = "",
+        args: string[] = []
     ): TelegramCommandContext {
 
 
@@ -21,9 +23,7 @@ export class TelegramCommandContextBuilder {
 
 
 
-        if (
-            normalized.startsWith("/")
-        ) {
+        if (normalized.startsWith("/")) {
 
             command =
                 normalized.split(" ")[0];
@@ -34,8 +34,7 @@ export class TelegramCommandContextBuilder {
             normalized.includes("start")
         ) {
 
-            command =
-                "/start";
+            command = "/start";
 
         }
         else if (
@@ -43,8 +42,7 @@ export class TelegramCommandContextBuilder {
             normalized.includes("help")
         ) {
 
-            command =
-                "/help";
+            command = "/help";
 
         }
         else if (
@@ -53,8 +51,7 @@ export class TelegramCommandContextBuilder {
             normalized.includes("gold")
         ) {
 
-            command =
-                "/price";
+            command = "/price";
 
         }
 
@@ -62,7 +59,11 @@ export class TelegramCommandContextBuilder {
 
         return {
 
-            command
+            chatId,
+
+            command,
+
+            arguments: args
 
         };
 

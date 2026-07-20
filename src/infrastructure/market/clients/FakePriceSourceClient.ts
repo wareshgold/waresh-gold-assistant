@@ -1,15 +1,13 @@
-import {
-    PriceSourceClient,
-    RawMarketPrice
-} from "./PriceSourceClient";
-
+import { PriceSourceClient } from "./PriceSourceClient";
+import { RawMarketPrice } from "./PriceSourceClient";
 
 
 export class FakePriceSourceClient
 implements PriceSourceClient {
 
 
-    async fetchPrice(): Promise<RawMarketPrice> {
+    async fetchPrice():
+        Promise<RawMarketPrice> {
 
 
         return {

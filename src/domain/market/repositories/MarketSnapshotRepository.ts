@@ -1,4 +1,4 @@
-import { MarketSnapshot } from "../entities/MarketSnapshot";
+import { MarketSnapshot } from "../snapshots/MarketSnapshot";
 
 
 export interface MarketSnapshotRepository {

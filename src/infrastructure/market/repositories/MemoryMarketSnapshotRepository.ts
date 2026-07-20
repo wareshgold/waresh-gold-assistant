@@ -1,19 +1,13 @@
-import { MarketSnapshot } 
-from "../../../domain/market/entities/MarketSnapshot";
-
-import { MarketSnapshotRepository }
-from "../../../domain/market/repositories/MarketSnapshotRepository";
-
+import { MarketSnapshot } from "../../../domain/market/snapshots/MarketSnapshot";
+import { MarketSnapshotRepository } from "../../../domain/market/repositories/MarketSnapshotRepository";
 
 
 export class MemoryMarketSnapshotRepository
 implements MarketSnapshotRepository {
 
 
-
-    private readonly snapshots:
+    private snapshots:
         MarketSnapshot[] = [];
-
 
 
 
@@ -37,7 +31,7 @@ implements MarketSnapshotRepository {
         Promise<MarketSnapshot | null> {
 
 
-        if (
+        if(
             this.snapshots.length === 0
         ) {
 
@@ -58,8 +52,10 @@ implements MarketSnapshotRepository {
 
 
 
+
+
     async getHistory(
-        limit: number = 10
+        limit: number = 50
     ):
         Promise<MarketSnapshot[]> {
 
@@ -70,7 +66,6 @@ implements MarketSnapshotRepository {
 
 
     }
-
 
 
 }

@@ -1,45 +1,56 @@
 export interface AppEnv {
 
-  ENVIRONMENT: string;
+    ENVIRONMENT: string;
 
-  MARKET_CACHE: KVNamespace;
 
-  MARKET_PRICE_API_URL: string;
+    MARKET_CACHE: KVNamespace;
 
-  TELEGRAM_BOT_TOKEN?: string;
 
-  TELEGRAM_WEBHOOK_SECRET?: string;
+    waresh_gold_db: D1Database;
+
+
+    MARKET_PRICE_API_URL: string;
+
+
+    TELEGRAM_BOT_TOKEN?: string;
+
+
+    TELEGRAM_WEBHOOK_SECRET?: string;
 
 }
 
 
 
 export function getEnv(
-  env: AppEnv
+    env: AppEnv
 ) {
 
-  return {
+    return {
 
-    environment:
-      env.ENVIRONMENT ?? "development",
-
-
-    marketPriceApiUrl:
-      env.MARKET_PRICE_API_URL,
+        environment:
+            env.ENVIRONMENT ?? "development",
 
 
-    marketCache:
-      env.MARKET_CACHE,
+        marketPriceApiUrl:
+            env.MARKET_PRICE_API_URL,
 
 
-    telegramBotToken:
-      env.TELEGRAM_BOT_TOKEN,
+        marketCache:
+            env.MARKET_CACHE,
 
 
-    telegramWebhookSecret:
-      env.TELEGRAM_WEBHOOK_SECRET ??
-      "development-secret"
+        database:
+            env.waresh_gold_db,
 
-  };
+
+        telegramBotToken:
+            env.TELEGRAM_BOT_TOKEN,
+
+
+        telegramWebhookSecret:
+            env.TELEGRAM_WEBHOOK_SECRET ??
+            "development-secret"
+
+    };
 
 }

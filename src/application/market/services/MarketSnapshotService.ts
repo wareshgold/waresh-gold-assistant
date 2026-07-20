@@ -1,50 +1,55 @@
-import { MarketPrice } 
-from "../../../domain/market/entities/MarketPrice";
-
-
-import { MarketSnapshot }
-from "../../../domain/market/entities/MarketSnapshot";
-
-
-import { MarketSnapshotRepository }
-from "../../../domain/market/repositories/MarketSnapshotRepository";
-
+import { MarketPriceProvider } from "../../../domain/market/providers/MarketPriceProvider";
+import { MarketSnapshot } from "../../../domain/market/snapshots/MarketSnapshot";
+import { MarketSnapshotRepository } from "../../../domain/market/repositories/MarketSnapshotRepository";
+import { MarketPrice } from "../../../domain/market/entities/MarketPrice";
 
 
 export class MarketSnapshotService {
 
 
+    private readonly priceProvider?:
+        MarketPriceProvider;
+
+
+
+    private readonly repository:
+        MarketSnapshotRepository;
+
+
 
     constructor(
+        repository:
+            MarketSnapshotRepository,
 
-        private readonly repository:
-            MarketSnapshotRepository
+        priceProvider?:
+            MarketPriceProvider
+    ) {
 
-    ) {}
+        this.repository =
+            repository;
+
+
+        this.priceProvider =
+            priceProvider;
+
+    }
 
 
 
 
 
     async savePrice(
-
         price: MarketPrice,
-
-        source: string
-
-    ): Promise<MarketSnapshot> {
+        source: string = "unknown"
+    ):
+        Promise<MarketSnapshot> {
 
 
 
         const snapshot =
-            new MarketSnapshot(
-
+            MarketSnapshot.fromMarketPrice(
                 price,
-
-                source,
-
-                new Date()
-
+                source
             );
 
 
@@ -57,6 +62,35 @@ export class MarketSnapshotService {
 
         return snapshot;
 
+    }
+
+
+
+
+
+    async capture():
+        Promise<MarketSnapshot> {
+
+
+        if (!this.priceProvider) {
+
+            throw new Error(
+                "MarketPriceProvider is required for capture"
+            );
+
+        }
+
+
+        const price =
+            await this.priceProvider
+                .getCurrentPrice();
+
+
+
+        return this.savePrice(
+            price,
+            "market-provider"
+        );
 
     }
 
@@ -65,14 +99,11 @@ export class MarketSnapshotService {
 
 
     async getLatest():
-
         Promise<MarketSnapshot | null> {
-
 
 
         return this.repository
             .getLatest();
-
 
     }
 
@@ -81,21 +112,15 @@ export class MarketSnapshotService {
 
 
     async getHistory(
-
         limit?: number
-
-    ): Promise<MarketSnapshot[]> {
-
+    ):
+        Promise<MarketSnapshot[]> {
 
 
         return this.repository
-            .getHistory(
-                limit
-            );
-
+            .getHistory(limit);
 
     }
-
 
 
 }
