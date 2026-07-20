@@ -1,121 +1,55 @@
 import { GoldRuleEngine } from "./GoldRuleEngine";
-
-import { GoldValueRule } from "../rules/GoldValueRule";
-import { LaborRule } from "../rules/LaborRule";
-import { ProfitRule } from "../rules/ProfitRule";
-import { TaxRule } from "../rules/TaxRule";
-import { FinalPriceRule } from "../rules/FinalPriceRule";
+import { GoldFormulaCalculator } from "./GoldFormulaCalculator";
 
 
-export class GoldRuleEngineService implements GoldRuleEngine {
+export class GoldRuleEngineService
+implements GoldRuleEngine {
 
 
-  private readonly goldValueRule =
-    new GoldValueRule();
-
-
-  private readonly laborRule =
-    new LaborRule();
-
-
-  private readonly profitRule =
-    new ProfitRule();
-
-
-  private readonly taxRule =
-    new TaxRule();
-
-
-  private readonly finalPriceRule =
-    new FinalPriceRule();
+    private readonly calculator =
+        new GoldFormulaCalculator();
 
 
 
-  execute(input: {
+    execute(input: {
 
-    weight: number;
+        weight: number;
 
-    goldPrice: number;
+        goldPrice: number;
 
-    laborPercent: number;
+        laborPercent: number;
 
-    profitPercent: number;
+        profitPercent: number;
 
-    taxPercent: number;
+        taxPercent: number;
 
-    discount?: number;
+        discount?: number;
 
-  }) {
-
-
-    const goldValue =
-      this.goldValueRule.calculate({
-        weight: input.weight,
-        goldPrice: input.goldPrice,
-      });
+    }) {
 
 
+        return this.calculator.calculate({
 
-    const labor =
-      this.laborRule.calculate({
-        goldValue,
-        laborPercent: input.laborPercent,
-      });
+            weight:
+                input.weight,
 
+            goldPrice:
+                input.goldPrice,
 
+            laborPercent:
+                input.laborPercent,
 
-    const profit =
-      this.profitRule.calculate({
-        baseAmount:
-          goldValue + labor,
+            profitPercent:
+                input.profitPercent,
 
-        profitPercent:
-          input.profitPercent,
-      });
+            taxPercent:
+                input.taxPercent,
 
+            discount:
+                input.discount
 
+        });
 
-    const tax =
-      this.taxRule.calculate({
-        baseAmount:
-          labor + profit,
-
-        taxPercent:
-          input.taxPercent,
-      });
-
-
-
-    const finalPrice =
-      this.finalPriceRule.calculate({
-        goldValue,
-
-        labor,
-
-        profit,
-
-        tax,
-
-        discount:
-          input.discount ?? 0,
-      });
-
-
-
-    return {
-
-      goldValue,
-
-      labor,
-
-      profit,
-
-      tax,
-
-      finalPrice,
-
-    };
-
-  }
+    }
 
 }

@@ -22,6 +22,12 @@ from "../application/market/GetGoldBubbleUseCase";
 import { GoldBubbleCalculator }
 from "../domain/market/services/GoldBubbleCalculator";
 
+import { ReverseGoldCalculator }
+from "../domain/gold/calculator/ReverseGoldCalculator";
+
+import { CalculateReverseGoldUseCase }
+from "../application/gold/CalculateReverseGoldUseCase";
+
 
 
 export class ApplicationContainer {
@@ -29,6 +35,10 @@ export class ApplicationContainer {
 
     public readonly telegramMessageHandler:
         TelegramMessageHandler;
+
+
+    public readonly calculateReverseGoldUseCase:
+        CalculateReverseGoldUseCase;
 
 
 
@@ -60,6 +70,18 @@ export class ApplicationContainer {
 
 
 
+        const reverseGoldCalculator =
+            new ReverseGoldCalculator();
+
+
+
+        this.calculateReverseGoldUseCase =
+            new CalculateReverseGoldUseCase(
+                reverseGoldCalculator
+            );
+
+
+
         const router =
             TelegramCommandRegistry.create(
                 getGoldPriceUseCase,
@@ -75,9 +97,15 @@ export class ApplicationContainer {
 
 
 
+        const formatter =
+            new TelegramResponseFormatter();
+
+
+
         this.telegramMessageHandler =
             new TelegramMessageHandler(
-                commandService
+                commandService,
+                formatter
             );
 
 
