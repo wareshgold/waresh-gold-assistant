@@ -1,6 +1,11 @@
-import { TelegramCommandExecutor } from "./interfaces/TelegramCommandExecutor";
-import { IncomingMessage } from "../common/models/IncomingMessage";
-import { TelegramResponseFormatter } from "./TelegramResponseFormatter";
+import { TelegramCommandExecutor } 
+from "./interfaces/TelegramCommandExecutor";
+
+import { IncomingMessage } 
+from "../common/models/IncomingMessage";
+
+import { TelegramResponseFormatter } 
+from "./TelegramResponseFormatter";
 
 
 export class TelegramMessageHandler {
@@ -28,7 +33,7 @@ export class TelegramMessageHandler {
 
         const response =
             await this.commandService.execute(
-                message.text
+                message
             );
 
 
@@ -46,5 +51,6 @@ export class TelegramMessageHandler {
         return response.content;
 
     }
+
 
 }

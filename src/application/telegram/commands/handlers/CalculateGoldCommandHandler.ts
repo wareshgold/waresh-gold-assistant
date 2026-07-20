@@ -5,14 +5,24 @@ import {
     CalculateGoldFormulaUseCase
 } from "../../../gold/CalculateGoldFormulaUseCase";
 
+import {
+    TelegramSessionStore
+} from "../../state/TelegramSessionStore";
+
 
 export class CalculateGoldCommandHandler
 implements TelegramCommandHandler {
 
 
     constructor(
+
         private readonly useCase:
-            CalculateGoldFormulaUseCase
+            CalculateGoldFormulaUseCase,
+
+
+        private readonly sessionStore:
+            TelegramSessionStore
+
     ) {}
 
 
@@ -28,15 +38,52 @@ implements TelegramCommandHandler {
 
 
     async execute(
+
         context: TelegramCommandContext
+
     ): Promise<string> {
 
 
+        if (
+            context.arguments.length === 0
+        ) {
+
+
+            await this.sessionStore.save({
+
+                userId:
+                    context.userId ?? "",
+
+
+                state:
+                    "GOLD_CALCULATION_WAITING_WEIGHT",
+
+
+                data:
+                    {},
+
+
+                updatedAt:
+                    Date.now()
+
+            });
+
+
+
+            return `
+💰 محاسبه طلا
+
+لطفاً وزن طلا را وارد کنید:
+            `.trim();
+
+        }
+
+
+
         const values =
-            context.arguments
-                .map(
-                    Number
-                );
+            context.arguments.map(
+                Number
+            );
 
 
 
@@ -70,6 +117,7 @@ implements TelegramCommandHandler {
             laborPercent,
             profitPercent,
             taxPercent
+
         ] = values;
 
 
@@ -123,6 +171,8 @@ ${result.tax}
 ${result.finalPrice}
         `.trim();
 
+
     }
+
 
 }

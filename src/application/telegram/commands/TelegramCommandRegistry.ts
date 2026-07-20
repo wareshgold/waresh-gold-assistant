@@ -1,15 +1,39 @@
-import { TelegramCommandRouter } from "./TelegramCommandRouter";
-import { TelegramCommandHandler } from "./TelegramCommandHandler";
+import { TelegramCommandRouter } 
+from "./TelegramCommandRouter";
 
-import { StartCommandHandler } from "./handlers/StartCommandHandler";
-import { HelpCommandHandler } from "./handlers/HelpCommandHandler";
-import { GoldPriceCommandHandler } from "./handlers/GoldPriceCommandHandler";
-import { GetGoldBubbleCommandHandler } from "./handlers/GetGoldBubbleCommandHandler";
-import { CalculateGoldCommandHandler } from "./handlers/CalculateGoldCommandHandler";
+import { TelegramCommandHandler } 
+from "./TelegramCommandHandler";
 
-import { GetGoldPriceUseCase } from "../../usecases/GetGoldPriceUseCase";
-import { GetGoldBubbleUseCase } from "../../market/GetGoldBubbleUseCase";
-import { CalculateGoldFormulaUseCase } from "../../gold/CalculateGoldFormulaUseCase";
+
+import { StartCommandHandler } 
+from "./handlers/StartCommandHandler";
+
+import { HelpCommandHandler } 
+from "./handlers/HelpCommandHandler";
+
+import { GoldPriceCommandHandler } 
+from "./handlers/GoldPriceCommandHandler";
+
+import { GetGoldBubbleCommandHandler } 
+from "./handlers/GetGoldBubbleCommandHandler";
+
+import { CalculateGoldCommandHandler } 
+from "./handlers/CalculateGoldCommandHandler";
+
+
+import { GetGoldPriceUseCase } 
+from "../../usecases/GetGoldPriceUseCase";
+
+import { GetGoldBubbleUseCase } 
+from "../../market/GetGoldBubbleUseCase";
+
+import { CalculateGoldFormulaUseCase } 
+from "../../gold/CalculateGoldFormulaUseCase";
+
+
+import { TelegramSessionStore } 
+from "../state/TelegramSessionStore";
+
 
 
 export class TelegramCommandRegistry {
@@ -17,11 +41,22 @@ export class TelegramCommandRegistry {
 
     static create(
 
-        getGoldPriceUseCase: GetGoldPriceUseCase,
 
-        getGoldBubbleUseCase: GetGoldBubbleUseCase,
+        getGoldPriceUseCase:
+            GetGoldPriceUseCase,
 
-        calculateGoldFormulaUseCase: CalculateGoldFormulaUseCase
+
+        getGoldBubbleUseCase:
+            GetGoldBubbleUseCase,
+
+
+        calculateGoldFormulaUseCase:
+            CalculateGoldFormulaUseCase,
+
+
+        sessionStore:
+            TelegramSessionStore
+
 
     ): TelegramCommandRouter {
 
@@ -34,7 +69,9 @@ export class TelegramCommandRegistry {
                 new StartCommandHandler(),
 
 
+
                 new HelpCommandHandler(),
+
 
 
                 new GoldPriceCommandHandler(
@@ -42,13 +79,16 @@ export class TelegramCommandRegistry {
                 ),
 
 
+
                 new GetGoldBubbleCommandHandler(
                     getGoldBubbleUseCase
                 ),
 
 
+
                 new CalculateGoldCommandHandler(
-                    calculateGoldFormulaUseCase
+                    calculateGoldFormulaUseCase,
+                    sessionStore
                 )
 
 

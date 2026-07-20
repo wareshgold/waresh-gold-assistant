@@ -1,11 +1,23 @@
-import { TelegramCommandExecutor } from "../interfaces/TelegramCommandExecutor";
-import { TelegramCommandRouter } from "../commands/TelegramCommandRouter";
-import { TelegramCommandContextBuilder } from "../commands/TelegramCommandContextBuilder";
-import { TelegramSessionStore } from "../state/TelegramSessionStore";
+import { TelegramCommandExecutor } 
+from "../interfaces/TelegramCommandExecutor";
+
+import { TelegramCommandRouter } 
+from "../commands/TelegramCommandRouter";
+
+import { TelegramCommandContextBuilder } 
+from "../commands/TelegramCommandContextBuilder";
+
+import { TelegramSessionStore } 
+from "../state/TelegramSessionStore";
+
+import { IncomingMessage } 
+from "../../common/models/IncomingMessage";
+
 
 
 export class TelegramCommandService
 implements TelegramCommandExecutor {
+
 
 
     private readonly contextBuilder:
@@ -33,21 +45,22 @@ implements TelegramCommandExecutor {
             contextBuilder ??
             new TelegramCommandContextBuilder();
 
-
     }
 
 
 
     async execute(
 
-        command: string
+        message: IncomingMessage
 
     ): Promise<any> {
 
 
+
         const context =
             this.contextBuilder.build(
-                command
+                message.text,
+                message.userId
             );
 
 
