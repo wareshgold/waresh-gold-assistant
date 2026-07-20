@@ -35,7 +35,8 @@
                 {
                         "binding": "waresh_gold_db",
                         "database_name": "waresh-gold-db",
-                        "database_id": "6685270e-8e5b-4af9-ac65-f2360fe70af8"
+                        "database_id": "6685270e-8e5b-4af9-ac65-f2360fe70af8",
+                        "migrations_dir": "migrations"
                 }
         ],
 
@@ -46,8 +47,10 @@
                 "ENVIRONMENT": "production",
 
                 "MARKET_PRICE_API_URL":
-                        "https://example.com/api/price"
-
+                        "https://example.com/api/price",
+                        
+                "TELEGRAM_MARKET_SOURCE_URL":
+                        "https://example.com/api/telegram-price"
         },
 
 
