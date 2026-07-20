@@ -44,6 +44,13 @@ implements TelegramCommandHandler {
     ): Promise<string> {
 
 
+
+        const userId =
+            context.userId ||
+            context.chatId;
+
+
+
         if (
             context.arguments.length === 0
         ) {
@@ -51,8 +58,7 @@ implements TelegramCommandHandler {
 
             await this.sessionStore.save({
 
-                userId:
-                    context.userId ?? "",
+                userId,
 
 
                 state:
@@ -88,12 +94,16 @@ implements TelegramCommandHandler {
 
 
         if (
+
             values.length < 5 ||
+
             values.some(
                 value =>
                     Number.isNaN(value)
             )
+
         ) {
+
 
             return `
 ❌ فرمت اشتباه است
@@ -123,6 +133,7 @@ implements TelegramCommandHandler {
 
 
         const result =
+
             this.useCase.execute({
 
                 weight,
@@ -135,14 +146,17 @@ implements TelegramCommandHandler {
 
                 taxPercent,
 
-                discount: 0
+                discount:
+                    0
 
             });
 
 
 
         return `
+
 💰 محاسبه طلا
+
 
 وزن:
 ${weight} گرم
@@ -169,6 +183,7 @@ ${result.tax}
 قیمت نهایی:
 
 ${result.finalPrice}
+
         `.trim();
 
 

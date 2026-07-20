@@ -1,14 +1,37 @@
-import { ApplicationResponse } from "../common/models/ApplicationResponse";
-
-
 export class TelegramResponseFormatter {
 
 
     format(
-        response: ApplicationResponse
+        response: any
     ): string {
 
-        return response.content;
+
+        if (typeof response === "string") {
+
+            return response;
+
+        }
+
+
+        if (
+            response?.content
+        ) {
+
+            return response.content;
+
+        }
+
+
+        if (
+            response?.type === "text"
+        ) {
+
+            return response.content ?? "";
+
+        }
+
+
+        return "";
 
     }
 

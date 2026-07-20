@@ -49,8 +49,11 @@ implements TelegramBotClient {
 
         if(!response.ok){
 
+            const error =
+                await response.text();
+
             throw new Error(
-                "Telegram API request failed"
+                error
             );
 
         }

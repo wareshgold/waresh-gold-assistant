@@ -37,32 +37,53 @@ export class TelegramUpdateProcessor {
 
 
         const message =
+
             this.mapper.map(update);
 
 
 
         const response =
+
             await this.handler.handle({
 
                 userId:
-                    String(message.chatId),
+
+                    message.userId,
 
 
                 text:
+
                     message.text
 
             });
 
 
 
+        const formattedResponse =
+
+            this.formatter.format(
+                response
+            );
+
+
+
+        console.log(
+            "FINAL TELEGRAM RESPONSE:",
+            formattedResponse
+        );
+
+
+
         await this.botClient.sendMessage({
 
             chatId:
+
                 String(message.chatId),
 
 
             text:
-                response
+
+                formattedResponse
 
         });
 

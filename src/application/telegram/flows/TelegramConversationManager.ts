@@ -27,6 +27,17 @@ export class TelegramConversationManager {
     ): Promise<any> {
 
 
+
+        console.log(
+            "CONVERSATION CHECK:",
+            {
+                userId,
+                message
+            }
+        );
+
+
+
         const session =
             await this.sessionStore.get(
                 userId
@@ -34,11 +45,29 @@ export class TelegramConversationManager {
 
 
 
+        console.log(
+            "SESSION RESULT:",
+            session
+        );
+
+
+
         if (!session) {
+
+            console.log(
+                "NO ACTIVE SESSION"
+            );
 
             return null;
 
         }
+
+
+
+        console.log(
+            "SESSION STATE:",
+            session.state
+        );
 
 
 
@@ -54,6 +83,13 @@ export class TelegramConversationManager {
 
 
 
+        console.log(
+            "FOUND FLOW:",
+            !!flow
+        );
+
+
+
         if (!flow) {
 
             return null;
@@ -63,8 +99,11 @@ export class TelegramConversationManager {
 
 
         return flow.execute(
+
             userId,
+
             message
+
         );
 
 

@@ -5,13 +5,18 @@ export class TelegramCommandContextBuilder {
 
 
     build(
+
         message: string,
-        chatId: string = "",
+
+        userId: string = "",
+
         args: string[] = []
+
     ): TelegramCommandContext {
 
 
         const normalized =
+
             message
                 .trim()
                 .toLowerCase();
@@ -19,6 +24,7 @@ export class TelegramCommandContextBuilder {
 
 
         const parts =
+
             normalized
                 .split(/\s+/)
                 .filter(Boolean);
@@ -26,10 +32,13 @@ export class TelegramCommandContextBuilder {
 
 
         let command =
+
             normalized;
 
 
+
         let argumentsList =
+
             args;
 
 
@@ -38,17 +47,23 @@ export class TelegramCommandContextBuilder {
 
 
             command =
+
                 parts[0];
 
 
             argumentsList =
+
                 parts.slice(1);
 
 
         }
+
         else if (
+
             normalized.includes("شروع") ||
+
             normalized.includes("start")
+
         ) {
 
 
@@ -56,9 +71,13 @@ export class TelegramCommandContextBuilder {
 
 
         }
+
         else if (
+
             normalized.includes("راهنما") ||
+
             normalized.includes("help")
+
         ) {
 
 
@@ -66,10 +85,15 @@ export class TelegramCommandContextBuilder {
 
 
         }
+
         else if (
+
             normalized.includes("قیمت") ||
+
             normalized.includes("طلا") ||
+
             normalized.includes("gold")
+
         ) {
 
 
@@ -82,12 +106,22 @@ export class TelegramCommandContextBuilder {
 
         return {
 
-            chatId,
+
+            chatId:
+
+                userId,
+
+
+            userId,
+
 
             command,
 
+
             arguments:
+
                 argumentsList
+
 
         };
 

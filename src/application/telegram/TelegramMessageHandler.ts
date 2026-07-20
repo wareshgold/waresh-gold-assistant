@@ -1,10 +1,10 @@
-import { TelegramCommandExecutor } 
+import { TelegramCommandExecutor }
 from "./interfaces/TelegramCommandExecutor";
 
-import { IncomingMessage } 
+import { IncomingMessage }
 from "../common/models/IncomingMessage";
 
-import { TelegramResponseFormatter } 
+import { TelegramResponseFormatter }
 from "./TelegramResponseFormatter";
 
 
@@ -38,6 +38,21 @@ export class TelegramMessageHandler {
 
 
 
+        console.log(
+            "HANDLER RESPONSE:",
+            response
+        );
+
+
+
+        if (!response) {
+
+            return "";
+
+        }
+
+
+
         if (this.formatter) {
 
             return this.formatter.format(
@@ -48,7 +63,15 @@ export class TelegramMessageHandler {
 
 
 
-        return response.content;
+        if (typeof response === "string") {
+
+            return response;
+
+        }
+
+
+
+        return response.content ?? "";
 
     }
 

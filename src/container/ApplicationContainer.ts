@@ -1,53 +1,47 @@
 import { TelegramMessageHandler }
 from "../application/telegram/TelegramMessageHandler";
 
-
 import { TelegramCommandService }
 from "../application/telegram/services/TelegramCommandService";
-
 
 import { TelegramResponseFormatter }
 from "../application/telegram/TelegramResponseFormatter";
 
-
 import { GetGoldPriceUseCase }
 from "../application/usecases/GetGoldPriceUseCase";
-
 
 import { FakeMarketPriceProvider }
 from "../infrastructure/market/FakeMarketPriceProvider";
 
-
 import { TelegramCommandRegistry }
 from "../application/telegram/commands/TelegramCommandRegistry";
-
 
 import { GetGoldBubbleUseCase }
 from "../application/market/GetGoldBubbleUseCase";
 
-
 import { GoldBubbleCalculator }
 from "../domain/market/services/GoldBubbleCalculator";
-
 
 import { ReverseGoldCalculator }
 from "../domain/gold/calculator/ReverseGoldCalculator";
 
-
 import { CalculateReverseGoldUseCase }
 from "../application/gold/CalculateReverseGoldUseCase";
-
 
 import { createGoldRuleEngine }
 from "../domain/gold/services/createGoldRuleEngine";
 
-
 import { CalculateGoldFormulaUseCase }
 from "../application/gold/CalculateGoldFormulaUseCase";
 
-
 import { MemoryTelegramSessionStore }
 from "../application/telegram/state/MemoryTelegramSessionStore";
+
+import { TelegramConversationManager }
+from "../application/telegram/flows/TelegramConversationManager";
+
+import { GoldCalculationConversationFlow }
+from "../application/telegram/flows/GoldCalculationConversationFlow";
 
 
 
@@ -78,45 +72,58 @@ export class ApplicationContainer {
 
 
 
-        const goldBubbleCalculator =
-            new GoldBubbleCalculator();
-
-
-
         const getGoldBubbleUseCase =
             new GetGoldBubbleUseCase(
+
                 marketProvider,
-                goldBubbleCalculator
+
+                new GoldBubbleCalculator()
+
             );
-
-
-
-        const reverseGoldCalculator =
-            new ReverseGoldCalculator();
 
 
 
         this.calculateReverseGoldUseCase =
             new CalculateReverseGoldUseCase(
-                reverseGoldCalculator
+
+                new ReverseGoldCalculator()
+
             );
-
-
-
-        const goldRuleEngine =
-            createGoldRuleEngine();
 
 
 
         const calculateGoldFormulaUseCase =
             new CalculateGoldFormulaUseCase(
-                goldRuleEngine
+
+                createGoldRuleEngine()
+
             );
 
 
 
         const sessionStore =
             new MemoryTelegramSessionStore();
+
+
+
+        const conversationManager =
+            new TelegramConversationManager(
+
+                sessionStore,
+
+                [
+
+                    new GoldCalculationConversationFlow(
+
+                        sessionStore,
+
+                        calculateGoldFormulaUseCase
+
+                    )
+
+                ]
+
+            );
 
 
 
@@ -140,14 +147,9 @@ export class ApplicationContainer {
 
                 router,
 
-                sessionStore
+                conversationManager
 
             );
-
-
-
-        const formatter =
-            new TelegramResponseFormatter();
 
 
 
@@ -156,7 +158,7 @@ export class ApplicationContainer {
 
                 commandService,
 
-                formatter
+                new TelegramResponseFormatter()
 
             );
 

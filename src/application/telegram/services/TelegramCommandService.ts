@@ -1,17 +1,17 @@
-import { TelegramCommandExecutor } 
+import { TelegramCommandExecutor }
 from "../interfaces/TelegramCommandExecutor";
 
-import { TelegramCommandRouter } 
+import { TelegramCommandRouter }
 from "../commands/TelegramCommandRouter";
 
-import { TelegramCommandContextBuilder } 
+import { TelegramCommandContextBuilder }
 from "../commands/TelegramCommandContextBuilder";
 
-import { TelegramSessionStore } 
-from "../state/TelegramSessionStore";
-
-import { IncomingMessage } 
+import { IncomingMessage }
 from "../../common/models/IncomingMessage";
+
+import { TelegramConversationManager }
+from "../flows/TelegramConversationManager";
 
 
 
@@ -27,12 +27,13 @@ implements TelegramCommandExecutor {
 
     constructor(
 
+
         private readonly router:
             TelegramCommandRouter,
 
 
-        private readonly sessionStore:
-            TelegramSessionStore,
+        private readonly conversationManager?:
+            TelegramConversationManager,
 
 
         contextBuilder?:
@@ -51,17 +52,105 @@ implements TelegramCommandExecutor {
 
     async execute(
 
-        message: IncomingMessage
+        message:
+            IncomingMessage | string
 
     ): Promise<any> {
 
 
 
-        const context =
-            this.contextBuilder.build(
-                message.text,
-                message.userId
+        const normalizedMessage:
+
+            IncomingMessage =
+
+        typeof message === "string"
+
+            ? {
+
+                userId:
+                    "default",
+
+                text:
+                    message
+
+            }
+
+            : message;
+
+
+
+        console.log(
+            "INCOMING MESSAGE:",
+            {
+                userId:
+                    normalizedMessage.userId,
+
+                text:
+                    normalizedMessage.text
+            }
+        );
+
+
+
+        if (
+            this.conversationManager
+        ) {
+
+
+            console.log(
+                "CHECKING CONVERSATION USER:",
+                normalizedMessage.userId
             );
+
+
+
+            const activeConversation =
+
+                await this.conversationManager.execute(
+
+                    normalizedMessage.userId,
+
+                    normalizedMessage.text
+
+                );
+
+
+
+            console.log(
+                "CONVERSATION RESULT:",
+                activeConversation
+            );
+
+
+
+            if (
+                activeConversation
+            ) {
+
+                return activeConversation;
+
+            }
+
+        }
+
+
+
+        const context =
+
+            this.contextBuilder.build(
+
+                normalizedMessage.text,
+
+                normalizedMessage.userId
+
+            );
+
+
+
+        console.log(
+            "COMMAND CONTEXT:",
+            context
+        );
 
 
 
