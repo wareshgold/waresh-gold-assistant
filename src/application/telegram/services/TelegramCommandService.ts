@@ -1,6 +1,7 @@
 import { TelegramCommandExecutor } from "../interfaces/TelegramCommandExecutor";
 import { TelegramCommandRouter } from "../commands/TelegramCommandRouter";
 import { TelegramCommandContextBuilder } from "../commands/TelegramCommandContextBuilder";
+import { TelegramSessionStore } from "../state/TelegramSessionStore";
 
 
 export class TelegramCommandService
@@ -18,14 +19,20 @@ implements TelegramCommandExecutor {
             TelegramCommandRouter,
 
 
+        private readonly sessionStore:
+            TelegramSessionStore,
+
+
         contextBuilder?:
             TelegramCommandContextBuilder
 
     ) {
 
+
         this.contextBuilder =
             contextBuilder ??
             new TelegramCommandContextBuilder();
+
 
     }
 
@@ -42,6 +49,7 @@ implements TelegramCommandExecutor {
             this.contextBuilder.build(
                 command
             );
+
 
 
         return this.router.execute(

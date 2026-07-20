@@ -1,100 +1,77 @@
 import { createCloudflareKVCacheStore }
 from "../infrastructure/cache/CloudflareKVCacheFactory";
 
-
 import { PriceRefreshService }
 from "../application/market/services/PriceRefreshService";
-
 
 import { MarketSnapshotService }
 from "../application/market/services/MarketSnapshotService";
 
-
 import { MemoryMarketSnapshotRepository }
 from "../infrastructure/market/repositories/MemoryMarketSnapshotRepository";
-
 
 import { D1MarketSnapshotRepository }
 from "../infrastructure/market/repositories/d1/D1MarketSnapshotRepository";
 
-
 import { GetGoldPriceUseCase }
 from "../application/usecases/GetGoldPriceUseCase";
-
 
 import { GetGoldBubbleUseCase }
 from "../application/market/GetGoldBubbleUseCase";
 
-
 import { GoldBubbleCalculator }
 from "../domain/market/services/GoldBubbleCalculator";
-
 
 import { FakeTelegramChannelMessageProvider }
 from "../infrastructure/market/sources/FakeTelegramChannelMessageProvider";
 
-
 import { TelegramMarketPriceProvider }
 from "../infrastructure/market/providers/TelegramMarketPriceProvider";
-
 
 import { CachedMarketPriceProvider }
 from "../infrastructure/market/providers/CachedMarketPriceProvider";
 
-
 import { TelegramUpdateMapper }
 from "../infrastructure/telegram/TelegramUpdateMapper";
-
 
 import { TelegramResponseFormatter }
 from "../application/telegram/TelegramResponseFormatter";
 
-
 import { TelegramMessageHandler }
 from "../application/telegram/TelegramMessageHandler";
-
 
 import { TelegramCommandService }
 from "../application/telegram/services/TelegramCommandService";
 
-
 import { TelegramUpdateProcessor }
 from "../application/telegram/services/TelegramUpdateProcessor";
-
 
 import { TelegramWebhookController }
 from "../interfaces/telegram/TelegramWebhookController";
 
-
 import { TelegramWebhookSecurityGuard }
 from "../interfaces/telegram/TelegramWebhookSecurityGuard";
-
 
 import { FakeTelegramBotClient }
 from "../infrastructure/telegram/FakeTelegramBotClient";
 
-
 import { TelegramHttpBotClient }
 from "../infrastructure/telegram/clients/TelegramHttpBotClient";
-
 
 import { TelegramCommandRegistry }
 from "../application/telegram/commands/TelegramCommandRegistry";
 
-
 import { createGoldRuleEngine }
 from "../domain/gold/services/createGoldRuleEngine";
-
 
 import { CalculateGoldFormulaUseCase }
 from "../application/gold/CalculateGoldFormulaUseCase";
 
+import { MemoryTelegramSessionStore }
+from "../application/telegram/state/MemoryTelegramSessionStore";
 
 import { AppEnv }
 from "../shared/config/env";
-
-
-
 
 
 export function createContainer(
@@ -102,14 +79,10 @@ export function createContainer(
 ) {
 
 
-
     const cache =
         createCloudflareKVCacheStore(
             env.MARKET_CACHE
         );
-
-
-
 
 
     const snapshotRepository =
@@ -124,8 +97,6 @@ export function createContainer(
 
 
 
-
-
     const snapshotService =
         new MarketSnapshotService(
             snapshotRepository
@@ -133,12 +104,8 @@ export function createContainer(
 
 
 
-
-
     const messageProvider =
         new FakeTelegramChannelMessageProvider();
-
-
 
 
 
@@ -149,15 +116,11 @@ export function createContainer(
 
 
 
-
-
     const marketProvider =
         new CachedMarketPriceProvider(
             telegramMarketProvider,
             cache
         );
-
-
 
 
 
@@ -170,8 +133,6 @@ export function createContainer(
 
 
 
-
-
     const getGoldPriceUseCase =
         new GetGoldPriceUseCase(
             marketProvider
@@ -179,12 +140,8 @@ export function createContainer(
 
 
 
-
-
     const goldBubbleCalculator =
         new GoldBubbleCalculator();
-
-
 
 
 
@@ -196,12 +153,8 @@ export function createContainer(
 
 
 
-
-
     const goldRuleEngine =
         createGoldRuleEngine();
-
-
 
 
 
@@ -209,8 +162,6 @@ export function createContainer(
         new CalculateGoldFormulaUseCase(
             goldRuleEngine
         );
-
-
 
 
 
@@ -223,14 +174,16 @@ export function createContainer(
 
 
 
+    const sessionStore =
+        new MemoryTelegramSessionStore();
+
 
 
     const telegramCommandService =
         new TelegramCommandService(
-            commandRouter
+            commandRouter,
+            sessionStore
         );
-
-
 
 
 
@@ -239,12 +192,8 @@ export function createContainer(
 
 
 
-
-
     const telegramFormatter =
         new TelegramResponseFormatter();
-
-
 
 
 
@@ -252,8 +201,6 @@ export function createContainer(
         new TelegramMessageHandler(
             telegramCommandService
         );
-
-
 
 
 
@@ -269,8 +216,6 @@ export function createContainer(
 
 
 
-
-
     const telegramProcessor =
         new TelegramUpdateProcessor(
             telegramMapper,
@@ -281,14 +226,10 @@ export function createContainer(
 
 
 
-
-
     const telegramSecurityGuard =
         new TelegramWebhookSecurityGuard(
             env.TELEGRAM_WEBHOOK_SECRET
         );
-
-
 
 
 
@@ -297,8 +238,6 @@ export function createContainer(
             telegramProcessor,
             telegramSecurityGuard
         );
-
-
 
 
 

@@ -34,6 +34,9 @@ from "../domain/gold/services/createGoldRuleEngine";
 import { CalculateGoldFormulaUseCase }
 from "../application/gold/CalculateGoldFormulaUseCase";
 
+import { MemoryTelegramSessionStore }
+from "../application/telegram/state/MemoryTelegramSessionStore";
+
 
 export class ApplicationContainer {
 
@@ -108,9 +111,15 @@ export class ApplicationContainer {
 
 
 
+        const sessionStore =
+            new MemoryTelegramSessionStore();
+
+
+
         const commandService =
             new TelegramCommandService(
-                router
+                router,
+                sessionStore
             );
 
 
