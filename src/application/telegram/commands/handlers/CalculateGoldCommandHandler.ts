@@ -1,5 +1,6 @@
 import { TelegramCommandHandler } from "../TelegramCommandHandler";
 import { TelegramCommandContext } from "../TelegramCommandContext";
+
 import {
     CalculateGoldFormulaUseCase
 } from "../../../gold/CalculateGoldFormulaUseCase";
@@ -10,7 +11,8 @@ implements TelegramCommandHandler {
 
 
     constructor(
-        private readonly useCase: CalculateGoldFormulaUseCase
+        private readonly useCase:
+            CalculateGoldFormulaUseCase
     ) {}
 
 
@@ -30,18 +32,60 @@ implements TelegramCommandHandler {
     ): Promise<string> {
 
 
+        const values =
+            context.arguments
+                .map(
+                    Number
+                );
+
+
+
+        if (
+            values.length < 5 ||
+            values.some(
+                value =>
+                    Number.isNaN(value)
+            )
+        ) {
+
+            return `
+❌ فرمت اشتباه است
+
+فرمت صحیح:
+
+/calc وزن قیمت_طلا اجرت سود مالیات
+
+مثال:
+
+/calc 5 18000000 15 7 9
+            `.trim();
+
+        }
+
+
+
+        const [
+            weight,
+            goldPrice,
+            laborPercent,
+            profitPercent,
+            taxPercent
+        ] = values;
+
+
+
         const result =
             this.useCase.execute({
 
-                weight: 5,
+                weight,
 
-                goldPrice: 18000000,
+                goldPrice,
 
-                laborPercent: 15,
+                laborPercent,
 
-                profitPercent: 7,
+                profitPercent,
 
-                taxPercent: 9,
+                taxPercent,
 
                 discount: 0
 
@@ -52,23 +96,30 @@ implements TelegramCommandHandler {
         return `
 💰 محاسبه طلا
 
-وزن: 5 گرم
+وزن:
+${weight} گرم
+
 
 ارزش طلا:
 ${result.goldValue}
 
+
 اجرت:
 ${result.labor}
+
 
 سود:
 ${result.profit}
 
+
 مالیات:
 ${result.tax}
+
 
 ----------------
 
 قیمت نهایی:
+
 ${result.finalPrice}
         `.trim();
 

@@ -83,9 +83,21 @@ describe(
 
 
                 const result =
-                    await handler.execute(
-                        {} as any
-                    );
+                    await handler.execute({
+
+                        chatId: "",
+
+                        command: "/calc",
+
+                        arguments: [
+                            "5",
+                            "18000000",
+                            "15",
+                            "7",
+                            "9"
+                        ]
+
+                    });
 
 
 
@@ -103,6 +115,44 @@ describe(
                 )
                 .toContain(
                     "112612050"
+                );
+
+
+            }
+        );
+
+
+
+        it(
+            "should reject invalid arguments",
+            async () => {
+
+
+                const handler =
+                    createHandler();
+
+
+
+                const result =
+                    await handler.execute({
+
+                        chatId: "",
+
+                        command: "/calc",
+
+                        arguments: [
+                            "5"
+                        ]
+
+                    });
+
+
+
+                expect(
+                    result
+                )
+                .toContain(
+                    "فرمت اشتباه"
                 );
 
 

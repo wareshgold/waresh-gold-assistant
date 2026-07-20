@@ -18,15 +18,32 @@ export class TelegramCommandContextBuilder {
 
 
 
+        const parts =
+            normalized
+                .split(/\s+/)
+                .filter(Boolean);
+
+
+
         let command =
             normalized;
+
+
+        let argumentsList =
+            args;
 
 
 
         if (normalized.startsWith("/")) {
 
+
             command =
-                normalized.split(" ")[0];
+                parts[0];
+
+
+            argumentsList =
+                parts.slice(1);
+
 
         }
         else if (
@@ -34,7 +51,9 @@ export class TelegramCommandContextBuilder {
             normalized.includes("start")
         ) {
 
+
             command = "/start";
+
 
         }
         else if (
@@ -42,7 +61,9 @@ export class TelegramCommandContextBuilder {
             normalized.includes("help")
         ) {
 
+
             command = "/help";
+
 
         }
         else if (
@@ -51,7 +72,9 @@ export class TelegramCommandContextBuilder {
             normalized.includes("gold")
         ) {
 
+
             command = "/price";
+
 
         }
 
@@ -63,10 +86,13 @@ export class TelegramCommandContextBuilder {
 
             command,
 
-            arguments: args
+            arguments:
+                argumentsList
 
         };
 
+
     }
+
 
 }
