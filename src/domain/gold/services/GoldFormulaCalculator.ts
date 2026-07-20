@@ -3,6 +3,7 @@ import { LaborRule } from "../rules/LaborRule";
 import { ProfitRule } from "../rules/ProfitRule";
 import { TaxRule } from "../rules/TaxRule";
 import { FinalPriceRule } from "../rules/FinalPriceRule";
+import { TaxMode } from "../value-objects/Tax";
 
 
 export class GoldFormulaCalculator {
@@ -40,6 +41,8 @@ export class GoldFormulaCalculator {
         profitPercent: number;
 
         taxPercent?: number;
+
+        taxMode?: TaxMode;
 
         discount?: number;
 
@@ -91,7 +94,10 @@ export class GoldFormulaCalculator {
                     labor + profit,
 
                 taxPercent:
-                    input.taxPercent ?? 0
+                    input.taxPercent ?? 0,
+
+                mode:
+                    input.taxMode ?? TaxMode.SEPARATE
 
             });
 

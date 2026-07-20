@@ -5,9 +5,11 @@ import { StartCommandHandler } from "./handlers/StartCommandHandler";
 import { HelpCommandHandler } from "./handlers/HelpCommandHandler";
 import { GoldPriceCommandHandler } from "./handlers/GoldPriceCommandHandler";
 import { GetGoldBubbleCommandHandler } from "./handlers/GetGoldBubbleCommandHandler";
+import { CalculateGoldCommandHandler } from "./handlers/CalculateGoldCommandHandler";
 
 import { GetGoldPriceUseCase } from "../../usecases/GetGoldPriceUseCase";
 import { GetGoldBubbleUseCase } from "../../market/GetGoldBubbleUseCase";
+import { CalculateGoldFormulaUseCase } from "../../gold/CalculateGoldFormulaUseCase";
 
 
 export class TelegramCommandRegistry {
@@ -17,7 +19,9 @@ export class TelegramCommandRegistry {
 
         getGoldPriceUseCase: GetGoldPriceUseCase,
 
-        getGoldBubbleUseCase: GetGoldBubbleUseCase
+        getGoldBubbleUseCase: GetGoldBubbleUseCase,
+
+        calculateGoldFormulaUseCase: CalculateGoldFormulaUseCase
 
     ): TelegramCommandRouter {
 
@@ -27,13 +31,10 @@ export class TelegramCommandRegistry {
             TelegramCommandHandler[] = [
 
 
-
                 new StartCommandHandler(),
 
 
-
                 new HelpCommandHandler(),
-
 
 
                 new GoldPriceCommandHandler(
@@ -41,9 +42,13 @@ export class TelegramCommandRegistry {
                 ),
 
 
-
                 new GetGoldBubbleCommandHandler(
                     getGoldBubbleUseCase
+                ),
+
+
+                new CalculateGoldCommandHandler(
+                    calculateGoldFormulaUseCase
                 )
 
 

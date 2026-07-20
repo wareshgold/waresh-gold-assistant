@@ -1,5 +1,6 @@
 import { GoldRuleEngine } from "./GoldRuleEngine";
 import { GoldFormulaCalculator } from "./GoldFormulaCalculator";
+import { TaxMode } from "../value-objects/Tax";
 
 
 export class GoldRuleEngineService
@@ -23,6 +24,8 @@ implements GoldRuleEngine {
 
         taxPercent: number;
 
+        taxMode?: TaxMode;
+
         discount?: number;
 
     }) {
@@ -33,17 +36,26 @@ implements GoldRuleEngine {
             weight:
                 input.weight,
 
+
             goldPrice:
                 input.goldPrice,
+
 
             laborPercent:
                 input.laborPercent,
 
+
             profitPercent:
                 input.profitPercent,
 
+
             taxPercent:
                 input.taxPercent,
+
+
+            taxMode:
+                input.taxMode,
+
 
             discount:
                 input.discount
