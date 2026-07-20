@@ -11,8 +11,9 @@ implements MarketMessageProvider {
 
 
     constructor(
-        private readonly endpoint: string
-    ){}
+        private readonly endpoint: string,
+        private readonly timeoutMs: number = 5000
+    ) {}
 
 
 
@@ -20,30 +21,100 @@ implements MarketMessageProvider {
         Promise<string> {
 
 
-        const response =
-            await fetch(
-                this.endpoint
+
+        const controller =
+            new AbortController();
+
+
+
+        const timeout =
+            setTimeout(
+                () => controller.abort(),
+                this.timeoutMs
             );
 
 
-        if(!response.ok){
 
-            throw new Error(
-                "Telegram source unavailable"
+        try {
+
+
+            const response =
+                await fetch(
+
+                    this.endpoint,
+
+                    {
+                        signal:
+                            controller.signal
+                    }
+
+                );
+
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Telegram source unavailable"
+                );
+
+            }
+
+
+
+            const data =
+                await response.json() as {
+                    message?: string;
+                };
+
+
+
+            if (
+                !data.message ||
+                typeof data.message !== "string"
+            ) {
+
+                throw new Error(
+                    "Invalid telegram source response"
+                );
+
+            }
+
+
+
+            return data.message;
+
+
+
+        } catch(error) {
+
+
+            if (
+                error instanceof DOMException &&
+                error.name === "AbortError"
+            ) {
+
+                throw new Error(
+                    "Telegram source timeout"
+                );
+
+            }
+
+
+
+            throw error;
+
+
+
+        } finally {
+
+
+            clearTimeout(
+                timeout
             );
+
 
         }
-
-
-
-        const data =
-            await response.json() as {
-                message:string;
-            };
-
-
-
-        return data.message;
 
 
     }
