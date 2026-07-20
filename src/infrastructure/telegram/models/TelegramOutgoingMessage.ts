@@ -4,4 +4,6 @@ export interface TelegramOutgoingMessage {
 
     text: string;
 
+    parseMode?: "HTML" | "MarkdownV2";
+
 }

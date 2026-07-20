@@ -47,12 +47,10 @@ export class TelegramUpdateProcessor {
             await this.handler.handle({
 
                 userId:
-
                     message.userId,
 
 
                 text:
-
                     message.text
 
             });
@@ -83,7 +81,12 @@ export class TelegramUpdateProcessor {
 
             text:
 
-                formattedResponse
+                formattedResponse,
+
+
+            parseMode:
+
+                "HTML"
 
         });
 

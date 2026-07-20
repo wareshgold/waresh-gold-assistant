@@ -1,37 +1,53 @@
 export class TelegramResponseFormatter {
 
 
+
     format(
         response: any
     ): string {
 
 
-        if (typeof response === "string") {
+        const text =
 
-            return response;
+            typeof response === "string"
 
-        }
+                ? response
 
+                : response?.content ??
 
-        if (
-            response?.content
-        ) {
+                  response?.type === "text"
 
-            return response.content;
+                    ? response.content ?? ""
 
-        }
-
-
-        if (
-            response?.type === "text"
-        ) {
-
-            return response.content ?? "";
-
-        }
+                    : "";
 
 
-        return "";
+
+        return this.formatCopyableNumbers(
+            text
+        );
+
+    }
+
+
+
+
+    private formatCopyableNumbers(
+        text: string
+    ): string {
+
+
+        return text.replace(
+
+            /(?<!\d)(\d{4,})(?!\d)/g,
+
+            (match) => {
+
+                return `<code>${match}</code>`;
+
+            }
+
+        );
 
     }
 

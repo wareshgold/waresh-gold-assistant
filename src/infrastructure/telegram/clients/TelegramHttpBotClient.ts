@@ -22,9 +22,9 @@ implements TelegramBotClient {
                 `https://api.telegram.org/bot${this.botToken}/sendMessage`,
                 {
 
-                    method:"POST",
+                    method: "POST",
 
-                    headers:{
+                    headers: {
                         "Content-Type":
                             "application/json"
                     },
@@ -38,7 +38,15 @@ implements TelegramBotClient {
 
 
                             text:
-                                message.text
+                                message.text,
+
+
+                            ...(message.parseMode
+                                ? {
+                                    parse_mode:
+                                        message.parseMode
+                                }
+                                : {})
 
                         })
 
@@ -51,6 +59,7 @@ implements TelegramBotClient {
 
             const error =
                 await response.text();
+
 
             throw new Error(
                 error
