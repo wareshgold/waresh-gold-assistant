@@ -12,6 +12,9 @@ export interface AppEnv {
     MARKET_PRICE_API_URL: string;
 
 
+    TELEGRAM_MARKET_SOURCE_URL?: string;
+
+
     TELEGRAM_BOT_TOKEN?: string;
 
 
@@ -33,6 +36,10 @@ export function getEnv(
 
         marketPriceApiUrl:
             env.MARKET_PRICE_API_URL,
+
+
+        telegramMarketSourceUrl:
+            env.TELEGRAM_MARKET_SOURCE_URL,
 
 
         marketCache:

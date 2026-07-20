@@ -25,6 +25,9 @@ from "../domain/market/services/GoldBubbleCalculator";
 import { FakeTelegramChannelMessageProvider }
 from "../infrastructure/market/sources/FakeTelegramChannelMessageProvider";
 
+import { HttpTelegramChannelMessageProvider }
+from "../infrastructure/market/sources/HttpTelegramChannelMessageProvider";
+
 import { TelegramMarketPriceProvider }
 from "../infrastructure/market/providers/TelegramMarketPriceProvider";
 
@@ -83,6 +86,7 @@ import { AppEnv }
 from "../shared/config/env";
 
 
+
 export function createContainer(
     env: AppEnv
 ) {
@@ -92,6 +96,7 @@ export function createContainer(
         createCloudflareKVCacheStore(
             env.MARKET_CACHE
         );
+
 
 
     const snapshotRepository =
@@ -114,11 +119,21 @@ export function createContainer(
 
 
     const messageProvider =
-        new FakeTelegramChannelMessageProvider();
+
+        env.ENVIRONMENT === "production" &&
+        env.TELEGRAM_MARKET_SOURCE_URL
+
+            ? new HttpTelegramChannelMessageProvider(
+                env.TELEGRAM_MARKET_SOURCE_URL
+            )
+
+            : new FakeTelegramChannelMessageProvider();
+
 
 
 
     const marketProvider =
+
         new CachedMarketPriceProvider(
 
             new TelegramMarketPriceProvider(
@@ -132,6 +147,7 @@ export function createContainer(
 
 
     const priceRefreshService =
+
         new PriceRefreshService(
             marketProvider,
             cache,
@@ -141,6 +157,7 @@ export function createContainer(
 
 
     const getGoldPriceUseCase =
+
         new GetGoldPriceUseCase(
             marketProvider
         );
@@ -148,6 +165,7 @@ export function createContainer(
 
 
     const getGoldBubbleUseCase =
+
         new GetGoldBubbleUseCase(
 
             marketProvider,
@@ -159,6 +177,7 @@ export function createContainer(
 
 
     const calculateGoldFormulaUseCase =
+
         new CalculateGoldFormulaUseCase(
 
             createGoldRuleEngine()
@@ -180,6 +199,7 @@ export function createContainer(
 
 
     const conversationManager =
+
         new TelegramConversationManager(
 
             sessionStore,
@@ -201,6 +221,7 @@ export function createContainer(
 
 
     const commandRouter =
+
         TelegramCommandRegistry.create(
 
             getGoldPriceUseCase,
@@ -216,6 +237,7 @@ export function createContainer(
 
 
     const telegramCommandService =
+
         new TelegramCommandService(
 
             commandRouter,
@@ -227,6 +249,7 @@ export function createContainer(
 
 
     const telegramHandler =
+
         new TelegramMessageHandler(
 
             telegramCommandService
@@ -236,6 +259,7 @@ export function createContainer(
 
 
     const telegramProcessor =
+
         new TelegramUpdateProcessor(
 
             new TelegramUpdateMapper(),
@@ -258,6 +282,7 @@ export function createContainer(
 
 
     const telegramWebhookController =
+
         new TelegramWebhookController(
 
             telegramProcessor,
