@@ -67,6 +67,9 @@ from "../domain/gold/services/createGoldRuleEngine";
 import { CalculateGoldFormulaUseCase }
 from "../application/gold/CalculateGoldFormulaUseCase";
 
+import { MemoryTelegramSessionStore }
+from "../application/telegram/state/MemoryTelegramSessionStore";
+
 import { D1TelegramSessionStore }
 from "../application/telegram/state/D1TelegramSessionStore";
 
@@ -80,7 +83,6 @@ import { AppEnv }
 from "../shared/config/env";
 
 
-
 export function createContainer(
     env: AppEnv
 ) {
@@ -90,7 +92,6 @@ export function createContainer(
         createCloudflareKVCacheStore(
             env.MARKET_CACHE
         );
-
 
 
     const snapshotRepository =
@@ -167,11 +168,14 @@ export function createContainer(
 
 
     const sessionStore =
-        new D1TelegramSessionStore(
 
-            env.waresh_gold_db
+        env.ENVIRONMENT === "production"
 
-        );
+            ? new D1TelegramSessionStore(
+                env.waresh_gold_db
+            )
+
+            : new MemoryTelegramSessionStore();
 
 
 
@@ -239,6 +243,7 @@ export function createContainer(
             telegramHandler,
 
             new TelegramResponseFormatter(),
+
 
             env.TELEGRAM_BOT_TOKEN
 
