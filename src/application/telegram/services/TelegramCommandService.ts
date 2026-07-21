@@ -94,6 +94,14 @@ implements TelegramCommandExecutor {
                     normalizedMessage.userId,
 
 
+                username:
+                    normalizedMessage.username,
+
+
+                firstName:
+                    normalizedMessage.firstName,
+
+
                 text:
                     normalizedMessage.text
 
@@ -149,6 +157,7 @@ implements TelegramCommandExecutor {
 
 
 
+
         const context =
 
 
@@ -156,9 +165,16 @@ implements TelegramCommandExecutor {
 
                 normalizedMessage.text,
 
-                normalizedMessage.userId
+                normalizedMessage.userId,
+
+                [],
+
+                normalizedMessage.username,
+
+                normalizedMessage.firstName
 
             );
+
 
 
 
@@ -172,6 +188,7 @@ implements TelegramCommandExecutor {
             context
 
         );
+
 
 
 
