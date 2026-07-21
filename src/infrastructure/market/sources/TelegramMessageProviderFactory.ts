@@ -3,15 +3,18 @@ import {
 }
 from "./MarketMessageProvider";
 
+
 import {
     FakeTelegramChannelMessageProvider
 }
 from "./FakeTelegramChannelMessageProvider";
 
+
 import {
     HttpTelegramChannelMessageProvider
 }
 from "./HttpTelegramChannelMessageProvider";
+
 
 import {
     AppEnv
@@ -20,15 +23,22 @@ from "../../../shared/config/env";
 
 
 
+
+
 export function createTelegramMessageProvider(
-    env: AppEnv
+    env?: AppEnv
 ): MarketMessageProvider {
 
 
 
     if (
+
+        env &&
+
         env.ENVIRONMENT === "production" &&
+
         env.TELEGRAM_MARKET_SOURCE_URL
+
     ) {
 
 
@@ -43,7 +53,10 @@ export function createTelegramMessageProvider(
 
 
 
+
+
     return new FakeTelegramChannelMessageProvider();
+
 
 
 }

@@ -1,86 +1,47 @@
 {
-        "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "waresh-gold-assistant",
 
-        "name": "waresh-gold-assistant",
+  "main": "src/index.ts",
 
-        "main": "src/index.ts",
+  "compatibility_date": "2026-07-17",
 
-        "compatibility_date": "2026-07-17",
-
-
-        "observability": {
-                "enabled": true
-        },
+  "observability": {
+    "enabled": true
+  },
 
 
-        "upload_source_maps": true,
+  "kv_namespaces": [
+    {
+      "binding": "MARKET_CACHE",
+      "id": "5b44d51427934e729dc0372d198487eb"
+    }
+  ],
 
 
-        "compatibility_flags": [
-                "nodejs_compat"
-        ],
+  "d1_databases": [
+    {
+      "binding": "waresh_gold_db",
+      "database_name": "waresh-gold-db",
+      "database_id": "6685270e-8e5b-4af9-ac65-f2360fe70af8"
+    }
+  ],
 
 
+  "vars": {
 
-        "kv_namespaces": [
-                {
-                        "binding": "MARKET_CACHE",
-                        "id": "5b44d51427934e729dc0372d198487eb"
-                }
-        ],
+    "ENVIRONMENT": "production",
 
+    "MARKET_PRICE_API_URL": "https://example.com/api/price"
 
-
-        "d1_databases": [
-                {
-                        "binding": "waresh_gold_db",
-                        "database_name": "waresh-gold-db",
-                        "database_id": "6685270e-8e5b-4af9-ac65-f2360fe70af8",
-                        "migrations_dir": "migrations"
-                }
-        ],
+  },
 
 
+  "triggers": {
 
-        "vars": {
+    "crons": [
+      "*/30 * * * *"
+    ]
 
-                "ENVIRONMENT": "production",
-
-                "MARKET_PRICE_API_URL":
-                        "https://example.com/api/price",
-
-                "TELEGRAM_MARKET_SOURCE_URL":
-                        "https://example.com/api/telegram-price"
-
-        },
-
-
-
-        "env": {
-
-                "test": {
-
-                        "vars": {
-
-                                "ENVIRONMENT": "test",
-
-                                "MARKET_PRICE_API_URL":
-                                        "https://example.com/api/price"
-
-                        }
-
-                }
-
-        },
-
-
-
-        "triggers": {
-
-                "crons": [
-                        "*/30 * * * *"
-                ]
-
-        }
+  }
 
 }
