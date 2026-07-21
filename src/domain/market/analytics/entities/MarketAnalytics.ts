@@ -1,5 +1,12 @@
-import { PercentageChange } from "../value-objects/PercentageChange";
-import { TrendDirection } from "../value-objects/TrendDirection";
+import { PercentageChange } 
+from "../value-objects/PercentageChange";
+
+import { TrendDirection } 
+from "../value-objects/TrendDirection";
+
+import { PriceRange } 
+from "../value-objects/PriceRange";
+
 
 
 export class MarketAnalytics {
@@ -17,6 +24,8 @@ export class MarketAnalytics {
 
         private readonly volatility: number,
 
+        private readonly priceRange: PriceRange,
+
         private readonly analyzedAt: Date
 
     ) {
@@ -31,7 +40,6 @@ export class MarketAnalytics {
         }
 
 
-
         if (previousPrice <= 0) {
 
             throw new Error(
@@ -39,7 +47,6 @@ export class MarketAnalytics {
             );
 
         }
-
 
 
         if (volatility < 0) {
@@ -56,14 +63,11 @@ export class MarketAnalytics {
 
 
 
-
     getCurrentPrice(): number {
 
         return this.currentPrice;
 
     }
-
-
 
 
 
@@ -75,15 +79,11 @@ export class MarketAnalytics {
 
 
 
-
-
     getChange(): PercentageChange {
 
         return this.change;
 
     }
-
-
 
 
 
@@ -95,8 +95,6 @@ export class MarketAnalytics {
 
 
 
-
-
     getVolatility(): number {
 
         return this.volatility;
@@ -105,6 +103,12 @@ export class MarketAnalytics {
 
 
 
+    getPriceRange(): PriceRange {
+
+        return this.priceRange;
+
+    }
+
 
 
     getAnalyzedAt(): Date {
@@ -112,7 +116,6 @@ export class MarketAnalytics {
         return this.analyzedAt;
 
     }
-
 
 
 }

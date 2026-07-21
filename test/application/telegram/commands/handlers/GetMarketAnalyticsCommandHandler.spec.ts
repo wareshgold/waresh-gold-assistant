@@ -9,6 +9,7 @@ import { GetMarketAnalyticsUseCase }
 from "../../../../../src/application/market/GetMarketAnalyticsUseCase";
 
 
+
 describe(
     "GetMarketAnalyticsCommandHandler",
     () => {
@@ -19,6 +20,7 @@ describe(
         implements Pick<GetMarketAnalyticsUseCase, "execute"> {
 
 
+
             async execute() {
 
                 return {
@@ -26,11 +28,13 @@ describe(
 
                     analytics: {
 
+
                         getCurrentPrice() {
 
                             return 18780155;
 
                         },
+
 
 
                         getChange() {
@@ -45,21 +49,55 @@ describe(
                         },
 
 
+
                         getTrend() {
 
                             return {
 
-                                emoji:
-                                    "📈"
+                                isUp:
+                                    true,
+
+
+                                isDown:
+                                    false
 
                             };
 
                         },
 
 
+
                         getVolatility() {
 
                             return 1.25;
+
+                        },
+
+
+
+                        getPriceRange() {
+
+                            return {
+
+
+                                toString() {
+
+                                    return "18,000,000 - 18,800,000";
+
+                                }
+
+
+                            };
+
+                        },
+
+
+
+                        getAnalyzedAt() {
+
+                            return new Date(
+                                "2026-07-21T09:00:00Z"
+                            );
 
                         }
 
@@ -78,6 +116,7 @@ describe(
 
 
 
+
         const createHandler = () => {
 
 
@@ -89,6 +128,8 @@ describe(
 
 
         };
+
+
 
 
 
@@ -124,6 +165,8 @@ describe(
 
 
 
+
+
         it(
             "should handle Persian analytics commands",
             () => {
@@ -142,6 +185,7 @@ describe(
 
                 )
                 .toBe(true);
+
 
 
 
@@ -166,6 +210,9 @@ describe(
 
 
 
+
+
+
         it(
             "should return analytics response",
             async () => {
@@ -176,11 +223,13 @@ describe(
 
 
 
+
                 const result =
 
                     await handler.execute(
                         {} as any
                     );
+
 
 
 
@@ -197,6 +246,7 @@ describe(
 
 
 
+
                 expect(
 
                     result.content
@@ -204,6 +254,19 @@ describe(
                 )
                 .toContain(
                     "📈"
+                );
+
+
+
+
+
+                expect(
+
+                    result.content
+
+                )
+                .toContain(
+                    "محدوده"
                 );
 
 

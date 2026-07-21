@@ -1,40 +1,49 @@
+import { TelegramCommandResponse } 
+from "./commands/TelegramCommandHandler";
+
+
 export class TelegramResponseFormatter {
 
 
 
     format(
-        response: any
+
+        response: TelegramCommandResponse | string
+
     ): string {
 
 
+
         const text =
+
 
             typeof response === "string"
 
                 ? response
 
-                : response?.content ??
-
-                  response?.type === "text"
-
-                    ? response.content ?? ""
-
-                    : "";
+                : response.content;
 
 
 
         return this.formatCopyableNumbers(
+
             text
+
         );
+
 
     }
 
 
 
 
+
     private formatCopyableNumbers(
+
         text: string
+
     ): string {
+
 
 
         return text.replace(
@@ -48,6 +57,7 @@ export class TelegramResponseFormatter {
             }
 
         );
+
 
     }
 

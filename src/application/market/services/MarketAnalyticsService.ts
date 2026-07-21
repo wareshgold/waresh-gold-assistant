@@ -7,6 +7,9 @@ from "../../../domain/market/analytics/entities/MarketAnalytics";
 import { PercentageChange }
 from "../../../domain/market/analytics/value-objects/PercentageChange";
 
+import { PriceRange }
+from "../../../domain/market/analytics/value-objects/PriceRange";
+
 import { TrendCalculator }
 from "../../../domain/market/analytics/services/TrendCalculator";
 
@@ -16,7 +19,6 @@ from "../../../domain/market/analytics/services/VolatilityCalculator";
 
 
 export class MarketAnalyticsService {
-
 
 
     constructor(
@@ -43,13 +45,10 @@ export class MarketAnalyticsService {
         Promise<MarketAnalytics | null> {
 
 
-
         const snapshots =
 
             await this.repository
                 .getHistory(50);
-
-
 
 
 
@@ -66,45 +65,12 @@ export class MarketAnalyticsService {
 
 
 
-
         const latest =
-
             snapshots[0];
 
 
-
         const previous =
-
             snapshots[1];
-
-
-
-
-
-        const change =
-
-            PercentageChange.create(
-
-                previous.gold18Price,
-
-                latest.gold18Price
-
-            );
-
-
-
-
-
-        const trend =
-
-            this.trendCalculator.calculate(
-
-                latest.gold18Price,
-
-                previous.gold18Price
-
-            );
-
 
 
 
@@ -122,6 +88,31 @@ export class MarketAnalyticsService {
 
 
 
+        const change =
+
+            PercentageChange.create(
+
+                previous.gold18Price,
+
+                latest.gold18Price
+
+            );
+
+
+
+
+        const trend =
+
+            this.trendCalculator.calculate(
+
+                latest.gold18Price,
+
+                previous.gold18Price
+
+            );
+
+
+
 
         const volatility =
 
@@ -131,6 +122,16 @@ export class MarketAnalyticsService {
 
             );
 
+
+
+
+        const priceRange =
+
+            PriceRange.create(
+
+                prices
+
+            );
 
 
 
@@ -146,6 +147,8 @@ export class MarketAnalyticsService {
             trend,
 
             volatility,
+
+            priceRange,
 
             new Date()
 

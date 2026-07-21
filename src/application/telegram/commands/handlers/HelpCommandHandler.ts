@@ -1,34 +1,56 @@
-import { TelegramCommandContext } from "../TelegramCommandContext";
-import { TelegramCommandHandler } from "../TelegramCommandHandler";
+import { TelegramCommandContext } 
+from "../TelegramCommandContext";
+
+import { TelegramCommandHandler } 
+from "../TelegramCommandHandler";
 
 
 export class HelpCommandHandler
-    implements TelegramCommandHandler {
+implements TelegramCommandHandler {
 
 
 
     canHandle(
+
         command: string
+
     ): boolean {
 
+
+        const normalizedCommand =
+            command.trim()
+                .toLowerCase();
+
+
+
         return (
-            command === "/help" ||
-            command === "help" ||
-            command === "/start"
+
+            normalizedCommand === "/help" ||
+
+            normalizedCommand === "help"
+
         );
+
 
     }
 
 
 
+
+
     async execute(
+
         context: TelegramCommandContext
+
     ) {
 
 
         return {
 
+            type: "text" as const,
+
             content:
+
 `🟡 وارش گلد
 
 ربات هوشمند طلا
@@ -41,6 +63,9 @@ export class HelpCommandHandler
 /bubble
 محاسبه حباب طلا
 
+/analytics
+تحلیل بازار طلا
+
 /help
 راهنما
 
@@ -49,6 +74,8 @@ export class HelpCommandHandler
 
         };
 
+
     }
+
 
 }

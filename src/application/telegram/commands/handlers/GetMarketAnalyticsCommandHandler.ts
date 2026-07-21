@@ -24,6 +24,7 @@ implements TelegramCommandHandler {
 
 
 
+
     canHandle(
 
         command: string
@@ -53,11 +54,13 @@ implements TelegramCommandHandler {
 
 
 
+
     async execute(
 
         context: TelegramCommandContext
 
     ): Promise<any> {
+
 
 
         const result =
@@ -67,7 +70,9 @@ implements TelegramCommandHandler {
 
 
 
+
         if (!result.analytics) {
+
 
             return {
 
@@ -78,7 +83,10 @@ implements TelegramCommandHandler {
 
             };
 
+
         }
+
+
 
 
 
@@ -87,11 +95,33 @@ implements TelegramCommandHandler {
 
 
 
+
+        const trendText =
+
+            analytics.getTrend().isUp
+
+                ? "صعودی 📈"
+
+                : analytics.getTrend().isDown
+
+                    ? "نزولی 📉"
+
+                    : "ثابت ➡️";
+
+
+
+
+
+
+
         return {
+
 
             type: "text",
 
+
             content:
+
 
                 [
 
@@ -99,13 +129,34 @@ implements TelegramCommandHandler {
 
                     "",
 
-                    `💰 قیمت فعلی: ${analytics.getCurrentPrice()}`,
 
-                    `📈 تغییر: ${analytics.getChange().formatted}`,
+                    `💰 قیمت فعلی: ${analytics
+                        .getCurrentPrice()
+                        .toLocaleString("fa-IR")} تومان`,
 
-                    `روند: ${analytics.getTrend().emoji}`,
 
-                    `نوسان: ${analytics.getVolatility().toFixed(2)}`
+                    `📈 تغییر: ${analytics
+                        .getChange()
+                        .formatted}`,
+
+
+                    `🔥 روند: ${trendText}`,
+
+
+                    `🌊 نوسان: ${analytics
+                        .getVolatility()
+                        .toFixed(2)}%`,
+
+
+                    `📌 محدوده ۵۰ رکورد اخیر: ${analytics
+                        .getPriceRange()
+                        .toString()}`,
+
+
+                    `🕒 زمان تحلیل: ${analytics
+                        .getAnalyzedAt()
+                        .toLocaleString("fa-IR")}`
+
 
                 ].join("\n")
 
