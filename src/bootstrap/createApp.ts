@@ -12,6 +12,9 @@ from "../interfaces/telegram/TelegramWebhookController";
 import { MarketPriceProvider }
 from "../domain/market/providers/MarketPriceProvider";
 
+import { MarketSnapshotService }
+from "../application/market/services/MarketSnapshotService";
+
 
 
 interface AppContainer {
@@ -25,7 +28,12 @@ interface AppContainer {
     MarketPriceProvider;
 
 
+  snapshotService:
+    MarketSnapshotService;
+
+
 }
+
 
 
 
@@ -49,7 +57,6 @@ export function createApp(
   app.onError(
     errorHandler
   );
-
 
 
 
@@ -113,6 +120,41 @@ export function createApp(
           updatedAt:
             price.updatedAt
 
+
+        });
+
+
+      }
+
+    );
+
+
+
+
+
+    app.get(
+      "/market/history",
+      async(c)=>{
+
+
+        const limit =
+          Number(
+            c.req.query("limit") ?? 50
+          );
+
+
+
+        const history =
+          await container
+            .snapshotService
+            .getHistory(limit);
+
+
+
+        return c.json({
+
+          items:
+            history
 
         });
 

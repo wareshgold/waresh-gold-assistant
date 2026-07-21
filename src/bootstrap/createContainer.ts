@@ -22,11 +22,10 @@ from "../application/market/GetGoldBubbleUseCase";
 import { GoldBubbleCalculator }
 from "../domain/market/services/GoldBubbleCalculator";
 
-import { FakeTelegramChannelMessageProvider }
-from "../infrastructure/market/sources/FakeTelegramChannelMessageProvider";
-
-import { HttpTelegramChannelMessageProvider }
-from "../infrastructure/market/sources/HttpTelegramChannelMessageProvider";
+import {
+    createTelegramMessageProvider
+}
+from "../infrastructure/market/sources/TelegramMessageProviderFactory";
 
 import { TelegramMarketPriceProvider }
 from "../infrastructure/market/providers/TelegramMarketPriceProvider";
@@ -119,16 +118,9 @@ export function createContainer(
 
 
     const messageProvider =
-
-        env.ENVIRONMENT === "production" &&
-        env.TELEGRAM_MARKET_SOURCE_URL
-
-            ? new HttpTelegramChannelMessageProvider(
-                env.TELEGRAM_MARKET_SOURCE_URL
-            )
-
-            : new FakeTelegramChannelMessageProvider();
-
+        createTelegramMessageProvider(
+            env
+        );
 
 
 
@@ -267,6 +259,7 @@ export function createContainer(
             telegramHandler,
 
             new TelegramResponseFormatter(),
+
 
 
             env.TELEGRAM_BOT_TOKEN

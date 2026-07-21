@@ -12,7 +12,7 @@ describe(
 
 
         it(
-            "should return telegram message from endpoint",
+            "should return telegram message from http source",
             async () => {
 
 
@@ -20,15 +20,16 @@ describe(
                     vi.fn()
                     .mockResolvedValue({
 
-                        ok:true,
+                        ok: true,
 
 
-                        json: async () => ({
+                        json:
+                            async () => ({
 
-                            message:
-                                "طلای ۱۸ عیار: 18000000"
+                                message:
+                                    "طلای ۱۸ عیار: 18000000"
 
-                        })
+                            })
 
                     }) as any;
 
@@ -58,16 +59,23 @@ describe(
 
 
 
+
+
         it(
-            "should throw when endpoint fails",
+            "should throw error when source response is invalid",
             async () => {
+
 
 
                 global.fetch =
                     vi.fn()
                     .mockResolvedValue({
 
-                        ok:false
+                        ok: true,
+
+
+                        json:
+                            async () => ({})
 
                     }) as any;
 
@@ -81,9 +89,46 @@ describe(
 
 
                 await expect(
-
                     provider.getLatestMessage()
+                )
+                .rejects
+                .toThrow(
+                    "Invalid telegram source response"
+                );
 
+
+            }
+        );
+
+
+
+
+
+        it(
+            "should throw error when source is unavailable",
+            async () => {
+
+
+
+                global.fetch =
+                    vi.fn()
+                    .mockResolvedValue({
+
+                        ok: false
+
+                    }) as any;
+
+
+
+                const provider =
+                    new HttpTelegramChannelMessageProvider(
+                        "https://example.com"
+                    );
+
+
+
+                await expect(
+                    provider.getLatestMessage()
                 )
                 .rejects
                 .toThrow(
