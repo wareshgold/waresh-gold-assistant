@@ -36,9 +36,6 @@ from "../../../../src/application/telegram/state/TelegramSessionStore";
 import { FakePriceSourceClient }
 from "../../../../src/infrastructure/market/clients/FakePriceSourceClient";
 
-import { GetGoldBubbleUseCase as BubbleUseCase }
-from "../../../../src/application/market/GetGoldBubbleUseCase";
-
 import { GoldBubbleCalculator }
 from "../../../../src/domain/market/services/GoldBubbleCalculator";
 
@@ -47,6 +44,7 @@ from "../../../../src/domain/market/providers/MarketPriceProvider";
 
 import { MarketPrice }
 from "../../../../src/domain/market/entities/MarketPrice";
+
 
 
 
@@ -65,6 +63,7 @@ implements MarketSnapshotRepository {
 
         Promise<MarketSnapshot | null> {
 
+
         return new MarketSnapshot(
 
             18_500_000,
@@ -76,6 +75,7 @@ implements MarketSnapshotRepository {
         );
 
     }
+
 
 
 
@@ -111,7 +111,9 @@ implements MarketSnapshotRepository {
 
     }
 
+
 }
+
 
 
 
@@ -136,7 +138,9 @@ implements MarketPriceProvider {
 
     }
 
+
 }
+
 
 
 
@@ -161,7 +165,10 @@ implements TelegramSessionStore {
 
     async delete(): Promise<void> {}
 
+
 }
+
+
 
 
 
@@ -174,18 +181,24 @@ describe(
 
         it(
             "should process /analytics command",
-            async()=>{
+            async () => {
 
 
                 const goldPriceUseCase =
+
                     new GetGoldPriceUseCase(
+
                         new FakePriceSourceClient()
+
                     );
 
 
 
+
+
                 const bubbleUseCase =
-                    new BubbleUseCase(
+
+                    new GetGoldBubbleUseCase(
 
                         new FakeMarketPriceProvider(),
 
@@ -195,7 +208,11 @@ describe(
 
 
 
+
+
+
                 const analyticsService =
+
                     new MarketAnalyticsService(
 
                         new FakeMarketSnapshotRepository(),
@@ -208,14 +225,24 @@ describe(
 
 
 
+
+
+
                 const analyticsUseCase =
+
                     new GetMarketAnalyticsUseCase(
+
                         analyticsService
+
                     );
 
 
 
+
+
+
                 const router =
+
                     TelegramCommandRegistry.create(
 
                         goldPriceUseCase,
@@ -232,35 +259,64 @@ describe(
 
 
 
+
+
+
                 const service =
+
                     new TelegramCommandService(
+
                         router
+
                     );
+
+
+
 
 
 
                 const response =
+
                     await service.execute(
+
                         "/analytics"
+
                     );
 
 
 
+
+
+
+
                 expect(response.content)
+
                     .toContain(
-                        "📊 تحلیل بازار طلا"
+
+                        "📊 گزارش هوشمند بازار طلا"
+
                     );
 
 
+
+
+
+
                 expect(response.content)
+
                     .toContain(
+
                         "صعودی"
+
                     );
+
 
 
             }
+
         );
 
 
     }
+
 );

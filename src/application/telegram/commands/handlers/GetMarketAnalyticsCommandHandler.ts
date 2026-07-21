@@ -1,7 +1,10 @@
 import { TelegramCommandContext }
 from "../TelegramCommandContext";
 
-import { TelegramCommandHandler }
+import {
+    TelegramCommandHandler,
+    TelegramCommandResponse
+}
 from "../TelegramCommandHandler";
 
 import { GetMarketAnalyticsUseCase }
@@ -55,11 +58,12 @@ implements TelegramCommandHandler {
 
 
 
+
     async execute(
 
         context: TelegramCommandContext
 
-    ): Promise<any> {
+    ): Promise<TelegramCommandResponse> {
 
 
 
@@ -79,7 +83,7 @@ implements TelegramCommandHandler {
                 type: "text",
 
                 content:
-                    "اطلاعات تحلیل بازار موجود نیست"
+                    "⚠️ اطلاعات تحلیل بازار در دسترس نیست"
 
             };
 
@@ -90,8 +94,11 @@ implements TelegramCommandHandler {
 
 
 
+
         const analytics =
             result.analytics;
+
+
 
 
 
@@ -114,6 +121,32 @@ implements TelegramCommandHandler {
 
 
 
+        const volatility =
+
+            analytics.getVolatility();
+
+
+
+
+
+        const volatilityText =
+
+            volatility >= 3
+
+                ? "زیاد 🔴"
+
+                : volatility >= 1
+
+                    ? "متوسط 🟡"
+
+                    : "کم 🟢";
+
+
+
+
+
+
+
         return {
 
 
@@ -125,37 +158,56 @@ implements TelegramCommandHandler {
 
                 [
 
-                    "📊 تحلیل بازار طلا",
+                    "📊 گزارش هوشمند بازار طلا",
 
                     "",
 
 
-                    `💰 قیمت فعلی: ${analytics
-                        .getCurrentPrice()
-                        .toLocaleString("fa-IR")} تومان`,
+                    `💰 قیمت فعلی:
+${analytics
+    .getCurrentPrice()
+    .toLocaleString("fa-IR")} تومان`,
 
 
-                    `📈 تغییر: ${analytics
-                        .getChange()
-                        .formatted}`,
+                    "",
 
 
-                    `🔥 روند: ${trendText}`,
+                    `📈 تغییر:
+${analytics
+    .getChange()
+    .formatted}`,
 
 
-                    `🌊 نوسان: ${analytics
-                        .getVolatility()
-                        .toFixed(2)}%`,
+                    "",
 
 
-                    `📌 محدوده ۵۰ رکورد اخیر: ${analytics
-                        .getPriceRange()
-                        .toString()}`,
+                    `🔥 وضعیت روند:
+${trendText}`,
 
 
-                    `🕒 زمان تحلیل: ${analytics
-                        .getAnalyzedAt()
-                        .toLocaleString("fa-IR")}`
+                    "",
+
+
+                    `🌊 شدت نوسان:
+${volatilityText} (${volatility.toFixed(2)}%)`,
+
+
+                    "",
+
+
+                    `📌 محدوده ۵۰ رکورد اخیر:
+${analytics
+    .getPriceRange()
+    .toString()}`,
+
+
+                    "",
+
+
+                    `🕒 آخرین تحلیل:
+${analytics
+    .getAnalyzedAt()
+    .toLocaleString("fa-IR")}`
 
 
                 ].join("\n")

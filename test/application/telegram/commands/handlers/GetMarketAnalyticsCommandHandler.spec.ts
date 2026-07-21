@@ -135,7 +135,6 @@ describe(
 
 
 
-
         it(
             "should handle /analytics command",
             () => {
@@ -211,8 +210,6 @@ describe(
 
 
 
-
-
         it(
             "should return analytics response",
             async () => {
@@ -220,6 +217,7 @@ describe(
 
                 const handler =
                     createHandler();
+
 
 
 
@@ -240,7 +238,7 @@ describe(
 
                 )
                 .toContain(
-                    "تحلیل بازار طلا"
+                    "گزارش هوشمند بازار طلا"
                 );
 
 
