@@ -10,6 +10,18 @@ from "../application/market/RefreshMarketPriceUseCase";
 import { MarketSnapshotService }
 from "../application/market/services/MarketSnapshotService";
 
+import { MarketAnalyticsService }
+from "../application/market/services/MarketAnalyticsService";
+
+import { GetMarketAnalyticsUseCase }
+from "../application/market/GetMarketAnalyticsUseCase";
+
+import { TrendCalculator }
+from "../domain/market/analytics/services/TrendCalculator";
+
+import { VolatilityCalculator }
+from "../domain/market/analytics/services/VolatilityCalculator";
+
 import { MemoryMarketSnapshotRepository }
 from "../infrastructure/market/repositories/MemoryMarketSnapshotRepository";
 
@@ -113,9 +125,30 @@ export function createContainer(
 
 
 
+
     const snapshotService =
         new MarketSnapshotService(
             snapshotRepository
+        );
+
+
+
+    const analyticsService =
+        new MarketAnalyticsService(
+
+            snapshotRepository,
+
+            new TrendCalculator(),
+
+            new VolatilityCalculator()
+
+        );
+
+
+
+    const getMarketAnalyticsUseCase =
+        new GetMarketAnalyticsUseCase(
+            analyticsService
         );
 
 
@@ -154,9 +187,7 @@ export function createContainer(
     const refreshMarketPriceUseCase =
 
         new RefreshMarketPriceUseCase(
-
             priceRefreshService
-
         );
 
 
@@ -232,6 +263,8 @@ export function createContainer(
             getGoldPriceUseCase,
 
             getGoldBubbleUseCase,
+
+            getMarketAnalyticsUseCase,
 
             calculateGoldFormulaUseCase,
 
