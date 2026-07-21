@@ -81,6 +81,9 @@ describe(
 
 
 
+
+
+
     it(
       "should return health status (integration style)",
       async () => {
@@ -109,6 +112,75 @@ describe(
 
       }
     );
+
+
+
+
+
+
+
+
+
+
+    it(
+      "should return market history",
+      async () => {
+
+
+        const response =
+          await SELF.fetch(
+            "https://example.com/market/history"
+          );
+
+
+
+        console.log(
+          "MARKET HISTORY STATUS:",
+          response.status
+        );
+
+
+        const rawBody =
+          await response.text();
+
+
+
+        console.log(
+          "MARKET HISTORY BODY:",
+          rawBody
+        );
+
+
+
+        expect(response.status)
+          .toBe(200);
+
+
+
+        const body =
+          JSON.parse(rawBody);
+
+
+
+        expect(body)
+          .toHaveProperty(
+            "items"
+          );
+
+
+
+        expect(
+          Array.isArray(body.items)
+        )
+          .toBe(true);
+
+
+
+      }
+    );
+
+
+
 
 
 
@@ -192,6 +264,10 @@ describe(
 
       }
     );
+
+
+
+
 
 
 

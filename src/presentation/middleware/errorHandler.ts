@@ -12,7 +12,14 @@ export const errorHandler: ErrorHandler =
         {
             name: error.name,
             message: error.message,
+            stack: error.stack
         }
+    );
+
+
+    console.error(
+        "APPLICATION ERROR:",
+        error
     );
 
 
@@ -44,7 +51,10 @@ export const errorHandler: ErrorHandler =
 
             error:{
                 code:"INTERNAL_ERROR",
-                message:"Internal Server Error"
+
+                message:
+                    error.message ??
+                    "Internal Server Error"
             }
         },
 
