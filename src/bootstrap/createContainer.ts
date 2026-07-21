@@ -125,8 +125,8 @@ export function createContainer(
 
 
 
-
     const snapshotService =
+
         new MarketSnapshotService(
             snapshotRepository
         );
@@ -134,6 +134,7 @@ export function createContainer(
 
 
     const analyticsService =
+
         new MarketAnalyticsService(
 
             snapshotRepository,
@@ -147,6 +148,7 @@ export function createContainer(
 
 
     const getMarketAnalyticsUseCase =
+
         new GetMarketAnalyticsUseCase(
             analyticsService
         );
@@ -154,19 +156,26 @@ export function createContainer(
 
 
     const messageProvider =
+
         createTelegramMessageProvider(
             env
         );
 
 
 
-    const marketProvider =
+    const liveMarketProvider =
+
+        new TelegramMarketPriceProvider(
+            messageProvider
+        );
+
+
+
+    const cachedMarketProvider =
 
         new CachedMarketPriceProvider(
 
-            new TelegramMarketPriceProvider(
-                messageProvider
-            ),
+            liveMarketProvider,
 
             cache
 
@@ -177,9 +186,13 @@ export function createContainer(
     const priceRefreshService =
 
         new PriceRefreshService(
-            marketProvider,
+
+            liveMarketProvider,
+
             cache,
+
             snapshotService
+
         );
 
 
@@ -195,7 +208,9 @@ export function createContainer(
     const getGoldPriceUseCase =
 
         new GetGoldPriceUseCase(
-            marketProvider
+
+            liveMarketProvider
+
         );
 
 
@@ -204,7 +219,7 @@ export function createContainer(
 
         new GetGoldBubbleUseCase(
 
-            marketProvider,
+            liveMarketProvider,
 
             new GoldBubbleCalculator()
 
@@ -333,11 +348,13 @@ export function createContainer(
 
 
 
-    return {
+     return {
 
         cache,
 
-        marketProvider,
+        marketProvider: liveMarketProvider,
+
+        cachedMarketProvider,
 
         priceRefreshService,
 
@@ -351,3 +368,5 @@ export function createContainer(
 
 
 }
+
+      

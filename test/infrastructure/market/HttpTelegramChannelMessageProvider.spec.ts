@@ -16,6 +16,7 @@ describe(
             async () => {
 
 
+
                 global.fetch =
                     vi.fn()
                     .mockResolvedValue({
@@ -55,7 +56,6 @@ describe(
 
             }
         );
-
 
 
 
@@ -104,6 +104,7 @@ describe(
 
 
 
+
         it(
             "should throw error when source is unavailable",
             async () => {
@@ -138,6 +139,77 @@ describe(
 
             }
         );
+
+
+
+
+
+
+        it(
+            "should throw timeout error when request exceeds timeout",
+            async () => {
+
+
+
+                global.fetch =
+                    vi.fn()
+                    .mockImplementation(
+                        (
+                            _url,
+                            options
+                        ) => {
+
+
+                            return new Promise(
+                                (_resolve, reject) => {
+
+
+                                    options.signal.addEventListener(
+                                        "abort",
+                                        () => {
+
+
+                                            reject(
+                                                new DOMException(
+                                                    "Aborted",
+                                                    "AbortError"
+                                                )
+                                            );
+
+
+                                        }
+                                    );
+
+
+                                }
+                            );
+
+
+                        }
+                    ) as any;
+
+
+
+                const provider =
+                    new HttpTelegramChannelMessageProvider(
+                        "https://example.com",
+                        10
+                    );
+
+
+
+                await expect(
+                    provider.getLatestMessage()
+                )
+                .rejects
+                .toThrow(
+                    "Telegram source timeout"
+                );
+
+
+            }
+        );
+
 
 
 
