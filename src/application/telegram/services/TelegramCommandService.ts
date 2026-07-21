@@ -50,6 +50,8 @@ implements TelegramCommandExecutor {
 
 
 
+
+
     async execute(
 
         message:
@@ -63,48 +65,57 @@ implements TelegramCommandExecutor {
 
             IncomingMessage =
 
-        typeof message === "string"
 
-            ? {
+            typeof message === "string"
 
-                userId:
-                    "default",
+                ? {
 
-                text:
-                    message
+                    userId:
+                        "default",
 
-            }
+                    text:
+                        message
 
-            : message;
+                }
+
+                : message;
+
+
 
 
 
         console.log(
+
             "INCOMING MESSAGE:",
+
             {
+
                 userId:
                     normalizedMessage.userId,
 
+
                 text:
                     normalizedMessage.text
+
             }
+
         );
 
 
 
+
+
+
         if (
+
             this.conversationManager
+
         ) {
-
-
-            console.log(
-                "CHECKING CONVERSATION USER:",
-                normalizedMessage.userId
-            );
 
 
 
             const activeConversation =
+
 
                 await this.conversationManager.execute(
 
@@ -116,26 +127,30 @@ implements TelegramCommandExecutor {
 
 
 
-            console.log(
-                "CONVERSATION RESULT:",
-                activeConversation
-            );
-
 
 
             if (
+
                 activeConversation
+
             ) {
+
 
                 return activeConversation;
 
+
             }
+
 
         }
 
 
 
+
+
+
         const context =
+
 
             this.contextBuilder.build(
 
@@ -147,16 +162,28 @@ implements TelegramCommandExecutor {
 
 
 
+
+
+
         console.log(
+
             "COMMAND CONTEXT:",
+
             context
+
         );
+
+
+
 
 
 
         return this.router.execute(
+
             context
+
         );
+
 
 
     }
