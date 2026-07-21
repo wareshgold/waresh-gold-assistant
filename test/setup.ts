@@ -1,8 +1,17 @@
 import { beforeAll } from "vitest";
 import { env } from "cloudflare:test";
 
+
 beforeAll(async () => {
+
+
+    env.ENVIRONMENT = "test";
+
+
+
     const migrations = [
+
+
         `
         CREATE TABLE IF NOT EXISTS market_snapshots (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -17,6 +26,8 @@ beforeAll(async () => {
         CREATE INDEX IF NOT EXISTS idx_market_snapshots_captured_at
         ON market_snapshots(captured_at DESC);
         `,
+
+
         `
         CREATE TABLE IF NOT EXISTS telegram_sessions (
             user_id TEXT PRIMARY KEY,
@@ -25,11 +36,21 @@ beforeAll(async () => {
             updated_at INTEGER NOT NULL
         );
         `,
+
+
     ];
 
+
+
     for (const migration of migrations) {
+
+
         await env.waresh_gold_db
             .prepare(migration)
             .run();
+
+
     }
+
+
 });

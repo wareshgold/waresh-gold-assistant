@@ -48,9 +48,29 @@
 
                 "MARKET_PRICE_API_URL":
                         "https://example.com/api/price",
-                        
+
                 "TELEGRAM_MARKET_SOURCE_URL":
                         "https://example.com/api/telegram-price"
+
+        },
+
+
+
+        "env": {
+
+                "test": {
+
+                        "vars": {
+
+                                "ENVIRONMENT": "test",
+
+                                "MARKET_PRICE_API_URL":
+                                        "https://example.com/api/price"
+
+                        }
+
+                }
+
         },
 
 

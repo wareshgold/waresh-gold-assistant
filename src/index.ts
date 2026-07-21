@@ -40,10 +40,12 @@ export default {
         createContainer(env);
 
 
+
       const price =
         await container
-          .priceRefreshService
-          .refresh();
+          .refreshMarketPriceUseCase
+          .execute();
+
 
 
       console.log(
@@ -58,6 +60,7 @@ export default {
         "Price refresh failed:",
         error
       );
+
 
       throw error;
 

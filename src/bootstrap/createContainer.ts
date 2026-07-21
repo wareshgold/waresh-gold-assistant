@@ -4,6 +4,9 @@ from "../infrastructure/cache/CloudflareKVCacheFactory";
 import { PriceRefreshService }
 from "../application/market/services/PriceRefreshService";
 
+import { RefreshMarketPriceUseCase }
+from "../application/market/RefreshMarketPriceUseCase";
+
 import { MarketSnapshotService }
 from "../application/market/services/MarketSnapshotService";
 
@@ -100,7 +103,7 @@ export function createContainer(
 
     const snapshotRepository =
 
-        env.ENVIRONMENT === "production"
+        env.waresh_gold_db
 
             ? new D1MarketSnapshotRepository(
                 env.waresh_gold_db
@@ -144,6 +147,16 @@ export function createContainer(
             marketProvider,
             cache,
             snapshotService
+        );
+
+
+
+    const refreshMarketPriceUseCase =
+
+        new RefreshMarketPriceUseCase(
+
+            priceRefreshService
+
         );
 
 
@@ -261,7 +274,6 @@ export function createContainer(
             new TelegramResponseFormatter(),
 
 
-
             env.TELEGRAM_BOT_TOKEN
 
                 ? new TelegramHttpBotClient(
@@ -295,6 +307,8 @@ export function createContainer(
         marketProvider,
 
         priceRefreshService,
+
+        refreshMarketPriceUseCase,
 
         snapshotService,
 
