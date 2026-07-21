@@ -1,7 +1,10 @@
-import { TelegramCommandContext } from "./TelegramCommandContext";
+import { TelegramCommandContext }
+from "./TelegramCommandContext";
+
 
 
 export class TelegramCommandContextBuilder {
+
 
 
     build(
@@ -10,24 +13,35 @@ export class TelegramCommandContextBuilder {
 
         userId: string = "",
 
-        args: string[] = []
+        args: string[] = [],
+
+        username?: string,
+
+        firstName?: string
 
     ): TelegramCommandContext {
+
 
 
         const normalized =
 
             message
+
                 .trim()
+
                 .toLowerCase();
+
 
 
 
         const parts =
 
             normalized
+
                 .split(/\s+/)
+
                 .filter(Boolean);
+
 
 
 
@@ -37,9 +51,11 @@ export class TelegramCommandContextBuilder {
 
 
 
+
         let argumentsList =
 
             args;
+
 
 
 
@@ -104,6 +120,7 @@ export class TelegramCommandContextBuilder {
 
 
 
+
         return {
 
 
@@ -113,6 +130,12 @@ export class TelegramCommandContextBuilder {
 
 
             userId,
+
+
+            username,
+
+
+            firstName,
 
 
             command,

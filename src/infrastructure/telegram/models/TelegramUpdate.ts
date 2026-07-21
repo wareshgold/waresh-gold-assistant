@@ -2,6 +2,7 @@ export interface TelegramUpdate {
 
     update_id: number;
 
+
     message: {
 
         chat?: {
@@ -10,11 +11,19 @@ export interface TelegramUpdate {
 
         };
 
+
         from?: {
 
             id: number;
 
+            first_name?: string;
+
+            last_name?: string;
+
+            username?: string;
+
         };
+
 
         text?: string;
 

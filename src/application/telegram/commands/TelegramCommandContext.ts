@@ -10,6 +10,9 @@ export interface TelegramCommandContext {
     username?: string;
 
 
+    firstName?: string;
+
+
     command: string;
 
 

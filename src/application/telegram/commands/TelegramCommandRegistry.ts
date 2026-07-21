@@ -1,6 +1,7 @@
 import { TelegramCommandRouter }
 from "./TelegramCommandRouter";
 
+
 import { TelegramCommandHandler }
 from "./TelegramCommandHandler";
 
@@ -8,41 +9,59 @@ from "./TelegramCommandHandler";
 import { StartCommandHandler }
 from "./handlers/StartCommandHandler";
 
+
 import { HelpCommandHandler }
 from "./handlers/HelpCommandHandler";
+
 
 import { GoldPriceCommandHandler }
 from "./handlers/GoldPriceCommandHandler";
 
+
 import { GetGoldBubbleCommandHandler }
 from "./handlers/GetGoldBubbleCommandHandler";
 
+
 import { GetMarketAnalyticsCommandHandler }
 from "./handlers/GetMarketAnalyticsCommandHandler";
+
 
 import { CalculateGoldCommandHandler }
 from "./handlers/CalculateGoldCommandHandler";
 
 
+
 import { GetGoldPriceUseCase }
 from "../../usecases/GetGoldPriceUseCase";
+
 
 import { GetGoldBubbleUseCase }
 from "../../market/GetGoldBubbleUseCase";
 
+
 import { GetMarketAnalyticsUseCase }
 from "../../market/GetMarketAnalyticsUseCase";
 
+
 import { CalculateGoldFormulaUseCase }
 from "../../gold/CalculateGoldFormulaUseCase";
+
 
 
 import { TelegramSessionStore }
 from "../state/TelegramSessionStore";
 
 
+import { RandomWelcomeMessageProvider }
+from "../welcome/RandomWelcomeMessageProvider";
+
+
+
+
 
 export class TelegramCommandRegistry {
+
+
 
 
 
@@ -74,12 +93,27 @@ export class TelegramCommandRegistry {
 
 
 
+
+        const welcomeMessageProvider =
+
+            new RandomWelcomeMessageProvider();
+
+
+
+
         const handlers:
+
             TelegramCommandHandler[] = [
 
 
 
-                new StartCommandHandler(),
+
+                new StartCommandHandler(
+
+                    welcomeMessageProvider
+
+                ),
+
 
 
 
@@ -87,27 +121,40 @@ export class TelegramCommandRegistry {
 
 
 
+
                 new GoldPriceCommandHandler(
+
                     getGoldPriceUseCase
+
                 ),
+
 
 
 
                 new GetGoldBubbleCommandHandler(
+
                     getGoldBubbleUseCase
+
                 ),
+
 
 
 
                 new GetMarketAnalyticsCommandHandler(
+
                     getMarketAnalyticsUseCase
+
                 ),
 
 
 
+
                 new CalculateGoldCommandHandler(
+
                     calculateGoldFormulaUseCase,
+
                     sessionStore
+
                 )
 
 
@@ -116,9 +163,14 @@ export class TelegramCommandRegistry {
 
 
 
+
+
         return new TelegramCommandRouter(
+
             handlers
+
         );
+
 
 
     }
