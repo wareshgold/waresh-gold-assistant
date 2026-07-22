@@ -16,6 +16,9 @@ from "../application/market/services/MarketAnalyticsService";
 import { GetMarketAnalyticsUseCase }
 from "../application/market/GetMarketAnalyticsUseCase";
 
+import { GetMarketHistoryUseCase }
+from "../application/market/GetMarketHistoryUseCase";
+
 import { TrendCalculator }
 from "../domain/market/analytics/services/TrendCalculator";
 
@@ -131,6 +134,9 @@ export function createContainer(
             )
 
             : new MemoryMarketSnapshotRepository();
+
+
+
     const snapshotService =
 
         new MarketSnapshotService(
@@ -157,6 +163,14 @@ export function createContainer(
 
         new GetMarketAnalyticsUseCase(
             analyticsService
+        );
+
+
+
+    const getMarketHistoryUseCase =
+
+        new GetMarketHistoryUseCase(
+            snapshotService
         );
 
 
@@ -300,6 +314,9 @@ export function createContainer(
             ]
 
         );
+
+
+
     const commandRouter =
 
         TelegramCommandRegistry.create(
@@ -309,6 +326,8 @@ export function createContainer(
             getGoldBubbleUseCase,
 
             getMarketAnalyticsUseCase,
+
+            getMarketHistoryUseCase,
 
             calculateGoldFormulaUseCase,
 
