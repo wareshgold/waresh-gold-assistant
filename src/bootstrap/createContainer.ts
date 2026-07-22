@@ -255,7 +255,7 @@ export function createContainer(
 
         new GetGoldPriceUseCase(
 
-            liveMarketProvider
+            cachedMarketProvider
 
         );
 
