@@ -58,6 +58,9 @@ from "../application/market/services/MarketAnalyticsService";
 import { GetMarketAnalyticsUseCase }
 from "../application/market/GetMarketAnalyticsUseCase";
 
+import { GetMarketHistoryUseCase }
+from "../application/market/GetMarketHistoryUseCase";
+
 import { TrendCalculator }
 from "../domain/market/analytics/services/TrendCalculator";
 
@@ -66,6 +69,7 @@ from "../domain/market/analytics/services/VolatilityCalculator";
 
 import { AppEnv }
 from "../shared/config/env";
+
 
 
 
@@ -79,6 +83,7 @@ export class ApplicationContainer {
 
     public readonly calculateReverseGoldUseCase:
         CalculateReverseGoldUseCase;
+
 
 
 
@@ -97,15 +102,11 @@ export class ApplicationContainer {
 
 
 
-
         const marketProvider =
 
             new TelegramMarketPriceProvider(
-
                 messageProvider
-
             );
-
 
 
 
@@ -119,15 +120,11 @@ export class ApplicationContainer {
 
 
 
-
         const snapshotService =
 
             new MarketSnapshotService(
-
                 snapshotRepository
-
             );
-
 
 
 
@@ -149,8 +146,6 @@ export class ApplicationContainer {
 
 
 
-
-
         const getMarketAnalyticsUseCase =
 
             new GetMarketAnalyticsUseCase(
@@ -163,6 +158,15 @@ export class ApplicationContainer {
 
 
 
+        const getMarketHistoryUseCase =
+
+            new GetMarketHistoryUseCase(
+
+                snapshotService
+
+            );
+
+
 
 
 
@@ -173,9 +177,6 @@ export class ApplicationContainer {
                 marketProvider
 
             );
-
-
-
 
 
 
@@ -195,9 +196,6 @@ export class ApplicationContainer {
 
 
 
-
-
-
         this.calculateReverseGoldUseCase =
 
             new CalculateReverseGoldUseCase(
@@ -205,9 +203,6 @@ export class ApplicationContainer {
                 new ReverseGoldCalculator()
 
             );
-
-
-
 
 
 
@@ -225,15 +220,9 @@ export class ApplicationContainer {
 
 
 
-
-
-
         const sessionStore =
 
             new MemoryTelegramSessionStore();
-
-
-
 
 
 
@@ -263,9 +252,6 @@ export class ApplicationContainer {
 
 
 
-
-
-
         const router =
 
             TelegramCommandRegistry.create(
@@ -275,15 +261,14 @@ export class ApplicationContainer {
                 getGoldBubbleUseCase,
 
                 getMarketAnalyticsUseCase,
+                
+                getMarketHistoryUseCase,
 
                 calculateGoldFormulaUseCase,
 
                 sessionStore
 
             );
-
-
-
 
 
 
@@ -298,9 +283,6 @@ export class ApplicationContainer {
                 conversationManager
 
             );
-
-
-
 
 
 

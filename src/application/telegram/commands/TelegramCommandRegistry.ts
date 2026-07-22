@@ -26,9 +26,12 @@ import { GetMarketAnalyticsCommandHandler }
 from "./handlers/GetMarketAnalyticsCommandHandler";
 
 
+import { GetMarketHistoryCommandHandler }
+from "./handlers/GetMarketHistoryCommandHandler";
+
+
 import { CalculateGoldCommandHandler }
 from "./handlers/CalculateGoldCommandHandler";
-
 
 
 import { GetGoldPriceUseCase }
@@ -43,9 +46,12 @@ import { GetMarketAnalyticsUseCase }
 from "../../market/GetMarketAnalyticsUseCase";
 
 
+import { GetMarketHistoryUseCase }
+from "../../market/GetMarketHistoryUseCase";
+
+
 import { CalculateGoldFormulaUseCase }
 from "../../gold/CalculateGoldFormulaUseCase";
-
 
 
 import { TelegramSessionStore }
@@ -80,6 +86,10 @@ export class TelegramCommandRegistry {
             GetMarketAnalyticsUseCase,
 
 
+        getMarketHistoryUseCase:
+            GetMarketHistoryUseCase,
+
+
         calculateGoldFormulaUseCase:
             CalculateGoldFormulaUseCase,
 
@@ -97,6 +107,7 @@ export class TelegramCommandRegistry {
         const welcomeMessageProvider =
 
             new RandomWelcomeMessageProvider();
+
 
 
 
@@ -143,6 +154,15 @@ export class TelegramCommandRegistry {
                 new GetMarketAnalyticsCommandHandler(
 
                     getMarketAnalyticsUseCase
+
+                ),
+
+
+
+
+                new GetMarketHistoryCommandHandler(
+
+                    getMarketHistoryUseCase
 
                 ),
 
