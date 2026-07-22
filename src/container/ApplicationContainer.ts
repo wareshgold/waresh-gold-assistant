@@ -10,6 +10,9 @@ from "../application/telegram/TelegramResponseFormatter";
 import { GetGoldPriceUseCase }
 from "../application/usecases/GetGoldPriceUseCase";
 
+import { GetCurrentMarketPriceUseCase }
+from "../application/market/GetCurrentMarketPriceUseCase";
+
 import { TelegramMarketPriceProvider }
 from "../infrastructure/market/providers/TelegramMarketPriceProvider";
 
@@ -72,6 +75,7 @@ from "../domain/market/analytics/services/VolatilityCalculator";
 export class ApplicationContainer {
 
 
+
     public readonly telegramMessageHandler:
         TelegramMessageHandler;
 
@@ -83,6 +87,7 @@ export class ApplicationContainer {
 
 
 
+
     constructor() {
 
 
@@ -90,11 +95,17 @@ export class ApplicationContainer {
         const messageProvider =
 
             createTelegramMessageProvider(
+
                 {
+
                     TELEGRAM_MARKET_SOURCE_URL:
+
                         "https://example.com"
+
                 } as any
+
             );
+
 
 
 
@@ -102,8 +113,25 @@ export class ApplicationContainer {
         const marketProvider =
 
             new TelegramMarketPriceProvider(
+
                 messageProvider
+
             );
+
+
+
+
+
+
+
+        const getCurrentMarketPriceUseCase =
+
+            new GetCurrentMarketPriceUseCase(
+
+                marketProvider
+
+            );
+
 
 
 
@@ -118,11 +146,17 @@ export class ApplicationContainer {
 
 
 
+
+
         const snapshotService =
 
             new MarketSnapshotService(
+
                 snapshotRepository
+
             );
+
+
 
 
 
@@ -144,11 +178,17 @@ export class ApplicationContainer {
 
 
 
+
+
         const getMarketAnalyticsUseCase =
 
             new GetMarketAnalyticsUseCase(
+
                 analyticsService
+
             );
+
+
 
 
 
@@ -157,8 +197,12 @@ export class ApplicationContainer {
         const getMarketHistoryUseCase =
 
             new GetMarketHistoryUseCase(
+
                 snapshotService
+
             );
+
+
 
 
 
@@ -167,8 +211,12 @@ export class ApplicationContainer {
         const getGoldPriceUseCase =
 
             new GetGoldPriceUseCase(
-                marketProvider
+
+                getCurrentMarketPriceUseCase
+
             );
+
+
 
 
 
@@ -188,6 +236,8 @@ export class ApplicationContainer {
 
 
 
+
+
         this.calculateReverseGoldUseCase =
 
             new CalculateReverseGoldUseCase(
@@ -195,6 +245,8 @@ export class ApplicationContainer {
                 new ReverseGoldCalculator()
 
             );
+
+
 
 
 
@@ -212,9 +264,13 @@ export class ApplicationContainer {
 
 
 
+
+
         const sessionStore =
 
             new MemoryTelegramSessionStore();
+
+
 
 
 
@@ -244,6 +300,8 @@ export class ApplicationContainer {
 
 
 
+
+
         const router =
 
             TelegramCommandRegistry.create(
@@ -266,6 +324,8 @@ export class ApplicationContainer {
 
 
 
+
+
         const commandService =
 
             new TelegramCommandService(
@@ -275,6 +335,8 @@ export class ApplicationContainer {
                 conversationManager
 
             );
+
+
 
 
 

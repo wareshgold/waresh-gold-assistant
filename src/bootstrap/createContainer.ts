@@ -34,6 +34,9 @@ from "../infrastructure/market/repositories/d1/D1MarketSnapshotRepository";
 import { GetGoldPriceUseCase }
 from "../application/usecases/GetGoldPriceUseCase";
 
+import { GetCurrentMarketPriceUseCase }
+from "../application/market/GetCurrentMarketPriceUseCase";
+
 import { GetGoldBubbleUseCase }
 from "../application/market/GetGoldBubbleUseCase";
 
@@ -229,6 +232,16 @@ export function createContainer(
 
 
 
+    const getCurrentMarketPriceUseCase =
+
+        new GetCurrentMarketPriceUseCase(
+
+            cachedMarketProvider
+
+        );
+
+
+
     const priceRefreshService =
 
         new PriceRefreshService(
@@ -255,7 +268,7 @@ export function createContainer(
 
         new GetGoldPriceUseCase(
 
-            cachedMarketProvider
+            getCurrentMarketPriceUseCase
 
         );
 

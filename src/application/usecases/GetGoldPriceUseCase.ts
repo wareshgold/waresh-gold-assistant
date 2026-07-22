@@ -1,21 +1,47 @@
-import { ApplicationResponse } from "../common/models/ApplicationResponse";
-import { MarketPriceProvider } from "../../domain/market/providers/MarketPriceProvider";
+import { ApplicationResponse }
+from "../common/models/ApplicationResponse";
+
+import { MarketPriceProvider }
+from "../../domain/market/providers/MarketPriceProvider";
+
+import { GetCurrentMarketPriceUseCase }
+from "../market/GetCurrentMarketPriceUseCase";
+
 
 
 export class GetGoldPriceUseCase {
 
 
+
     constructor(
-        private readonly marketPriceProvider: MarketPriceProvider
+
+        private readonly priceSource:
+
+            MarketPriceProvider
+            |
+            GetCurrentMarketPriceUseCase
+
     ) {}
 
 
 
-    async execute(): Promise<ApplicationResponse> {
+
+
+    async execute():
+
+        Promise<ApplicationResponse> {
+
 
 
         const price =
-            await this.marketPriceProvider.getCurrentPrice();
+
+            "execute" in this.priceSource
+
+                ? await this.priceSource.execute()
+
+                : await this.priceSource.getCurrentPrice();
+
+
 
 
 
@@ -26,38 +52,54 @@ export class GetGoldPriceUseCase {
 
 
             content:
+
                 [
+
                     "🟡 قیمت طلا",
+
                     "",
+
                     `قیمت: ${price.gold18Price}`,
+
                     `دلار: ${price.currencyPrice}`,
+
                     `اونس: ${price.ouncePrice}`,
+
                     `زمان: ${price.updatedAt.toISOString()}`
+
                 ].join("\n"),
+
 
 
 
             metadata: {
 
+
                 gold18Price:
+
                     price.gold18Price,
 
 
                 currencyPrice:
+
                     price.currencyPrice,
 
 
                 ouncePrice:
+
                     price.ouncePrice,
 
 
                 updatedAt:
+
                     price.updatedAt
+
 
             }
 
 
         };
+
 
     }
 
