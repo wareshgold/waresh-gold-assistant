@@ -1,3 +1,10 @@
+import {
+    RetryPolicy as ResilienceRetryPolicy
+}
+from "../../resilience/RetryPolicy";
+
+
+
 export interface RetryPolicyOptions {
 
     retries: number;
@@ -8,66 +15,27 @@ export interface RetryPolicyOptions {
 
 
 
-export class RetryPolicy {
+export class RetryPolicy
+extends ResilienceRetryPolicy {
+
 
 
     constructor(
-        private readonly options: RetryPolicyOptions
-    ) {}
+        options: RetryPolicyOptions
+    ) {
 
 
+        super({
 
-    async execute<T>(
-        action: () => Promise<T>
-    ): Promise<T> {
-
-
-        let lastError: unknown;
+            maxAttempts:
+                options.retries + 1,
 
 
+            delayMs:
+                options.delayMs
 
-        for(
-            let attempt = 0;
-            attempt <= this.options.retries;
-            attempt++
-        ) {
+        });
 
-
-            try {
-
-                return await action();
-
-            }
-            catch(error) {
-
-                lastError = error;
-
-
-
-                if(
-                    attempt < this.options.retries &&
-                    this.options.delayMs > 0
-                ) {
-
-                    await new Promise(
-                        resolve =>
-                            setTimeout(
-                                resolve,
-                                this.options.delayMs
-                            )
-                    );
-
-                }
-
-
-            }
-
-
-        }
-
-
-
-        throw lastError;
 
     }
 

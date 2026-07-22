@@ -4,20 +4,29 @@ import {
 }
 from "../../../domain/market/providers/MarketPriceSource";
 
+
 import {
     MarketMessageProvider
 }
 from "./MarketMessageProvider";
+
 
 import {
     TelegramPriceParser
 }
 from "../parsers/TelegramPriceParser";
 
+
 import {
     RetryPolicy
 }
 from "../../resilience/RetryPolicy";
+
+
+import {
+    TimeoutPolicy
+}
+from "../../resilience/TimeoutPolicy";
 
 
 
@@ -31,18 +40,36 @@ implements MarketPriceSource {
 
 
 
+    private readonly timeoutPolicy:
+        TimeoutPolicy;
+
+
+
     constructor(
+
         private readonly messageProvider:
             MarketMessageProvider
+
     ){
 
 
         this.retryPolicy =
+
             new RetryPolicy({
 
                 maxAttempts: 3,
 
                 delayMs: 500
+
+            });
+
+
+
+        this.timeoutPolicy =
+
+            new TimeoutPolicy({
+
+                timeoutMs: 3000
 
             });
 
@@ -55,42 +82,64 @@ implements MarketPriceSource {
         Promise<MarketPriceResult> {
 
 
+
         return this.retryPolicy.execute(
 
             async () => {
 
 
-                const message =
-                    await this.messageProvider
-                        .getLatestMessage();
+                return this.timeoutPolicy.execute(
+
+                    async () => {
+
+
+                        const message =
+
+                            await this.messageProvider
+                                .getLatestMessage();
 
 
 
-                const parsed =
-                    TelegramPriceParser.parse(
-                        message
-                    );
+                        const parsed =
+
+                            TelegramPriceParser.parse(
+                                message
+                            );
 
 
 
-                return {
-
-                    gold18Price:
-                        parsed.gold18Price,
+                        return {
 
 
-                    currencyPrice:
-                        parsed.currencyPrice,
+                            gold18Price:
+
+                                parsed.gold18Price,
 
 
-                    ouncePrice:
-                        parsed.ouncePrice,
+
+                            currencyPrice:
+
+                                parsed.currencyPrice,
 
 
-                    updatedAt:
-                        parsed.updatedAt
 
-                };
+                            ouncePrice:
+
+                                parsed.ouncePrice,
+
+
+
+                            updatedAt:
+
+                                parsed.updatedAt
+
+
+                        };
+
+
+                    }
+
+                );
 
 
             }

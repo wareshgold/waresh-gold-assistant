@@ -11,9 +11,20 @@ import {
 from "../clients/PriceSourceClient";
 
 
+import {
+    TimeoutPolicy
+}
+from "../../resilience/TimeoutPolicy";
+
+
 
 export class HttpMarketPriceSource
 implements MarketPriceSource {
+
+
+
+    private readonly timeoutPolicy:
+        TimeoutPolicy;
 
 
 
@@ -22,7 +33,19 @@ implements MarketPriceSource {
         private readonly client:
             PriceSourceClient
 
-    ) {}
+    ) {
+
+
+        this.timeoutPolicy =
+
+            new TimeoutPolicy({
+
+                timeoutMs: 3000
+
+            });
+
+
+    }
 
 
 
@@ -31,34 +54,44 @@ implements MarketPriceSource {
 
 
 
-        const rawPrice =
-            await this.client.fetchPrice();
+        return this.timeoutPolicy.execute(
+
+            async () => {
+
+
+                const rawPrice =
+                    await this.client.fetchPrice();
 
 
 
-        return {
+                return {
 
 
-            gold18Price:
-                rawPrice.gold18Price,
-
-
-
-            currencyPrice:
-                rawPrice.currencyPrice,
+                    gold18Price:
+                        rawPrice.gold18Price,
 
 
 
-            ouncePrice:
-                rawPrice.ouncePrice,
+                    currencyPrice:
+                        rawPrice.currencyPrice,
 
 
 
-            updatedAt:
-                rawPrice.updatedAt
+                    ouncePrice:
+                        rawPrice.ouncePrice,
 
 
-        };
+
+                    updatedAt:
+                        rawPrice.updatedAt
+
+
+                };
+
+
+            }
+
+        );
 
 
     }

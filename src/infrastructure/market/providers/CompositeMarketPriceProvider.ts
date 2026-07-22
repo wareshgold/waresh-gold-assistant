@@ -19,7 +19,7 @@ from "../../../domain/market/providers/MarketPriceSource";
 import {
     RetryPolicy
 }
-from "../../shared/retry/RetryPolicy";
+from "../../resilience/RetryPolicy";
 
 
 
@@ -37,7 +37,7 @@ implements MarketPriceProvider {
         private readonly retryPolicy:
             RetryPolicy = new RetryPolicy({
 
-                retries: 2,
+                maxAttempts: 3,
 
                 delayMs: 200
 
