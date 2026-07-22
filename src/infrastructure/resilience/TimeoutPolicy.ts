@@ -9,6 +9,7 @@ export interface TimeoutPolicyOptions {
 export class TimeoutPolicy {
 
 
+
     constructor(
 
         private readonly options:
@@ -26,19 +27,19 @@ export class TimeoutPolicy {
     ): Promise<T> {
 
 
-        return Promise.race([
+        let timer:
+            ReturnType<typeof setTimeout>;
 
 
-            operation(),
 
-
+        const timeoutPromise =
 
             new Promise<T>(
 
                 (_, reject) => {
 
 
-                    setTimeout(
+                    timer = setTimeout(
 
                         () => {
 
@@ -61,10 +62,33 @@ export class TimeoutPolicy {
 
                 }
 
-            )
+            );
 
 
-        ]);
+
+        try {
+
+
+            return await Promise.race([
+
+                operation(),
+
+                timeoutPromise
+
+            ]);
+
+
+
+        }
+        finally {
+
+
+            clearTimeout(
+                timer!
+            );
+
+
+        }
 
 
     }
