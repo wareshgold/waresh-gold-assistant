@@ -20,6 +20,12 @@ export interface AppEnv {
 
     TELEGRAM_WEBHOOK_SECRET?: string;
 
+
+    MARKET_SOURCE_RETRY_COUNT?: string;
+
+
+    MARKET_SOURCE_RETRY_DELAY_MS?: string;
+
 }
 
 
@@ -56,7 +62,23 @@ export function getEnv(
 
         telegramWebhookSecret:
             env.TELEGRAM_WEBHOOK_SECRET ??
-            "development-secret"
+            "development-secret",
+
+
+
+        marketSourceRetryCount:
+            Number(
+                env.MARKET_SOURCE_RETRY_COUNT ??
+                "2"
+            ),
+
+
+
+        marketSourceRetryDelayMs:
+            Number(
+                env.MARKET_SOURCE_RETRY_DELAY_MS ??
+                "200"
+            )
 
     };
 

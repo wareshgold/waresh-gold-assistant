@@ -42,8 +42,17 @@ import {
 }
 from "../infrastructure/market/sources/TelegramMessageProviderFactory";
 
-import { TelegramMarketPriceProvider }
-from "../infrastructure/market/providers/TelegramMarketPriceProvider";
+import { TelegramMarketPriceSource }
+from "../infrastructure/market/sources/TelegramMarketPriceSource";
+
+import { HttpMarketPriceSource }
+from "../infrastructure/market/sources/HttpMarketPriceSource";
+
+import { HttpPriceSourceClient }
+from "../infrastructure/market/clients/HttpPriceSourceClient";
+
+import { CompositeMarketPriceProvider }
+from "../infrastructure/market/providers/CompositeMarketPriceProvider";
 
 import { CachedMarketPriceProvider }
 from "../infrastructure/market/providers/CachedMarketPriceProvider";
@@ -122,9 +131,6 @@ export function createContainer(
             )
 
             : new MemoryMarketSnapshotRepository();
-
-
-
     const snapshotService =
 
         new MarketSnapshotService(
@@ -163,11 +169,37 @@ export function createContainer(
 
 
 
-    const liveMarketProvider =
+    const telegramSource =
 
-        new TelegramMarketPriceProvider(
+        new TelegramMarketPriceSource(
             messageProvider
         );
+
+
+
+    const httpSource =
+
+        new HttpMarketPriceSource(
+
+            new HttpPriceSourceClient(
+
+                env.MARKET_PRICE_API_URL
+
+            )
+
+        );
+
+
+
+    const liveMarketProvider =
+
+        new CompositeMarketPriceProvider([
+
+            telegramSource,
+
+            httpSource
+
+        ]);
 
 
 
@@ -268,9 +300,6 @@ export function createContainer(
             ]
 
         );
-
-
-
     const commandRouter =
 
         TelegramCommandRegistry.create(
@@ -348,7 +377,7 @@ export function createContainer(
 
 
 
-     return {
+    return {
 
         cache,
 
@@ -368,5 +397,3 @@ export function createContainer(
 
 
 }
-
-      

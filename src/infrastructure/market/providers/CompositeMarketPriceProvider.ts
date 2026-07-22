@@ -16,6 +16,12 @@ import {
 from "../../../domain/market/providers/MarketPriceSource";
 
 
+import {
+    RetryPolicy
+}
+from "../../shared/retry/RetryPolicy";
+
+
 
 export class CompositeMarketPriceProvider
 implements MarketPriceProvider {
@@ -25,7 +31,17 @@ implements MarketPriceProvider {
     constructor(
 
         private readonly sources:
-            MarketPriceSource[]
+            MarketPriceSource[],
+
+
+        private readonly retryPolicy:
+            RetryPolicy = new RetryPolicy({
+
+                retries: 2,
+
+                delayMs: 200
+
+            })
 
     ){}
 
@@ -45,7 +61,13 @@ implements MarketPriceProvider {
 
 
                 const price =
-                    await source.getPrice();
+
+                    await this.retryPolicy.execute(
+
+                        () =>
+                            source.getPrice()
+
+                    );
 
 
 
