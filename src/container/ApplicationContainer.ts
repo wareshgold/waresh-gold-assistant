@@ -67,10 +67,6 @@ from "../domain/market/analytics/services/TrendCalculator";
 import { VolatilityCalculator }
 from "../domain/market/analytics/services/VolatilityCalculator";
 
-import { AppEnv }
-from "../shared/config/env";
-
-
 
 
 export class ApplicationContainer {
@@ -87,16 +83,17 @@ export class ApplicationContainer {
 
 
 
-    constructor(
-        env: AppEnv
-    ) {
+    constructor() {
 
 
 
         const messageProvider =
 
             createTelegramMessageProvider(
-                env
+                {
+                    TELEGRAM_MARKET_SOURCE_URL:
+                        "https://example.com"
+                } as any
             );
 
 
@@ -107,6 +104,7 @@ export class ApplicationContainer {
             new TelegramMarketPriceProvider(
                 messageProvider
             );
+
 
 
 
@@ -149,9 +147,7 @@ export class ApplicationContainer {
         const getMarketAnalyticsUseCase =
 
             new GetMarketAnalyticsUseCase(
-
                 analyticsService
-
             );
 
 
@@ -161,9 +157,7 @@ export class ApplicationContainer {
         const getMarketHistoryUseCase =
 
             new GetMarketHistoryUseCase(
-
                 snapshotService
-
             );
 
 
@@ -173,9 +167,7 @@ export class ApplicationContainer {
         const getGoldPriceUseCase =
 
             new GetGoldPriceUseCase(
-
                 marketProvider
-
             );
 
 
@@ -261,7 +253,7 @@ export class ApplicationContainer {
                 getGoldBubbleUseCase,
 
                 getMarketAnalyticsUseCase,
-                
+
                 getMarketHistoryUseCase,
 
                 calculateGoldFormulaUseCase,

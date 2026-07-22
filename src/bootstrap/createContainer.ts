@@ -349,11 +349,13 @@ export function createContainer(
 
 
 
-    const telegramHandler =
+    const telegramMessageHandler =
 
         new TelegramMessageHandler(
 
-            telegramCommandService
+            telegramCommandService,
+
+            new TelegramResponseFormatter()
 
         );
 
@@ -365,7 +367,7 @@ export function createContainer(
 
             new TelegramUpdateMapper(),
 
-            telegramHandler,
+            telegramMessageHandler,
 
             new TelegramResponseFormatter(),
 
@@ -409,6 +411,8 @@ export function createContainer(
         refreshMarketPriceUseCase,
 
         snapshotService,
+
+        telegramMessageHandler,
 
         telegramWebhookController
 
