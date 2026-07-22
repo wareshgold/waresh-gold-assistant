@@ -1,10 +1,15 @@
 import {
     PriceSourceClient,
     RawMarketPrice
-} from "./PriceSourceClient";
+}
+from "./PriceSourceClient";
 
-import { MarketPriceResponseSchema }
+
+import {
+    MarketPriceResponseSchema
+}
 from "../schemas/MarketPriceResponseSchema";
+
 
 import {
     RetryPolicy
@@ -12,9 +17,16 @@ import {
 from "../../resilience/RetryPolicy";
 
 
+import {
+    TimeoutPolicy
+}
+from "../../resilience/TimeoutPolicy";
+
+
 
 export class HttpPriceSourceClient
 implements PriceSourceClient {
+
 
 
     private readonly retryPolicy:
@@ -22,17 +34,35 @@ implements PriceSourceClient {
 
 
 
+    private readonly timeoutPolicy:
+        TimeoutPolicy;
+
+
+
     constructor(
+
         private readonly url: string
+
     ) {
 
 
         this.retryPolicy =
+
             new RetryPolicy({
 
                 maxAttempts: 3,
 
-                delayMs: 500
+                delayMs: 300
+
+            });
+
+
+
+        this.timeoutPolicy =
+
+            new TimeoutPolicy({
+
+                timeoutMs: 5000
 
             });
 
@@ -41,8 +71,10 @@ implements PriceSourceClient {
 
 
 
+
     async fetchPrice():
         Promise<RawMarketPrice> {
+
 
 
         return this.retryPolicy.execute(
@@ -50,60 +82,80 @@ implements PriceSourceClient {
             async () => {
 
 
-                const response =
-                    await fetch(this.url);
+                return this.timeoutPolicy.execute(
+
+                    async () => {
+
+
+                        const response =
+
+                            await fetch(
+                                this.url
+                            );
 
 
 
-                if (!response.ok) {
+                        if (!response.ok) {
 
 
-                    throw new Error(
-                        "Failed to fetch market price"
-                    );
+                            throw new Error(
+                                "Failed to fetch market price"
+                            );
 
 
-                }
-
-
-
-                const json =
-                    await response.json();
+                        }
 
 
 
+                        const json =
 
-                const validated =
-                    MarketPriceResponseSchema.parse(json);
+                            await response.json();
 
 
 
 
-                return {
+                        const validated =
 
-
-                    gold18Price:
-                        validated.gold18Price,
-
-
-
-                    currencyPrice:
-                        validated.currencyPrice,
+                            MarketPriceResponseSchema
+                                .parse(json);
 
 
 
-                    ouncePrice:
-                        validated.ouncePrice,
+
+                        return {
+
+
+                            gold18Price:
+
+                                validated.gold18Price,
 
 
 
-                    updatedAt:
-                        new Date(
-                            validated.updatedAt
-                        )
+                            currencyPrice:
+
+                                validated.currencyPrice,
 
 
-                };
+
+                            ouncePrice:
+
+                                validated.ouncePrice,
+
+
+
+                            updatedAt:
+
+                                new Date(
+                                    validated.updatedAt
+                                )
+
+
+                        };
+
+
+                    }
+
+                );
 
 
             }
