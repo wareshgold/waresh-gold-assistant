@@ -1,7 +1,7 @@
-import { TelegramCommandContext } 
+import { TelegramCommandContext }
 from "../TelegramCommandContext";
 
-import { TelegramCommandHandler } 
+import { TelegramCommandHandler }
 from "../TelegramCommandHandler";
 
 
@@ -38,6 +38,8 @@ implements TelegramCommandHandler {
 
 
 
+
+
     async execute(
 
         context: TelegramCommandContext
@@ -65,6 +67,9 @@ implements TelegramCommandHandler {
 
 /analytics
 تحلیل بازار طلا
+
+/history
+تاریخچه قیمت طلا
 
 /help
 راهنما
