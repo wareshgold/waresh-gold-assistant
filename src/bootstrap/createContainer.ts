@@ -278,7 +278,7 @@ export function createContainer(
 
         new GetGoldBubbleUseCase(
 
-            liveMarketProvider,
+            cachedMarketProvider,
 
             new GoldBubbleCalculator()
 

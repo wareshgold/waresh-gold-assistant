@@ -11,9 +11,9 @@ from "./FakeTelegramChannelMessageProvider";
 
 
 import {
-    HttpTelegramChannelMessageProvider
+    TelegramChannelScraperMessageProvider
 }
-from "./HttpTelegramChannelMessageProvider";
+from "./TelegramChannelScraperMessageProvider";
 
 
 import {
@@ -42,7 +42,8 @@ export function createTelegramMessageProvider(
     ) {
 
 
-        return new HttpTelegramChannelMessageProvider(
+
+        return new TelegramChannelScraperMessageProvider(
 
             env.TELEGRAM_MARKET_SOURCE_URL
 
