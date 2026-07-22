@@ -14,6 +14,11 @@ import {
 }
 from "../parsers/TelegramPriceParser";
 
+import {
+    RetryPolicy
+}
+from "../../resilience/RetryPolicy";
+
 
 
 export class TelegramMarketPriceSource
@@ -21,10 +26,28 @@ implements MarketPriceSource {
 
 
 
+    private readonly retryPolicy:
+        RetryPolicy;
+
+
+
     constructor(
         private readonly messageProvider:
             MarketMessageProvider
-    ){}
+    ){
+
+
+        this.retryPolicy =
+            new RetryPolicy({
+
+                maxAttempts: 3,
+
+                delayMs: 500
+
+            });
+
+
+    }
 
 
 
@@ -32,38 +55,47 @@ implements MarketPriceSource {
         Promise<MarketPriceResult> {
 
 
+        return this.retryPolicy.execute(
 
-        const message =
-            await this.messageProvider
-                .getLatestMessage();
-
+            async () => {
 
 
-        const parsed =
-            TelegramPriceParser.parse(
-                message
-            );
+                const message =
+                    await this.messageProvider
+                        .getLatestMessage();
 
 
 
-        return {
-
-            gold18Price:
-                parsed.gold18Price,
-
-
-            currencyPrice:
-                parsed.currencyPrice,
+                const parsed =
+                    TelegramPriceParser.parse(
+                        message
+                    );
 
 
-            ouncePrice:
-                parsed.ouncePrice,
+
+                return {
+
+                    gold18Price:
+                        parsed.gold18Price,
 
 
-            updatedAt:
-                parsed.updatedAt
+                    currencyPrice:
+                        parsed.currencyPrice,
 
-        };
+
+                    ouncePrice:
+                        parsed.ouncePrice,
+
+
+                    updatedAt:
+                        parsed.updatedAt
+
+                };
+
+
+            }
+
+        );
 
 
     }
