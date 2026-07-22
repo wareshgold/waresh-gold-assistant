@@ -3,8 +3,13 @@ import {
     RawMarketPrice
 } from "./PriceSourceClient";
 
-import { MarketPriceResponseSchema } 
+import { MarketPriceResponseSchema }
 from "../schemas/MarketPriceResponseSchema";
+
+import {
+    RetryPolicy
+}
+from "../../resilience/RetryPolicy";
 
 
 
@@ -12,69 +17,98 @@ export class HttpPriceSourceClient
 implements PriceSourceClient {
 
 
+    private readonly retryPolicy:
+        RetryPolicy;
+
+
+
     constructor(
         private readonly url: string
-    ) {}
+    ) {
+
+
+        this.retryPolicy =
+            new RetryPolicy({
+
+                maxAttempts: 3,
+
+                delayMs: 500
+
+            });
+
+
+    }
 
 
 
-    async fetchPrice(): Promise<RawMarketPrice> {
+    async fetchPrice():
+        Promise<RawMarketPrice> {
 
 
-        const response =
-            await fetch(this.url);
+        return this.retryPolicy.execute(
+
+            async () => {
 
 
-
-        if (!response.ok) {
-
-
-            throw new Error(
-                "Failed to fetch market price"
-            );
-
-
-        }
+                const response =
+                    await fetch(this.url);
 
 
 
-        const json =
-            await response.json();
+                if (!response.ok) {
+
+
+                    throw new Error(
+                        "Failed to fetch market price"
+                    );
+
+
+                }
+
+
+
+                const json =
+                    await response.json();
 
 
 
 
-        const validated =
-            MarketPriceResponseSchema.parse(json);
+                const validated =
+                    MarketPriceResponseSchema.parse(json);
 
 
 
 
-        return {
+                return {
 
 
-            gold18Price:
-                validated.gold18Price,
-
-
-
-            currencyPrice:
-                validated.currencyPrice,
+                    gold18Price:
+                        validated.gold18Price,
 
 
 
-            ouncePrice:
-                validated.ouncePrice,
+                    currencyPrice:
+                        validated.currencyPrice,
 
 
 
-            updatedAt:
-                new Date(
-                    validated.updatedAt
-                )
+                    ouncePrice:
+                        validated.ouncePrice,
 
 
-        };
+
+                    updatedAt:
+                        new Date(
+                            validated.updatedAt
+                        )
+
+
+                };
+
+
+            }
+
+        );
 
 
     }
