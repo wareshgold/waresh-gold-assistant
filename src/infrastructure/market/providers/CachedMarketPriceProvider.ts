@@ -1,18 +1,30 @@
 import { MarketPrice }
 from "../../../domain/market/entities/MarketPrice";
 
+
 import { MarketPriceProvider }
 from "../../../domain/market/providers/MarketPriceProvider";
 
+
 import { CacheStore }
 from "../../cache/CacheStore";
+
 
 import { MarketSnapshotRepository }
 from "../../../domain/market/repositories/MarketSnapshotRepository";
 
 
+import { MetricRecorder }
+from "../../../application/system/observability/MetricRecorder";
+
+
+import { MetricType }
+from "../../../domain/system/observability/MetricType";
+
+
 
 export class CachedMarketPriceProvider
+
 implements MarketPriceProvider {
 
 
@@ -22,7 +34,10 @@ implements MarketPriceProvider {
 
 
 
+
+
     constructor(
+
 
         private readonly fallbackProvider:
             MarketPriceProvider,
@@ -33,7 +48,12 @@ implements MarketPriceProvider {
 
 
         private readonly snapshotRepository:
-            MarketSnapshotRepository
+            MarketSnapshotRepository,
+
+
+        private readonly metrics:
+            MetricRecorder
+
 
     ) {}
 
@@ -41,25 +61,75 @@ implements MarketPriceProvider {
 
 
 
+
+
+
     async getCurrentPrice():
-        Promise<MarketPrice> {
+
+    Promise<MarketPrice> {
 
 
 
-        const cached =
+        let cached:
 
-            await this.cache.get<MarketPrice>(
 
-                this.cacheKey
+
+            MarketPrice | null = null;
+
+
+
+        try {
+
+
+            cached =
+
+                await this.cache.get<MarketPrice>(
+
+                    this.cacheKey
+
+                );
+
+
+
+        }
+
+        catch(error) {
+
+
+
+            await this.metrics.record(
+
+                MetricType.CACHE_ERROR,
+
+                1
 
             );
+
+
+        }
+
+
+
+
 
 
 
         if (cached) {
 
 
+
+            await this.metrics.record(
+
+                MetricType.CACHE_HIT,
+
+                1
+
+            );
+
+
+
             return {
+
 
                 ...cached,
 
@@ -72,8 +142,8 @@ implements MarketPriceProvider {
 
                     )
 
-            };
 
+            };
 
         }
 
@@ -81,7 +151,23 @@ implements MarketPriceProvider {
 
 
 
+
+        await this.metrics.record(
+
+            MetricType.CACHE_MISS,
+
+            1
+
+        );
+
+
+
+
+
+
+
         try {
+
 
 
             console.warn(
@@ -91,11 +177,15 @@ implements MarketPriceProvider {
             );
 
 
+
             const freshPrice =
+
 
                 await this.fallbackProvider
 
                     .getCurrentPrice();
+
+
 
 
 
@@ -111,13 +201,17 @@ implements MarketPriceProvider {
 
 
 
+
+
             return freshPrice;
+
+
 
 
 
         }
 
-        catch(error){
+        catch(error) {
 
 
 
@@ -129,7 +223,10 @@ implements MarketPriceProvider {
 
 
 
+
+
             const snapshot =
+
 
                 await this.snapshotRepository
 
@@ -137,7 +234,9 @@ implements MarketPriceProvider {
 
 
 
-            if(snapshot){
+
+
+            if(snapshot) {
 
 
 
@@ -149,15 +248,22 @@ implements MarketPriceProvider {
 
 
 
+
+
                 return new MarketPrice(
+
 
                     snapshot.gold18Price,
 
+
                     snapshot.currencyPrice,
+
 
                     snapshot.ouncePrice,
 
+
                     snapshot.capturedAt
+
 
                 );
 
@@ -166,15 +272,18 @@ implements MarketPriceProvider {
 
 
 
-            throw error;
 
+
+            throw error;
 
 
         }
 
 
 
+
     }
+
 
 
 }

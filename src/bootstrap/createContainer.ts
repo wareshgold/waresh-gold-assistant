@@ -64,6 +64,8 @@ from "../application/system/GetSystemMetricsUseCase";
 
 
 
+
+
 export function createContainer(
 
     env: AppEnv
@@ -71,27 +73,20 @@ export function createContainer(
 ) {
 
 
+
     const storage =
+
         createStorageModule(env);
 
 
 
+
+
     const cache =
+
         createCacheModule(env);
 
 
-
-    const market =
-        createMarketModule(
-            env,
-            storage,
-            cache
-        );
-
-
-
-    const gold =
-        createGoldModule();
 
 
 
@@ -102,7 +97,37 @@ export function createContainer(
 
 
 
+
+    const market =
+
+        createMarketModule(
+
+            env,
+
+            storage,
+
+            cache,
+
+            monitoring
+
+        );
+
+
+
+
+
+    const gold =
+
+        createGoldModule();
+
+
+
+
+
+
+
     const getSystemMetricsUseCase =
+
 
         new GetSystemMetricsUseCase(
 
@@ -114,119 +139,198 @@ export function createContainer(
 
 
 
+
+
+
     const currentMarketPriceUseCase =
 
+
         new GetCurrentMarketPriceUseCase(
+
             market.cachedMarketProvider
+
         );
+
+
+
+
 
 
 
 
     const getGoldPriceUseCase =
 
+
         new GetGoldPriceUseCase(
+
             currentMarketPriceUseCase
+
         );
+
+
+
+
 
 
 
 
     const getGoldBubbleUseCase =
 
+
         new GetGoldBubbleUseCase(
+
 
             market.cachedMarketProvider,
 
+
             gold.goldBubbleCalculator
 
+
         );
+
+
+
+
 
 
 
 
     const getGoldBubbleDataUseCase =
 
+
         new GetGoldBubbleDataUseCase(
+
 
             market.cachedMarketProvider,
 
+
             gold.goldBubbleCalculator
 
+
         );
+
+
+
+
 
 
 
 
     const getMarketAnalyticsUseCase =
 
+
         new GetMarketAnalyticsUseCase(
+
 
             market.analyticsService
 
+
         );
+
+
+
+
 
 
 
 
     const getMarketHistoryUseCase =
 
+
         new GetMarketHistoryUseCase(
+
 
             market.snapshotService
 
+
         );
+
+
+
+
 
 
 
 
     const refreshMarketPriceUseCase =
 
+
         new RefreshMarketPriceUseCase(
+
 
             market.priceRefreshService
 
+
         );
+
+
+
+
 
 
 
 
     const refreshMarketPriceJob =
 
+
         new RefreshMarketPriceJob(
+
 
             refreshMarketPriceUseCase
 
+
         );
+
+
+
+
 
 
 
 
     const telegram =
 
+
         createTelegramModule(
+
 
             env,
 
+
             {
+
 
                 getGoldPriceUseCase,
 
+
                 getGoldBubbleUseCase,
+
 
                 getMarketAnalyticsUseCase,
 
+
                 getMarketHistoryUseCase,
 
+
+
                 calculateGoldFormulaUseCase:
+
                     gold.calculateGoldFormulaUseCase,
 
+
+
                 sessionStore:
+
                     storage.sessionStore
+
 
             }
 
+
         );
+
+
+
 
 
 
@@ -235,41 +339,54 @@ export function createContainer(
     return {
 
 
+
         ...cache,
+
 
 
         ...market,
 
 
+
         ...gold,
 
 
+
         ...telegram,
+
 
 
         ...monitoring,
 
 
 
+
         getSystemMetricsUseCase,
+
 
 
         getGoldPriceUseCase,
 
 
+
         getGoldBubbleUseCase,
+
 
 
         getGoldBubbleDataUseCase,
 
 
+
         getMarketAnalyticsUseCase,
+
 
 
         getMarketHistoryUseCase,
 
 
+
         refreshMarketPriceUseCase,
+
 
 
         refreshMarketPriceJob
@@ -277,6 +394,7 @@ export function createContainer(
 
 
     };
+
 
 
 }
