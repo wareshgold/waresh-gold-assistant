@@ -1,4 +1,4 @@
-import { TelegramCommandResponse } 
+import { TelegramCommandResponse }
 from "./commands/TelegramCommandHandler";
 
 
@@ -11,7 +11,6 @@ export class TelegramResponseFormatter {
         response: TelegramCommandResponse | string
 
     ): string {
-
 
 
         const text =
@@ -48,9 +47,24 @@ export class TelegramResponseFormatter {
 
         return text.replace(
 
-            /(?<!\d)(\d{4,})(?!\d)/g,
+            /(<code>.*?<\/code>)|(?<!\d)(\d{4,})(?!\d)/g,
 
-            (match) => {
+            (
+
+                match,
+
+                existingCode
+
+            ) => {
+
+
+                if (existingCode) {
+
+                    return existingCode;
+
+                }
+
+
 
                 return `<code>${match}</code>`;
 
