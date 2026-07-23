@@ -1,14 +1,21 @@
 import PriceCard from "@/components/PriceCard";
+import MarketStatus from "@/components/MarketStatus";
 import { getMarketPrice } from "@/lib/api";
 
+
 export default async function Home() {
-  const market = await getMarketPrice();
+
+  const market =
+    await getMarketPrice();
+
 
   return (
     <main className="min-h-screen bg-zinc-100 p-8 font-sans">
+
       <div className="mx-auto max-w-5xl">
 
         <header className="mb-8">
+
           <h1 className="text-3xl font-bold text-zinc-900">
             🟡 Waresh Gold
           </h1>
@@ -16,6 +23,7 @@ export default async function Home() {
           <p className="mt-2 text-zinc-600">
             Market Dashboard
           </p>
+
         </header>
 
 
@@ -26,10 +34,12 @@ export default async function Home() {
             value={`${market.gold18Price.toLocaleString()} تومان`}
           />
 
+
           <PriceCard
             title="دلار تهران"
             value={`${market.currencyPrice.toLocaleString()} تومان`}
           />
+
 
           <PriceCard
             title="اونس جهانی"
@@ -39,30 +49,13 @@ export default async function Home() {
         </section>
 
 
-        <section className="mt-8 rounded-xl bg-white p-6 shadow">
+        <MarketStatus
+          updatedAt={market.updatedAt}
+        />
 
-          <h2 className="text-xl font-semibold text-zinc-900">
-            Market Status
-          </h2>
-
-          <div className="mt-4 flex items-center gap-2">
-            <span className="h-3 w-3 rounded-full bg-green-500" />
-
-            <span className="text-zinc-700">
-              Online
-            </span>
-          </div>
-
-
-          <p className="mt-4 text-sm text-zinc-500">
-            Last update:
-            {" "}
-            {new Date(market.updatedAt).toLocaleString("fa-IR")}
-          </p>
-
-        </section>
 
       </div>
+
     </main>
   );
 }
