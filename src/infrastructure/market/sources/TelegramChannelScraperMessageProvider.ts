@@ -11,7 +11,14 @@ implements MarketMessageProvider {
 
 
     constructor(
-        private readonly channelUrl: string
+
+        private readonly channelUrl:
+            string,
+
+
+        private readonly timeoutMs:
+            number = 5000
+
     ) {}
 
 
@@ -21,28 +28,50 @@ implements MarketMessageProvider {
 
 
 
-        const startTime =
-            Date.now();
+        const controller =
+            new AbortController();
 
 
 
-        console.log(
-            "TELEGRAM FETCH START",
-            this.channelUrl
-        );
+        const timeout =
+            setTimeout(
+
+                () => {
+
+                    controller.abort();
+
+                },
+
+                this.timeoutMs
+
+            );
 
 
 
         try {
 
 
+            console.log(
+
+                "TELEGRAM FETCH START",
+
+                this.channelUrl
+
+            );
+
+
 
             const response =
+
                 await fetch(
 
                     this.channelUrl,
 
                     {
+
+                        signal:
+                            controller.signal,
+
 
                         redirect:
                             "follow",
@@ -52,18 +81,11 @@ implements MarketMessageProvider {
 
 
                             "User-Agent":
-                                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
-
+                                "Mozilla/5.0",
 
 
                             "Accept":
-                                "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-
-
-
-                            "Accept-Language":
-                                "fa-IR,fa;q=0.9,en-US;q=0.8,en;q=0.7"
-
+                                "text/html"
 
                         }
 
@@ -73,52 +95,29 @@ implements MarketMessageProvider {
 
 
 
-            console.log(
-
-                "TELEGRAM RESPONSE RECEIVED",
-
-                response.status,
-
-                Date.now() - startTime
-
-            );
-
-
-
-            if (!response.ok) {
+            if(!response.ok){
 
 
                 throw new Error(
 
-                    `Telegram channel unavailable ${response.status}`
+                    `Telegram HTTP ${response.status}`
 
                 );
-
 
             }
 
 
 
             const html =
+
                 await response.text();
-
-
-
-            console.log(
-
-                "TELEGRAM HTML LENGTH",
-
-                html.length,
-
-                Date.now() - startTime
-
-            );
 
 
 
             const messages =
 
                 [
+
                     ...html.matchAll(
 
                         /<div class="tgme_widget_message_text[^>]*>([\s\S]*?)<\/div>/g
@@ -129,17 +128,15 @@ implements MarketMessageProvider {
 
 
 
-            if (
+            if(
                 messages.length === 0
-            ) {
-
+            ){
 
                 throw new Error(
 
-                    "Telegram message html not found"
+                    "Telegram message not found"
 
                 );
-
 
             }
 
@@ -177,26 +174,11 @@ implements MarketMessageProvider {
                     "&"
                 )
 
-                .replace(
-                    /&#x27;/g,
-                    "'"
-                )
-
                 .trim();
 
 
 
-            console.log(
-
-                "TELEGRAM MESSAGE",
-
-                message
-
-            );
-
-
-
-            if (!message) {
+            if(!message){
 
 
                 throw new Error(
@@ -205,8 +187,15 @@ implements MarketMessageProvider {
 
                 );
 
-
             }
+
+
+
+            console.log(
+
+                "TELEGRAM MESSAGE RECEIVED"
+
+            );
 
 
 
@@ -215,20 +204,40 @@ implements MarketMessageProvider {
 
 
         }
+        catch(error){
 
-        catch(error) {
 
+            if(
 
-            console.log(
+                error instanceof DOMException &&
 
-                "TELEGRAM ERROR",
+                error.name === "AbortError"
 
-                error
+            ){
 
-            );
+                throw new Error(
+
+                    "Telegram source timeout"
+
+                );
+
+            }
+
 
 
             throw error;
+
+
+
+        }
+        finally{
+
+
+            clearTimeout(
+
+                timeout
+
+            );
 
 
         }
