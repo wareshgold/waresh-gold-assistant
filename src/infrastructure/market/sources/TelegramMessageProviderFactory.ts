@@ -41,12 +41,9 @@ export function createTelegramMessageProvider(
     ) {
 
 
-
         return new TelegramChannelScraperMessageProvider(
 
-            env.TELEGRAM_MARKET_SOURCE_URL,
-
-            15000
+            env.TELEGRAM_MARKET_SOURCE_URL
 
         );
 

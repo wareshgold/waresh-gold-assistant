@@ -11,76 +11,25 @@ implements MarketMessageProvider {
 
 
     constructor(
-
-        private readonly channelUrl: string,
-
-        private readonly timeoutMs: number = 5000
-
+        private readonly channelUrl: string
     ) {}
 
 
 
-
-
     async getLatestMessage():
-
         Promise<string> {
 
 
 
         const startTime =
-
             Date.now();
 
 
 
-
         console.log(
-
             "TELEGRAM FETCH START",
-
             this.channelUrl
-
         );
-
-
-
-
-        const controller =
-
-            new AbortController();
-
-
-
-
-        const timeout =
-
-            setTimeout(
-
-                () => {
-
-
-                    console.log(
-
-                        "TELEGRAM ABORT TRIGGERED",
-
-                        Date.now() - startTime
-
-                    );
-
-
-
-                    controller.abort();
-
-
-
-                },
-
-                this.timeoutMs
-
-            );
-
-
 
 
 
@@ -89,46 +38,33 @@ implements MarketMessageProvider {
 
 
             const response =
-
                 await fetch(
 
                     this.channelUrl,
 
                     {
 
-                        method:
-                            "GET",
-
-
                         redirect:
                             "follow",
 
-
-                        signal:
-                            controller.signal,
-
-
                         headers: {
 
-
                             "User-Agent":
-                                "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-
+                                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
 
 
                             "Accept":
-                                "text/html,application/xhtml+xml"
+                                "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 
 
+                            "Accept-Language":
+                                "en-US,en;q=0.9"
 
                         }
-
 
                     }
 
                 );
-
-
 
 
 
@@ -144,9 +80,7 @@ implements MarketMessageProvider {
 
 
 
-
-
-            if(!response.ok){
+            if (!response.ok) {
 
 
                 throw new Error(
@@ -160,13 +94,8 @@ implements MarketMessageProvider {
 
 
 
-
-
             const html =
-
                 await response.text();
-
-
 
 
 
@@ -174,27 +103,30 @@ implements MarketMessageProvider {
 
                 "TELEGRAM HTML LENGTH",
 
-                html.length
+                html.length,
+
+                Date.now() - startTime
 
             );
 
 
 
+            const messages =
+
+                [
+                    ...html.matchAll(
+
+                        /<div class="tgme_widget_message_text[^>]*>([\s\S]*?)<\/div>/g
+
+                    )
+
+                ];
 
 
-            const startIndex =
 
-                html.lastIndexOf(
-
-                    '<div class="tgme_widget_message_text'
-
-                );
-
-
-
-
-
-            if(startIndex === -1){
+            if (
+                messages.length === 0
+            ) {
 
 
                 throw new Error(
@@ -208,49 +140,11 @@ implements MarketMessageProvider {
 
 
 
-
-
-            const endIndex =
-
-                html.indexOf(
-
-                    "</div>",
-
-                    startIndex
-
-                );
-
-
-
-
-
-            if(endIndex === -1){
-
-
-                throw new Error(
-
-                    "Telegram message closing tag not found"
-
-                );
-
-
-            }
-
-
-
-
-
             let message =
 
-                html.substring(
-
-                    startIndex,
-
-                    endIndex
-
-                );
-
-
+                messages[
+                    messages.length - 1
+                ][1];
 
 
 
@@ -259,56 +153,26 @@ implements MarketMessageProvider {
                 message
 
                 .replace(
-
                     /<br\s*\/?>/gi,
-
                     "\n"
-
                 )
 
                 .replace(
-
                     /<[^>]+>/g,
-
                     ""
-
                 )
 
                 .replace(
-
                     /&nbsp;/g,
-
                     " "
-
                 )
 
                 .replace(
-
                     /&amp;/g,
-
                     "&"
-
                 )
 
                 .trim();
-
-
-
-
-
-            if(!message){
-
-
-                throw new Error(
-
-                    "Telegram empty message"
-
-                );
-
-
-            }
-
-
 
 
 
@@ -322,18 +186,27 @@ implements MarketMessageProvider {
 
 
 
+            if (!message) {
+
+
+                throw new Error(
+
+                    "Telegram empty message"
+
+                );
+
+
+            }
+
 
 
             return message;
 
 
 
-
-
         }
 
-        catch(error){
-
+        catch(error) {
 
 
             console.log(
@@ -345,51 +218,13 @@ implements MarketMessageProvider {
             );
 
 
-
-
-
-            if(
-
-                error instanceof DOMException &&
-
-                error.name === "AbortError"
-
-            ){
-
-
-                throw new Error(
-
-                    "Telegram channel timeout"
-
-                );
-
-
-            }
-
-
-
-
-
             throw error;
 
 
-
-
-
         }
-
-        finally {
-
-
-            clearTimeout(timeout);
-
-
-        }
-
 
 
     }
-
 
 
 }

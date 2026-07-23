@@ -57,9 +57,9 @@ implements MarketPriceSource {
 
             new RetryPolicy({
 
-                maxAttempts: 3,
+                maxAttempts: 1,
 
-                delayMs: 500
+                delayMs: 0
 
             });
 
@@ -69,7 +69,7 @@ implements MarketPriceSource {
 
             new TimeoutPolicy({
 
-                timeoutMs: 15000
+                timeoutMs: 6000
 
             });
 
