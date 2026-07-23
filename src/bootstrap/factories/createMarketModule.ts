@@ -172,7 +172,9 @@ export function createMarketModule(
 
             marketProvider,
 
-            cacheModule.cache
+            cacheModule.cache,
+
+            storage.snapshotRepository
 
         );
 
