@@ -31,7 +31,7 @@ export class TelegramPriceParser {
 
         const currencyMatch =
             message.match(
-                /دلار\s*تهران:\s*([0-9۰-۹٠-٩,]+)/m
+                /(?:دلار\s*تهران|تتر|دلار):\s*([0-9۰-۹٠-٩,]+)/m
             );
 
 
@@ -74,11 +74,9 @@ export class TelegramPriceParser {
 
             ouncePrice:
                 ounceMatch
-
                     ? this.parseNumber(
                         ounceMatch[1]
                     )
-
                     : 0,
 
 
@@ -279,7 +277,7 @@ export class TelegramPriceParser {
                 digit =>
                     String(
                         "۰۱۲۳۴۵۶۷۸۹"
-                            .indexOf(digit)
+                        .indexOf(digit)
                     )
             )
 
@@ -288,7 +286,7 @@ export class TelegramPriceParser {
                 digit =>
                     String(
                         "٠١٢٣٤٥٦٧٨٩"
-                            .indexOf(digit)
+                        .indexOf(digit)
                     )
             );
 

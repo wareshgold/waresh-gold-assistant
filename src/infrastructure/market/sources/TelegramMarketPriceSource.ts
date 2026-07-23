@@ -78,6 +78,7 @@ implements MarketPriceSource {
 
 
 
+
     async getPrice():
         Promise<MarketPriceResult> {
 
@@ -93,10 +94,18 @@ implements MarketPriceSource {
                     async () => {
 
 
+
                         const message =
 
                             await this.messageProvider
                                 .getLatestMessage();
+
+
+
+                        console.log(
+                            "TELEGRAM RAW MESSAGE:",
+                            message
+                        );
 
 
 
@@ -105,6 +114,13 @@ implements MarketPriceSource {
                             TelegramPriceParser.parse(
                                 message
                             );
+
+
+
+                        console.log(
+                            "TELEGRAM PARSED:",
+                            parsed
+                        );
 
 
 

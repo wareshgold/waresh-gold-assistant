@@ -38,24 +38,22 @@ implements MarketMessageProvider {
         try {
 
 
+
             const response =
                 await fetch(
-
                     this.channelUrl,
-
                     {
                         signal:
                             controller.signal
                     }
-
                 );
 
 
 
-            if (!response.ok) {
+            if(!response.ok){
 
                 throw new Error(
-                    "Telegram channel unavailable"
+                    `Telegram channel unavailable ${response.status}`
                 );
 
             }
@@ -67,65 +65,90 @@ implements MarketMessageProvider {
 
 
 
-            const messages =
-                [
-                    ...html.matchAll(
-                        /tgme_widget_message_text[^>]*>([\s\S]*?)<\/div>/g
-                    )
-                ];
+            const startIndex =
+                html.lastIndexOf(
+                    '<div class="tgme_widget_message_text'
+                );
 
 
 
-            if (
-                messages.length === 0
-            ) {
+            if(startIndex === -1){
 
                 throw new Error(
-                    "Telegram message not found"
+                    "Telegram message html not found"
                 );
 
             }
 
 
 
-            const latestMessage =
-                messages[
-                    messages.length - 1
-                ][1]
-                    .replace(
-                        /<br\s*\/?>/g,
-                        "\n"
-                    )
-                    .replace(
-                        /<[^>]+>/g,
-                        ""
-                    )
-                    .trim();
+            const endIndex =
+                html.indexOf(
+                    "</div>",
+                    startIndex
+                );
 
 
 
-            if (!latestMessage) {
+            if(endIndex === -1){
 
                 throw new Error(
-                    "Empty telegram message"
+                    "Telegram message closing tag not found"
                 );
 
             }
 
 
 
-            return latestMessage;
+            let message =
+                html.substring(
+                    startIndex,
+                    endIndex
+                );
+
+
+
+            message =
+                message
+                .replace(
+                    /<br\s*\/?>/gi,
+                    "\n"
+                )
+                .replace(
+                    /<[^>]+>/g,
+                    ""
+                )
+                .replace(
+                    /&nbsp;/g,
+                    " "
+                )
+                .trim();
+
+
+
+            if(!message){
+
+                throw new Error(
+                    "Telegram empty message"
+                );
+
+            }
+
+
+
+            return message;
 
 
 
         }
-        catch(error) {
+        catch(error){
 
 
-            if (
+
+            if(
                 error instanceof DOMException &&
                 error.name === "AbortError"
-            ) {
+            ){
 
                 throw new Error(
                     "Telegram channel timeout"
@@ -134,19 +157,18 @@ implements MarketMessageProvider {
             }
 
 
+
             throw error;
 
 
-        }
-        finally {
-
-
-            clearTimeout(
-                timeout
-            );
-
 
         }
+        finally{
+
+            clearTimeout(timeout);
+
+        }
+
 
 
     }
