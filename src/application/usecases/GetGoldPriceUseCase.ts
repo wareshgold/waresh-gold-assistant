@@ -55,19 +55,39 @@ export class GetGoldPriceUseCase {
 
                 [
 
-                    "🟡 قیمت طلا",
+                    "🟡 قیمت لحظه‌ای طلا",
 
                     "",
 
-                    `قیمت: ${price.gold18Price}`,
+                    `💰 طلای ۱۸ عیار:`,
 
-                    `دلار: ${price.currencyPrice}`,
+                    `${this.formatNumber(price.gold18Price)} تومان`,
 
-                    `اونس: ${price.ouncePrice}`,
+                    "",
 
-                    `زمان: ${price.updatedAt.toISOString()}`
+                    `💵 دلار:`,
+
+                    `${this.formatNumber(price.currencyPrice)} تومان`,
+
+                    "",
+
+                    `🌎 اونس جهانی:`,
+
+                    `${this.formatNumber(price.ouncePrice)} دلار`,
+
+                    "",
+
+                    `🕒 بروزرسانی:`,
+
+                    price.updatedAt.toLocaleString(
+                        "fa-IR",
+                        {
+                            timeZone: "Asia/Tehran"
+                        }
+                    )
 
                 ].join("\n"),
+
 
 
 
@@ -99,6 +119,30 @@ export class GetGoldPriceUseCase {
 
 
         };
+
+
+    }
+
+
+
+
+
+    private formatNumber(
+
+        value: number
+
+    ): string {
+
+
+        return new Intl.NumberFormat(
+
+            "fa-IR"
+
+        ).format(
+
+            Math.round(value)
+
+        );
 
 
     }

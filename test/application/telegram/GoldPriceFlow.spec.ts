@@ -31,29 +31,41 @@ describe(
 
 
             const marketProvider =
+
                 new TelegramMarketPriceProvider(
+
                     new FakeTelegramChannelMessageProvider()
+
                 );
 
 
 
             const useCase =
+
                 new GetGoldPriceUseCase(
+
                     marketProvider
+
                 );
 
 
 
             const router =
+
                 TelegramCommandRegistry.create(
+
                     useCase,
+
                     undefined as any
+
                 );
 
 
 
             return new TelegramCommandService(
+
                 router
+
             );
 
 
@@ -69,27 +81,59 @@ describe(
 
 
                 const service =
+
                     createService();
 
 
 
+
                 const result =
+
                     await service.execute(
+
                         "/price"
+
+                    );
+
+
+
+
+                expect(result.content)
+
+                    .toContain(
+
+                        "قیمت لحظه‌ای طلا"
+
                     );
 
 
 
                 expect(result.content)
+
                     .toContain(
-                        "18780155"
+
+                        "طلای ۱۸ عیار"
+
                     );
 
 
 
                 expect(result.content)
+
                     .toContain(
-                        "193190"
+
+                        "۱۸٬۷۸۰٬۱۵۵"
+
+                    );
+
+
+
+                expect(result.content)
+
+                    .toContain(
+
+                        "۱۹۳٬۱۹۰"
+
                     );
 
 
