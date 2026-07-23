@@ -62,24 +62,61 @@ implements MarketPriceProvider {
 
                 const price =
 
-                    await this.retryPolicy.execute(
+                    await Promise.race([
 
-                        () =>
-                            source.getPrice()
 
-                    );
+                        this.retryPolicy.execute(
+
+                            () =>
+                                source.getPrice()
+
+                        ),
+
+
+
+                        new Promise<never>(
+
+                            (_, reject) => {
+
+
+                                setTimeout(
+
+                                    () => reject(
+
+                                        new Error(
+                                            "Market source timeout"
+                                        )
+
+                                    ),
+
+                                    6000
+
+                                );
+
+
+                            }
+
+                        )
+
+
+                    ]);
 
 
 
                 return new MarketPrice(
 
+
                     price.gold18Price,
+
 
                     price.currencyPrice,
 
+
                     price.ouncePrice,
 
+
                     price.updatedAt
+
 
                 );
 
