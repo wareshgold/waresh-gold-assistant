@@ -63,6 +63,11 @@ import { GetSystemMetricsUseCase }
 from "../application/system/GetSystemMetricsUseCase";
 
 
+import { SystemMetricsController }
+from "../interfaces/http/SystemMetricsController";
+
+
+
 
 
 
@@ -140,6 +145,19 @@ export function createContainer(
 
 
 
+    const systemMetricsController =
+
+
+        new SystemMetricsController(
+
+            getSystemMetricsUseCase
+
+        );
+
+
+
+
+
 
 
     const currentMarketPriceUseCase =
@@ -157,7 +175,6 @@ export function createContainer(
 
 
 
-
     const getGoldPriceUseCase =
 
 
@@ -166,7 +183,6 @@ export function createContainer(
             currentMarketPriceUseCase
 
         );
-
 
 
 
@@ -194,7 +210,6 @@ export function createContainer(
 
 
 
-
     const getGoldBubbleDataUseCase =
 
 
@@ -208,7 +223,6 @@ export function createContainer(
 
 
         );
-
 
 
 
@@ -233,7 +247,6 @@ export function createContainer(
 
 
 
-
     const getMarketHistoryUseCase =
 
 
@@ -244,7 +257,6 @@ export function createContainer(
 
 
         );
-
 
 
 
@@ -269,7 +281,6 @@ export function createContainer(
 
 
 
-
     const refreshMarketPriceJob =
 
 
@@ -280,7 +291,6 @@ export function createContainer(
 
 
         );
-
 
 
 
@@ -358,6 +368,11 @@ export function createContainer(
 
         ...monitoring,
 
+
+
+
+
+        systemMetricsController,
 
 
 
