@@ -11,6 +11,40 @@ from "./shared/config/env";
 
 
 
+
+let cachedContainer:
+    ReturnType<typeof createContainer> | null = null;
+
+
+
+
+
+function getContainer(
+    env: AppEnv
+) {
+
+
+    if(!cachedContainer) {
+
+
+        cachedContainer =
+            createContainer(env);
+
+
+    }
+
+
+    return cachedContainer;
+
+
+}
+
+
+
+
+
+
+
 export default {
 
 
@@ -28,7 +62,7 @@ export default {
 
         const container =
 
-            createContainer(env);
+            getContainer(env);
 
 
 
@@ -56,6 +90,8 @@ export default {
 
 
 
+
+
     async scheduled(
 
         event: ScheduledEvent,
@@ -68,21 +104,23 @@ export default {
 
 
 
+        const container =
+
+            getContainer(env);
+
+
+
+
         try {
-
-
-
-            const container =
-
-                createContainer(env);
-
 
 
 
             const price =
 
                 await container
+
                     .refreshMarketPriceJob
+
                     .execute();
 
 
@@ -103,7 +141,6 @@ export default {
         catch(error) {
 
 
-
             console.error(
 
                 "Price refresh failed:",
@@ -111,7 +148,6 @@ export default {
                 error
 
             );
-
 
 
             throw error;

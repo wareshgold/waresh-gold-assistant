@@ -2,7 +2,7 @@ import { Hono }
 from "hono";
 
 
-import { requestLogger }
+import { createRequestLogger }
 from "../shared/middleware/requestLogger";
 
 
@@ -30,6 +30,9 @@ import { GetGoldBubbleDataUseCase }
 from "../application/market/GetGoldBubbleDataUseCase";
 
 
+import { SystemMonitoringService }
+from "../application/system/observability/SystemMonitoringService";
+
 
 
 
@@ -44,6 +47,11 @@ interface AppContainer {
 
     systemMetricsController:
         SystemMetricsController;
+
+
+
+    monitoringService:
+        SystemMonitoringService;
 
 
 
@@ -70,7 +78,6 @@ interface AppContainer {
 
 
 
-
 export function createApp(
 
     container: AppContainer
@@ -87,15 +94,17 @@ export function createApp(
 
 
 
-
     app.use(
 
         "*",
 
-        requestLogger
+        createRequestLogger(
+
+            container.monitoringService
+
+        )
 
     );
-
 
 
 
@@ -106,7 +115,6 @@ export function createApp(
         errorHandler
 
     );
-
 
 
 
@@ -155,8 +163,6 @@ export function createApp(
 
 
 
-
-
     app.get(
 
         "/system/metrics",
@@ -196,7 +202,6 @@ export function createApp(
 
 
 
-
     const marketPriceHandler =
 
 
@@ -215,9 +220,7 @@ export function createApp(
 
 
 
-
             return c.json({
-
 
 
                 gold18Price:
@@ -256,7 +259,6 @@ export function createApp(
 
 
 
-
     app.get(
 
         "/market/gold-price",
@@ -283,13 +285,11 @@ export function createApp(
 
 
 
-
     app.get(
 
         "/market/gold-bubble",
 
         async(c)=>{
-
 
 
             const bubble =
@@ -305,9 +305,7 @@ export function createApp(
 
 
 
-
             return c.json({
-
 
 
                 marketPrice:
@@ -354,13 +352,11 @@ export function createApp(
 
 
 
-
     app.get(
 
         "/market/history",
 
         async(c)=>{
-
 
 
             const limit =
@@ -371,7 +367,6 @@ export function createApp(
                     c.req.query("limit") ?? 50
 
                 );
-
 
 
 
@@ -389,9 +384,7 @@ export function createApp(
 
 
 
-
             return c.json({
-
 
 
                 items:
@@ -414,13 +407,11 @@ export function createApp(
 
 
 
-
     app.post(
 
         "/telegram/webhook",
 
         async(c)=>{
-
 
 
             return await container

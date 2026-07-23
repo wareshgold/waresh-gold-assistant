@@ -84,6 +84,7 @@ describe(
 
 
 
+
     it(
       "should return health status (integration style)",
       async () => {
@@ -113,6 +114,93 @@ describe(
       }
     );
 
+
+
+
+
+
+
+
+
+    it(
+      "should record http request metrics",
+      async () => {
+
+
+        const healthResponse =
+          await SELF.fetch(
+
+            "https://example.com/health"
+
+          );
+
+
+
+        expect(healthResponse.status)
+          .toBe(200);
+
+
+
+
+        const response =
+          await SELF.fetch(
+
+            "https://example.com/system/metrics"
+
+          );
+
+
+
+        expect(response.status)
+          .toBe(200);
+
+
+
+        const body =
+          await response.json();
+
+
+
+        expect(body)
+          .toHaveProperty(
+            "items"
+          );
+
+
+
+        expect(
+          Array.isArray(body.items)
+        )
+          .toBe(true);
+
+
+
+        const metricTypes =
+
+          body.items.map(
+
+            (item:any)=>
+              item.type
+
+          );
+
+
+
+        expect(metricTypes)
+          .toContain(
+            "http_request_count"
+          );
+
+
+
+        expect(metricTypes)
+          .toContain(
+            "http_request_duration"
+          );
+
+
+      }
+    );
 
 
 
@@ -178,7 +266,6 @@ describe(
 
       }
     );
-
 
 
 
@@ -264,7 +351,6 @@ describe(
 
       }
     );
-
 
 
 

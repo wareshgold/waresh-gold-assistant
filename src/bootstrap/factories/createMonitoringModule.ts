@@ -28,30 +28,30 @@ export interface MonitoringModule {
 
 
 
+const metricsStore =
+
+    new MemoryMetricsStore();
+
+
+
+
+const monitoringService =
+
+    new SystemMonitoringService(
+
+        metricsStore
+
+    );
+
+
+
+
+
 
 export function createMonitoringModule()
 
 :
 MonitoringModule {
-
-
-
-    const metricsStore =
-
-        new MemoryMetricsStore();
-
-
-
-
-    const monitoringService =
-
-        new SystemMonitoringService(
-
-            metricsStore
-
-        );
-
-
 
 
     return {

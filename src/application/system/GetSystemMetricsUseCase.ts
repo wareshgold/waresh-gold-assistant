@@ -6,6 +6,7 @@ from "./observability/SystemMonitoringService";
 export class GetSystemMetricsUseCase {
 
 
+
     constructor(
 
         private readonly monitoringService:
@@ -15,22 +16,14 @@ export class GetSystemMetricsUseCase {
 
 
 
-    execute() {
 
 
-        return {
-
-            metrics:
-
-                this.monitoringService
-                    .getAll(),
+    async execute() {
 
 
-            generatedAt:
+        return await this.monitoringService
 
-                new Date()
-
-        };
+            .getAll();
 
 
     }
