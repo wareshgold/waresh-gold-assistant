@@ -1,20 +1,26 @@
 export enum MetricType {
 
 
-    REQUEST_COUNT =
-        "request_count",
+    HTTP_REQUEST_COUNT =
+        "http_request_count",
 
 
-    ERROR_COUNT =
-        "error_count",
+    HTTP_REQUEST_DURATION =
+        "http_request_duration",
 
 
-    REQUEST_LATENCY =
-        "request_latency",
+
+    MARKET_FETCH_SUCCESS =
+        "market_fetch_success",
 
 
-    MARKET_REFRESH =
-        "market_refresh",
+    MARKET_FETCH_FAILURE =
+        "market_fetch_failure",
+
+
+    MARKET_FETCH_DURATION =
+        "market_fetch_duration",
+
 
 
     CACHE_HIT =
@@ -22,7 +28,12 @@ export enum MetricType {
 
 
     CACHE_MISS =
-        "cache_miss"
+        "cache_miss",
+
+
+    CACHE_ERROR =
+        "cache_error"
+
 
 
 }

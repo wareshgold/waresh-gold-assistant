@@ -1,9 +1,20 @@
-import { HealthMetric }
+import {
+    HealthMetric
+}
 from "../../../domain/system/observability/HealthMetric";
 
 
-import { MetricType }
+import {
+    MetricType
+}
 from "../../../domain/system/observability/MetricType";
+
+
+import {
+    MetricRecorder
+}
+from "./MetricRecorder";
+
 
 
 
@@ -31,7 +42,10 @@ export interface MetricsStore {
 
 
 
-export class SystemMonitoringService {
+
+export class SystemMonitoringService
+
+implements MetricRecorder {
 
 
 
@@ -56,7 +70,8 @@ export class SystemMonitoringService {
             number
 
     ):
-    Promise<HealthMetric> {
+    Promise<void> {
+
 
 
         const metric =
@@ -76,10 +91,6 @@ export class SystemMonitoringService {
             metric
 
         );
-
-
-
-        return metric;
 
 
     }
