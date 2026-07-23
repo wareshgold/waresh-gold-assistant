@@ -22,6 +22,10 @@ import { createTelegramModule }
 from "./factories/createTelegramModule";
 
 
+import { createHealthModule }
+from "./factories/createHealthModule";
+
+
 import { GetCurrentMarketPriceUseCase }
 from "../application/market/GetCurrentMarketPriceUseCase";
 
@@ -83,6 +87,11 @@ export function createContainer(
 
     const gold =
         createGoldModule();
+
+
+
+    const health =
+        createHealthModule();
 
 
 
@@ -217,6 +226,9 @@ export function createContainer(
 
 
         ...telegram,
+
+
+        ...health,
 
 
 
