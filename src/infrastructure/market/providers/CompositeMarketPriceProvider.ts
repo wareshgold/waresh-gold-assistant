@@ -89,6 +89,13 @@ implements MarketPriceProvider {
             catch(error){
 
 
+                console.error(
+                    "Market price source failed:",
+                    source.constructor.name,
+                    error
+                );
+
+
                 continue;
 
 
