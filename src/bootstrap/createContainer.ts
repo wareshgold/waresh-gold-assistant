@@ -50,6 +50,10 @@ import { RefreshMarketPriceUseCase }
 from "../application/market/RefreshMarketPriceUseCase";
 
 
+import { RefreshMarketPriceJob }
+from "../application/jobs/RefreshMarketPriceJob";
+
+
 
 export function createContainer(
 
@@ -58,48 +62,27 @@ export function createContainer(
 ) {
 
 
-
     const storage =
-
-        createStorageModule(
-
-            env
-
-        );
-
+        createStorageModule(env);
 
 
 
     const cache =
-
-        createCacheModule(
-
-            env
-
-        );
-
+        createCacheModule(env);
 
 
 
     const market =
-
         createMarketModule(
-
             env,
-
             storage,
-
             cache
-
         );
 
 
 
-
     const gold =
-
         createGoldModule();
-
 
 
 
@@ -107,11 +90,8 @@ export function createContainer(
     const currentMarketPriceUseCase =
 
         new GetCurrentMarketPriceUseCase(
-
             market.cachedMarketProvider
-
         );
-
 
 
 
@@ -119,11 +99,8 @@ export function createContainer(
     const getGoldPriceUseCase =
 
         new GetGoldPriceUseCase(
-
             currentMarketPriceUseCase
-
         );
-
 
 
 
@@ -141,7 +118,6 @@ export function createContainer(
 
 
 
-
     const getGoldBubbleDataUseCase =
 
         new GetGoldBubbleDataUseCase(
@@ -151,7 +127,6 @@ export function createContainer(
             gold.goldBubbleCalculator
 
         );
-
 
 
 
@@ -167,7 +142,6 @@ export function createContainer(
 
 
 
-
     const getMarketHistoryUseCase =
 
         new GetMarketHistoryUseCase(
@@ -175,7 +149,6 @@ export function createContainer(
             market.snapshotService
 
         );
-
 
 
 
@@ -188,6 +161,16 @@ export function createContainer(
 
         );
 
+
+
+
+    const refreshMarketPriceJob =
+
+        new RefreshMarketPriceJob(
+
+            refreshMarketPriceUseCase
+
+        );
 
 
 
@@ -221,7 +204,6 @@ export function createContainer(
 
 
 
-
     return {
 
 
@@ -241,24 +223,22 @@ export function createContainer(
         getGoldPriceUseCase,
 
 
-
         getGoldBubbleUseCase,
-
 
 
         getGoldBubbleDataUseCase,
 
 
-
         getMarketAnalyticsUseCase,
-
 
 
         getMarketHistoryUseCase,
 
 
+        refreshMarketPriceUseCase,
 
-        refreshMarketPriceUseCase
+
+        refreshMarketPriceJob
 
 
 

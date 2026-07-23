@@ -1,71 +1,126 @@
-import { createApp } from "./bootstrap/createApp";
-import { createContainer } from "./bootstrap/createContainer";
-import { AppEnv } from "./shared/config/env";
+import { createApp }
+from "./bootstrap/createApp";
+
+
+import { createContainer }
+from "./bootstrap/createContainer";
+
+
+import { AppEnv }
+from "./shared/config/env";
+
 
 
 export default {
 
-  async fetch(
-    request: Request,
-    env: AppEnv,
-    ctx: ExecutionContext
-  ) {
 
-    const container =
-      createContainer(env);
+    async fetch(
 
+        request: Request,
 
-    const app =
-      createApp(container);
+        env: AppEnv,
 
+        ctx: ExecutionContext
 
-    return app.fetch(
-      request,
-      env,
-      ctx
-    );
-
-  },
-
-
-  async scheduled(
-    event: ScheduledEvent,
-    env: AppEnv,
-    ctx: ExecutionContext
-  ) {
-
-    try {
-
-      const container =
-        createContainer(env);
+    ) {
 
 
 
-      const price =
-        await container
-          .refreshMarketPriceUseCase
-          .execute();
+        const container =
+
+            createContainer(env);
 
 
 
-      console.log(
-        "Price refreshed:",
-        price
-      );
+
+        const app =
+
+            createApp(container);
 
 
-    } catch (error) {
-
-      console.error(
-        "Price refresh failed:",
-        error
-      );
 
 
-      throw error;
+        return app.fetch(
+
+            request,
+
+            env,
+
+            ctx
+
+        );
+
+
+    },
+
+
+
+
+    async scheduled(
+
+        event: ScheduledEvent,
+
+        env: AppEnv,
+
+        ctx: ExecutionContext
+
+    ) {
+
+
+
+        try {
+
+
+
+            const container =
+
+                createContainer(env);
+
+
+
+
+            const price =
+
+                await container
+                    .refreshMarketPriceJob
+                    .execute();
+
+
+
+
+            console.log(
+
+                "Price refreshed:",
+
+                price
+
+            );
+
+
+
+        }
+
+        catch(error) {
+
+
+
+            console.error(
+
+                "Price refresh failed:",
+
+                error
+
+            );
+
+
+
+            throw error;
+
+
+        }
+
 
     }
 
-  }
 
 };
