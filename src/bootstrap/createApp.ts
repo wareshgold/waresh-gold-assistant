@@ -16,9 +16,7 @@ import { MarketSnapshotService }
 from "../application/market/services/MarketSnapshotService";
 
 
-
 interface AppContainer {
-
 
     telegramWebhookController:
         TelegramWebhookController;
@@ -30,7 +28,6 @@ interface AppContainer {
 
     snapshotService:
         MarketSnapshotService;
-
 
 }
 
@@ -82,9 +79,9 @@ export function createApp(
 
 
 
-    app.get(
-        "/market/gold-price",
-        async(c)=>{
+    const marketPriceHandler =
+
+        async(c:any)=>{
 
 
             const price =
@@ -115,7 +112,28 @@ export function createApp(
             });
 
 
-        }
+        };
+
+
+
+    /*
+     * Legacy API
+     * Kept for backward compatibility
+     */
+    app.get(
+        "/market/gold-price",
+        marketPriceHandler
+    );
+
+
+
+    /*
+     * Versioned API
+     * New clients should use this
+     */
+    app.get(
+        "/api/v1/market/gold-price",
+        marketPriceHandler
     );
 
 
