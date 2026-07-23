@@ -5,28 +5,74 @@ interface MarketStatusProps {
 export default function MarketStatus({
   updatedAt,
 }: MarketStatusProps) {
+
   return (
-    <section className="mt-8 rounded-xl bg-white p-6 shadow">
+    <section
+      className="
+        mt-8
+        rounded-2xl
+        bg-white
+        p-6
+        shadow-sm
+        border
+        border-zinc-200
+      "
+    >
 
-      <h2 className="text-xl font-semibold text-zinc-900">
-        Market Status
-      </h2>
+      <div className="flex items-center justify-between">
 
-      <div className="mt-4 flex items-center gap-2">
+        <div>
 
-        <span className="h-3 w-3 rounded-full bg-green-500" />
+          <h2 className="text-lg font-semibold text-zinc-900">
+            وضعیت بازار
+          </h2>
 
-        <span className="text-zinc-700">
-          Online
+          <p className="mt-2 text-sm text-zinc-500">
+            اتصال مستقیم به Waresh Gold Market Engine
+          </p>
+
+        </div>
+
+
+        <div className="flex items-center gap-2">
+
+          <span
+            className="
+              h-3
+              w-3
+              rounded-full
+              bg-green-500
+            "
+          />
+
+          <span className="text-sm font-medium text-green-600">
+            Online
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div
+        className="
+          mt-6
+          rounded-xl
+          bg-zinc-50
+          p-4
+          text-sm
+          text-zinc-600
+        "
+      >
+
+        آخرین بروزرسانی:
+
+        <span className="ml-2 font-medium text-zinc-900">
+          {new Date(updatedAt).toLocaleString("fa-IR")}
         </span>
 
       </div>
 
-      <p className="mt-4 text-sm text-zinc-500">
-        Last update:
-        {" "}
-        {new Date(updatedAt).toLocaleString("fa-IR")}
-      </p>
 
     </section>
   );

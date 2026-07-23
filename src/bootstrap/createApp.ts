@@ -15,6 +15,10 @@ from "../domain/market/providers/MarketPriceProvider";
 import { MarketSnapshotService }
 from "../application/market/services/MarketSnapshotService";
 
+import { GetGoldBubbleDataUseCase }
+from "../application/market/GetGoldBubbleDataUseCase";
+
+
 
 interface AppContainer {
 
@@ -28,6 +32,10 @@ interface AppContainer {
 
     snapshotService:
         MarketSnapshotService;
+
+
+    getGoldBubbleDataUseCase:
+        GetGoldBubbleDataUseCase;
 
 }
 
@@ -79,6 +87,7 @@ export function createApp(
 
 
 
+
     const marketPriceHandler =
 
         async(c:any)=>{
@@ -116,10 +125,8 @@ export function createApp(
 
 
 
-    /*
-     * Legacy API
-     * Kept for backward compatibility
-     */
+
+
     app.get(
         "/market/gold-price",
         marketPriceHandler
@@ -127,14 +134,57 @@ export function createApp(
 
 
 
-    /*
-     * Versioned API
-     * New clients should use this
-     */
     app.get(
         "/api/v1/market/gold-price",
         marketPriceHandler
     );
+
+
+
+
+
+    app.get(
+        "/market/gold-bubble",
+        async(c)=>{
+
+
+            const bubble =
+
+                await container
+                    .getGoldBubbleDataUseCase
+                    .execute();
+
+
+
+            return c.json({
+
+                marketPrice:
+                    bubble.marketPrice,
+
+
+                intrinsicPrice:
+                    bubble.intrinsicPrice,
+
+
+                bubbleAmount:
+                    bubble.bubbleAmount,
+
+
+                bubblePercentage:
+                    bubble.bubblePercentage,
+
+
+                updatedAt:
+                    bubble.updatedAt
+
+
+            });
+
+
+        }
+    );
+
+
 
 
 
@@ -169,6 +219,8 @@ export function createApp(
 
         }
     );
+
+
 
 
 

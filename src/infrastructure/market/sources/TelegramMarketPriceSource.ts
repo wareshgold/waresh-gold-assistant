@@ -69,7 +69,7 @@ implements MarketPriceSource {
 
             new TimeoutPolicy({
 
-                timeoutMs: 3000
+                timeoutMs: 15000
 
             });
 

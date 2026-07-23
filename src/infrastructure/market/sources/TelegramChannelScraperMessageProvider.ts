@@ -12,13 +12,25 @@ implements MarketMessageProvider {
 
     constructor(
         private readonly channelUrl: string,
-        private readonly timeoutMs: number = 5000
+        private readonly timeoutMs: number = 15000
     ) {}
 
 
 
     async getLatestMessage():
         Promise<string> {
+
+
+
+        const startTime =
+            Date.now();
+
+
+
+        console.log(
+            "TELEGRAM FETCH START",
+            this.channelUrl
+        );
 
 
 
@@ -29,7 +41,16 @@ implements MarketMessageProvider {
 
         const timeout =
             setTimeout(
-                () => controller.abort(),
+                () => {
+
+                    console.log(
+                        "TELEGRAM ABORT TRIGGERED",
+                        Date.now() - startTime
+                    );
+
+                    controller.abort();
+
+                },
                 this.timeoutMs
             );
 
@@ -41,12 +62,34 @@ implements MarketMessageProvider {
 
             const response =
                 await fetch(
+
                     this.channelUrl,
+
                     {
                         signal:
-                            controller.signal
+                            controller.signal,
+
+                        headers: {
+
+                            "User-Agent":
+                                "Mozilla/5.0",
+
+                            "Accept":
+                                "text/html"
+
+                        }
+
                     }
+
                 );
+
+
+
+            console.log(
+                "TELEGRAM RESPONSE RECEIVED",
+                response.status,
+                Date.now() - startTime
+            );
 
 
 
@@ -65,10 +108,25 @@ implements MarketMessageProvider {
 
 
 
+            console.log(
+                "TELEGRAM HTML LENGTH",
+                html.length,
+                Date.now() - startTime
+            );
+
+
+
             const startIndex =
                 html.lastIndexOf(
                     '<div class="tgme_widget_message_text'
                 );
+
+
+
+            console.log(
+                "TELEGRAM START INDEX",
+                startIndex
+            );
 
 
 
@@ -122,7 +180,18 @@ implements MarketMessageProvider {
                     /&nbsp;/g,
                     " "
                 )
+                .replace(
+                    /&amp;/g,
+                    "&"
+                )
                 .trim();
+
+
+
+            console.log(
+                "TELEGRAM MESSAGE",
+                message
+            );
 
 
 
@@ -142,6 +211,13 @@ implements MarketMessageProvider {
 
         }
         catch(error){
+
+
+
+            console.log(
+                "TELEGRAM ERROR",
+                error
+            );
 
 
 
@@ -168,7 +244,6 @@ implements MarketMessageProvider {
             clearTimeout(timeout);
 
         }
-
 
 
     }

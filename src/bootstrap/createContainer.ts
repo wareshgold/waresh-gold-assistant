@@ -34,6 +34,10 @@ import { GetGoldBubbleUseCase }
 from "../application/market/GetGoldBubbleUseCase";
 
 
+import { GetGoldBubbleDataUseCase }
+from "../application/market/GetGoldBubbleDataUseCase";
+
+
 import { GetMarketAnalyticsUseCase }
 from "../application/market/GetMarketAnalyticsUseCase";
 
@@ -65,6 +69,7 @@ export function createContainer(
 
 
 
+
     const cache =
 
         createCacheModule(
@@ -72,6 +77,7 @@ export function createContainer(
             env
 
         );
+
 
 
 
@@ -89,9 +95,12 @@ export function createContainer(
 
 
 
+
     const gold =
 
         createGoldModule();
+
+
 
 
 
@@ -105,6 +114,8 @@ export function createContainer(
 
 
 
+
+
     const getGoldPriceUseCase =
 
         new GetGoldPriceUseCase(
@@ -112,6 +123,8 @@ export function createContainer(
             currentMarketPriceUseCase
 
         );
+
+
 
 
 
@@ -127,6 +140,22 @@ export function createContainer(
 
 
 
+
+
+    const getGoldBubbleDataUseCase =
+
+        new GetGoldBubbleDataUseCase(
+
+            market.cachedMarketProvider,
+
+            gold.goldBubbleCalculator
+
+        );
+
+
+
+
+
     const getMarketAnalyticsUseCase =
 
         new GetMarketAnalyticsUseCase(
@@ -134,6 +163,8 @@ export function createContainer(
             market.analyticsService
 
         );
+
+
 
 
 
@@ -147,6 +178,8 @@ export function createContainer(
 
 
 
+
+
     const refreshMarketPriceUseCase =
 
         new RefreshMarketPriceUseCase(
@@ -154,6 +187,8 @@ export function createContainer(
             market.priceRefreshService
 
         );
+
+
 
 
 
@@ -185,6 +220,8 @@ export function createContainer(
 
 
 
+
+
     return {
 
 
@@ -200,19 +237,29 @@ export function createContainer(
         ...telegram,
 
 
+
         getGoldPriceUseCase,
+
 
 
         getGoldBubbleUseCase,
 
 
+
+        getGoldBubbleDataUseCase,
+
+
+
         getMarketAnalyticsUseCase,
+
 
 
         getMarketHistoryUseCase,
 
 
+
         refreshMarketPriceUseCase
+
 
 
     };
