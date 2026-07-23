@@ -1,10 +1,10 @@
-import { ApplicationResponse } 
+import { ApplicationResponse }
 from "../common/models/ApplicationResponse";
 
-import { MarketPriceProvider } 
+import { MarketPriceProvider }
 from "../../domain/market/providers/MarketPriceProvider";
 
-import { GoldBubbleCalculator } 
+import { GoldBubbleCalculator }
 from "../../domain/market/services/GoldBubbleCalculator";
 
 
@@ -27,6 +27,7 @@ export class GetGoldBubbleUseCase {
 
 
 
+
     async execute(): Promise<ApplicationResponse> {
 
 
@@ -39,10 +40,13 @@ export class GetGoldBubbleUseCase {
 
 
 
+
         const result =
 
             this.calculator.calculate(
+
                 marketPrice
+
             );
 
 
@@ -52,7 +56,9 @@ export class GetGoldBubbleUseCase {
         return {
 
 
+
             type: "text",
+
 
 
 
@@ -64,15 +70,30 @@ export class GetGoldBubbleUseCase {
 
                     "",
 
-                    `قیمت بازار: ${Math.round(result.marketPrice)}`,
+                    "💰 قیمت بازار:",
 
-                    `قیمت ذاتی: ${Math.round(result.intrinsicPrice)}`,
+                    `${this.formatNumber(result.marketPrice)} تومان`,
 
-                    `مقدار حباب: ${Math.round(result.bubbleAmount)}`,
+                    "",
 
-                    `درصد حباب: ${result.bubblePercentage.toFixed(2)}%`
+                    "🏦 قیمت ذاتی:",
+
+                    `${this.formatNumber(result.intrinsicPrice)} تومان`,
+
+                    "",
+
+                    "🫧 مقدار حباب:",
+
+                    `${this.formatNumber(result.bubbleAmount)} تومان`,
+
+                    "",
+
+                    "📊 درصد حباب:",
+
+                    `${this.formatPercent(result.bubblePercentage)}`
 
                 ].join("\n"),
+
 
 
 
@@ -80,26 +101,98 @@ export class GetGoldBubbleUseCase {
             metadata: {
 
 
+
                 marketPrice:
+
                     result.marketPrice,
 
 
+
                 intrinsicPrice:
+
                     result.intrinsicPrice,
 
 
+
                 bubbleAmount:
+
                     result.bubbleAmount,
 
 
+
                 bubblePercentage:
+
                     result.bubblePercentage
+
 
 
             }
 
 
         };
+
+
+    }
+
+
+
+
+
+
+    private formatNumber(
+
+        value: number
+
+    ): string {
+
+
+        return new Intl.NumberFormat(
+
+            "fa-IR"
+
+        ).format(
+
+            Math.round(value)
+
+        );
+
+
+    }
+
+
+
+
+
+    private formatPercent(
+
+        value: number
+
+    ): string {
+
+
+        return (
+
+            new Intl.NumberFormat(
+
+                "fa-IR",
+
+                {
+
+                    minimumFractionDigits: 2,
+
+                    maximumFractionDigits: 2
+
+                }
+
+            )
+
+            .format(value)
+
+            +
+
+            "٪"
+
+        );
 
 
     }
