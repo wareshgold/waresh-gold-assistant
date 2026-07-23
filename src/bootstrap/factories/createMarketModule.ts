@@ -242,17 +242,23 @@ export function createMarketModule(
 
     const marketProvider =
 
+        new CompositeMarketPriceProvider(
 
-        new CompositeMarketPriceProvider([
+            [
+
+                telegramSource,
+
+                httpSource
+
+            ],
 
 
-            telegramSource,
+            undefined,
 
 
-            httpSource
+            monitoring.monitoringService
 
-
-        ]);
+        );
 
 
 

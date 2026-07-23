@@ -22,13 +22,27 @@ import {
 from "../../resilience/RetryPolicy";
 
 
+import {
+    MetricRecorder
+}
+from "../../../application/system/observability/MetricRecorder";
+
+
+import {
+    MetricType
+}
+from "../../../domain/system/observability/MetricType";
+
+
 
 export class CompositeMarketPriceProvider
+
 implements MarketPriceProvider {
 
 
 
     constructor(
+
 
         private readonly sources:
             MarketPriceSource[],
@@ -41,28 +55,53 @@ implements MarketPriceProvider {
 
                 delayMs: 0
 
-            })
+            }),
 
-    ){}
+
+        private readonly metrics?:
+            MetricRecorder
+
+
+    ) {}
+
+
+
+
+
 
 
 
     async getCurrentPrice():
-        Promise<MarketPrice> {
+
+    Promise<MarketPrice> {
 
 
 
         for(
+
             const source of this.sources
-        ){
+
+        ) {
+
+
+
+            const startTime =
+
+                Date.now();
+
+
+
 
 
             try {
 
 
+
                 const price =
 
+
                     await Promise.race([
+
 
 
                         this.retryPolicy.execute(
@@ -84,7 +123,9 @@ implements MarketPriceProvider {
                                     () => reject(
 
                                         new Error(
+
                                             "Market source timeout"
+
                                         )
 
                                     ),
@@ -99,42 +140,129 @@ implements MarketPriceProvider {
                         )
 
 
+
                     ]);
+
+
+
+
+
+
+
+                if(this.metrics) {
+
+
+                    await this.metrics.record(
+
+                        MetricType.MARKET_FETCH_SUCCESS,
+
+                        1
+
+                    );
+
+
+
+                    await this.metrics.record(
+
+                        MetricType.MARKET_FETCH_DURATION,
+
+                        Date.now() - startTime
+
+                    );
+
+
+                }
+
+
+
+
 
 
 
                 return new MarketPrice(
 
 
+
                     price.gold18Price,
+
 
 
                     price.currencyPrice,
 
 
+
                     price.ouncePrice,
+
 
 
                     price.updatedAt
 
 
+
                 );
+
+
+
 
 
             }
 
-            catch(error){
+            catch(error) {
+
+
+
+                if(this.metrics) {
+
+
+
+                    await this.metrics.record(
+
+                        MetricType.MARKET_FETCH_FAILURE,
+
+                        1
+
+                    );
+
+
+
+
+                    await this.metrics.record(
+
+                        MetricType.MARKET_FETCH_DURATION,
+
+                        Date.now() - startTime
+
+                    );
+
+
+                }
+
+
+
+
+
 
 
                 console.error(
 
+
+
                     "Market price source failed:",
+
+
 
                     source.constructor.name,
 
+
+
                     error
 
+
+
                 );
+
+
+
 
 
                 continue;
@@ -143,7 +271,12 @@ implements MarketPriceProvider {
             }
 
 
+
         }
+
+
+
+
 
 
 
@@ -154,7 +287,10 @@ implements MarketPriceProvider {
         );
 
 
+
     }
+
+
 
 
 }

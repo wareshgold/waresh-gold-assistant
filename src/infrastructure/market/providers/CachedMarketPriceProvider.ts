@@ -51,11 +51,43 @@ implements MarketPriceProvider {
             MarketSnapshotRepository,
 
 
-        private readonly metrics:
+        private readonly metrics?:
             MetricRecorder
 
 
     ) {}
+
+
+
+
+
+
+    private async recordMetric(
+
+        type:
+            MetricType,
+
+        value:
+            number
+
+    ): Promise<void> {
+
+
+        if(this.metrics) {
+
+            await this.metrics.record(
+
+                type,
+
+                value
+
+            );
+
+        }
+
+
+    }
+
 
 
 
@@ -71,8 +103,6 @@ implements MarketPriceProvider {
 
 
         let cached:
-
-
 
             MarketPrice | null = null;
 
@@ -97,7 +127,7 @@ implements MarketPriceProvider {
 
 
 
-            await this.metrics.record(
+            await this.recordMetric(
 
                 MetricType.CACHE_ERROR,
 
@@ -113,12 +143,11 @@ implements MarketPriceProvider {
 
 
 
-
-        if (cached) {
-
+        if(cached) {
 
 
-            await this.metrics.record(
+
+            await this.recordMetric(
 
                 MetricType.CACHE_HIT,
 
@@ -145,6 +174,7 @@ implements MarketPriceProvider {
 
             };
 
+
         }
 
 
@@ -152,7 +182,8 @@ implements MarketPriceProvider {
 
 
 
-        await this.metrics.record(
+
+        await this.recordMetric(
 
             MetricType.CACHE_MISS,
 
@@ -189,6 +220,8 @@ implements MarketPriceProvider {
 
 
 
+
+
             await this.cache.set(
 
                 this.cacheKey,
@@ -203,7 +236,9 @@ implements MarketPriceProvider {
 
 
 
+
             return freshPrice;
+
 
 
 
@@ -225,12 +260,15 @@ implements MarketPriceProvider {
 
 
 
+
+
             const snapshot =
 
 
                 await this.snapshotRepository
 
                     .getLatest();
+
 
 
 
@@ -245,6 +283,8 @@ implements MarketPriceProvider {
                     "Using stale market snapshot"
 
                 );
+
+
 
 
 
@@ -274,6 +314,7 @@ implements MarketPriceProvider {
 
 
 
+
             throw error;
 
 
@@ -282,7 +323,9 @@ implements MarketPriceProvider {
 
 
 
+
     }
+
 
 
 

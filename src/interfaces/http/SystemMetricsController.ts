@@ -8,6 +8,7 @@ from "../../application/system/GetSystemMetricsUseCase";
 export class SystemMetricsController {
 
 
+
     constructor(
 
         private readonly getSystemMetricsUseCase:
@@ -17,15 +18,27 @@ export class SystemMetricsController {
 
 
 
+
+
     async handle() {
 
 
-        return await this.getSystemMetricsUseCase
 
-            .execute();
+        const metrics =
+
+            await this.getSystemMetricsUseCase
+
+                .execute();
+
+
+
+
+
+        return metrics;
 
 
     }
+
 
 
 }
