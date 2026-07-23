@@ -10,13 +10,49 @@ import {
 from "./FakeTelegramChannelMessageProvider";
 
 
+import {
+    TelegramChannelScraperMessageProvider
+}
+from "./TelegramChannelScraperMessageProvider";
+
+
+import {
+    AppEnv
+}
+from "../../../shared/config/env";
+
+
 
 export function createTelegramMessageProvider(
 
-    _env?:
-        import("../../../shared/config/env").AppEnv
+    env?:
+        AppEnv
 
 ): MarketMessageProvider {
+
+
+
+    if (
+
+        env?.ENVIRONMENT === "production" &&
+
+        env.TELEGRAM_MARKET_SOURCE_URL
+
+    ) {
+
+
+
+        return new TelegramChannelScraperMessageProvider(
+
+            env.TELEGRAM_MARKET_SOURCE_URL,
+
+            15000
+
+        );
+
+
+    }
+
 
 
     return new FakeTelegramChannelMessageProvider();
