@@ -20,176 +20,156 @@ from "../application/market/services/MarketSnapshotService";
 interface AppContainer {
 
 
-  telegramWebhookController:
-    TelegramWebhookController;
+    telegramWebhookController:
+        TelegramWebhookController;
 
 
-  marketProvider:
-    MarketPriceProvider;
+    marketProvider:
+        MarketPriceProvider;
 
 
-  snapshotService:
-    MarketSnapshotService;
+    snapshotService:
+        MarketSnapshotService;
 
 
 }
 
 
 
-
 export function createApp(
-  container?: AppContainer
+    container: AppContainer
 ) {
 
 
-  const app =
-    new Hono();
+    const app =
+        new Hono();
 
 
 
-  app.use(
-    "*",
-    requestLogger
-  );
-
-
-
-  app.onError(
-    errorHandler
-  );
-
-
-
-
-  app.get(
-    "/health",
-    (c)=>{
-
-
-      return c.json({
-
-        status:"ok",
-
-        service:
-          "waresh-gold-assistant",
-
-        version:
-          "0.1.0"
-
-      });
-
-
-    }
-
-  );
-
-
-
-
-
-  if(container){
-
-
-
-    app.get(
-      "/market/gold-price",
-      async(c)=>{
-
-
-        const price =
-          await container
-            .marketProvider
-            .getCurrentPrice();
-
-
-
-        return c.json({
-
-          gold18Price:
-            price.gold18Price,
-
-
-          currencyPrice:
-            price.currencyPrice,
-
-
-          ouncePrice:
-            price.ouncePrice,
-
-
-          updatedAt:
-            price.updatedAt
-
-
-        });
-
-
-      }
-
+    app.use(
+        "*",
+        requestLogger
     );
 
 
 
-
-
-    app.get(
-      "/market/history",
-      async(c)=>{
-
-
-        const limit =
-          Number(
-            c.req.query("limit") ?? 50
-          );
-
-
-
-        const history =
-          await container
-            .snapshotService
-            .getHistory(limit);
-
-
-
-        return c.json({
-
-          items:
-            history
-
-        });
-
-
-      }
-
+    app.onError(
+        errorHandler
     );
 
 
+
+    app.get(
+        "/health",
+        (c)=>{
+
+
+            return c.json({
+
+                status:"ok",
+
+                service:
+                    "waresh-gold-assistant",
+
+                version:
+                    "0.1.0"
+
+            });
+
+
+        }
+    );
+
+
+
+    app.get(
+        "/market/gold-price",
+        async(c)=>{
+
+
+            const price =
+
+                await container
+                    .marketProvider
+                    .getCurrentPrice();
+
+
+
+            return c.json({
+
+                gold18Price:
+                    price.gold18Price,
+
+
+                currencyPrice:
+                    price.currencyPrice,
+
+
+                ouncePrice:
+                    price.ouncePrice,
+
+
+                updatedAt:
+                    price.updatedAt
+
+            });
+
+
+        }
+    );
+
+
+
+    app.get(
+        "/market/history",
+        async(c)=>{
+
+
+            const limit =
+
+                Number(
+                    c.req.query("limit") ?? 50
+                );
+
+
+
+            const history =
+
+                await container
+                    .snapshotService
+                    .getHistory(limit);
+
+
+
+            return c.json({
+
+                items:
+                    history
+
+            });
+
+
+        }
+    );
 
 
 
     app.post(
-      "/telegram/webhook",
-
-      async(c)=>{
-
-
-        return await container
-          .telegramWebhookController
-          .handle(c);
+        "/telegram/webhook",
+        async(c)=>{
 
 
-      }
+            return await container
+                .telegramWebhookController
+                .handle(c);
 
+
+        }
     );
 
 
 
-  }
-
-
-
-
-  return app;
+    return app;
 
 
 }
