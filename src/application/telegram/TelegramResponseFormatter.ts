@@ -58,6 +58,7 @@ export class TelegramResponseFormatter {
             ) => {
 
 
+
                 if (existingCode) {
 
                     return existingCode;
