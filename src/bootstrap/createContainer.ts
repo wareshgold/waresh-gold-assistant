@@ -22,6 +22,11 @@ import { createTelegramModule }
 from "./factories/createTelegramModule";
 
 
+import { createMonitoringModule }
+from "./factories/createMonitoringModule";
+
+
+
 import { GetCurrentMarketPriceUseCase }
 from "../application/market/GetCurrentMarketPriceUseCase";
 
@@ -54,6 +59,10 @@ import { RefreshMarketPriceJob }
 from "../application/jobs/RefreshMarketPriceJob";
 
 
+import { GetSystemMetricsUseCase }
+from "../application/system/GetSystemMetricsUseCase";
+
+
 
 export function createContainer(
 
@@ -83,6 +92,24 @@ export function createContainer(
 
     const gold =
         createGoldModule();
+
+
+
+    const monitoring =
+
+        createMonitoringModule();
+
+
+
+
+    const getSystemMetricsUseCase =
+
+        new GetSystemMetricsUseCase(
+
+            monitoring.monitoringService
+
+        );
+
 
 
 
@@ -204,6 +231,7 @@ export function createContainer(
 
 
 
+
     return {
 
 
@@ -218,6 +246,12 @@ export function createContainer(
 
         ...telegram,
 
+
+        ...monitoring,
+
+
+
+        getSystemMetricsUseCase,
 
 
         getGoldPriceUseCase,
