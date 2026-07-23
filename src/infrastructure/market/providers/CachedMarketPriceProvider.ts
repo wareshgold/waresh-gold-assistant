@@ -1,6 +1,11 @@
-import { MarketPrice } from "../../../domain/market/entities/MarketPrice";
-import { MarketPriceProvider } from "../../../domain/market/providers/MarketPriceProvider";
-import { CacheStore } from "../../cache/CacheStore";
+import { MarketPrice }
+from "../../../domain/market/entities/MarketPrice";
+
+import { MarketPriceProvider }
+from "../../../domain/market/providers/MarketPriceProvider";
+
+import { CacheStore }
+from "../../cache/CacheStore";
 
 
 
@@ -19,6 +24,7 @@ implements MarketPriceProvider {
         private readonly fallbackProvider:
             MarketPriceProvider,
 
+
         private readonly cache:
             CacheStore
 
@@ -26,13 +32,17 @@ implements MarketPriceProvider {
 
 
 
-    async getCurrentPrice(): Promise<MarketPrice> {
+    async getCurrentPrice():
+        Promise<MarketPrice> {
 
 
 
         const cached =
+
             await this.cache.get<MarketPrice>(
+
                 this.cacheKey
+
             );
 
 
@@ -44,42 +54,35 @@ implements MarketPriceProvider {
 
                 ...cached,
 
+
                 updatedAt:
+
                     new Date(
+
                         cached.updatedAt
+
                     )
 
+
             };
+
 
         }
 
 
 
+        console.warn(
 
-
-        const freshPrice =
-            await this.fallbackProvider
-                .getCurrentPrice();
-
-
-
-
-
-        await this.cache.set(
-
-            this.cacheKey,
-
-            freshPrice,
-
-            1800
+            "Market cache empty, using fallback provider"
 
         );
 
 
 
+        return await this.fallbackProvider
 
+            .getCurrentPrice();
 
-        return freshPrice;
 
 
     }

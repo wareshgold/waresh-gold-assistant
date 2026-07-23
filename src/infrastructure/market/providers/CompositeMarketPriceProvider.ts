@@ -147,23 +147,9 @@ implements MarketPriceProvider {
 
 
 
-        console.warn(
+        throw new Error(
 
-            "All market sources failed, using emergency fallback"
-
-        );
-
-
-
-        return new MarketPrice(
-
-            18780155,
-
-            193190,
-
-            4018,
-
-            new Date()
+            "No market price source available"
 
         );
 
