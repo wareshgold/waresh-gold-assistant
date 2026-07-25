@@ -233,7 +233,16 @@ export function createTelegramModule(
         TelegramCallbackRegistry.create(
 
 
-            dependencies.getGoldPriceUseCase
+            dependencies.getGoldPriceUseCase,
+
+
+            dependencies.getGoldBubbleUseCase,
+
+
+            dependencies.getMarketAnalyticsUseCase,
+
+
+            dependencies.getMarketHistoryUseCase
 
 
         );
