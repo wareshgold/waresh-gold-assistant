@@ -20,8 +20,20 @@ export class TelegramCommandRouter {
 
 
 
+    getHandlers():
+
+        TelegramCommandHandler[] {
+
+        return this.handlers;
+
+    }
+
+
+
     async execute(
+
         context: TelegramCommandContext
+
     ): Promise<any> {
 
 
