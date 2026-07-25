@@ -62,6 +62,22 @@ import { RandomWelcomeMessageProvider }
 from "../welcome/RandomWelcomeMessageProvider";
 
 
+import { MemoryTelegramMenuRegistry }
+from "../menu/MemoryTelegramMenuRegistry";
+
+
+import { TelegramMenuService }
+from "../menu/TelegramMenuService";
+
+
+import { TelegramMainMenu }
+from "../menu/TelegramMainMenu";
+
+
+import { TelegramReplyKeyboardBuilder }
+from "../keyboards/TelegramReplyKeyboardBuilder";
+
+
 
 
 
@@ -111,9 +127,50 @@ export class TelegramCommandRegistry {
 
 
 
+
+        const menuRegistry =
+
+            new MemoryTelegramMenuRegistry();
+
+
+
+
+
+        const telegramMenuService =
+
+            new TelegramMenuService(
+
+                menuRegistry
+
+            );
+
+
+
+
+
+        telegramMenuService.registerMenu(
+
+            TelegramMainMenu
+
+        );
+
+
+
+
+
+        const telegramReplyKeyboardBuilder =
+
+            new TelegramReplyKeyboardBuilder();
+
+
+
+
+
         let commandRouter:
 
             TelegramCommandRouter;
+
+
 
 
 
@@ -126,7 +183,11 @@ export class TelegramCommandRegistry {
 
                 new StartCommandHandler(
 
-                    welcomeMessageProvider
+                    welcomeMessageProvider,
+
+                    telegramMenuService,
+
+                    telegramReplyKeyboardBuilder
 
                 ),
 

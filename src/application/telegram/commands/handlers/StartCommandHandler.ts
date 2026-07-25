@@ -1,13 +1,31 @@
-import { TelegramCommandHandler }
+import {
+    TelegramCommandHandler
+}
 from "../TelegramCommandHandler";
 
 
-import { TelegramCommandContext }
+import {
+    TelegramCommandContext
+}
 from "../TelegramCommandContext";
 
 
-import { WelcomeMessageProvider }
+import {
+    WelcomeMessageProvider
+}
 from "../../welcome/WelcomeMessageProvider";
+
+
+import {
+    TelegramMenuService
+}
+from "../../menu/TelegramMenuService";
+
+
+import {
+    TelegramReplyKeyboardBuilder
+}
+from "../../keyboards/TelegramReplyKeyboardBuilder";
 
 
 
@@ -18,10 +36,22 @@ implements TelegramCommandHandler {
 
     constructor(
 
+
         private readonly welcomeMessageProvider:
-            WelcomeMessageProvider
+            WelcomeMessageProvider,
+
+
+        private readonly telegramMenuService:
+            TelegramMenuService,
+
+
+        private readonly telegramReplyKeyboardBuilder:
+            TelegramReplyKeyboardBuilder
+
 
     ) {}
+
+
 
 
 
@@ -32,12 +62,15 @@ implements TelegramCommandHandler {
             command:
                 "/start",
 
+
             description:
                 "شروع کار با ربات"
 
         };
 
     }
+
+
 
 
 
@@ -57,6 +90,9 @@ implements TelegramCommandHandler {
 
 
 
+
+
+
     async execute(
 
         context: TelegramCommandContext
@@ -65,19 +101,48 @@ implements TelegramCommandHandler {
 
 
 
+        const welcomeMessage =
+
+            this.welcomeMessageProvider.getWelcomeMessage(
+
+                context.firstName,
+
+                context.username
+
+            );
+
+
+
+
+
+        const menuItems =
+
+            this.telegramMenuService.getMainMenu();
+
+
+
+
+
+        const keyboard =
+
+            this.telegramReplyKeyboardBuilder.build(
+
+                menuItems
+
+            );
+
+
+
+
+
         return {
 
 
             content:
+                welcomeMessage,
 
-                this.welcomeMessageProvider.getWelcomeMessage(
 
-                    context.firstName,
-
-                    context.username
-
-                )
-
+            keyboard
 
         };
 
