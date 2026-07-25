@@ -2,29 +2,47 @@ import { TelegramCommandContext }
 from "./TelegramCommandContext";
 
 
+
 export interface TelegramCommandResponse {
 
 
-    type?: "text";
+    type?:
+        "text";
 
 
-    content: string;
+
+    content:
+        string;
+
+
+
+    replyMarkup?:
+        unknown;
+
 
 
 }
+
+
 
 
 
 export interface TelegramCommandMetadata {
 
 
-    command: string;
+    command:
+        string;
 
 
-    description: string;
+
+    description:
+        string;
+
 
 
 }
+
+
 
 
 
@@ -39,7 +57,8 @@ export interface TelegramCommandHandler {
 
     canHandle(
 
-        command: string
+        command:
+            string
 
     ): boolean;
 
@@ -47,9 +66,12 @@ export interface TelegramCommandHandler {
 
     execute(
 
-        context: TelegramCommandContext
+        context:
+            TelegramCommandContext
 
-    ): Promise<TelegramCommandResponse | string>;
+    ):
+        Promise<TelegramCommandResponse | string>;
+
 
 
 }
