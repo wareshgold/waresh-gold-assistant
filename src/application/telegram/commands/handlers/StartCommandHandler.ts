@@ -29,8 +29,11 @@ from "../../keyboards/TelegramReplyKeyboardBuilder";
 
 
 
+
+
 export class StartCommandHandler
 implements TelegramCommandHandler {
+
 
 
 
@@ -49,7 +52,10 @@ implements TelegramCommandHandler {
             TelegramReplyKeyboardBuilder
 
 
+
     ) {}
+
+
 
 
 
@@ -57,7 +63,9 @@ implements TelegramCommandHandler {
 
     metadata() {
 
+
         return {
+
 
             command:
                 "/start",
@@ -66,7 +74,10 @@ implements TelegramCommandHandler {
             description:
                 "شروع کار با ربات"
 
+
+
         };
+
 
     }
 
@@ -74,9 +85,12 @@ implements TelegramCommandHandler {
 
 
 
+
+
     canHandle(
 
-        command: string
+        command:
+            string
 
     ): boolean {
 
@@ -93,15 +107,17 @@ implements TelegramCommandHandler {
 
 
 
+
     async execute(
 
-        context: TelegramCommandContext
+        context:
+            TelegramCommandContext
 
-    ): Promise<any> {
-
+    ) {
 
 
         const welcomeMessage =
+
 
             this.welcomeMessageProvider.getWelcomeMessage(
 
@@ -115,7 +131,10 @@ implements TelegramCommandHandler {
 
 
 
+
+
         const menuItems =
+
 
             this.telegramMenuService.getMainMenu();
 
@@ -123,13 +142,19 @@ implements TelegramCommandHandler {
 
 
 
+
+
+
         const keyboard =
+
 
             this.telegramReplyKeyboardBuilder.build(
 
                 menuItems
 
             );
+
+
 
 
 
@@ -142,12 +167,17 @@ implements TelegramCommandHandler {
                 welcomeMessage,
 
 
-            keyboard
+            replyMarkup:
+                keyboard
+
+
 
         };
 
 
     }
+
+
 
 
 }
