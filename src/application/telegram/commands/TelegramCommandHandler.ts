@@ -15,7 +15,26 @@ export interface TelegramCommandResponse {
 
 
 
+export interface TelegramCommandMetadata {
+
+
+    command: string;
+
+
+    description: string;
+
+
+}
+
+
+
 export interface TelegramCommandHandler {
+
+
+    metadata?():
+
+        TelegramCommandMetadata;
+
 
 
     canHandle(
