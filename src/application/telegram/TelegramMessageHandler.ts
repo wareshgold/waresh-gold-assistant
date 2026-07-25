@@ -15,6 +15,20 @@ from "./commands/TelegramCommandHandler";
 
 
 
+export interface TelegramHandledResponse {
+
+
+    content: string;
+
+
+    keyboard?: any;
+
+
+}
+
+
+
+
 export class TelegramMessageHandler {
 
 
@@ -39,12 +53,14 @@ export class TelegramMessageHandler {
 
 
 
+
     async handle(
 
         message:
             IncomingMessage
 
     ): Promise<string> {
+
 
 
         const response =
@@ -74,7 +90,9 @@ export class TelegramMessageHandler {
 
             return "";
 
+
         }
+
 
 
 
@@ -87,6 +105,7 @@ export class TelegramMessageHandler {
 
 
         }
+
 
 
 
@@ -111,7 +130,7 @@ export class TelegramMessageHandler {
         message:
             IncomingMessage
 
-    ): Promise<TelegramCommandResponse | string> {
+    ): Promise<TelegramHandledResponse | string> {
 
 
 
@@ -139,12 +158,17 @@ export class TelegramMessageHandler {
 
 
 
+
+
         if (!response) {
 
 
             return "";
 
+
         }
+
+
 
 
 
@@ -162,15 +186,20 @@ export class TelegramMessageHandler {
 
 
 
+
+
         return {
 
 
             ...response,
 
 
+
             content:
 
+
                 this.formatter
+
 
                     ? this.formatter.format(response)
 
@@ -183,6 +212,8 @@ export class TelegramMessageHandler {
 
 
     }
+
+
 
 
 

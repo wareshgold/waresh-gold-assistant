@@ -38,6 +38,11 @@ import { AppEnv }
 from "../../shared/config/env";
 
 
+import { TelegramKeyboardMapper }
+from "../../infrastructure/telegram/TelegramKeyboardMapper";
+
+
+
 
 interface Dependencies {
 
@@ -60,6 +65,7 @@ interface Dependencies {
     sessionStore: any;
 
 }
+
 
 
 
@@ -97,6 +103,7 @@ export function createTelegramModule(
 
 
 
+
     const commandRouter =
 
         TelegramCommandRegistry.create(
@@ -118,6 +125,7 @@ export function createTelegramModule(
 
 
 
+
     const commandService =
 
         new TelegramCommandService(
@@ -127,6 +135,7 @@ export function createTelegramModule(
             conversationManager
 
         );
+
 
 
 
@@ -144,9 +153,12 @@ export function createTelegramModule(
 
 
 
+
     const botClient =
 
+
         env.TELEGRAM_BOT_TOKEN
+
 
             ? new TelegramHttpBotClient(
 
@@ -154,60 +166,94 @@ export function createTelegramModule(
 
             )
 
+
             : new FakeTelegramBotClient();
+
+
+
 
 
 
 
     const processor =
 
+
         new TelegramUpdateProcessor(
+
 
             new TelegramUpdateMapper(),
 
+
+
             messageHandler,
+
+
 
             new TelegramResponseFormatter(),
 
-            botClient
+
+
+            botClient,
+
+
+
+            new TelegramKeyboardMapper()
+
+
 
         );
+
+
+
 
 
 
 
     const webhookController =
 
+
         new TelegramWebhookController(
+
 
             processor,
 
+
+
             new TelegramWebhookSecurityGuard(
+
 
                 env.TELEGRAM_WEBHOOK_SECRET
 
+
             )
+
 
         );
 
 
 
 
-        return {
 
+
+
+    return {
+
+
+        messageHandler,
+
+
+        telegramMessageHandler:
 
             messageHandler,
 
 
-            telegramMessageHandler:
-                messageHandler,
+        telegramWebhookController:
+
+            webhookController
 
 
-            telegramWebhookController:
-                webhookController
+    };
 
-
-        };
 
 
 }

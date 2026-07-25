@@ -18,6 +18,10 @@ import { TelegramUpdate }
 from "../../../infrastructure/telegram/models/TelegramUpdate";
 
 
+import { TelegramKeyboardMapper }
+from "../../../infrastructure/telegram/TelegramKeyboardMapper";
+
+
 
 export class TelegramUpdateProcessor {
 
@@ -40,11 +44,16 @@ export class TelegramUpdateProcessor {
 
 
         private readonly botClient:
-            TelegramBotClient
+            TelegramBotClient,
+
+
+        private readonly keyboardMapper:
+            TelegramKeyboardMapper
 
 
 
     ) {}
+
 
 
 
@@ -71,6 +80,7 @@ export class TelegramUpdateProcessor {
 
 
 
+
         const response =
 
 
@@ -78,10 +88,12 @@ export class TelegramUpdateProcessor {
 
 
                 userId:
+
                     message.userId,
 
 
                 text:
+
                     message.text
 
 
@@ -108,6 +120,7 @@ export class TelegramUpdateProcessor {
 
 
 
+
         console.log(
 
             "FINAL TELEGRAM RESPONSE:",
@@ -115,6 +128,31 @@ export class TelegramUpdateProcessor {
             formattedResponse
 
         );
+
+
+
+
+
+
+        const replyMarkup =
+
+
+            typeof response === "string"
+
+
+                ? undefined
+
+
+                : response.keyboard
+
+                    ? this.keyboardMapper.map(
+
+                        response.keyboard
+
+                    )
+
+                    : undefined;
+
 
 
 
@@ -133,7 +171,6 @@ export class TelegramUpdateProcessor {
 
 
 
-
             text:
 
                 formattedResponse,
@@ -141,17 +178,7 @@ export class TelegramUpdateProcessor {
 
 
 
-
-            replyMarkup:
-
-                typeof response === "string"
-
-                    ? undefined
-
-                    :
-
-                    response.replyMarkup,
-
+            replyMarkup,
 
 
 
