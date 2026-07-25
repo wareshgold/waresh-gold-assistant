@@ -42,6 +42,19 @@ import { TelegramKeyboardMapper }
 from "../../infrastructure/telegram/TelegramKeyboardMapper";
 
 
+import { TelegramCallbackRegistry }
+from "../../application/telegram/callbacks/TelegramCallbackRegistry";
+
+
+import { TelegramCallbackProcessor }
+from "../../application/telegram/services/TelegramCallbackProcessor";
+
+
+import { TelegramCallbackMapper }
+from "../../application/telegram/mappers/TelegramCallbackMapper";
+
+
+
 
 
 interface Dependencies {
@@ -82,23 +95,34 @@ export function createTelegramModule(
 
     const conversationManager =
 
+
         new TelegramConversationManager(
+
 
             dependencies.sessionStore,
 
+
             [
+
 
                 new GoldCalculationConversationFlow(
 
+
                     dependencies.sessionStore,
+
 
                     dependencies.calculateGoldFormulaUseCase
 
+
                 )
+
 
             ]
 
+
         );
+
+
 
 
 
@@ -106,21 +130,31 @@ export function createTelegramModule(
 
     const commandRouter =
 
+
         TelegramCommandRegistry.create(
+
 
             dependencies.getGoldPriceUseCase,
 
+
             dependencies.getGoldBubbleUseCase,
+
 
             dependencies.getMarketAnalyticsUseCase,
 
+
             dependencies.getMarketHistoryUseCase,
+
 
             dependencies.calculateGoldFormulaUseCase,
 
+
             dependencies.sessionStore
 
+
         );
+
+
 
 
 
@@ -128,13 +162,19 @@ export function createTelegramModule(
 
     const commandService =
 
+
         new TelegramCommandService(
+
 
             commandRouter,
 
+
             conversationManager
 
+
         );
+
+
 
 
 
@@ -142,13 +182,19 @@ export function createTelegramModule(
 
     const messageHandler =
 
+
         new TelegramMessageHandler(
+
 
             commandService,
 
+
             new TelegramResponseFormatter()
 
+
         );
+
+
 
 
 
@@ -157,14 +203,19 @@ export function createTelegramModule(
     const botClient =
 
 
+
         env.TELEGRAM_BOT_TOKEN
+
 
 
             ? new TelegramHttpBotClient(
 
+
                 env.TELEGRAM_BOT_TOKEN
 
+
             )
+
 
 
             : new FakeTelegramBotClient();
@@ -175,13 +226,57 @@ export function createTelegramModule(
 
 
 
+
+    const callbackRouter =
+
+
+        TelegramCallbackRegistry.create(
+
+
+            dependencies.getGoldPriceUseCase
+
+
+        );
+
+
+
+
+
+
+
+
+    const callbackProcessor =
+
+
+        new TelegramCallbackProcessor(
+
+
+            new TelegramCallbackMapper(),
+
+
+            callbackRouter
+
+
+        );
+
+
+
+
+
+
+
+
     const processor =
+
 
 
         new TelegramUpdateProcessor(
 
 
+
             new TelegramUpdateMapper(),
+
+
 
 
 
@@ -189,7 +284,11 @@ export function createTelegramModule(
 
 
 
+
+
             new TelegramResponseFormatter(),
+
+
 
 
 
@@ -197,11 +296,20 @@ export function createTelegramModule(
 
 
 
-            new TelegramKeyboardMapper()
+
+
+            new TelegramKeyboardMapper(),
+
+
+
+
+
+            callbackProcessor
 
 
 
         );
+
 
 
 
@@ -212,20 +320,27 @@ export function createTelegramModule(
     const webhookController =
 
 
+
         new TelegramWebhookController(
+
 
 
             processor,
 
 
 
+
+
             new TelegramWebhookSecurityGuard(
+
 
 
                 env.TELEGRAM_WEBHOOK_SECRET
 
 
+
             )
+
 
 
         );
@@ -236,20 +351,29 @@ export function createTelegramModule(
 
 
 
+
     return {
+
 
 
         messageHandler,
 
 
+
         telegramMessageHandler:
+
+
 
             messageHandler,
 
 
+
         telegramWebhookController:
 
+
+
             webhookController
+
 
 
     };
