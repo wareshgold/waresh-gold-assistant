@@ -184,6 +184,12 @@ describe(
 
         expect(body)
           .toHaveProperty(
+            "summary"
+          );
+
+
+        expect(body)
+          .toHaveProperty(
             "items"
           );
 
@@ -193,6 +199,25 @@ describe(
           Array.isArray(body.items)
         )
           .toBe(true);
+
+
+
+        expect(body.summary)
+          .toHaveProperty(
+            "requests"
+          );
+
+
+        expect(body.summary)
+          .toHaveProperty(
+            "cacheHits"
+          );
+
+
+        expect(body.summary)
+          .toHaveProperty(
+            "marketFetchSuccess"
+          );
 
 
 

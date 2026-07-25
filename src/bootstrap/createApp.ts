@@ -189,12 +189,8 @@ export function createApp(
 
 
     app.get(
-
         "/system/metrics",
-
         async(c)=>{
-
-
 
             const metrics =
 
@@ -205,21 +201,9 @@ export function createApp(
                     .handle();
 
 
-
-
-
-            return c.json({
-
-                items:
-
-                    metrics
-
-            });
-
-
+            return c.json(metrics);
 
         }
-
     );
 
 
