@@ -78,6 +78,12 @@ import { TelegramReplyKeyboardBuilder }
 from "../keyboards/TelegramReplyKeyboardBuilder";
 
 
+import { TelegramInlineKeyboardBuilder }
+from "../keyboards/TelegramInlineKeyboardBuilder";
+
+
+
+
 
 
 
@@ -87,27 +93,35 @@ export class TelegramCommandRegistry {
 
 
 
+
+
     static create(
+
 
 
         getGoldPriceUseCase:
             GetGoldPriceUseCase,
 
 
+
         getGoldBubbleUseCase:
             GetGoldBubbleUseCase,
+
 
 
         getMarketAnalyticsUseCase:
             GetMarketAnalyticsUseCase,
 
 
+
         getMarketHistoryUseCase:
             GetMarketHistoryUseCase,
 
 
+
         calculateGoldFormulaUseCase:
             CalculateGoldFormulaUseCase,
+
 
 
         sessionStore:
@@ -120,6 +134,9 @@ export class TelegramCommandRegistry {
 
 
 
+
+
+
         const welcomeMessageProvider =
 
             new RandomWelcomeMessageProvider();
@@ -128,9 +145,13 @@ export class TelegramCommandRegistry {
 
 
 
+
+
         const menuRegistry =
 
             new MemoryTelegramMenuRegistry();
+
+
 
 
 
@@ -148,11 +169,15 @@ export class TelegramCommandRegistry {
 
 
 
+
+
         telegramMenuService.registerMenu(
 
             TelegramMainMenu
 
         );
+
+
 
 
 
@@ -166,9 +191,13 @@ export class TelegramCommandRegistry {
 
 
 
+
+
         let commandRouter:
 
             TelegramCommandRouter;
+
+
 
 
 
@@ -181,26 +210,44 @@ export class TelegramCommandRegistry {
 
 
 
+
+
+
                 new StartCommandHandler(
+
 
                     welcomeMessageProvider,
 
+
                     telegramMenuService,
 
-                    telegramReplyKeyboardBuilder
+
+                    telegramReplyKeyboardBuilder,
+
+
+                    new TelegramInlineKeyboardBuilder()
+
 
                 ),
+
+
+
 
 
 
 
                 new HelpCommandHandler(
 
+
                     () =>
 
                         commandRouter.getHandlers()
 
+
                 ),
+
+
+
 
 
 
@@ -214,11 +261,17 @@ export class TelegramCommandRegistry {
 
 
 
+
+
+
                 new GetGoldBubbleCommandHandler(
 
                     getGoldBubbleUseCase
 
                 ),
+
+
+
 
 
 
@@ -232,11 +285,17 @@ export class TelegramCommandRegistry {
 
 
 
+
+
+
                 new GetMarketHistoryCommandHandler(
 
                     getMarketHistoryUseCase
 
                 ),
+
+
+
 
 
 
@@ -251,7 +310,14 @@ export class TelegramCommandRegistry {
 
 
 
+
+
+
+
             ];
+
+
+
 
 
 
@@ -269,11 +335,16 @@ export class TelegramCommandRegistry {
 
 
 
+
+
         return commandRouter;
 
 
 
     }
+
+
+
 
 
 }
