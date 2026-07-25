@@ -70,7 +70,6 @@ from "../domain/market/analytics/services/TrendCalculator";
 import { VolatilityCalculator }
 from "../domain/market/analytics/services/VolatilityCalculator";
 
-
 import { TelegramActionExecutor }
 from "../application/telegram/actions/TelegramActionExecutor";
 
@@ -82,6 +81,7 @@ from "../application/telegram/actions/TelegramTextActionResolver";
 
 import { TelegramCommandActionResolver }
 from "../application/telegram/actions/TelegramCommandActionResolver";
+
 
 
 
@@ -312,14 +312,6 @@ export class ApplicationContainer {
 
 
 
-        let commandService:
-
-            TelegramCommandService;
-
-
-
-
-
         const actionResolver =
 
             new CompositeTelegramActionResolver(
@@ -344,19 +336,7 @@ export class ApplicationContainer {
 
                 actionResolver,
 
-                {
-
-                    execute:
-
-                        async (message) =>
-
-                            commandService.execute(
-
-                                message
-
-                            )
-
-                }
+                router
 
             );
 
@@ -364,7 +344,7 @@ export class ApplicationContainer {
 
 
 
-        commandService =
+        const commandService =
 
             new TelegramCommandService(
 
