@@ -27,6 +27,22 @@ implements TelegramCommandHandler {
 
 
 
+    metadata() {
+
+        return {
+
+            command:
+                "/calc",
+
+            description:
+                "محاسبه قیمت طلا"
+
+        };
+
+    }
+
+
+
     canHandle(
         command: string
     ): boolean {

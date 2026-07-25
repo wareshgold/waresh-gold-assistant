@@ -25,6 +25,22 @@ implements TelegramCommandHandler {
 
 
 
+    metadata() {
+
+        return {
+
+            command:
+                "/start",
+
+            description:
+                "شروع کار با ربات"
+
+        };
+
+    }
+
+
+
     canHandle(
 
         command: string
