@@ -5,6 +5,7 @@ from "../../application/telegram/keyboards/TelegramKeyboardMarkup";
 
 
 
+
 export interface TelegramReplyMarkup {
 
 
@@ -27,27 +28,95 @@ export interface TelegramReplyMarkup {
 
 
 
+export interface TelegramInlineMarkup {
+
+
+    inline_keyboard: {
+
+
+        text: string;
+
+
+        callback_data: string;
+
+
+    }[][];
+
+
+}
+
+
+
+
+
+
+
 export class TelegramKeyboardMapper {
+
 
 
 
     map(
 
+
         markup:
             TelegramKeyboardMarkup
 
-    ): TelegramReplyMarkup | undefined {
+
+    ):
+
+        TelegramReplyMarkup
+        |
+        TelegramInlineMarkup
+        |
+        undefined {
+
+
 
 
 
         if (
 
-            markup.type !== "REPLY"
+            markup.type === "REPLY"
 
         ) {
 
 
-            return undefined;
+            return {
+
+
+                keyboard:
+
+                    markup.rows.map(
+
+                        row =>
+
+                            row.map(
+
+                                button => ({
+
+
+                                    text:
+
+                                        button.text
+
+
+                                })
+
+
+                            )
+
+
+                    ),
+
+
+
+                resize_keyboard:
+
+                    true
+
+
+            };
 
 
         }
@@ -57,37 +126,61 @@ export class TelegramKeyboardMapper {
 
 
 
-        return {
+
+        if (
+
+            markup.type === "INLINE"
+
+        ) {
 
 
-            keyboard:
+            return {
 
-                markup.rows.map(
 
-                    row =>
+                inline_keyboard:
 
-                        row.map(
+                    markup.rows.map(
 
-                            button => ({
+                        row =>
 
-                                text:
-                                    button.text
+                            row.map(
 
-                            })
-
-                        )
-
-                ),
+                                button => ({
 
 
 
-            resize_keyboard:
+                                    text:
 
-                true
+                                        button.text,
 
 
-        };
 
+                                    callback_data:
+
+                                        button.actionId ?? ""
+
+
+                                })
+
+
+                            )
+
+
+                    )
+
+
+            };
+
+
+        }
+
+
+
+
+
+
+
+        return undefined;
 
 
     }
