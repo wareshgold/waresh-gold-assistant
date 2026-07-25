@@ -14,28 +14,75 @@ beforeAll(async () => {
 
         `
         CREATE TABLE IF NOT EXISTS market_snapshots (
+
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+
             gold18_price INTEGER NOT NULL,
+
             currency_price INTEGER NOT NULL,
+
             ounce_price INTEGER NOT NULL,
+
             source TEXT NOT NULL,
+
             captured_at TEXT NOT NULL,
+
             created_at TEXT NOT NULL
+
         );
 
+
         CREATE INDEX IF NOT EXISTS idx_market_snapshots_captured_at
+
         ON market_snapshots(captured_at DESC);
+
         `,
+
 
 
         `
         CREATE TABLE IF NOT EXISTS telegram_sessions (
+
             user_id TEXT PRIMARY KEY,
+
             state TEXT NOT NULL,
+
             data TEXT NOT NULL,
+
             updated_at INTEGER NOT NULL
+
         );
+
         `,
+
+
+
+        `
+        CREATE TABLE IF NOT EXISTS system_metrics (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            type TEXT NOT NULL,
+
+            value REAL NOT NULL,
+
+            created_at TEXT NOT NULL
+
+        );
+
+
+        CREATE INDEX IF NOT EXISTS idx_system_metrics_created_at
+
+        ON system_metrics(created_at DESC);
+
+
+
+        CREATE INDEX IF NOT EXISTS idx_system_metrics_type
+
+        ON system_metrics(type);
+
+        `,
+
 
 
     ];
@@ -46,7 +93,9 @@ beforeAll(async () => {
 
 
         await env.waresh_gold_db
+
             .prepare(migration)
+
             .run();
 
 
