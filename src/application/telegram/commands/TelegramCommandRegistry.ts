@@ -111,6 +111,11 @@ export class TelegramCommandRegistry {
 
 
 
+        let commandRouter:
+
+            TelegramCommandRouter;
+
+
 
         const handlers:
 
@@ -128,7 +133,13 @@ export class TelegramCommandRegistry {
 
 
 
-                new HelpCommandHandler(),
+                new HelpCommandHandler(
+
+                    () =>
+
+                        commandRouter.getHandlers()
+
+                ),
 
 
 
@@ -185,11 +196,19 @@ export class TelegramCommandRegistry {
 
 
 
-        return new TelegramCommandRouter(
+        commandRouter =
 
-            handlers
+            new TelegramCommandRouter(
 
-        );
+                handlers
+
+            );
+
+
+
+
+
+        return commandRouter;
 
 
 

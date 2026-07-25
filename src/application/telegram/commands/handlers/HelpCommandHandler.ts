@@ -1,12 +1,40 @@
 import { TelegramCommandContext }
 from "../TelegramCommandContext";
 
-import { TelegramCommandHandler }
+import {
+    TelegramCommandHandler
+}
 from "../TelegramCommandHandler";
+
 
 
 export class HelpCommandHandler
 implements TelegramCommandHandler {
+
+
+
+    constructor(
+
+        private readonly handlerProvider:
+            () => TelegramCommandHandler[]
+
+    ) {}
+
+
+
+    metadata() {
+
+        return {
+
+            command:
+                "/help",
+
+            description:
+                "راهنمای دستورات ربات"
+
+        };
+
+    }
 
 
 
@@ -31,10 +59,7 @@ implements TelegramCommandHandler {
 
         );
 
-
     }
-
-
 
 
 
@@ -47,35 +72,73 @@ implements TelegramCommandHandler {
     ) {
 
 
+        const commands =
+
+            this.handlerProvider()
+
+                .map(
+
+                    handler => {
+
+
+                        const metadata =
+
+                            handler.metadata?.();
+
+
+
+                        if (!metadata) {
+
+                            return "";
+
+                        }
+
+
+
+                        return (
+
+                            `${metadata.command}\n` +
+
+                            `${metadata.description}`
+
+                        );
+
+
+                    }
+
+                )
+
+                .filter(Boolean);
+
+
+
+
+
         return {
 
             type: "text" as const,
 
             content:
 
-`🟡 وارش گلد
+                [
 
-ربات هوشمند طلا
+                    "🟡 وارش گلد",
 
-دستورات:
+                    "",
 
-/price
-قیمت لحظه‌ای طلا
+                    "🤖 ربات هوشمند طلا",
 
-/bubble
-محاسبه حباب طلا
+                    "",
 
-/analytics
-تحلیل بازار طلا
+                    "دستورات موجود:",
 
-/history
-تاریخچه قیمت طلا
+                    "",
 
-/help
-راهنما
+                    ...commands
 
-/start
-شروع کار با ربات`
+                ]
+
+                .join("\n\n")
 
         };
 
