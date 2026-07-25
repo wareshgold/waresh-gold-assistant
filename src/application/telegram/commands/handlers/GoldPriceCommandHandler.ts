@@ -16,6 +16,22 @@ implements TelegramCommandHandler {
 
 
 
+    metadata() {
+
+        return {
+
+            command:
+                "/price",
+
+            description:
+                "قیمت لحظه‌ای طلا"
+
+        };
+
+    }
+
+
+
     canHandle(
 
         command: string
