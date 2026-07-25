@@ -67,6 +67,11 @@ import { SystemMetricsController }
 from "../interfaces/http/SystemMetricsController";
 
 
+import { HealthCheckService }
+from "../application/system/HealthCheckService";
+
+
+
 
 
 
@@ -98,6 +103,22 @@ export function createContainer(
     const monitoring =
 
         createMonitoringModule();
+
+
+
+
+
+    const healthCheckService =
+
+        new HealthCheckService(
+
+            cache.cache,
+
+            storage.snapshotRepository,
+
+            monitoring.metricsStore
+
+        );
 
 
 
@@ -195,12 +216,9 @@ export function createContainer(
 
         new GetGoldBubbleUseCase(
 
-
             market.cachedMarketProvider,
 
-
             gold.goldBubbleCalculator
-
 
         );
 
@@ -215,12 +233,9 @@ export function createContainer(
 
         new GetGoldBubbleDataUseCase(
 
-
             market.cachedMarketProvider,
 
-
             gold.goldBubbleCalculator
-
 
         );
 
@@ -235,9 +250,7 @@ export function createContainer(
 
         new GetMarketAnalyticsUseCase(
 
-
             market.analyticsService
-
 
         );
 
@@ -252,9 +265,7 @@ export function createContainer(
 
         new GetMarketHistoryUseCase(
 
-
             market.snapshotService
-
 
         );
 
@@ -269,9 +280,7 @@ export function createContainer(
 
         new RefreshMarketPriceUseCase(
 
-
             market.priceRefreshService
-
 
         );
 
@@ -286,9 +295,7 @@ export function createContainer(
 
         new RefreshMarketPriceJob(
 
-
             refreshMarketPriceUseCase
-
 
         );
 
@@ -303,24 +310,17 @@ export function createContainer(
 
         createTelegramModule(
 
-
             env,
-
 
             {
 
-
                 getGoldPriceUseCase,
-
 
                 getGoldBubbleUseCase,
 
-
                 getMarketAnalyticsUseCase,
 
-
                 getMarketHistoryUseCase,
-
 
 
                 calculateGoldFormulaUseCase:
@@ -328,16 +328,14 @@ export function createContainer(
                     gold.calculateGoldFormulaUseCase,
 
 
-
                 sessionStore:
 
                     storage.sessionStore
 
-
             }
 
-
         );
+
 
 
 
@@ -371,8 +369,11 @@ export function createContainer(
 
 
 
-
         systemMetricsController,
+
+
+
+        healthCheckService,
 
 
 

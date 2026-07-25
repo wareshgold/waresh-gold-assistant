@@ -34,6 +34,11 @@ import { SystemMonitoringService }
 from "../application/system/observability/SystemMonitoringService";
 
 
+import { HealthCheckService }
+from "../application/system/HealthCheckService";
+
+
+
 
 
 interface AppContainer {
@@ -52,6 +57,11 @@ interface AppContainer {
 
     monitoringService:
         SystemMonitoringService;
+
+
+
+    healthCheckService:
+        HealthCheckService;
 
 
 
@@ -94,6 +104,7 @@ export function createApp(
 
 
 
+
     app.use(
 
         "*",
@@ -110,6 +121,7 @@ export function createApp(
 
 
 
+
     app.onError(
 
         errorHandler
@@ -121,19 +133,28 @@ export function createApp(
 
 
 
+
     app.get(
 
         "/health",
 
-        (c)=>{
+        async(c)=>{
+
+
+
+            const health =
+
+                await container
+
+                    .healthCheckService
+
+                    .execute();
+
+
+
 
 
             return c.json({
-
-
-                status:
-
-                    "ok",
 
 
 
@@ -145,7 +166,11 @@ export function createApp(
 
                 version:
 
-                    "0.1.0"
+                    "0.1.0",
+
+
+
+                ...health
 
 
 
@@ -170,6 +195,7 @@ export function createApp(
         async(c)=>{
 
 
+
             const metrics =
 
                 await container
@@ -177,6 +203,7 @@ export function createApp(
                     .systemMetricsController
 
                     .handle();
+
 
 
 
@@ -205,7 +232,9 @@ export function createApp(
     const marketPriceHandler =
 
 
+
         async(c:any)=>{
+
 
 
             const price =
@@ -220,7 +249,9 @@ export function createApp(
 
 
 
+
             return c.json({
+
 
 
                 gold18Price:
@@ -259,6 +290,7 @@ export function createApp(
 
 
 
+
     app.get(
 
         "/market/gold-price",
@@ -266,6 +298,7 @@ export function createApp(
         marketPriceHandler
 
     );
+
 
 
 
@@ -292,6 +325,7 @@ export function createApp(
         async(c)=>{
 
 
+
             const bubble =
 
 
@@ -306,6 +340,7 @@ export function createApp(
 
 
             return c.json({
+
 
 
                 marketPrice:
@@ -352,11 +387,13 @@ export function createApp(
 
 
 
+
     app.get(
 
         "/market/history",
 
         async(c)=>{
+
 
 
             const limit =
@@ -367,6 +404,7 @@ export function createApp(
                     c.req.query("limit") ?? 50
 
                 );
+
 
 
 
@@ -385,6 +423,7 @@ export function createApp(
 
 
             return c.json({
+
 
 
                 items:
@@ -407,11 +446,13 @@ export function createApp(
 
 
 
+
     app.post(
 
         "/telegram/webhook",
 
         async(c)=>{
+
 
 
             return await container

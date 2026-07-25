@@ -55,21 +55,38 @@ describe(
 
 
 
-        const body =
+        const body:any =
           await response.json();
 
 
 
-        expect(body)
+        expect(body.status)
+          .toBe("healthy");
+
+
+        expect(body.service)
+          .toBe(
+            "waresh-gold-assistant"
+          );
+
+
+        expect(body.version)
+          .toBe(
+            "0.1.0"
+          );
+
+
+        expect(body.services)
           .toEqual({
 
-            status:"ok",
+            cache:
+              "up",
 
-            service:
-              "waresh-gold-assistant",
+            storage:
+              "up",
 
-            version:
-              "0.1.0",
+            metrics:
+              "up"
 
           });
 
@@ -102,13 +119,17 @@ describe(
 
 
 
-        const body =
+        const body:any =
           await response.json();
 
 
 
         expect(body.status)
-          .toBe("ok");
+          .toBe("healthy");
+
+
+        expect(body.services)
+          .toBeDefined();
 
 
       }
