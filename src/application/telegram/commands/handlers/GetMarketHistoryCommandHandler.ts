@@ -26,6 +26,22 @@ implements TelegramCommandHandler {
 
 
 
+    metadata() {
+
+        return {
+
+            command:
+                "/history",
+
+            description:
+                "تاریخچه قیمت طلا"
+
+        };
+
+    }
+
+
+
 
 
     canHandle(
@@ -125,6 +141,7 @@ implements TelegramCommandHandler {
 
 
 
+
         const lines =
 
             result.items.map(
@@ -149,6 +166,7 @@ implements TelegramCommandHandler {
                 }
 
             );
+
 
 
 
