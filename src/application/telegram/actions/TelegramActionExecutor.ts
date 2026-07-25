@@ -5,15 +5,26 @@ from "./TelegramActionResolver";
 
 
 import {
-    TelegramCommandExecutor
+    TelegramCommandRouter
 }
-from "../interfaces/TelegramCommandExecutor";
+from "../commands/TelegramCommandRouter";
 
 
+import {
+    TelegramCommandContextBuilder
+}
+from "../commands/TelegramCommandContextBuilder";
 
 
 
 export class TelegramActionExecutor {
+
+
+
+    private readonly contextBuilder:
+        TelegramCommandContextBuilder;
+
+
 
 
 
@@ -24,12 +35,27 @@ export class TelegramActionExecutor {
             TelegramActionResolver,
 
 
-        private readonly commandExecutor:
-            TelegramCommandExecutor
+        private readonly router:
+            TelegramCommandRouter,
+
+
+        contextBuilder?:
+            TelegramCommandContextBuilder
 
 
 
-    ) {}
+    ) {
+
+
+        this.contextBuilder =
+
+            contextBuilder ??
+
+            new TelegramCommandContextBuilder();
+
+
+    }
+
 
 
 
@@ -39,11 +65,8 @@ export class TelegramActionExecutor {
 
     async execute(
 
-
         actionId:
             string
-
-
 
     ): Promise<any> {
 
@@ -77,9 +100,27 @@ export class TelegramActionExecutor {
 
 
 
-        return this.commandExecutor.execute(
 
-            command
+        const context =
+
+            this.contextBuilder.build(
+
+                command,
+
+                "default",
+
+                []
+
+            );
+
+
+
+
+
+
+        return this.router.execute(
+
+            context
 
         );
 
