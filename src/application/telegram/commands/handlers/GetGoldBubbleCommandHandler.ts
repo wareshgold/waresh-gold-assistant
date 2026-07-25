@@ -1,7 +1,7 @@
 import { TelegramCommandContext } from "../TelegramCommandContext";
 import { TelegramCommandHandler } from "../TelegramCommandHandler";
 
-import { GetGoldBubbleUseCase } 
+import { GetGoldBubbleUseCase }
 from "../../../market/GetGoldBubbleUseCase";
 
 
@@ -16,6 +16,22 @@ implements TelegramCommandHandler {
             GetGoldBubbleUseCase
 
     ) {}
+
+
+
+    metadata() {
+
+        return {
+
+            command:
+                "/bubble",
+
+            description:
+                "محاسبه حباب طلا"
+
+        };
+
+    }
 
 
 
