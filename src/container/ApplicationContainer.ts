@@ -71,6 +71,20 @@ import { VolatilityCalculator }
 from "../domain/market/analytics/services/VolatilityCalculator";
 
 
+import { TelegramActionExecutor }
+from "../application/telegram/actions/TelegramActionExecutor";
+
+import { CompositeTelegramActionResolver }
+from "../application/telegram/actions/CompositeTelegramActionResolver";
+
+import { TelegramTextActionResolver }
+from "../application/telegram/actions/TelegramTextActionResolver";
+
+import { TelegramCommandActionResolver }
+from "../application/telegram/actions/TelegramCommandActionResolver";
+
+
+
 
 export class ApplicationContainer {
 
@@ -83,7 +97,6 @@ export class ApplicationContainer {
 
     public readonly calculateReverseGoldUseCase:
         CalculateReverseGoldUseCase;
-
 
 
 
@@ -109,7 +122,6 @@ export class ApplicationContainer {
 
 
 
-
         const marketProvider =
 
             new TelegramMarketPriceProvider(
@@ -117,9 +129,6 @@ export class ApplicationContainer {
                 messageProvider
 
             );
-
-
-
 
 
 
@@ -135,15 +144,9 @@ export class ApplicationContainer {
 
 
 
-
-
-
         const snapshotRepository =
 
             new MemoryMarketSnapshotRepository();
-
-
-
 
 
 
@@ -155,9 +158,6 @@ export class ApplicationContainer {
                 snapshotRepository
 
             );
-
-
-
 
 
 
@@ -177,9 +177,6 @@ export class ApplicationContainer {
 
 
 
-
-
-
         const getMarketAnalyticsUseCase =
 
             new GetMarketAnalyticsUseCase(
@@ -187,9 +184,6 @@ export class ApplicationContainer {
                 analyticsService
 
             );
-
-
-
 
 
 
@@ -205,9 +199,6 @@ export class ApplicationContainer {
 
 
 
-
-
-
         const getGoldPriceUseCase =
 
             new GetGoldPriceUseCase(
@@ -215,9 +206,6 @@ export class ApplicationContainer {
                 getCurrentMarketPriceUseCase
 
             );
-
-
-
 
 
 
@@ -235,9 +223,6 @@ export class ApplicationContainer {
 
 
 
-
-
-
         this.calculateReverseGoldUseCase =
 
             new CalculateReverseGoldUseCase(
@@ -245,9 +230,6 @@ export class ApplicationContainer {
                 new ReverseGoldCalculator()
 
             );
-
-
-
 
 
 
@@ -263,15 +245,9 @@ export class ApplicationContainer {
 
 
 
-
-
-
         const sessionStore =
 
             new MemoryTelegramSessionStore();
-
-
-
 
 
 
@@ -299,9 +275,6 @@ export class ApplicationContainer {
 
 
 
-
-
-
         const router =
 
             TelegramCommandRegistry.create(
@@ -323,10 +296,7 @@ export class ApplicationContainer {
 
 
 
-
-
-
-        const commandService =
+        let commandService =
 
             new TelegramCommandService(
 
@@ -338,6 +308,50 @@ export class ApplicationContainer {
 
 
 
+
+        const actionResolver =
+
+            new CompositeTelegramActionResolver(
+
+                [
+
+                    new TelegramTextActionResolver(),
+
+                    new TelegramCommandActionResolver()
+
+                ]
+
+            );
+
+
+
+
+        const actionExecutor =
+
+            new TelegramActionExecutor(
+
+                actionResolver,
+
+                commandService
+
+            );
+
+
+
+
+        commandService =
+
+            new TelegramCommandService(
+
+                router,
+
+                conversationManager,
+
+                undefined,
+
+                actionExecutor
+
+            );
 
 
 
