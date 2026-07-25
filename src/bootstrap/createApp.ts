@@ -6,6 +6,10 @@ import { createRequestLogger }
 from "../shared/middleware/requestLogger";
 
 
+import { createRequestContext }
+from "../shared/middleware/requestContext";
+
+
 import { errorHandler }
 from "../presentation/middleware/errorHandler";
 
@@ -109,6 +113,18 @@ export function createApp(
 
         "*",
 
+        createRequestContext()
+
+    );
+
+
+
+
+
+    app.use(
+
+        "*",
+
         createRequestLogger(
 
             container.monitoringService
@@ -122,11 +138,14 @@ export function createApp(
 
 
 
+
     app.onError(
 
         errorHandler
 
     );
+
+
 
 
 
@@ -149,6 +168,7 @@ export function createApp(
                     .healthCheckService
 
                     .execute();
+
 
 
 
@@ -188,6 +208,8 @@ export function createApp(
 
 
 
+
+
     app.get(
         "/system/metrics",
         async(c)=>{
@@ -213,6 +235,7 @@ export function createApp(
 
 
 
+
     const marketPriceHandler =
 
 
@@ -229,6 +252,7 @@ export function createApp(
                     .marketProvider
 
                     .getCurrentPrice();
+
 
 
 
@@ -275,6 +299,7 @@ export function createApp(
 
 
 
+
     app.get(
 
         "/market/gold-price",
@@ -288,6 +313,7 @@ export function createApp(
 
 
 
+
     app.get(
 
         "/api/v1/market/gold-price",
@@ -295,6 +321,10 @@ export function createApp(
         marketPriceHandler
 
     );
+
+
+
+
 
 
 
@@ -318,6 +348,7 @@ export function createApp(
                     .getGoldBubbleDataUseCase
 
                     .execute();
+
 
 
 
@@ -372,6 +403,7 @@ export function createApp(
 
 
 
+
     app.get(
 
         "/market/history",
@@ -393,6 +425,7 @@ export function createApp(
 
 
 
+
             const history =
 
 
@@ -401,6 +434,7 @@ export function createApp(
                     .snapshotService
 
                     .getHistory(limit);
+
 
 
 
@@ -423,6 +457,7 @@ export function createApp(
         }
 
     );
+
 
 
 

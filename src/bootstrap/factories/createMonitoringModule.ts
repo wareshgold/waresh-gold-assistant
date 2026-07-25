@@ -5,9 +5,16 @@ from "../../application/system/observability/SystemMonitoringService";
 
 
 import {
-    MemoryMetricsStore
+    D1MetricsStore
 }
-from "../../infrastructure/monitoring/MemoryMetricsStore";
+from "../../infrastructure/system/observability/d1/D1MetricsStore";
+
+
+import {
+    AppEnv
+}
+from "../../shared/config/env";
+
 
 
 
@@ -20,7 +27,8 @@ export interface MonitoringModule {
 
 
     metricsStore:
-        MemoryMetricsStore;
+        D1MetricsStore;
+
 
 
 }
@@ -28,30 +36,44 @@ export interface MonitoringModule {
 
 
 
-const metricsStore =
-
-    new MemoryMetricsStore();
 
 
+export function createMonitoringModule(
 
+    env:
+        AppEnv
 
-const monitoringService =
+):
 
-    new SystemMonitoringService(
-
-        metricsStore
-
-    );
-
-
-
-
-
-
-export function createMonitoringModule()
-
-:
 MonitoringModule {
+
+
+
+    const metricsStore =
+
+        new D1MetricsStore(
+
+            env.waresh_gold_db
+
+        );
+
+
+
+
+
+
+    const monitoringService =
+
+        new SystemMonitoringService(
+
+            metricsStore
+
+        );
+
+
+
+
+
 
 
     return {
@@ -63,7 +85,9 @@ MonitoringModule {
         metricsStore
 
 
+
     };
+
 
 
 }

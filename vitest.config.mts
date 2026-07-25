@@ -23,6 +23,8 @@ export default defineWorkersConfig({
                         "waresh_gold_db"
                     ],
 
+                    d1Persist: true,
+
                 },
 
             },

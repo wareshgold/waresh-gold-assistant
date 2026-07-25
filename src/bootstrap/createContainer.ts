@@ -102,7 +102,7 @@ export function createContainer(
 
     const monitoring =
 
-        createMonitoringModule();
+        createMonitoringModule(env);
 
 
 

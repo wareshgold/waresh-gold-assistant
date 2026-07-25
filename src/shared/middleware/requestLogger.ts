@@ -54,12 +54,16 @@ export function createRequestLogger(
 
 
 
-
         logger.info(
 
             "HTTP Request",
 
             {
+
+                requestId:
+
+                    c.get("requestId"),
+
 
                 method:
 
@@ -79,7 +83,6 @@ export function createRequestLogger(
                 durationMs:
 
                     duration,
-
 
             }
 
