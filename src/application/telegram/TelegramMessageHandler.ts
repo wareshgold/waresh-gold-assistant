@@ -1,17 +1,26 @@
 import { TelegramCommandExecutor }
 from "./interfaces/TelegramCommandExecutor";
 
+
 import { IncomingMessage }
 from "../common/models/IncomingMessage";
+
 
 import { TelegramResponseFormatter }
 from "./TelegramResponseFormatter";
 
 
+import { TelegramCommandResponse }
+from "./commands/TelegramCommandHandler";
+
+
+
 export class TelegramMessageHandler {
 
 
+
     constructor(
+
 
         private readonly commandService:
             TelegramCommandExecutor,
@@ -20,32 +29,48 @@ export class TelegramMessageHandler {
         private readonly formatter?:
             TelegramResponseFormatter
 
+
+
     ) {}
+
+
+
+
 
 
 
     async handle(
 
-        message: IncomingMessage
+        message:
+            IncomingMessage
 
     ): Promise<string> {
 
 
         const response =
+
             await this.commandService.execute(
+
                 message
+
             );
 
 
 
         console.log(
+
             "HANDLER RESPONSE:",
+
             response
+
         );
 
 
 
+
+
         if (!response) {
+
 
             return "";
 
@@ -53,27 +78,112 @@ export class TelegramMessageHandler {
 
 
 
-        if (this.formatter) {
-
-            return this.formatter.format(
-                response
-            );
-
-        }
-
 
 
         if (typeof response === "string") {
 
+
             return response;
 
+
         }
+
+
 
 
 
         return response.content ?? "";
 
+
+
     }
+
+
+
+
+
+
+
+
+
+    async handleResponse(
+
+        message:
+            IncomingMessage
+
+    ): Promise<TelegramCommandResponse | string> {
+
+
+
+        const response =
+
+            await this.commandService.execute(
+
+                message
+
+            );
+
+
+
+
+
+        console.log(
+
+            "HANDLER RESPONSE:",
+
+            response
+
+        );
+
+
+
+
+
+        if (!response) {
+
+
+            return "";
+
+        }
+
+
+
+
+
+        if (typeof response === "string") {
+
+
+            return response;
+
+
+        }
+
+
+
+
+
+        return {
+
+
+            ...response,
+
+
+            content:
+
+                this.formatter
+
+                    ? this.formatter.format(response)
+
+                    : response.content
+
+
+
+        };
+
+
+
+    }
+
 
 
 }

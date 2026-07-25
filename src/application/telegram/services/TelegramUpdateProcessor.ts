@@ -74,7 +74,7 @@ export class TelegramUpdateProcessor {
         const response =
 
 
-            await this.handler.handle({
+            await this.handler.handleResponse({
 
 
                 userId:
