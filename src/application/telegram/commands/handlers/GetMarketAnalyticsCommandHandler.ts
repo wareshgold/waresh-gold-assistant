@@ -26,6 +26,22 @@ implements TelegramCommandHandler {
 
 
 
+    metadata() {
+
+        return {
+
+            command:
+                "/analytics",
+
+            description:
+                "تحلیل بازار طلا"
+
+        };
+
+    }
+
+
+
 
 
     canHandle(
@@ -95,8 +111,12 @@ implements TelegramCommandHandler {
 
 
 
+
+
         const analytics =
             result.analytics;
+
+
 
 
 
@@ -121,9 +141,12 @@ implements TelegramCommandHandler {
 
 
 
+
+
         const volatility =
 
             analytics.getVolatility();
+
 
 
 
@@ -140,6 +163,8 @@ implements TelegramCommandHandler {
                     ? "متوسط 🟡"
 
                     : "کم 🟢";
+
+
 
 
 
