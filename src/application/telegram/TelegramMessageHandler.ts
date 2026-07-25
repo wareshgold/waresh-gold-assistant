@@ -10,9 +10,6 @@ import { TelegramResponseFormatter }
 from "./TelegramResponseFormatter";
 
 
-import { TelegramCommandResponse }
-from "./commands/TelegramCommandHandler";
-
 
 
 export interface TelegramHandledResponse {
@@ -21,7 +18,7 @@ export interface TelegramHandledResponse {
     content: string;
 
 
-    keyboard?: any;
+    replyMarkup?: any;
 
 
 }
@@ -29,7 +26,9 @@ export interface TelegramHandledResponse {
 
 
 
+
 export class TelegramMessageHandler {
+
 
 
 
@@ -73,17 +72,6 @@ export class TelegramMessageHandler {
 
 
 
-        console.log(
-
-            "HANDLER RESPONSE:",
-
-            response
-
-        );
-
-
-
-
 
         if (!response) {
 
@@ -110,9 +98,7 @@ export class TelegramMessageHandler {
 
 
 
-
         return response.content ?? "";
-
 
 
     }
@@ -146,19 +132,6 @@ export class TelegramMessageHandler {
 
 
 
-        console.log(
-
-            "HANDLER RESPONSE:",
-
-            response
-
-        );
-
-
-
-
-
-
 
         if (!response) {
 
@@ -167,7 +140,6 @@ export class TelegramMessageHandler {
 
 
         }
-
 
 
 

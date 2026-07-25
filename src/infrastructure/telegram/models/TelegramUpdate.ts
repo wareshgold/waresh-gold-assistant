@@ -3,13 +3,16 @@ export interface TelegramUpdate {
     update_id: number;
 
 
-    message: {
+
+    message?: {
+
 
         chat?: {
 
             id: number;
 
         };
+
 
 
         from?: {
@@ -25,8 +28,62 @@ export interface TelegramUpdate {
         };
 
 
+
         text?: string;
 
+
     };
+
+
+
+
+
+    callback_query?: {
+
+
+        id: string;
+
+
+
+        data?: string;
+
+
+
+        from?: {
+
+
+            id: number;
+
+            first_name?: string;
+
+            last_name?: string;
+
+            username?: string;
+
+
+        };
+
+
+
+        message?: {
+
+
+            chat?: {
+
+
+                id: number;
+
+
+            };
+
+
+            message_id?: number;
+
+
+        };
+
+
+    };
+
 
 }

@@ -1,13 +1,32 @@
+export interface TelegramReplyButton {
+
+
+    text: string;
+
+
+}
+
+
+
+
+export interface TelegramInlineButton {
+
+
+    text: string;
+
+
+    callback_data: string;
+
+
+}
+
+
+
+
 export interface TelegramReplyMarkup {
 
 
-    keyboard: {
-
-
-        text: string;
-
-
-    }[][];
+    keyboard: TelegramReplyButton[][];
 
 
 
@@ -15,6 +34,34 @@ export interface TelegramReplyMarkup {
 
 
 }
+
+
+
+
+
+export interface TelegramInlineKeyboardMarkup {
+
+
+    inline_keyboard:
+
+        TelegramInlineButton[][];
+
+
+}
+
+
+
+
+
+export type TelegramMarkup =
+
+
+    | TelegramReplyMarkup
+
+    | TelegramInlineKeyboardMarkup;
+
+
+
 
 
 
@@ -32,7 +79,7 @@ export interface TelegramOutgoingMessage {
 
 
 
-    replyMarkup?: TelegramReplyMarkup;
+    replyMarkup?: TelegramMarkup;
 
 
 }

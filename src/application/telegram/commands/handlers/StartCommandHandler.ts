@@ -23,16 +23,18 @@ from "../../menu/TelegramMenuService";
 
 
 import {
-    TelegramReplyKeyboardBuilder
+    TelegramInlineKeyboardBuilder
 }
-from "../../keyboards/TelegramReplyKeyboardBuilder";
+from "../../keyboards/TelegramInlineKeyboardBuilder";
 
 
 
 
 
 export class StartCommandHandler
+
 implements TelegramCommandHandler {
+
 
 
 
@@ -40,20 +42,27 @@ implements TelegramCommandHandler {
     constructor(
 
 
+
         private readonly welcomeMessageProvider:
+
             WelcomeMessageProvider,
 
 
+
         private readonly telegramMenuService:
+
             TelegramMenuService,
 
 
-        private readonly telegramReplyKeyboardBuilder:
-            TelegramReplyKeyboardBuilder
+
+        private readonly telegramInlineKeyboardBuilder:
+
+            TelegramInlineKeyboardBuilder
 
 
 
     ) {}
+
 
 
 
@@ -68,10 +77,13 @@ implements TelegramCommandHandler {
 
 
             command:
+
                 "/start",
 
 
+
             description:
+
                 "شروع کار با ربات"
 
 
@@ -80,6 +92,7 @@ implements TelegramCommandHandler {
 
 
     }
+
 
 
 
@@ -116,14 +129,19 @@ implements TelegramCommandHandler {
     ) {
 
 
+
         const welcomeMessage =
+
 
 
             this.welcomeMessageProvider.getWelcomeMessage(
 
+
                 context.firstName,
 
+
                 context.username
+
 
             );
 
@@ -136,6 +154,7 @@ implements TelegramCommandHandler {
         const menuItems =
 
 
+
             this.telegramMenuService.getMainMenu();
 
 
@@ -144,13 +163,15 @@ implements TelegramCommandHandler {
 
 
 
+        const inlineKeyboard =
 
-        const keyboard =
 
 
-            this.telegramReplyKeyboardBuilder.build(
+            this.telegramInlineKeyboardBuilder.build(
+
 
                 menuItems
+
 
             );
 
@@ -164,11 +185,14 @@ implements TelegramCommandHandler {
 
 
             content:
+
                 welcomeMessage,
 
 
+
             replyMarkup:
-                keyboard
+
+                inlineKeyboard
 
 
 
@@ -176,6 +200,7 @@ implements TelegramCommandHandler {
 
 
     }
+
 
 
 

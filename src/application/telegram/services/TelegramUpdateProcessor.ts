@@ -22,8 +22,15 @@ import { TelegramKeyboardMapper }
 from "../../../infrastructure/telegram/TelegramKeyboardMapper";
 
 
+import { TelegramCallbackProcessor }
+from "./TelegramCallbackProcessor";
+
+
+
+
 
 export class TelegramUpdateProcessor {
+
 
 
 
@@ -31,28 +38,39 @@ export class TelegramUpdateProcessor {
     constructor(
 
 
+
         private readonly mapper:
             TelegramUpdateMapper,
+
 
 
         private readonly handler:
             TelegramMessageHandler,
 
 
+
         private readonly formatter:
             TelegramResponseFormatter,
+
 
 
         private readonly botClient:
             TelegramBotClient,
 
 
+
         private readonly keyboardMapper:
-            TelegramKeyboardMapper
+            TelegramKeyboardMapper,
+
+
+
+        private readonly callbackProcessor?:
+            TelegramCallbackProcessor
 
 
 
     ) {}
+
 
 
 
@@ -70,10 +88,84 @@ export class TelegramUpdateProcessor {
 
 
 
+        if (
+
+            update.callback_query
+
+            &&
+
+            this.callbackProcessor
+
+        ) {
+
+
+
+            const response =
+
+                await this.callbackProcessor.process(
+
+                    update
+
+                );
+
+
+
+
+
+            const formattedResponse =
+
+                this.formatter.format(
+
+                    response
+
+                );
+
+
+
+
+
+            await this.botClient.sendMessage({
+
+
+                chatId:
+
+                    String(
+
+                        update.callback_query.message?.chat?.id
+
+                    ),
+
+
+                text:
+
+                    formattedResponse,
+
+
+                parseMode:
+
+                    "HTML"
+
+
+            });
+
+
+
+            return;
+
+        }
+
+
+
+
+
+
+
+
         const message =
 
 
             this.mapper.map(update);
+
 
 
 
@@ -106,6 +198,7 @@ export class TelegramUpdateProcessor {
 
 
 
+
         const formattedResponse =
 
 
@@ -121,18 +214,6 @@ export class TelegramUpdateProcessor {
 
 
 
-        console.log(
-
-            "FINAL TELEGRAM RESPONSE:",
-
-            formattedResponse
-
-        );
-
-
-
-
-
 
         const replyMarkup =
 
@@ -143,11 +224,11 @@ export class TelegramUpdateProcessor {
                 ? undefined
 
 
-                : response.keyboard
+                : response.replyMarkup
 
                     ? this.keyboardMapper.map(
 
-                        response.keyboard
+                        response.replyMarkup
 
                     )
 
@@ -193,8 +274,9 @@ export class TelegramUpdateProcessor {
 
 
 
-
     }
+
+
 
 
 

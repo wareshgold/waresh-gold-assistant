@@ -74,10 +74,6 @@ import { TelegramMainMenu }
 from "../menu/TelegramMainMenu";
 
 
-import { TelegramReplyKeyboardBuilder }
-from "../keyboards/TelegramReplyKeyboardBuilder";
-
-
 import { TelegramInlineKeyboardBuilder }
 from "../keyboards/TelegramInlineKeyboardBuilder";
 
@@ -183,16 +179,6 @@ export class TelegramCommandRegistry {
 
 
 
-        const telegramReplyKeyboardBuilder =
-
-            new TelegramReplyKeyboardBuilder();
-
-
-
-
-
-
-
         let commandRouter:
 
             TelegramCommandRouter;
@@ -220,9 +206,6 @@ export class TelegramCommandRegistry {
 
 
                     telegramMenuService,
-
-
-                    telegramReplyKeyboardBuilder,
 
 
                     new TelegramInlineKeyboardBuilder()
