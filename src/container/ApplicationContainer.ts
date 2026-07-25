@@ -101,6 +101,7 @@ export class ApplicationContainer {
 
 
 
+
     constructor() {
 
 
@@ -122,6 +123,7 @@ export class ApplicationContainer {
 
 
 
+
         const marketProvider =
 
             new TelegramMarketPriceProvider(
@@ -129,6 +131,7 @@ export class ApplicationContainer {
                 messageProvider
 
             );
+
 
 
 
@@ -144,9 +147,11 @@ export class ApplicationContainer {
 
 
 
+
         const snapshotRepository =
 
             new MemoryMarketSnapshotRepository();
+
 
 
 
@@ -158,6 +163,7 @@ export class ApplicationContainer {
                 snapshotRepository
 
             );
+
 
 
 
@@ -177,6 +183,7 @@ export class ApplicationContainer {
 
 
 
+
         const getMarketAnalyticsUseCase =
 
             new GetMarketAnalyticsUseCase(
@@ -184,6 +191,7 @@ export class ApplicationContainer {
                 analyticsService
 
             );
+
 
 
 
@@ -199,6 +207,7 @@ export class ApplicationContainer {
 
 
 
+
         const getGoldPriceUseCase =
 
             new GetGoldPriceUseCase(
@@ -206,6 +215,7 @@ export class ApplicationContainer {
                 getCurrentMarketPriceUseCase
 
             );
+
 
 
 
@@ -223,6 +233,7 @@ export class ApplicationContainer {
 
 
 
+
         this.calculateReverseGoldUseCase =
 
             new CalculateReverseGoldUseCase(
@@ -230,6 +241,7 @@ export class ApplicationContainer {
                 new ReverseGoldCalculator()
 
             );
+
 
 
 
@@ -245,9 +257,11 @@ export class ApplicationContainer {
 
 
 
+
         const sessionStore =
 
             new MemoryTelegramSessionStore();
+
 
 
 
@@ -275,6 +289,7 @@ export class ApplicationContainer {
 
 
 
+
         const router =
 
             TelegramCommandRegistry.create(
@@ -296,15 +311,11 @@ export class ApplicationContainer {
 
 
 
-        let commandService =
 
-            new TelegramCommandService(
+        let commandService:
 
-                router,
+            TelegramCommandService;
 
-                conversationManager
-
-            );
 
 
 
@@ -326,15 +337,29 @@ export class ApplicationContainer {
 
 
 
+
         const actionExecutor =
 
             new TelegramActionExecutor(
 
                 actionResolver,
 
-                commandService
+                {
+
+                    execute:
+
+                        async (message) =>
+
+                            commandService.execute(
+
+                                message
+
+                            )
+
+                }
 
             );
+
 
 
 
@@ -352,6 +377,7 @@ export class ApplicationContainer {
                 actionExecutor
 
             );
+
 
 
 
