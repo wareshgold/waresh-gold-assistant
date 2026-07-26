@@ -59,6 +59,12 @@ from "./handlers/OpenSettingsMenuCallbackHandler";
 
 
 import {
+    OpenMainMenuCallbackHandler
+}
+from "./handlers/OpenMainMenuCallbackHandler";
+
+
+import {
     GetGoldPriceUseCase
 }
 from "../../usecases/GetGoldPriceUseCase";
@@ -100,6 +106,19 @@ import {
 from "../presentation/TelegramDateFormatter";
 
 
+import {
+    TelegramMenuService
+}
+from "../menu/TelegramMenuService";
+
+
+
+import {
+    TelegramInlineKeyboardBuilder
+}
+from "../keyboards/TelegramInlineKeyboardBuilder";
+
+
 
 
 
@@ -139,7 +158,12 @@ export class TelegramCallbackRegistry {
 
 
         marketBubbleMessageFormatter:
-            MarketBubbleMessageFormatter
+            MarketBubbleMessageFormatter,
+
+
+
+        telegramMenuService:
+            TelegramMenuService
 
 
 
@@ -153,6 +177,16 @@ export class TelegramCallbackRegistry {
 
             TelegramCallbackHandler[] = [
 
+
+
+
+                new OpenMainMenuCallbackHandler(
+
+                    telegramMenuService,
+
+                    new TelegramInlineKeyboardBuilder()
+
+                ),
 
 
 
