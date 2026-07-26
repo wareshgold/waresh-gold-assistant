@@ -41,6 +41,12 @@ from "./handlers/OpenMarketMenuCallbackHandler";
 
 
 import {
+    OpenCalculationMenuCallbackHandler
+}
+from "./handlers/OpenCalculationMenuCallbackHandler";
+
+
+import {
     GetGoldPriceUseCase
 }
 from "../../usecases/GetGoldPriceUseCase";
@@ -91,7 +97,6 @@ export class TelegramCallbackRegistry {
 
 
 
-
     static create(
 
 
@@ -132,7 +137,6 @@ export class TelegramCallbackRegistry {
 
 
 
-
         const handlers:
 
             TelegramCallbackHandler[] = [
@@ -141,6 +145,10 @@ export class TelegramCallbackRegistry {
 
 
                 new OpenMarketMenuCallbackHandler(),
+
+
+
+                new OpenCalculationMenuCallbackHandler(),
 
 
 
