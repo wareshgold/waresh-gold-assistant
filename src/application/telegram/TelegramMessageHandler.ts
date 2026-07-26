@@ -12,6 +12,7 @@ from "./TelegramResponseFormatter";
 
 
 
+
 export interface TelegramHandledResponse {
 
 
@@ -27,7 +28,11 @@ export interface TelegramHandledResponse {
 
 
 
+
+
 export class TelegramMessageHandler {
+
+
 
 
 
@@ -53,10 +58,15 @@ export class TelegramMessageHandler {
 
 
 
+
+
+
     async handle(
+
 
         message:
             IncomingMessage
+
 
     ): Promise<string> {
 
@@ -73,6 +83,7 @@ export class TelegramMessageHandler {
 
 
 
+
         if (!response) {
 
 
@@ -80,6 +91,7 @@ export class TelegramMessageHandler {
 
 
         }
+
 
 
 
@@ -98,7 +110,10 @@ export class TelegramMessageHandler {
 
 
 
+
+
         return response.content ?? "";
+
 
 
     }
@@ -111,10 +126,15 @@ export class TelegramMessageHandler {
 
 
 
+
+
+
     async handleResponse(
+
 
         message:
             IncomingMessage
+
 
     ): Promise<TelegramHandledResponse | string> {
 
@@ -133,6 +153,7 @@ export class TelegramMessageHandler {
 
 
 
+
         if (!response) {
 
 
@@ -140,6 +161,7 @@ export class TelegramMessageHandler {
 
 
         }
+
 
 
 
@@ -160,6 +182,7 @@ export class TelegramMessageHandler {
 
 
 
+
         return {
 
 
@@ -170,10 +193,28 @@ export class TelegramMessageHandler {
             content:
 
 
+
                 this.formatter
 
 
-                    ? this.formatter.format(response)
+
+                    ? this.formatter.format(
+
+
+                        {
+
+
+                            type: "text",
+
+
+                            content: response.content ?? ""
+
+
+                        }
+
+
+                    )
+
 
                     : response.content
 
@@ -184,6 +225,7 @@ export class TelegramMessageHandler {
 
 
     }
+
 
 
 

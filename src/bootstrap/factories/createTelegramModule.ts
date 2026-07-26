@@ -37,29 +37,26 @@ from "../../interfaces/telegram/TelegramWebhookSecurityGuard";
 import { AppEnv }
 from "../../shared/config/env";
 
-
 import { TelegramKeyboardMapper }
 from "../../infrastructure/telegram/TelegramKeyboardMapper";
-
 
 import { TelegramCallbackRegistry }
 from "../../application/telegram/callbacks/TelegramCallbackRegistry";
 
-
 import { TelegramCallbackProcessor }
 from "../../application/telegram/services/TelegramCallbackProcessor";
-
 
 import { TelegramCallbackMapper }
 from "../../application/telegram/mappers/TelegramCallbackMapper";
 
-
 import { TelegramMessageBuilder }
 from "../../application/telegram/presentation/TelegramMessageBuilder";
 
-
 import { MarketAnalyticsMessageFormatter }
 from "../../application/telegram/presentation/MarketAnalyticsMessageFormatter";
+
+import { MarketBubbleMessageFormatter }
+from "../../application/telegram/presentation/MarketBubbleMessageFormatter";
 
 
 
@@ -135,6 +132,37 @@ export function createTelegramModule(
 
 
 
+    const marketAnalyticsMessageFormatter =
+
+
+        new MarketAnalyticsMessageFormatter(
+
+
+            new TelegramMessageBuilder()
+
+
+        );
+
+
+
+
+
+
+    const marketBubbleMessageFormatter =
+
+
+        new MarketBubbleMessageFormatter(
+
+
+            new TelegramMessageBuilder()
+
+
+        );
+
+
+
+
+
 
     const commandRouter =
 
@@ -157,11 +185,13 @@ export function createTelegramModule(
             dependencies.calculateGoldFormulaUseCase,
 
 
-            dependencies.sessionStore
+            dependencies.sessionStore,
+
+
+            marketBubbleMessageFormatter
 
 
         );
-
 
 
 
@@ -187,7 +217,6 @@ export function createTelegramModule(
 
 
 
-
     const messageHandler =
 
 
@@ -201,24 +230,6 @@ export function createTelegramModule(
 
 
         );
-
-
-
-
-
-
-
-    const marketAnalyticsMessageFormatter =
-
-
-        new MarketAnalyticsMessageFormatter(
-
-
-            new TelegramMessageBuilder()
-
-
-        );
-
 
 
 
@@ -251,8 +262,6 @@ export function createTelegramModule(
 
 
 
-
-
     const callbackRouter =
 
 
@@ -271,11 +280,13 @@ export function createTelegramModule(
             dependencies.getMarketHistoryUseCase,
 
 
-            marketAnalyticsMessageFormatter
+            marketAnalyticsMessageFormatter,
+
+
+            marketBubbleMessageFormatter
 
 
         );
-
 
 
 
@@ -305,7 +316,6 @@ export function createTelegramModule(
 
 
 
-
     const processor =
 
 
@@ -318,11 +328,7 @@ export function createTelegramModule(
 
 
 
-
-
             messageHandler,
-
-
 
 
 
@@ -330,11 +336,7 @@ export function createTelegramModule(
 
 
 
-
-
             botClient,
-
-
 
 
 
@@ -342,16 +344,11 @@ export function createTelegramModule(
 
 
 
-
-
             callbackProcessor
 
 
 
-
-
         );
-
 
 
 
@@ -372,8 +369,6 @@ export function createTelegramModule(
 
 
 
-
-
             new TelegramWebhookSecurityGuard(
 
 
@@ -387,7 +382,6 @@ export function createTelegramModule(
 
 
         );
-
 
 
 

@@ -1,9 +1,20 @@
 export interface ApplicationResponse {
 
-    type: "text";
+    type:
+        "text"
+        |
+        "data";
 
-    content: string;
 
-    metadata?: Record<string, unknown>;
+    content:
+        string;
+
+
+    data?:
+        unknown;
+
+
+    metadata?:
+        Record<string, unknown>;
 
 }

@@ -16,6 +16,13 @@ import {
 from "../../../market/GetGoldBubbleUseCase";
 
 
+import {
+    MarketBubbleMessageFormatter
+}
+from "../../presentation/MarketBubbleMessageFormatter";
+
+
+
 
 
 export class GetGoldBubbleCallbackHandler
@@ -24,12 +31,24 @@ implements TelegramCallbackHandler {
 
 
 
+
+
     constructor(
 
+
         private readonly getGoldBubbleUseCase:
-            GetGoldBubbleUseCase
+            GetGoldBubbleUseCase,
+
+
+        private readonly marketBubbleMessageFormatter:
+            MarketBubbleMessageFormatter
+
 
     ) {}
+
+
+
+
 
 
 
@@ -43,7 +62,9 @@ implements TelegramCallbackHandler {
     ): boolean {
 
 
+
         return (
+
 
             context.callback.namespace === "gold"
 
@@ -51,10 +72,14 @@ implements TelegramCallbackHandler {
 
             context.callback.action === "bubble"
 
+
         );
 
 
     }
+
+
+
 
 
 
@@ -69,7 +94,35 @@ implements TelegramCallbackHandler {
     ): Promise<any> {
 
 
-        return this.getGoldBubbleUseCase.execute();
+
+        const response =
+
+            await this.getGoldBubbleUseCase.execute();
+
+
+
+
+
+        return {
+
+
+            type:
+
+                "text",
+
+
+
+            content:
+
+                this.marketBubbleMessageFormatter.format(
+
+                    response.data as any
+
+                )
+
+
+
+        };
 
 
     }

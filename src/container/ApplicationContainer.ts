@@ -83,6 +83,13 @@ import { TelegramCommandActionResolver }
 from "../application/telegram/actions/TelegramCommandActionResolver";
 
 
+import { TelegramMessageBuilder }
+from "../application/telegram/presentation/TelegramMessageBuilder";
+
+
+import { MarketBubbleMessageFormatter }
+from "../application/telegram/presentation/MarketBubbleMessageFormatter";
+
 
 
 
@@ -97,7 +104,6 @@ export class ApplicationContainer {
 
     public readonly calculateReverseGoldUseCase:
         CalculateReverseGoldUseCase;
-
 
 
 
@@ -164,11 +170,7 @@ export class ApplicationContainer {
 
             );
 
-
-
-
-
-        const analyticsService =
+                const analyticsService =
 
             new MarketAnalyticsService(
 
@@ -290,6 +292,18 @@ export class ApplicationContainer {
 
 
 
+        const marketBubbleMessageFormatter =
+
+            new MarketBubbleMessageFormatter(
+
+                new TelegramMessageBuilder()
+
+            );
+
+
+
+
+
         const router =
 
             TelegramCommandRegistry.create(
@@ -304,15 +318,14 @@ export class ApplicationContainer {
 
                 calculateGoldFormulaUseCase,
 
-                sessionStore
+                sessionStore,
+
+                marketBubbleMessageFormatter
 
             );
-
-
-
-
-
-        const actionResolver =
+        
+         
+                 const actionResolver =
 
             new CompositeTelegramActionResolver(
 
@@ -378,4 +391,4 @@ export class ApplicationContainer {
 
 
 
-}
+}   

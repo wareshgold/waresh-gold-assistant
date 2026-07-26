@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { GetGoldBubbleCommandHandler } 
+
+import { GetGoldBubbleCommandHandler }
 from "../../../../../src/application/telegram/commands/handlers/GetGoldBubbleCommandHandler";
 
 
@@ -8,45 +9,133 @@ import { GetGoldBubbleUseCase }
 from "../../../../../src/application/market/GetGoldBubbleUseCase";
 
 
+
+
+
 describe(
     "GetGoldBubbleCommandHandler",
     () => {
 
 
+
+
+
         class FakeGetGoldBubbleUseCase
+
         implements Pick<GetGoldBubbleUseCase, "execute"> {
 
 
-            execute() {
+
+
+
+            async execute() {
+
 
                 return {
 
-                    type: "text",
+
+                    type:
+
+                        "data",
+
+
 
                     content:
-                        "🟡 حباب طلا",
+
+                        "",
+
+
+
+
+                    data: {
+
+
+                        marketPrice:
+
+                            18500000,
+
+
+                        intrinsicPrice:
+
+                            14324759,
+
+
+                        bubbleAmount:
+
+                            4175241,
+
+
+                        bubblePercentage:
+
+                            29.15
+
+
+                    },
+
+
+
+
 
                     metadata: {
 
-                        bubblePercentage: 5
+
+                        marketPrice:
+
+                            18500000,
+
+
+                        intrinsicPrice:
+
+                            14324759,
+
+
+                        bubbleAmount:
+
+                            4175241,
+
+
+                        bubblePercentage:
+
+                            29.15
+
 
                     }
 
+
                 };
 
+
             }
+
+
 
         }
 
 
 
+
+
+
+
+
+
         const createHandler = () => {
 
+
             return new GetGoldBubbleCommandHandler(
+
                 new FakeGetGoldBubbleUseCase()
+
             );
 
+
         };
+
+
+
+
+
+
 
 
 
@@ -56,18 +145,29 @@ describe(
 
 
                 const handler =
+
                     createHandler();
 
 
 
+
                 expect(
+
                     handler.canHandle("/bubble")
+
                 )
+
                 .toBe(true);
+
 
 
             }
         );
+
+
+
+
+
 
 
 
@@ -78,25 +178,41 @@ describe(
 
 
                 const handler =
+
                     createHandler();
 
 
 
+
                 expect(
+
                     handler.canHandle("حباب")
+
                 )
+
                 .toBe(true);
+
+
 
 
 
                 expect(
+
                     handler.canHandle("حباب طلا")
+
                 )
+
                 .toBe(true);
+
 
 
             }
         );
+
+
+
+
+
 
 
 
@@ -106,28 +222,46 @@ describe(
             async () => {
 
 
+
                 const handler =
+
                     createHandler();
 
 
 
+
+
                 const result =
+
                     await handler.execute(
+
                         {} as any
+
                     );
 
 
 
+
+
+
                 expect(
+
                     result.content
+
                 )
+
                 .toContain(
+
                     "حباب طلا"
+
                 );
+
 
 
             }
         );
+
+
 
 
     }

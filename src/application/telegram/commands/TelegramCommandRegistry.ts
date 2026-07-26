@@ -78,6 +78,10 @@ import { TelegramInlineKeyboardBuilder }
 from "../keyboards/TelegramInlineKeyboardBuilder";
 
 
+import { MarketBubbleMessageFormatter }
+from "../presentation/MarketBubbleMessageFormatter";
+
+
 
 
 
@@ -121,7 +125,12 @@ export class TelegramCommandRegistry {
 
 
         sessionStore:
-            TelegramSessionStore
+            TelegramSessionStore,
+
+
+
+        marketBubbleMessageFormatter:
+            MarketBubbleMessageFormatter
 
 
 
@@ -249,7 +258,9 @@ export class TelegramCommandRegistry {
 
                 new GetGoldBubbleCommandHandler(
 
-                    getGoldBubbleUseCase
+                    getGoldBubbleUseCase,
+
+                    marketBubbleMessageFormatter
 
                 ),
 
@@ -305,7 +316,6 @@ export class TelegramCommandRegistry {
 
 
 
-
         commandRouter =
 
             new TelegramCommandRouter(
@@ -325,6 +335,8 @@ export class TelegramCommandRegistry {
 
 
     }
+
+
 
 
 
