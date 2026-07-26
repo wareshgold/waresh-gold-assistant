@@ -22,6 +22,12 @@ import {
 from "../../presentation/MarketAnalyticsMessageFormatter";
 
 
+import {
+    TelegramNavigationService
+}
+from "../../navigation/TelegramNavigationService";
+
+
 
 
 export class GetMarketAnalyticsCallbackHandler
@@ -38,10 +44,16 @@ implements TelegramCallbackHandler {
 
 
         private readonly marketAnalyticsMessageFormatter:
-            MarketAnalyticsMessageFormatter
+            MarketAnalyticsMessageFormatter,
+
+
+        private readonly telegramNavigationService:
+            TelegramNavigationService
 
 
     ) {}
+
+
 
 
 
@@ -76,6 +88,8 @@ implements TelegramCallbackHandler {
 
 
 
+
+
     async execute(
 
         context:
@@ -93,6 +107,7 @@ implements TelegramCallbackHandler {
 
 
 
+
         if (!result.analytics) {
 
 
@@ -101,7 +116,12 @@ implements TelegramCallbackHandler {
 
                 content:
 
-                    "📊 اطلاعات تحلیل بازار موجود نیست"
+                    "📊 اطلاعات تحلیل بازار موجود نیست",
+
+
+                replyMarkup:
+
+                    this.telegramNavigationService.getMarketMenu()
 
 
             };
@@ -116,7 +136,14 @@ implements TelegramCallbackHandler {
 
 
 
+
         return {
+
+
+            type:
+
+                "text",
+
 
 
             content:
@@ -125,7 +152,13 @@ implements TelegramCallbackHandler {
 
                     result.analytics
 
-                )
+                ),
+
+
+
+            replyMarkup:
+
+                this.telegramNavigationService.getMarketMenu()
 
 
 

@@ -22,12 +22,20 @@ import {
 from "../../presentation/MarketBubbleMessageFormatter";
 
 
+import {
+    TelegramNavigationService
+}
+from "../../navigation/TelegramNavigationService";
+
+
+
 
 
 
 export class GetGoldBubbleCallbackHandler
 
 implements TelegramCallbackHandler {
+
 
 
 
@@ -41,7 +49,11 @@ implements TelegramCallbackHandler {
 
 
         private readonly marketBubbleMessageFormatter:
-            MarketBubbleMessageFormatter
+            MarketBubbleMessageFormatter,
+
+
+        private readonly telegramNavigationService:
+            TelegramNavigationService
 
 
     ) {}
@@ -103,6 +115,8 @@ implements TelegramCallbackHandler {
 
 
 
+
+
         return {
 
 
@@ -118,7 +132,13 @@ implements TelegramCallbackHandler {
 
                     response.data as any
 
-                )
+                ),
+
+
+
+            replyMarkup:
+
+                this.telegramNavigationService.getMarketMenu()
 
 
 
