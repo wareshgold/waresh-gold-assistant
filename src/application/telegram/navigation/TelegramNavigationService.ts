@@ -14,7 +14,10 @@ import {
 
 
 
+
+
 export interface TelegramNavigationService {
+
 
 
     getMainMenu():
@@ -58,6 +61,9 @@ export interface TelegramNavigationService {
 
 
 
+
+
+
 export class DefaultTelegramNavigationService
 
 implements TelegramNavigationService {
@@ -68,15 +74,20 @@ implements TelegramNavigationService {
 
 
         private readonly catalog:
+
             TelegramNavigationCatalog = new TelegramNavigationCatalog(),
 
 
 
         private readonly keyboardBuilder:
+
             TelegramInlineKeyboardBuilder = new TelegramInlineKeyboardBuilder()
 
 
     ) {}
+
+
+
 
 
 
@@ -93,7 +104,11 @@ implements TelegramNavigationService {
 
         );
 
+
     }
+
+
+
 
 
 
@@ -110,7 +125,11 @@ implements TelegramNavigationService {
 
         );
 
+
     }
+
+
+
 
 
 
@@ -127,7 +146,11 @@ implements TelegramNavigationService {
 
         );
 
+
     }
+
+
+
 
 
 
@@ -144,7 +167,11 @@ implements TelegramNavigationService {
 
         );
 
+
     }
+
+
+
 
 
 
@@ -161,7 +188,11 @@ implements TelegramNavigationService {
 
         );
 
+
     }
+
+
+
 
 
 
@@ -189,7 +220,6 @@ implements TelegramNavigationService {
 
                             "⬅️ بازگشت",
 
-
                         actionId:
 
                             "menu:main",
@@ -202,7 +232,9 @@ implements TelegramNavigationService {
 
         };
 
+
     }
+
 
 
 }

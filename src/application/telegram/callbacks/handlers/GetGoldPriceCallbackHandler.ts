@@ -16,6 +16,13 @@ import {
 from "../../../usecases/GetGoldPriceUseCase";
 
 
+import {
+    TelegramNavigationService
+}
+from "../../navigation/TelegramNavigationService";
+
+
+
 
 
 export class GetGoldPriceCallbackHandler
@@ -26,10 +33,21 @@ implements TelegramCallbackHandler {
 
     constructor(
 
+
         private readonly getGoldPriceUseCase:
-            GetGoldPriceUseCase
+
+            GetGoldPriceUseCase,
+
+
+
+        private readonly telegramNavigationService:
+
+            TelegramNavigationService
+
 
     ) {}
+
+
 
 
 
@@ -61,6 +79,10 @@ implements TelegramCallbackHandler {
 
 
 
+
+
+
+
     async execute(
 
         context:
@@ -69,7 +91,80 @@ implements TelegramCallbackHandler {
     ): Promise<any> {
 
 
-        return this.getGoldPriceUseCase.execute();
+
+        const response =
+
+            await this.getGoldPriceUseCase.execute();
+
+
+
+
+
+        return {
+
+
+            ...response,
+
+
+
+            replyMarkup: {
+
+
+                type:
+
+                    "INLINE",
+
+
+
+                rows: [
+
+
+
+                    [
+
+                        {
+
+                            text:
+
+                                "📊 بازگشت به بازار",
+
+
+                            actionId:
+
+                                "menu:market",
+
+                        }
+
+                    ],
+
+
+
+
+                    [
+
+                        {
+
+                            text:
+
+                                "🏠 منوی اصلی",
+
+
+                            actionId:
+
+                                "menu:main",
+
+                        }
+
+                    ]
+
+
+
+                ]
+
+            }
+
+
+        };
 
 
     }

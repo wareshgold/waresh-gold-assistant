@@ -19,18 +19,26 @@ import {
 
 
 
+
+
 export class OpenMainMenuCallbackHandler
 
 implements TelegramCallbackHandler {
 
 
 
+
     constructor(
 
+
         private readonly telegramNavigationService:
+
             TelegramNavigationService
 
+
     ) {}
+
+
 
 
 
@@ -57,12 +65,14 @@ implements TelegramCallbackHandler {
 
 
 
+
     async execute(
 
         context:
             TelegramCallbackContext
 
     ):
+
         Promise<TelegramCommandResponse> {
 
 
@@ -91,6 +101,7 @@ implements TelegramCallbackHandler {
 
 
     }
+
 
 
 }
