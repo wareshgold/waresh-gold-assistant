@@ -1,13 +1,12 @@
 import {
     TelegramMenuItem,
-}
-from "../menu/TelegramMenuItem";
+} from "../menu/TelegramMenuItem";
 
 
 import {
     TelegramKeyboardMarkup,
-}
-from "./TelegramKeyboardMarkup";
+} from "./TelegramKeyboardMarkup";
+
 
 
 
@@ -22,10 +21,11 @@ export class TelegramInlineKeyboardBuilder {
     ): TelegramKeyboardMarkup {
 
 
-
         return {
 
+
             type: "INLINE",
+
 
             rows:
 
@@ -33,13 +33,18 @@ export class TelegramInlineKeyboardBuilder {
 
                     item => [
 
+
                         {
 
-                            text: item.label,
+                            text:
+
+                                item.label,
+
 
                             actionId:
 
                                 this.createCallbackData(item),
+
 
                         }
 
@@ -47,9 +52,14 @@ export class TelegramInlineKeyboardBuilder {
 
                 )
 
+
         };
 
+
     }
+
+
+
 
 
 
@@ -63,15 +73,8 @@ export class TelegramInlineKeyboardBuilder {
 
 
 
-        if (item.action.value) {
+        switch(item.id) {
 
-            return item.action.value;
-
-        }
-
-
-
-        switch (item.id) {
 
 
             case "gold.price":
@@ -79,14 +82,17 @@ export class TelegramInlineKeyboardBuilder {
                 return "gold:price";
 
 
+
             case "gold.bubble":
 
                 return "gold:bubble";
 
 
+
             case "gold.calculate":
 
-                return "calculator:start";
+                return "command:calc";
+
 
 
             case "market.analytics":
@@ -94,17 +100,23 @@ export class TelegramInlineKeyboardBuilder {
                 return "market:analytics";
 
 
+
             case "market.history":
 
                 return "market:history";
+
 
 
             default:
 
                 return item.id.replace(".", ":");
 
+
         }
 
+
     }
+
+
 
 }

@@ -7,7 +7,7 @@ export class MarketPrice {
 
     public readonly currencyPrice: number,
 
-    public readonly ouncePrice: number,
+    public readonly ouncePrice: number | null,
 
     public readonly updatedAt: Date
 
@@ -35,7 +35,10 @@ export class MarketPrice {
 
 
 
-    if (ouncePrice <= 0) {
+    if (
+      ouncePrice !== null &&
+      ouncePrice <= 0
+    ) {
 
       throw new Error(
         "Ounce price must be positive"

@@ -30,8 +30,7 @@ export class TelegramCallbackRouter {
 
     ) {
 
-        this.handlers =
-            handlers;
+        this.handlers = handlers;
 
     }
 
@@ -54,15 +53,14 @@ export class TelegramCallbackRouter {
 
 
 
-
     async execute(
 
         context:
             TelegramCallbackContext
 
     ):
-        Promise<any> {
 
+        Promise<any> {
 
 
 
@@ -87,19 +85,26 @@ export class TelegramCallbackRouter {
         if (!handler) {
 
 
+            console.log(
+                "UNKNOWN CALLBACK:",
+                context.data,
+                context.callback
+            );
+
+
+
             return {
 
 
                 content:
 
-                    "عملیات نامعتبر است"
+                    `عملیات نامعتبر است\n\n${context.data}`
 
 
             };
 
 
         }
-
 
 
 

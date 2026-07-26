@@ -10,6 +10,12 @@ import {
 from "./TelegramMessageBuilder";
 
 
+import {
+    TelegramDateFormatter
+}
+from "./TelegramDateFormatter";
+
+
 
 export class GoldPriceMessageFormatter {
 
@@ -17,7 +23,11 @@ export class GoldPriceMessageFormatter {
     constructor(
 
         private readonly builder:
-            TelegramMessageBuilder
+            TelegramMessageBuilder,
+
+
+        private readonly dateFormatter:
+            TelegramDateFormatter
 
     ) {}
 
@@ -41,16 +51,19 @@ export class GoldPriceMessageFormatter {
         return this.builder.build([
 
 
-            "💰 قیمت لحظه‌ای طلا",
+            "🟡 قیمت لحظه‌ای طلا",
+
 
             "",
 
-            "🟡 طلای ۱۸ عیار",
+
+            "💰 طلای ۱۸ عیار",
 
             `${this.number(metadata.gold18Price)} تومان`,
 
 
             "",
+
 
             "💵 دلار",
 
@@ -59,12 +72,14 @@ export class GoldPriceMessageFormatter {
 
             "",
 
+
             "🌎 اونس جهانی",
 
             `${this.number(metadata.ouncePrice)} دلار`,
 
 
             "",
+
 
             "🕒 بروزرسانی",
 
@@ -74,6 +89,7 @@ export class GoldPriceMessageFormatter {
 
 
     }
+
 
 
 
@@ -91,7 +107,8 @@ export class GoldPriceMessageFormatter {
 
             ? new Intl.NumberFormat(
                 "fa-IR"
-            ).format(
+            )
+            .format(
                 Math.round(value)
             )
 
@@ -99,6 +116,8 @@ export class GoldPriceMessageFormatter {
 
 
     }
+
+
 
 
 
@@ -114,13 +133,12 @@ export class GoldPriceMessageFormatter {
 
         return value
 
-            ? new Date(
-                value as string
-            ).toLocaleString(
-                "fa-IR",
-                {
-                    timeZone: "Asia/Tehran"
-                }
+            ? this.dateFormatter.format(
+
+                new Date(
+                    value as string
+                )
+
             )
 
             : "-";

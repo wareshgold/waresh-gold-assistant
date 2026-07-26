@@ -6,6 +6,7 @@ from "./TelegramActionResolver";
 
 
 export class TelegramTextActionResolver
+
 implements TelegramActionResolver {
 
 
@@ -17,7 +18,6 @@ implements TelegramActionResolver {
 
 
 
-
     constructor() {
 
 
@@ -25,32 +25,32 @@ implements TelegramActionResolver {
 
 
             [
-                "💰 قیمت طلا",
-                "gold.price"
+                "price",
+                "/price"
             ],
 
 
             [
-                "🫧 حباب طلا",
-                "gold.bubble"
+                "bubble",
+                "/bubble"
             ],
 
 
             [
-                "🧮 محاسبه طلا",
-                "gold.calculate"
+                "calc",
+                "/calc"
             ],
 
 
             [
-                "📈 تحلیل بازار",
-                "market.analytics"
+                "analytics",
+                "/analytics"
             ],
 
 
             [
-                "📜 تاریخچه قیمت",
-                "market.history"
+                "history",
+                "/history"
             ]
 
 
@@ -65,7 +65,8 @@ implements TelegramActionResolver {
 
     resolve(
 
-        actionId: string
+        actionId:
+            string
 
     ): string | undefined {
 

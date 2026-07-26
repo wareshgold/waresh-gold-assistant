@@ -12,7 +12,9 @@ from "../mappers/TelegramCallbackMapper";
 
 
 
+
 export class TelegramCallbackProcessor {
+
 
 
 
@@ -35,12 +37,24 @@ export class TelegramCallbackProcessor {
 
 
 
+
+
     async process(
 
         update:
             any
 
     ): Promise<any> {
+
+
+
+        console.log(
+
+            "CALLBACK RAW DATA:",
+
+            update.callback_query?.data
+
+        );
 
 
 
@@ -55,12 +69,56 @@ export class TelegramCallbackProcessor {
 
 
 
+        console.log(
 
-        return this.router.execute(
+            "CALLBACK CONTEXT:",
 
-            context
+            JSON.stringify(
+
+                context,
+
+                null,
+
+                2
+
+            )
 
         );
+
+
+
+
+        const response =
+
+            await this.router.execute(
+
+                context
+
+            );
+
+
+
+
+        console.log(
+
+            "CALLBACK RESPONSE:",
+
+            JSON.stringify(
+
+                response,
+
+                null,
+
+                2
+
+            )
+
+        );
+
+
+
+
+        return response;
 
 
     }

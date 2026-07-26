@@ -1,14 +1,7 @@
-export interface ParsedMarketPrice {
-
-    gold18Price: number;
-
-    currencyPrice: number;
-
-    ouncePrice: number;
-
-    updatedAt: Date;
-
+import {
+    MarketPrice
 }
+from "../../../domain/market/entities/MarketPrice";
 
 
 
@@ -18,34 +11,41 @@ export class TelegramPriceParser {
 
     static parse(
         message: string
-    ): ParsedMarketPrice {
+    ): MarketPrice {
+
+
+        const normalized =
+            this.normalizeDigits(message);
 
 
 
-        const goldMatch =
-            message.match(
-                /طلای\s*۱۸\s*عیار:\s*([0-9۰-۹٠-٩,]+)/m
+        const gold18Price =
+            this.extractNumber(
+                normalized,
+                /(?:طلای\s*18\s*عیار|طلای\s*۱۸\s*عیار|۱۸\s*عیار)\s*[:：]\s*([\d,]+)/i
             );
 
 
 
-        const currencyMatch =
-            message.match(
-                /(?:دلار\s*تهران|تتر|دلار):\s*([0-9۰-۹٠-٩,]+)/m
+        const currencyPrice =
+            this.extractNumber(
+                normalized,
+                /(?:دلار\s*تهران|دلار)\s*[:：]\s*([\d,]+)/i
             );
 
 
 
-        const ounceMatch =
-            message.match(
-                /اونس\s*طلا:\s*([0-9۰-۹٠-٩,]+)/m
+        const ouncePrice =
+            this.extractNumber(
+                normalized,
+                /(?:اونس\s*طلا|اونس|انس\s*طلا)\s*[:：]\s*([\d,]+)/i
             );
 
 
 
         if (
-            !goldMatch ||
-            !currencyMatch
+            gold18Price === null ||
+            currencyPrice === null
         ) {
 
             throw new Error(
@@ -56,38 +56,17 @@ export class TelegramPriceParser {
 
 
 
-        return {
+        return new MarketPrice(
 
-            gold18Price:
-                this.parseNumber(
-                    goldMatch[1]
-                ),
+            gold18Price,
 
+            currencyPrice,
 
+            ouncePrice,
 
-            currencyPrice:
-                this.parseNumber(
-                    currencyMatch[1]
-                ),
+            this.extractDateTime(normalized)
 
-
-
-            ouncePrice:
-                ounceMatch
-                    ? this.parseNumber(
-                        ounceMatch[1]
-                    )
-                    : 0,
-
-
-
-            updatedAt:
-                this.parseTelegramDateTime(
-                    message
-                )
-
-        };
-
+        );
 
     }
 
@@ -95,110 +74,29 @@ export class TelegramPriceParser {
 
 
 
-    private static parseTelegramDateTime(
-        message: string
-    ): Date {
+    private static extractNumber(
+        text: string,
+        regex: RegExp
+    ): number | null {
+
+
+        const match =
+            text.match(regex);
 
 
 
-        const dateMatch =
-            message.match(
-                /(?:تاریخ|📅)\s*[:：]?\s*([0-9۰-۹٠-٩]{4})[\/\-]([0-9۰-۹٠-٩]{1,2})[\/\-]([0-9۰-۹٠-٩]{1,2})/
-            );
+        if (!match) {
 
-
-
-        const timeMatch =
-            message.match(
-                /(?:ساعت|🕒|⏰)\s*[:：]?\s*([0-9۰-۹٠-٩]{1,2})[:：]([0-9۰-۹٠-٩]{1,2})/
-            );
-
-
-
-        if (!dateMatch) {
-
-            return new Date();
+            return null;
 
         }
 
 
 
-        const year =
-            Number(
-                this.convertPersianNumber(
-                    dateMatch[1]
-                )
-            );
-
-
-
-        const month =
-            Number(
-                this.convertPersianNumber(
-                    dateMatch[2]
-                )
-            );
-
-
-
-        const day =
-            Number(
-                this.convertPersianNumber(
-                    dateMatch[3]
-                )
-            );
-
-
-
-        const hour =
-            timeMatch
-                ? Number(
-                    this.convertPersianNumber(
-                        timeMatch[1]
-                    )
-                )
-                : 0;
-
-
-
-        const minute =
-            timeMatch
-                ? Number(
-                    this.convertPersianNumber(
-                        timeMatch[2]
-                    )
-                )
-                : 0;
-
-
-
-        const gregorian =
-            this.jalaliToGregorian(
-                year,
-                month,
-                day
-            );
-
-
-
-        return new Date(
-
-            Date.UTC(
-
-                gregorian.year,
-
-                gregorian.month - 1,
-
-                gregorian.day,
-
-                hour,
-
-                minute
-
-            )
-
+        return Number(
+            match[1]
+                .replace(/,/g, "")
         );
-
 
     }
 
@@ -206,68 +104,9 @@ export class TelegramPriceParser {
 
 
 
-    private static jalaliToGregorian(
-        jy: number,
-        jm: number,
-        jd: number
-    ) {
-
-
-
-        const date =
-            new Date(
-                Date.UTC(
-                    jy + 621,
-                    2,
-                    21
-                )
-            );
-
-
-
-        const days =
-            jd +
-            (
-                jm <= 6
-
-                    ? (jm - 1) * 31
-
-                    : (jm - 7) * 30 + 186
-
-            );
-
-
-
-        date.setUTCDate(
-            date.getUTCDate() + days - 1
-        );
-
-
-
-        return {
-
-            year:
-                date.getUTCFullYear(),
-
-            month:
-                date.getUTCMonth() + 1,
-
-            day:
-                date.getUTCDate()
-
-        };
-
-
-    }
-
-
-
-
-
-    private static convertPersianNumber(
+    private static normalizeDigits(
         value: string
     ): string {
-
 
 
         return value
@@ -277,19 +116,14 @@ export class TelegramPriceParser {
                 digit =>
                     String(
                         "۰۱۲۳۴۵۶۷۸۹"
-                        .indexOf(digit)
+                            .indexOf(digit)
                     )
             )
 
             .replace(
-                /[٠-٩]/g,
-                digit =>
-                    String(
-                        "٠١٢٣٤٥٦٧٨٩"
-                        .indexOf(digit)
-                    )
+                /[٬]/g,
+                ","
             );
-
 
     }
 
@@ -297,24 +131,46 @@ export class TelegramPriceParser {
 
 
 
-    private static parseNumber(
-        value: string
-    ): number {
+    private static extractDateTime(
+        text: string
+    ): Date {
+
+
+        const timeMatch =
+            text.match(
+                /ساعت\s*[:：]\s*(\d{1,2}):(\d{1,2})/
+            );
 
 
 
-        return Number(
+        if (!timeMatch) {
 
-            this.convertPersianNumber(
-                value
-            )
-            .replace(
-                /,/g,
-                ""
-            )
+            return new Date();
+
+        }
+
+
+
+        const date =
+            new Date();
+
+
+
+        date.setUTCHours(
+
+            Number(timeMatch[1]),
+
+            Number(timeMatch[2]),
+
+            0,
+
+            0
 
         );
 
+
+
+        return date;
 
     }
 

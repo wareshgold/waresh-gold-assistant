@@ -70,6 +70,13 @@ import {
 from "../presentation/MarketBubbleMessageFormatter";
 
 
+import {
+    TelegramDateFormatter
+}
+from "../presentation/TelegramDateFormatter";
+
+
+
 
 
 
@@ -177,7 +184,9 @@ export class TelegramCallbackRegistry {
 
                 new GetMarketHistoryCallbackHandler(
 
-                    getMarketHistoryUseCase
+                    getMarketHistoryUseCase,
+
+                    new TelegramDateFormatter()
 
                 )
 

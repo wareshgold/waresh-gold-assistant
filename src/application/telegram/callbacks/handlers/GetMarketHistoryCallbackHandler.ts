@@ -16,6 +16,13 @@ import {
 from "../../../market/GetMarketHistoryUseCase";
 
 
+import {
+    TelegramDateFormatter
+}
+from "../../presentation/TelegramDateFormatter";
+
+
+
 
 
 export class GetMarketHistoryCallbackHandler
@@ -26,10 +33,18 @@ implements TelegramCallbackHandler {
 
     constructor(
 
+
         private readonly getMarketHistoryUseCase:
-            GetMarketHistoryUseCase
+            GetMarketHistoryUseCase,
+
+
+        private readonly dateFormatter:
+            TelegramDateFormatter
+
 
     ) {}
+
+
 
 
 
@@ -62,6 +77,7 @@ implements TelegramCallbackHandler {
 
 
 
+
     async execute(
 
         context:
@@ -77,29 +93,70 @@ implements TelegramCallbackHandler {
 
 
 
+
+        if (!result.items.length) {
+
+
+            return {
+
+                content:
+
+                    "📜 تاریخچه‌ای موجود نیست"
+
+            };
+
+        }
+
+
+
+
+
+
+        const lines =
+
+            result.items.map(
+
+                (item, index) => {
+
+
+                    return (
+
+                        `${index + 1}️⃣\n` +
+
+                        `💰 طلا: ${item.gold18Price.toLocaleString("fa-IR")} تومان\n` +
+
+                        `💵 دلار: ${item.currencyPrice.toLocaleString("fa-IR")} تومان\n` +
+
+                        `🌎 اونس: ${item.ouncePrice.toLocaleString("fa-IR")} دلار\n` +
+
+                        `🕒 ${this.dateFormatter.format(item.capturedAt)}\n`
+
+                    );
+
+
+                }
+
+            );
+
+
+
+
+
+
+
         return {
 
 
             content:
 
-                result.items.length
 
-                    ? result.items
+                "📜 تاریخچه قیمت طلا\n\n" +
 
-                        .map(
+                lines.join("\n") +
 
-                            item =>
+                "\n━━━━━━━━━━━━━━\n" +
 
-                                JSON.stringify(item)
-
-                        )
-
-                        .join("\n")
-
-                    :
-
-                    "📜 تاریخچه‌ای موجود نیست"
-
+                "🟡 Waresh Gold Assistant"
 
 
         };
