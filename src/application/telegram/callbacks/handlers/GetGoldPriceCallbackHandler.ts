@@ -31,7 +31,9 @@ implements TelegramCallbackHandler {
 
 
 
+
     constructor(
+
 
 
         private readonly getGoldPriceUseCase:
@@ -45,7 +47,10 @@ implements TelegramCallbackHandler {
             TelegramNavigationService
 
 
+
     ) {}
+
+
 
 
 
@@ -59,6 +64,7 @@ implements TelegramCallbackHandler {
             TelegramCallbackContext
 
     ): boolean {
+
 
 
         return (
@@ -82,7 +88,6 @@ implements TelegramCallbackHandler {
 
 
 
-
     async execute(
 
         context:
@@ -92,9 +97,11 @@ implements TelegramCallbackHandler {
 
 
 
+
         const response =
 
             await this.getGoldPriceUseCase.execute();
+
 
 
 
@@ -120,27 +127,33 @@ implements TelegramCallbackHandler {
 
 
 
+
                     [
+
 
                         {
 
                             text:
 
-                                "📊 بازگشت به بازار",
+                                "⬅️ بازگشت به بازار",
 
 
                             actionId:
 
                                 "menu:market",
 
+
                         }
+
 
                     ],
 
 
 
 
+
                     [
+
 
                         {
 
@@ -153,7 +166,9 @@ implements TelegramCallbackHandler {
 
                                 "menu:main",
 
+
                         }
+
 
                     ]
 
@@ -168,6 +183,8 @@ implements TelegramCallbackHandler {
 
 
     }
+
+
 
 
 }

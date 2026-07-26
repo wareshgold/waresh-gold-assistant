@@ -22,6 +22,12 @@ import {
 from "../../presentation/TelegramDateFormatter";
 
 
+import {
+    TelegramNavigationService
+}
+from "../../navigation/TelegramNavigationService";
+
+
 
 
 
@@ -31,18 +37,31 @@ implements TelegramCallbackHandler {
 
 
 
+
     constructor(
 
 
+
         private readonly getMarketHistoryUseCase:
+
             GetMarketHistoryUseCase,
 
 
+
         private readonly dateFormatter:
-            TelegramDateFormatter
+
+            TelegramDateFormatter,
+
+
+
+        private readonly telegramNavigationService:
+
+            TelegramNavigationService
+
 
 
     ) {}
+
 
 
 
@@ -56,6 +75,7 @@ implements TelegramCallbackHandler {
             TelegramCallbackContext
 
     ): boolean {
+
 
 
         return (
@@ -79,7 +99,6 @@ implements TelegramCallbackHandler {
 
 
 
-
     async execute(
 
         context:
@@ -88,9 +107,11 @@ implements TelegramCallbackHandler {
     ): Promise<any> {
 
 
+
         const result =
 
             await this.getMarketHistoryUseCase.execute(5);
+
 
 
 
@@ -103,11 +124,20 @@ implements TelegramCallbackHandler {
 
                 content:
 
-                    "📜 تاریخچه‌ای موجود نیست"
+                    "📜 تاریخچه‌ای پیدا نشد",
+
+
+                replyMarkup:
+
+                    this.telegramNavigationService.getMarketMenu()
+
 
             };
 
+
         }
+
+
 
 
 
@@ -126,14 +156,14 @@ implements TelegramCallbackHandler {
 
                         `${index + 1}️⃣\n` +
 
-                        `🟡 طلا: ${item.gold18Price.toLocaleString("fa-IR")} تومان\n` +
+                        `💰 طلا: ${item.gold18Price.toLocaleString("fa-IR")} تومان\n` +
 
                         `💵 دلار: ${item.currencyPrice.toLocaleString("fa-IR")} تومان\n` +
 
                         `🌎 اونس: ${
                             item.ouncePrice !== null
                                 ? item.ouncePrice.toLocaleString("fa-IR")
-                                : "ناموجود"
+                                : "نامشخص"
                         } دلار\n` +
 
                         `🕒 ${this.dateFormatter.format(item.capturedAt)}\n`
@@ -151,19 +181,32 @@ implements TelegramCallbackHandler {
 
 
 
+
         return {
+
+
+            type:
+
+                "text",
+
 
 
             content:
 
 
-                "📈 تاریخچه قیمت طلا\n\n" +
+                "📜 تاریخچه قیمت بازار\n\n" +
 
                 lines.join("\n") +
 
-                "\n────────────\n" +
+                "\n\n🟡 Waresh Gold",
 
-                "🟡 Waresh Gold Assistant"
+
+
+
+            replyMarkup:
+
+                this.telegramNavigationService.getMarketMenu()
+
 
 
         };
