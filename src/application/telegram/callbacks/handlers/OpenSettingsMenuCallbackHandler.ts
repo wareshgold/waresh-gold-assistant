@@ -28,6 +28,12 @@ import {
 } from "../../menu/TelegramMenuAction";
 
 
+import {
+    TelegramNavigationMenuFactory,
+} from "../../menu/TelegramNavigationMenuFactory";
+
+
+
 
 export class OpenSettingsMenuCallbackHandler
 
@@ -36,7 +42,15 @@ implements TelegramCallbackHandler {
 
 
     private readonly keyboardBuilder =
+
         new TelegramInlineKeyboardBuilder();
+
+
+
+
+    private readonly navigationMenuFactory =
+
+        new TelegramNavigationMenuFactory();
 
 
 
@@ -61,6 +75,8 @@ implements TelegramCallbackHandler {
 
 
 
+
+
     async execute(
 
         context:
@@ -79,16 +95,25 @@ implements TelegramCallbackHandler {
 
                 {
 
-                    id: "settings.alerts",
+                    id:
 
-                    label: "🔔 هشدار قیمت",
+                        "settings.alerts",
+
+
+                    label:
+
+                        "🔔 هشدار قیمت",
+
 
                     action: {
 
                         type:
+
                             TelegramMenuActionType.CALLBACK,
 
+
                         value:
+
                             "settings:alerts",
 
                     },
@@ -98,18 +123,28 @@ implements TelegramCallbackHandler {
 
 
 
+
                 {
 
-                    id: "settings.account",
+                    id:
 
-                    label: "👤 حساب کاربری",
+                        "settings.account",
+
+
+                    label:
+
+                        "👤 حساب کاربری",
+
 
                     action: {
 
                         type:
+
                             TelegramMenuActionType.CALLBACK,
 
+
                         value:
+
                             "settings:account",
 
                     },
@@ -119,23 +154,39 @@ implements TelegramCallbackHandler {
 
 
 
+
                 {
 
-                    id: "settings.bot",
+                    id:
 
-                    label: "🔧 تنظیمات بات",
+                        "settings.bot",
+
+
+                    label:
+
+                        "🔧 تنظیمات بات",
+
 
                     action: {
 
                         type:
+
                             TelegramMenuActionType.CALLBACK,
 
+
                         value:
+
                             "settings:bot",
 
                     },
 
                 },
+
+
+
+
+
+                this.navigationMenuFactory.createBackMenuItem(),
 
 
 
@@ -146,10 +197,14 @@ implements TelegramCallbackHandler {
 
 
 
+
+
+
         return {
 
 
             type:
+
                 "text",
 
 
@@ -163,6 +218,7 @@ implements TelegramCallbackHandler {
             replyMarkup:
 
                 this.keyboardBuilder.build(items),
+
 
 
         };

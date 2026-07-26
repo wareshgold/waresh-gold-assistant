@@ -28,6 +28,11 @@ import {
 } from "../../menu/TelegramMenuAction";
 
 
+import {
+    TelegramNavigationMenuFactory,
+} from "../../menu/TelegramNavigationMenuFactory";
+
+
 
 export class OpenAssistantMenuCallbackHandler
 
@@ -37,6 +42,12 @@ implements TelegramCallbackHandler {
 
     private readonly keyboardBuilder =
         new TelegramInlineKeyboardBuilder();
+
+
+
+    private readonly navigationMenuFactory =
+        new TelegramNavigationMenuFactory();
+
 
 
 
@@ -55,6 +66,7 @@ implements TelegramCallbackHandler {
 
 
     }
+
 
 
 
@@ -139,7 +151,13 @@ implements TelegramCallbackHandler {
 
 
 
+
+                this.navigationMenuFactory.createBackMenuItem(),
+
+
+
             ];
+
 
 
 
