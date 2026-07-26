@@ -54,6 +54,14 @@ import { TelegramCallbackMapper }
 from "../../application/telegram/mappers/TelegramCallbackMapper";
 
 
+import { TelegramMessageBuilder }
+from "../../application/telegram/presentation/TelegramMessageBuilder";
+
+
+import { MarketAnalyticsMessageFormatter }
+from "../../application/telegram/presentation/MarketAnalyticsMessageFormatter";
+
+
 
 
 
@@ -200,6 +208,23 @@ export function createTelegramModule(
 
 
 
+    const marketAnalyticsMessageFormatter =
+
+
+        new MarketAnalyticsMessageFormatter(
+
+
+            new TelegramMessageBuilder()
+
+
+        );
+
+
+
+
+
+
+
     const botClient =
 
 
@@ -227,6 +252,7 @@ export function createTelegramModule(
 
 
 
+
     const callbackRouter =
 
 
@@ -242,10 +268,14 @@ export function createTelegramModule(
             dependencies.getMarketAnalyticsUseCase,
 
 
-            dependencies.getMarketHistoryUseCase
+            dependencies.getMarketHistoryUseCase,
+
+
+            marketAnalyticsMessageFormatter
 
 
         );
+
 
 
 
@@ -267,6 +297,7 @@ export function createTelegramModule(
 
 
         );
+
 
 
 
@@ -317,7 +348,10 @@ export function createTelegramModule(
 
 
 
+
+
         );
+
 
 
 
@@ -353,6 +387,7 @@ export function createTelegramModule(
 
 
         );
+
 
 
 

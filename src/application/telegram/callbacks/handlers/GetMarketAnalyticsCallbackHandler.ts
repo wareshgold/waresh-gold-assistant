@@ -16,6 +16,12 @@ import {
 from "../../../market/GetMarketAnalyticsUseCase";
 
 
+import {
+    MarketAnalyticsMessageFormatter
+}
+from "../../presentation/MarketAnalyticsMessageFormatter";
+
+
 
 
 export class GetMarketAnalyticsCallbackHandler
@@ -26,10 +32,17 @@ implements TelegramCallbackHandler {
 
     constructor(
 
+
         private readonly getMarketAnalyticsUseCase:
-            GetMarketAnalyticsUseCase
+            GetMarketAnalyticsUseCase,
+
+
+        private readonly marketAnalyticsMessageFormatter:
+            MarketAnalyticsMessageFormatter
+
 
     ) {}
+
 
 
 
@@ -61,6 +74,8 @@ implements TelegramCallbackHandler {
 
 
 
+
+
     async execute(
 
         context:
@@ -72,6 +87,8 @@ implements TelegramCallbackHandler {
         const result =
 
             await this.getMarketAnalyticsUseCase.execute();
+
+
 
 
 
@@ -96,12 +113,15 @@ implements TelegramCallbackHandler {
 
 
 
+
+
+
         return {
 
 
             content:
 
-                JSON.stringify(
+                this.marketAnalyticsMessageFormatter.format(
 
                     result.analytics
 

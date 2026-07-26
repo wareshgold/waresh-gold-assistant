@@ -3,9 +3,13 @@ import {
 } from "./TelegramCallbackContext";
 
 
+import {
+  TelegramCommandResponse,
+} from "../commands/TelegramCommandHandler";
+
+
 
 export interface TelegramCallbackHandler {
-
 
 
     canHandle(
@@ -19,15 +23,12 @@ export interface TelegramCallbackHandler {
 
 
 
-
     execute(
 
         context:
             TelegramCallbackContext
 
     ):
-        Promise<any>;
-
-
+        Promise<TelegramCommandResponse | string>;
 
 }
