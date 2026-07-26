@@ -17,7 +17,7 @@ export interface RawMarketPrice {
     currencyPrice: number;
 
 
-    ouncePrice: number;
+    ouncePrice: number | null;
 
 
     updatedAt: Date;

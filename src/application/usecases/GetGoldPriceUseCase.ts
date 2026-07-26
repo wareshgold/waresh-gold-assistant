@@ -73,7 +73,11 @@ export class GetGoldPriceUseCase {
 
                     `🌎 اونس جهانی:`,
 
-                    `${this.formatNumber(price.ouncePrice)} دلار`,
+                    `${
+                        price.ouncePrice !== null
+                            ? this.formatNumber(price.ouncePrice)
+                            : "ناموجود"
+                    } دلار`,
 
                     "",
 

@@ -32,6 +32,16 @@ export class GoldBubbleCalculator {
 
 
 
+        if (marketPrice.ouncePrice === null) {
+
+            throw new Error(
+                "Cannot calculate gold bubble without ounce price"
+            );
+
+        }
+
+
+
         const gram24kPrice =
 
             (

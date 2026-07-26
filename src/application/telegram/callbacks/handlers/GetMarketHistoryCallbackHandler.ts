@@ -78,6 +78,8 @@ implements TelegramCallbackHandler {
 
 
 
+
+
     async execute(
 
         context:
@@ -112,6 +114,7 @@ implements TelegramCallbackHandler {
 
 
 
+
         const lines =
 
             result.items.map(
@@ -123,11 +126,15 @@ implements TelegramCallbackHandler {
 
                         `${index + 1}️⃣\n` +
 
-                        `💰 طلا: ${item.gold18Price.toLocaleString("fa-IR")} تومان\n` +
+                        `🟡 طلا: ${item.gold18Price.toLocaleString("fa-IR")} تومان\n` +
 
                         `💵 دلار: ${item.currencyPrice.toLocaleString("fa-IR")} تومان\n` +
 
-                        `🌎 اونس: ${item.ouncePrice.toLocaleString("fa-IR")} دلار\n` +
+                        `🌎 اونس: ${
+                            item.ouncePrice !== null
+                                ? item.ouncePrice.toLocaleString("fa-IR")
+                                : "ناموجود"
+                        } دلار\n` +
 
                         `🕒 ${this.dateFormatter.format(item.capturedAt)}\n`
 
@@ -150,11 +157,11 @@ implements TelegramCallbackHandler {
             content:
 
 
-                "📜 تاریخچه قیمت طلا\n\n" +
+                "📈 تاریخچه قیمت طلا\n\n" +
 
                 lines.join("\n") +
 
-                "\n━━━━━━━━━━━━━━\n" +
+                "\n────────────\n" +
 
                 "🟡 Waresh Gold Assistant"
 

@@ -12,16 +12,16 @@ export interface MarketPriceSource {
 export interface MarketPriceResult {
 
 
-    gold18Price:number;
+    gold18Price: number;
 
 
-    currencyPrice:number;
+    currencyPrice: number;
 
 
-    ouncePrice:number;
+    ouncePrice: number | null;
 
 
-    updatedAt:Date;
+    updatedAt: Date;
 
 
 }

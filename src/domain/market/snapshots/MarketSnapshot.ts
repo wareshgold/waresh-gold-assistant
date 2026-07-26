@@ -7,7 +7,7 @@ export class MarketSnapshot {
 
         public readonly currencyPrice: number,
 
-        public readonly ouncePrice: number,
+        public readonly ouncePrice: number | null,
 
         public readonly capturedAt: Date,
 
@@ -37,7 +37,10 @@ export class MarketSnapshot {
 
 
 
-        if (ouncePrice <= 0) {
+        if (
+            ouncePrice !== null &&
+            ouncePrice <= 0
+        ) {
 
             throw new Error(
                 "Snapshot ounce price must be positive"
@@ -60,7 +63,7 @@ export class MarketSnapshot {
 
             currencyPrice: number;
 
-            ouncePrice: number;
+            ouncePrice: number | null;
 
             updatedAt: Date;
 

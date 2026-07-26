@@ -152,11 +152,15 @@ implements TelegramCommandHandler {
 
                     return [
 
-                        `${index + 1}) 💰 ${item.gold18Price.toLocaleString("fa-IR")} تومان`,
+                        `${index + 1}) 🟡 ${item.gold18Price.toLocaleString("fa-IR")} تومان`,
 
                         `💵 دلار: ${item.currencyPrice.toLocaleString("fa-IR")}`,
 
-                        `🌎 اونس: ${item.ouncePrice.toLocaleString("fa-IR")}`,
+                        `🌎 اونس: ${
+                            item.ouncePrice !== null
+                                ? item.ouncePrice.toLocaleString("fa-IR")
+                                : "ناموجود"
+                        }`,
 
                         `🕒 ${item.capturedAt.toLocaleString("fa-IR")}`
 
@@ -166,7 +170,6 @@ implements TelegramCommandHandler {
                 }
 
             );
-
 
 
 
