@@ -35,6 +35,12 @@ from "./handlers/GetMarketHistoryCallbackHandler";
 
 
 import {
+    OpenMarketMenuCallbackHandler
+}
+from "./handlers/OpenMarketMenuCallbackHandler";
+
+
+import {
     GetGoldPriceUseCase
 }
 from "../../usecases/GetGoldPriceUseCase";
@@ -79,11 +85,7 @@ from "../presentation/TelegramDateFormatter";
 
 
 
-
-
-
 export class TelegramCallbackRegistry {
-
 
 
 
@@ -131,12 +133,14 @@ export class TelegramCallbackRegistry {
 
 
 
-
         const handlers:
 
             TelegramCallbackHandler[] = [
 
 
+
+
+                new OpenMarketMenuCallbackHandler(),
 
 
 
@@ -147,8 +151,6 @@ export class TelegramCallbackRegistry {
                     getGoldPriceUseCase
 
                 ),
-
-
 
 
 
@@ -166,8 +168,6 @@ export class TelegramCallbackRegistry {
 
 
 
-
-
                 new GetMarketAnalyticsCallbackHandler(
 
                     getMarketAnalyticsUseCase,
@@ -175,8 +175,6 @@ export class TelegramCallbackRegistry {
                     marketAnalyticsMessageFormatter
 
                 ),
-
-
 
 
 
@@ -193,7 +191,6 @@ export class TelegramCallbackRegistry {
 
 
             ];
-
 
 
 
