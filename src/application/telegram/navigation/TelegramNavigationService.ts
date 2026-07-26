@@ -1,56 +1,180 @@
-import { TelegramKeyboard } from "../types/TelegramKeyboard";
+import {
+    TelegramKeyboardMarkup,
+} from "../keyboards/TelegramKeyboardMarkup";
+
 
 
 export interface TelegramNavigationService {
-    mainMenu(): TelegramKeyboard;
 
-    backMenu(): TelegramKeyboard;
+    mainMenu():
+
+        TelegramKeyboardMarkup;
+
+
+    backMenu():
+
+        TelegramKeyboardMarkup;
+
 }
 
 
+
+
+
+
 export class DefaultTelegramNavigationService
-    implements TelegramNavigationService {
 
-    mainMenu(): TelegramKeyboard {
+implements TelegramNavigationService {
+
+
+
+    mainMenu():
+
+        TelegramKeyboardMarkup {
+
+
         return {
-            inline_keyboard: [
+
+
+            type:
+
+                "INLINE",
+
+
+
+            rows: [
+
+
                 [
+
                     {
-                        text: "💰 قیمت طلا",
-                        callback_data: "gold_price",
+
+                        text:
+
+                            "💰 قیمت لحظه‌ای",
+
+
+                        actionId:
+
+                            "gold:price",
+
                     },
+
+
                     {
-                        text: "🧮 محاسبه طلا",
-                        callback_data: "calculate_gold",
+
+                        text:
+
+                            "🧮 محاسبه طلا",
+
+
+                        actionId:
+
+                            "calculate:gold-price",
+
                     },
+
                 ],
+
+
+
+
                 [
+
                     {
-                        text: "📊 حباب طلا",
-                        callback_data: "gold_bubble",
+
+                        text:
+
+                            "🫧 حباب طلا",
+
+
+                        actionId:
+
+                            "gold:bubble",
+
                     },
+
                 ],
+
+
+
+
                 [
+
                     {
-                        text: "ℹ️ راهنما",
-                        callback_data: "help",
+
+                        text:
+
+                            "❓ راهنما",
+
+
+                        actionId:
+
+                            "help",
+
                     },
+
                 ],
+
+
+
             ],
+
+
         };
+
+
     }
 
 
-    backMenu(): TelegramKeyboard {
+
+
+
+
+
+    backMenu():
+
+        TelegramKeyboardMarkup {
+
+
         return {
-            inline_keyboard: [
+
+
+            type:
+
+                "INLINE",
+
+
+
+            rows: [
+
+
                 [
+
                     {
-                        text: "🏠 منوی اصلی",
-                        callback_data: "main_menu",
+
+                        text:
+
+                            "⬅️ بازگشت",
+
+
+                        actionId:
+
+                            "menu:main",
+
                     },
+
                 ],
+
+
             ],
+
+
         };
+
+
     }
+
+
+
 }
