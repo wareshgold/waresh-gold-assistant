@@ -1,69 +1,89 @@
 import { TelegramUpdateMapper }
 from "../../infrastructure/telegram/TelegramUpdateMapper";
 
+
 import { TelegramHttpBotClient }
 from "../../infrastructure/telegram/clients/TelegramHttpBotClient";
+
 
 import { FakeTelegramBotClient }
 from "../../infrastructure/telegram/FakeTelegramBotClient";
 
+
 import { TelegramCommandRegistry }
 from "../../application/telegram/commands/TelegramCommandRegistry";
+
 
 import { TelegramCommandService }
 from "../../application/telegram/services/TelegramCommandService";
 
+
 import { TelegramMessageHandler }
 from "../../application/telegram/TelegramMessageHandler";
+
 
 import { TelegramResponseFormatter }
 from "../../application/telegram/TelegramResponseFormatter";
 
+
 import { TelegramUpdateProcessor }
 from "../../application/telegram/services/TelegramUpdateProcessor";
+
 
 import { TelegramConversationManager }
 from "../../application/telegram/flows/TelegramConversationManager";
 
+
 import { GoldCalculationConversationFlow }
 from "../../application/telegram/flows/GoldCalculationConversationFlow";
+
 
 import { TelegramWebhookController }
 from "../../interfaces/telegram/TelegramWebhookController";
 
+
 import { TelegramWebhookSecurityGuard }
 from "../../interfaces/telegram/TelegramWebhookSecurityGuard";
+
 
 import { AppEnv }
 from "../../shared/config/env";
 
+
 import { TelegramKeyboardMapper }
 from "../../infrastructure/telegram/TelegramKeyboardMapper";
+
 
 import { TelegramCallbackRegistry }
 from "../../application/telegram/callbacks/TelegramCallbackRegistry";
 
+
 import { TelegramCallbackProcessor }
 from "../../application/telegram/services/TelegramCallbackProcessor";
+
 
 import { TelegramCallbackMapper }
 from "../../application/telegram/mappers/TelegramCallbackMapper";
 
+
 import { TelegramMessageBuilder }
 from "../../application/telegram/presentation/TelegramMessageBuilder";
+
 
 import { MarketAnalyticsMessageFormatter }
 from "../../application/telegram/presentation/MarketAnalyticsMessageFormatter";
 
+
 import { MarketBubbleMessageFormatter }
 from "../../application/telegram/presentation/MarketBubbleMessageFormatter";
 
-import { TelegramNavigationCatalog }
-from "../../application/telegram/navigation/TelegramNavigationCatalog";
+
+import { TelegramNavigationService }
+from "../../application/telegram/navigation/TelegramNavigationService";
+
 
 import { DefaultTelegramNavigationService }
 from "../../application/telegram/navigation/TelegramNavigationService";
-
 
 
 
@@ -94,6 +114,8 @@ interface Dependencies {
 
 
 
+
+
 export function createTelegramModule(
 
     env: AppEnv,
@@ -101,6 +123,7 @@ export function createTelegramModule(
     dependencies: Dependencies
 
 ) {
+
 
 
 
@@ -138,6 +161,7 @@ export function createTelegramModule(
 
 
 
+
     const marketAnalyticsMessageFormatter =
 
 
@@ -148,6 +172,7 @@ export function createTelegramModule(
 
 
         );
+
 
 
 
@@ -171,16 +196,15 @@ export function createTelegramModule(
 
 
 
-    const telegramNavigationService =
+
+    const telegramNavigationService:
+
+        TelegramNavigationService =
 
 
-        new DefaultTelegramNavigationService(
+            new DefaultTelegramNavigationService();
 
 
-            new TelegramNavigationCatalog()
-
-
-        );
 
 
 
@@ -222,6 +246,8 @@ export function createTelegramModule(
 
 
 
+
+
     const commandService =
 
 
@@ -235,6 +261,8 @@ export function createTelegramModule(
 
 
         );
+
+
 
 
 
@@ -260,6 +288,8 @@ export function createTelegramModule(
 
 
 
+
+
     const botClient =
 
 
@@ -268,14 +298,15 @@ export function createTelegramModule(
 
             ? new TelegramHttpBotClient(
 
-
                 env.TELEGRAM_BOT_TOKEN
-
 
             )
 
 
             : new FakeTelegramBotClient();
+
+
+
 
 
 
@@ -316,6 +347,8 @@ export function createTelegramModule(
 
 
 
+
+
     const callbackProcessor =
 
 
@@ -329,6 +362,8 @@ export function createTelegramModule(
 
 
         );
+
+
 
 
 
@@ -366,6 +401,8 @@ export function createTelegramModule(
 
 
 
+
+
     const webhookController =
 
 
@@ -380,11 +417,12 @@ export function createTelegramModule(
 
                 env.TELEGRAM_WEBHOOK_SECRET
 
-
             )
 
 
         );
+
+
 
 
 
@@ -399,15 +437,12 @@ export function createTelegramModule(
 
         telegramMessageHandler:
 
-
             messageHandler,
 
 
         telegramWebhookController:
 
-
             webhookController
-
 
     };
 

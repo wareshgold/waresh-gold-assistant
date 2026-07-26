@@ -1,50 +1,55 @@
 import {
-    TelegramMenuItem,
-} from "../menu/TelegramMenuItem";
+    TelegramKeyboardMarkup,
+} from "../keyboards/TelegramKeyboardMarkup";
 
 
 import {
     TelegramNavigationCatalog,
-    TelegramNavigationMenuId,
 } from "./TelegramNavigationCatalog";
 
 
+import {
+    TelegramInlineKeyboardBuilder,
+} from "../keyboards/TelegramInlineKeyboardBuilder";
 
 
 
 export interface TelegramNavigationService {
 
 
-    getMenu(
-        menuId:
-            TelegramNavigationMenuId
-    ):
-        TelegramMenuItem[];
-
-
-
     getMainMenu():
-        TelegramMenuItem[];
+
+        TelegramKeyboardMarkup;
 
 
 
     getMarketMenu():
-        TelegramMenuItem[];
+
+        TelegramKeyboardMarkup;
 
 
 
     getCalculatorMenu():
-        TelegramMenuItem[];
+
+        TelegramKeyboardMarkup;
 
 
 
     getAssistantMenu():
-        TelegramMenuItem[];
+
+        TelegramKeyboardMarkup;
 
 
 
     getSettingsMenu():
-        TelegramMenuItem[];
+
+        TelegramKeyboardMarkup;
+
+
+
+    backMenu():
+
+        TelegramKeyboardMarkup;
 
 
 }
@@ -61,8 +66,15 @@ implements TelegramNavigationService {
 
     constructor(
 
+
         private readonly catalog:
-            TelegramNavigationCatalog
+            TelegramNavigationCatalog = new TelegramNavigationCatalog(),
+
+
+
+        private readonly keyboardBuilder:
+            TelegramInlineKeyboardBuilder = new TelegramInlineKeyboardBuilder()
+
 
     ) {}
 
@@ -70,36 +82,14 @@ implements TelegramNavigationService {
 
 
 
-    getMenu(
-
-        menuId:
-            TelegramNavigationMenuId
-
-    ):
-        TelegramMenuItem[] {
-
-
-        return this.catalog.get(
-
-            menuId
-
-        );
-
-
-    }
-
-
-
-
-
     getMainMenu():
 
-        TelegramMenuItem[] {
+        TelegramKeyboardMarkup {
 
 
-        return this.getMenu(
+        return this.keyboardBuilder.build(
 
-            "main"
+            this.catalog.get("main")
 
         );
 
@@ -111,12 +101,12 @@ implements TelegramNavigationService {
 
     getMarketMenu():
 
-        TelegramMenuItem[] {
+        TelegramKeyboardMarkup {
 
 
-        return this.getMenu(
+        return this.keyboardBuilder.build(
 
-            "market"
+            this.catalog.get("market")
 
         );
 
@@ -128,12 +118,12 @@ implements TelegramNavigationService {
 
     getCalculatorMenu():
 
-        TelegramMenuItem[] {
+        TelegramKeyboardMarkup {
 
 
-        return this.getMenu(
+        return this.keyboardBuilder.build(
 
-            "calculate"
+            this.catalog.get("calculate")
 
         );
 
@@ -145,12 +135,12 @@ implements TelegramNavigationService {
 
     getAssistantMenu():
 
-        TelegramMenuItem[] {
+        TelegramKeyboardMarkup {
 
 
-        return this.getMenu(
+        return this.keyboardBuilder.build(
 
-            "assistant"
+            this.catalog.get("assistant")
 
         );
 
@@ -162,17 +152,57 @@ implements TelegramNavigationService {
 
     getSettingsMenu():
 
-        TelegramMenuItem[] {
+        TelegramKeyboardMarkup {
 
 
-        return this.getMenu(
+        return this.keyboardBuilder.build(
 
-            "settings"
+            this.catalog.get("settings")
 
         );
 
     }
 
+
+
+
+
+    backMenu():
+
+        TelegramKeyboardMarkup {
+
+
+        return {
+
+            type:
+
+                "INLINE",
+
+
+            rows: [
+
+                [
+
+                    {
+
+                        text:
+
+                            "⬅️ بازگشت",
+
+
+                        actionId:
+
+                            "menu:main",
+
+                    }
+
+                ]
+
+            ]
+
+        };
+
+    }
 
 
 }
