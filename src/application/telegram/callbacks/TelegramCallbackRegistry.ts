@@ -10,6 +10,7 @@ import {
 from "./TelegramCallbackHandler";
 
 
+
 import {
     GetGoldPriceCallbackHandler
 }
@@ -64,6 +65,7 @@ import {
 from "./handlers/OpenMainMenuCallbackHandler";
 
 
+
 import {
     GetGoldPriceUseCase
 }
@@ -88,6 +90,7 @@ import {
 from "../../market/GetMarketHistoryUseCase";
 
 
+
 import {
     MarketAnalyticsMessageFormatter
 }
@@ -106,10 +109,12 @@ import {
 from "../presentation/TelegramDateFormatter";
 
 
+
 import {
-    TelegramMenuService
+    TelegramNavigationService
 }
-from "../menu/TelegramMenuService";
+from "../navigation/TelegramNavigationService";
+
 
 
 import {
@@ -121,7 +126,11 @@ from "../keyboards/TelegramInlineKeyboardBuilder";
 
 
 
+
+
 export class TelegramCallbackRegistry {
+
+
 
 
 
@@ -129,32 +138,55 @@ export class TelegramCallbackRegistry {
     static create(
 
 
+
+
         getGoldPriceUseCase:
+
             GetGoldPriceUseCase,
 
 
+
+
         getGoldBubbleUseCase:
+
             GetGoldBubbleUseCase,
 
 
+
+
         getMarketAnalyticsUseCase:
+
             GetMarketAnalyticsUseCase,
 
 
+
+
         getMarketHistoryUseCase:
+
             GetMarketHistoryUseCase,
 
 
+
+
         marketAnalyticsMessageFormatter:
+
             MarketAnalyticsMessageFormatter,
 
 
+
+
         marketBubbleMessageFormatter:
+
             MarketBubbleMessageFormatter,
 
 
-        telegramMenuService:
-            TelegramMenuService
+
+
+        telegramNavigationService:
+
+            TelegramNavigationService
+
+
 
 
 
@@ -162,19 +194,31 @@ export class TelegramCallbackRegistry {
 
 
 
+
+
+
         const handlers:
+
+
 
             TelegramCallbackHandler[] = [
 
 
 
+
+
                 new OpenMainMenuCallbackHandler(
 
-                    telegramMenuService,
+
+                    telegramNavigationService,
+
 
                     new TelegramInlineKeyboardBuilder()
 
+
                 ),
+
+
 
 
 
@@ -182,11 +226,17 @@ export class TelegramCallbackRegistry {
 
 
 
+
+
                 new OpenCalculatorMenuCallbackHandler(),
 
 
 
+
+
                 new OpenAssistantMenuCallbackHandler(),
+
+
 
 
 
@@ -195,42 +245,61 @@ export class TelegramCallbackRegistry {
 
 
 
+
+
                 new GetGoldPriceCallbackHandler(
+
 
                     getGoldPriceUseCase
 
+
                 ),
+
+
 
 
 
 
                 new GetGoldBubbleCallbackHandler(
 
+
                     getGoldBubbleUseCase,
+
 
                     marketBubbleMessageFormatter
 
+
                 ),
+
+
 
 
 
 
                 new GetMarketAnalyticsCallbackHandler(
 
+
                     getMarketAnalyticsUseCase,
 
+
                     marketAnalyticsMessageFormatter
+
 
                 ),
 
 
 
 
+
+
                 new GetMarketHistoryCallbackHandler(
+
 
                     getMarketHistoryUseCase,
 
+
                     new TelegramDateFormatter()
+
 
                 )
 
@@ -241,14 +310,24 @@ export class TelegramCallbackRegistry {
 
 
 
+
+
+
         return new TelegramCallbackRouter(
 
+
             handlers
+
 
         );
 
 
+
     }
+
+
+
+
 
 
 

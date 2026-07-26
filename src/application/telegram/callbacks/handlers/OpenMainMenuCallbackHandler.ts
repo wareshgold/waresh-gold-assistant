@@ -19,8 +19,9 @@ import {
 
 
 import {
-    TelegramMenuService,
-} from "../../menu/TelegramMenuService";
+    TelegramNavigationService,
+} from "../../navigation/TelegramNavigationService";
+
 
 
 
@@ -32,12 +33,15 @@ implements TelegramCallbackHandler {
 
     constructor(
 
-        private readonly telegramMenuService:
-            TelegramMenuService,
+
+        private readonly telegramNavigationService:
+            TelegramNavigationService,
+
 
 
         private readonly telegramInlineKeyboardBuilder:
             TelegramInlineKeyboardBuilder
+
 
     ) {}
 
@@ -65,6 +69,7 @@ implements TelegramCallbackHandler {
 
 
 
+
     async execute(
 
         context:
@@ -77,7 +82,10 @@ implements TelegramCallbackHandler {
 
         const menuItems =
 
-            this.telegramMenuService.getMainMenu();
+
+            this.telegramNavigationService.getMainMenu();
+
+
 
 
 
@@ -101,11 +109,15 @@ implements TelegramCallbackHandler {
 
             replyMarkup:
 
+
                 this.telegramInlineKeyboardBuilder.build(
+
 
                     menuItems
 
+
                 ),
+
 
 
         };

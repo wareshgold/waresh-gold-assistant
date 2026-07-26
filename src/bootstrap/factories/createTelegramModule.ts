@@ -58,11 +58,11 @@ from "../../application/telegram/presentation/MarketAnalyticsMessageFormatter";
 import { MarketBubbleMessageFormatter }
 from "../../application/telegram/presentation/MarketBubbleMessageFormatter";
 
-import { TelegramMenuService }
-from "../../application/telegram/menu/TelegramMenuService";
+import { TelegramNavigationCatalog }
+from "../../application/telegram/navigation/TelegramNavigationCatalog";
 
-import { MemoryTelegramMenuRegistry }
-from "../../application/telegram/menu/MemoryTelegramMenuRegistry";
+import { DefaultTelegramNavigationService }
+from "../../application/telegram/navigation/TelegramNavigationService";
 
 
 
@@ -170,13 +170,14 @@ export function createTelegramModule(
 
 
 
-    const telegramMenuService =
+
+    const telegramNavigationService =
 
 
-        new TelegramMenuService(
+        new DefaultTelegramNavigationService(
 
 
-            new MemoryTelegramMenuRegistry()
+            new TelegramNavigationCatalog()
 
 
         );
@@ -221,7 +222,6 @@ export function createTelegramModule(
 
 
 
-
     const commandService =
 
 
@@ -235,7 +235,6 @@ export function createTelegramModule(
 
 
         );
-
 
 
 
@@ -261,7 +260,6 @@ export function createTelegramModule(
 
 
 
-
     const botClient =
 
 
@@ -278,7 +276,6 @@ export function createTelegramModule(
 
 
             : new FakeTelegramBotClient();
-
 
 
 
@@ -309,11 +306,10 @@ export function createTelegramModule(
             marketBubbleMessageFormatter,
 
 
-            telegramMenuService
+            telegramNavigationService
 
 
         );
-
 
 
 
@@ -333,7 +329,6 @@ export function createTelegramModule(
 
 
         );
-
 
 
 
@@ -371,7 +366,6 @@ export function createTelegramModule(
 
 
 
-
     const webhookController =
 
 
@@ -391,7 +385,6 @@ export function createTelegramModule(
 
 
         );
-
 
 
 

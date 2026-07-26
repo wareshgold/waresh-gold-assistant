@@ -1,22 +1,53 @@
 import {
-    TelegramKeyboardMarkup,
-} from "../keyboards/TelegramKeyboardMarkup";
+    TelegramMenuItem,
+} from "../menu/TelegramMenuItem";
+
+
+import {
+    TelegramNavigationCatalog,
+    TelegramNavigationMenuId,
+} from "./TelegramNavigationCatalog";
+
+
 
 
 
 export interface TelegramNavigationService {
 
-    mainMenu():
 
-        TelegramKeyboardMarkup;
+    getMenu(
+        menuId:
+            TelegramNavigationMenuId
+    ):
+        TelegramMenuItem[];
 
 
-    backMenu():
 
-        TelegramKeyboardMarkup;
+    getMainMenu():
+        TelegramMenuItem[];
+
+
+
+    getMarketMenu():
+        TelegramMenuItem[];
+
+
+
+    getCalculatorMenu():
+        TelegramMenuItem[];
+
+
+
+    getAssistantMenu():
+        TelegramMenuItem[];
+
+
+
+    getSettingsMenu():
+        TelegramMenuItem[];
+
 
 }
-
 
 
 
@@ -28,100 +59,31 @@ implements TelegramNavigationService {
 
 
 
-    mainMenu():
+    constructor(
 
-        TelegramKeyboardMarkup {
+        private readonly catalog:
+            TelegramNavigationCatalog
 
-
-        return {
-
-
-            type:
-
-                "INLINE",
-
-
-
-            rows: [
-
-
-                [
-
-                    {
-
-                        text:
-
-                            "💰 قیمت لحظه‌ای",
-
-
-                        actionId:
-
-                            "gold:price",
-
-                    },
-
-
-                    {
-
-                        text:
-
-                            "🧮 محاسبه طلا",
-
-
-                        actionId:
-
-                            "calculate:gold-price",
-
-                    },
-
-                ],
+    ) {}
 
 
 
 
-                [
 
-                    {
+    getMenu(
 
-                        text:
+        menuId:
+            TelegramNavigationMenuId
 
-                            "🫧 حباب طلا",
-
-
-                        actionId:
-
-                            "gold:bubble",
-
-                    },
-
-                ],
+    ):
+        TelegramMenuItem[] {
 
 
+        return this.catalog.get(
 
+            menuId
 
-                [
-
-                    {
-
-                        text:
-
-                            "❓ راهنما",
-
-
-                        actionId:
-
-                            "help",
-
-                    },
-
-                ],
-
-
-
-            ],
-
-
-        };
+        );
 
 
     }
@@ -130,48 +92,84 @@ implements TelegramNavigationService {
 
 
 
+    getMainMenu():
+
+        TelegramMenuItem[] {
 
 
-    backMenu():
+        return this.getMenu(
 
-        TelegramKeyboardMarkup {
+            "main"
 
+        );
 
-        return {
-
-
-            type:
-
-                "INLINE",
+    }
 
 
 
-            rows: [
 
 
-                [
+    getMarketMenu():
 
-                    {
-
-                        text:
-
-                            "⬅️ بازگشت",
+        TelegramMenuItem[] {
 
 
-                        actionId:
+        return this.getMenu(
 
-                            "menu:main",
+            "market"
 
-                    },
+        );
 
-                ],
-
-
-            ],
+    }
 
 
-        };
 
+
+
+    getCalculatorMenu():
+
+        TelegramMenuItem[] {
+
+
+        return this.getMenu(
+
+            "calculate"
+
+        );
+
+    }
+
+
+
+
+
+    getAssistantMenu():
+
+        TelegramMenuItem[] {
+
+
+        return this.getMenu(
+
+            "assistant"
+
+        );
+
+    }
+
+
+
+
+
+    getSettingsMenu():
+
+        TelegramMenuItem[] {
+
+
+        return this.getMenu(
+
+            "settings"
+
+        );
 
     }
 
