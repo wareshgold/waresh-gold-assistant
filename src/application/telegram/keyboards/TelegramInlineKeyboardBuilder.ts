@@ -11,16 +11,13 @@ from "./TelegramKeyboardMarkup";
 
 
 
-
 export class TelegramInlineKeyboardBuilder {
-
 
 
 
     build(
 
-        items:
-            TelegramMenuItem[]
+        items: TelegramMenuItem[]
 
     ): TelegramKeyboardMarkup {
 
@@ -28,14 +25,7 @@ export class TelegramInlineKeyboardBuilder {
 
         return {
 
-
-
-            type:
-
-                "INLINE",
-
-
-
+            type: "INLINE",
 
             rows:
 
@@ -43,41 +33,23 @@ export class TelegramInlineKeyboardBuilder {
 
                     item => [
 
-
                         {
 
-
-                            text:
-
-                                item.label,
-
-
+                            text: item.label,
 
                             actionId:
 
-                                this.createCallbackData(
-
-                                    item
-
-                                ),
-
-
+                                this.createCallbackData(item),
 
                         }
-
 
                     ]
 
                 )
 
-
-
         };
 
-
     }
-
-
 
 
 
@@ -85,19 +57,21 @@ export class TelegramInlineKeyboardBuilder {
 
     private createCallbackData(
 
-        item:
-            TelegramMenuItem
+        item: TelegramMenuItem
 
     ): string {
 
 
 
-        switch (
+        if (item.action.value) {
 
-            item.id
+            return item.action.value;
 
-        ) {
+        }
 
+
+
+        switch (item.id) {
 
 
             case "gold.price":
@@ -105,11 +79,9 @@ export class TelegramInlineKeyboardBuilder {
                 return "gold:price";
 
 
-
             case "gold.bubble":
 
                 return "gold:bubble";
-
 
 
             case "gold.calculate":
@@ -117,11 +89,9 @@ export class TelegramInlineKeyboardBuilder {
                 return "calculator:start";
 
 
-
             case "market.analytics":
 
                 return "market:analytics";
-
 
 
             case "market.history":
@@ -129,23 +99,12 @@ export class TelegramInlineKeyboardBuilder {
                 return "market:history";
 
 
-
             default:
 
-                return item.id.replace(
-
-                    ".",
-
-                    ":"
-
-                );
-
+                return item.id.replace(".", ":");
 
         }
 
-
     }
-
-
 
 }
