@@ -124,6 +124,30 @@ export class TelegramUpdateProcessor {
 
 
 
+            const replyMarkup =
+
+
+                typeof response === "string"
+
+
+                    ? undefined
+
+
+                    : response.replyMarkup
+
+                        ? this.keyboardMapper.map(
+
+                            response.replyMarkup
+
+                        )
+
+                        : undefined;
+
+
+
+
+
+
             await this.botClient.sendMessage({
 
 
@@ -139,6 +163,9 @@ export class TelegramUpdateProcessor {
                 text:
 
                     formattedResponse,
+
+
+                replyMarkup,
 
 
                 parseMode:
@@ -161,10 +188,12 @@ export class TelegramUpdateProcessor {
 
 
 
+
         const message =
 
 
             this.mapper.map(update);
+
 
 
 
@@ -199,6 +228,7 @@ export class TelegramUpdateProcessor {
 
 
 
+
         const formattedResponse =
 
 
@@ -207,6 +237,7 @@ export class TelegramUpdateProcessor {
                 response
 
             );
+
 
 
 
@@ -233,6 +264,7 @@ export class TelegramUpdateProcessor {
                     )
 
                     : undefined;
+
 
 
 
