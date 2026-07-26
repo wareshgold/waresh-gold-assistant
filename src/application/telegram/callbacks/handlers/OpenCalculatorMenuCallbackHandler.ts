@@ -23,21 +23,9 @@ from "../../keyboards/TelegramInlineKeyboardBuilder";
 
 
 import {
-    TelegramMenuItem,
+    TelegramCalculatorMenu,
 }
-from "../../menu/TelegramMenuItem";
-
-
-import {
-    TelegramMenuActionType,
-}
-from "../../menu/TelegramMenuAction";
-
-
-import {
-    TelegramNavigationMenuFactory,
-}
-from "../../menu/TelegramNavigationMenuFactory";
+from "../../menu/TelegramCalculatorMenu";
 
 
 
@@ -52,12 +40,6 @@ implements TelegramCallbackHandler {
 
     private readonly keyboardBuilder =
         new TelegramInlineKeyboardBuilder();
-
-
-
-
-    private readonly navigationMenuFactory =
-        new TelegramNavigationMenuFactory();
 
 
 
@@ -96,101 +78,10 @@ implements TelegramCallbackHandler {
 
 
 
-        const items:
 
-            TelegramMenuItem[] = [
+        const items =
 
-
-
-                {
-
-                    id:
-                        "calculate.gold-price",
-
-
-                    label:
-                        "💰 محاسبه قیمت طلا",
-
-
-                    action: {
-
-                        type:
-                            TelegramMenuActionType.CALLBACK,
-
-
-                        value:
-                            "calculate:gold-price",
-
-                    },
-
-                },
-
-
-
-
-
-
-                {
-
-                    id:
-                        "calculate.invoice",
-
-
-                    label:
-                        "🧾 محاسبه فاکتور",
-
-
-                    action: {
-
-                        type:
-                            TelegramMenuActionType.CALLBACK,
-
-
-                        value:
-                            "calculate:invoice",
-
-                    },
-
-                },
-
-
-
-
-
-
-                {
-
-                    id:
-                        "calculate.formula",
-
-
-                    label:
-                        "🧮 حل فرمول طلا",
-
-
-                    action: {
-
-                        type:
-                            TelegramMenuActionType.CALLBACK,
-
-
-                        value:
-                            "calculate:formula",
-
-                    },
-
-                },
-
-
-
-
-
-
-                this.navigationMenuFactory.createBackMenuItem(),
-
-
-
-            ];
+            TelegramCalculatorMenu;
 
 
 
@@ -203,6 +94,7 @@ implements TelegramCallbackHandler {
 
 
             type:
+
                 "text",
 
 
@@ -213,17 +105,21 @@ implements TelegramCallbackHandler {
 
 
 
-
             replyMarkup:
 
-                this.keyboardBuilder.build(items),
+                this.keyboardBuilder.build(
 
+                    items
+
+                ),
 
 
         };
 
 
     }
+
+
 
 
 }

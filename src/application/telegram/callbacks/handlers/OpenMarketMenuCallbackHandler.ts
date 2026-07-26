@@ -19,18 +19,10 @@ import {
 
 
 import {
-    TelegramMenuItem,
-} from "../../menu/TelegramMenuItem";
+    TelegramMarketMenu,
+} from "../../menu/TelegramMarketMenu";
 
 
-import {
-    TelegramMenuActionType,
-} from "../../menu/TelegramMenuAction";
-
-
-import {
-    TelegramNavigationMenuFactory,
-} from "../../menu/TelegramNavigationMenuFactory";
 
 
 
@@ -40,13 +32,9 @@ implements TelegramCallbackHandler {
 
 
 
+
     private readonly keyboardBuilder =
         new TelegramInlineKeyboardBuilder();
-
-
-
-    private readonly navigationMenuFactory =
-        new TelegramNavigationMenuFactory();
 
 
 
@@ -73,6 +61,8 @@ implements TelegramCallbackHandler {
 
 
 
+
+
     async execute(
 
         context:
@@ -83,100 +73,11 @@ implements TelegramCallbackHandler {
 
 
 
-        const items:
 
-            TelegramMenuItem[] = [
+        const items =
 
+            TelegramMarketMenu;
 
-
-                {
-
-                    id: "gold.price",
-
-                    label: "💰 قیمت لحظه‌ای",
-
-                    action: {
-
-                        type:
-                            TelegramMenuActionType.CALLBACK,
-
-                        value:
-                            "gold:price",
-
-                    },
-
-                },
-
-
-
-
-                {
-
-                    id: "market.history",
-
-                    label: "📜 تاریخچه قیمت",
-
-                    action: {
-
-                        type:
-                            TelegramMenuActionType.CALLBACK,
-
-                        value:
-                            "market:history",
-
-                    },
-
-                },
-
-
-
-
-                {
-
-                    id: "gold.bubble",
-
-                    label: "🫧 حباب طلا",
-
-                    action: {
-
-                        type:
-                            TelegramMenuActionType.CALLBACK,
-
-                        value:
-                            "gold:bubble",
-
-                    },
-
-                },
-
-
-
-
-                {
-
-                    id: "market.analytics",
-
-                    label: "📈 تحلیل بازار",
-
-                    action: {
-
-                        type:
-                            TelegramMenuActionType.CALLBACK,
-
-                        value:
-                            "market:analytics",
-
-                    },
-
-                },
-
-
-
-                this.navigationMenuFactory.createBackMenuItem(),
-
-
-
-            ];
 
 
 
@@ -188,6 +89,7 @@ implements TelegramCallbackHandler {
 
 
             type:
+
                 "text",
 
 
@@ -200,13 +102,19 @@ implements TelegramCallbackHandler {
 
             replyMarkup:
 
-                this.keyboardBuilder.build(items),
+                this.keyboardBuilder.build(
+
+                    items
+
+                ),
 
 
         };
 
 
     }
+
+
 
 
 }
