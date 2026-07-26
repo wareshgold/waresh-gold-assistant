@@ -8,64 +8,55 @@ import {
 } from "./TelegramMenuAction";
 
 
+
 export const TelegramMainMenu: TelegramMenuItem[] = [
 
-  {
-    id: "gold.price",
 
-    label: "💰 قیمت طلا",
+  {
+    id: "menu.market",
+
+    label: "📊 بازار",
 
     action: {
-      type: TelegramMenuActionType.COMMAND,
-      value: "price",
+      type: TelegramMenuActionType.CALLBACK,
+      value: "menu:market",
     },
   },
 
 
   {
-    id: "gold.bubble",
+    id: "menu.calculate",
 
-    label: "🫧 حباب طلا",
+    label: "🧮 محاسبات",
 
     action: {
-      type: TelegramMenuActionType.COMMAND,
-      value: "bubble",
+      type: TelegramMenuActionType.CALLBACK,
+      value: "menu:calculate",
     },
   },
 
 
   {
-    id: "gold.calculate",
+    id: "menu.assistant",
 
-    label: "🧮 محاسبه طلا",
+    label: "🤖 دستیار",
 
     action: {
-      type: TelegramMenuActionType.COMMAND,
-      value: "calc",
+      type: TelegramMenuActionType.CALLBACK,
+      value: "menu:assistant",
     },
   },
 
 
   {
-    id: "market.analytics",
+    id: "menu.settings",
 
-    label: "📈 تحلیل بازار",
+    label: "⚙️ تنظیمات",
 
     action: {
-      type: TelegramMenuActionType.COMMAND,
-      value: "analytics",
+      type: TelegramMenuActionType.CALLBACK,
+      value: "menu:settings",
     },
   },
 
-
-  {
-    id: "market.history",
-
-    label: "📜 تاریخچه قیمت",
-
-    action: {
-      type: TelegramMenuActionType.COMMAND,
-      value: "history",
-    },
-  },
 ];

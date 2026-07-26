@@ -3,6 +3,7 @@ import {
 } from "./TelegramMenuItem";
 
 
+
 export class TelegramMenuCallbackResolver {
 
 
@@ -46,6 +47,30 @@ export class TelegramMenuCallbackResolver {
             case "market.history":
 
                 return "market:history";
+
+
+
+            case "menu.market":
+
+                return "menu:market";
+
+
+
+            case "menu.calculate":
+
+                return "menu:calculate";
+
+
+
+            case "menu.assistant":
+
+                return "menu:assistant";
+
+
+
+            case "menu.settings":
+
+                return "menu:settings";
 
 
 
