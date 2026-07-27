@@ -72,6 +72,7 @@ describe(
 
 
 
+
         it(
             "should return calculated gold response",
             async () => {
@@ -114,12 +115,14 @@ describe(
                     result
                 )
                 .toContain(
-                    "112612050"
+                    "۱۱۲٬۶۱۲٬۰۵۰"
                 );
 
 
             }
         );
+
+
 
 
 

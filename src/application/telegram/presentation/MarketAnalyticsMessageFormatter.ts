@@ -18,6 +18,7 @@ export class MarketAnalyticsMessageFormatter {
     constructor(
 
         private readonly builder:
+
             TelegramMessageBuilder
 
     ) {}
@@ -30,23 +31,28 @@ export class MarketAnalyticsMessageFormatter {
     format(
 
         analytics:
+
             MarketAnalytics
 
     ): string {
 
 
         const change =
+
             analytics.getChange();
 
 
 
         const trend =
+
             analytics.getTrend();
 
 
 
         const range =
+
             analytics.getPriceRange();
+
 
 
 
@@ -64,7 +70,7 @@ export class MarketAnalyticsMessageFormatter {
 
             "🟡 قیمت فعلی",
 
-            `${this.formatNumber(
+            `${this.copyFormat(
                 analytics.getCurrentPrice()
             )} تومان`,
 
@@ -96,9 +102,9 @@ export class MarketAnalyticsMessageFormatter {
 
             "⚡ میزان نوسان",
 
-            `${this.formatNumber(
+            `${this.copyPercent(
                 analytics.getVolatility()
-            )}٪`,
+            )}`,
 
 
 
@@ -108,7 +114,7 @@ export class MarketAnalyticsMessageFormatter {
 
             "📉 محدوده قیمت",
 
-            `${range.formattedMin} - ${range.formattedMax}`,
+            `${this.copyFormat(range.formattedMin)} - ${this.copyFormat(range.formattedMax)}`,
 
 
 
@@ -118,7 +124,7 @@ export class MarketAnalyticsMessageFormatter {
 
             "📌 میانگین",
 
-            `${range.formattedAverage} تومان`,
+            `${this.copyFormat(range.formattedAverage)} تومان`,
 
 
 
@@ -129,13 +135,21 @@ export class MarketAnalyticsMessageFormatter {
             "🕒 زمان تحلیل",
 
             analytics
+
                 .getAnalyzedAt()
+
                 .toLocaleString(
+
                     "fa-IR",
+
                     {
+
                         timeZone:
+
                             "Asia/Tehran"
+
                     }
+
                 )
 
         ]);
@@ -147,9 +161,12 @@ export class MarketAnalyticsMessageFormatter {
 
 
 
+
+
     private translateTrend(
 
         trend:
+
             string
 
     ): string {
@@ -159,22 +176,27 @@ export class MarketAnalyticsMessageFormatter {
 
 
             case "UP":
+
                 return "صعودی";
 
 
             case "DOWN":
+
                 return "نزولی";
 
 
             case "STABLE":
+
                 return "متعادل";
 
 
             case "VOLATILE":
+
                 return "پرنوسان";
 
 
             default:
+
                 return "نامشخص";
 
         }
@@ -187,23 +209,62 @@ export class MarketAnalyticsMessageFormatter {
 
 
 
-    private formatNumber(
+
+
+    private copyFormat(
 
         value:
+
+            number | string
+
+    ): string {
+
+
+        return `\`${value}\``;
+
+
+    }
+
+
+
+
+
+
+
+
+    private copyPercent(
+
+        value:
+
             number
 
     ): string {
 
 
-        return new Intl.NumberFormat(
-            "fa-IR"
-        )
-        .format(
-            Math.round(value)
+        return (
+
+            `\`${
+
+                new Intl.NumberFormat(
+
+                    "fa-IR"
+
+                )
+
+                .format(
+
+                    value
+
+                )
+
+            }٪\``
+
         );
 
 
     }
+
+
 
 
 }

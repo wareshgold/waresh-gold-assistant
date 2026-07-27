@@ -13,7 +13,9 @@ from "./TelegramMessageBuilder";
 
 
 
+
 export class MarketBubbleMessageFormatter {
+
 
 
 
@@ -22,6 +24,7 @@ export class MarketBubbleMessageFormatter {
     constructor(
 
         private readonly builder:
+
             TelegramMessageBuilder
 
     ) {}
@@ -33,20 +36,18 @@ export class MarketBubbleMessageFormatter {
 
 
 
+
     format(
 
         bubble:
+
             GoldBubbleResult
 
     ): string {
 
 
 
-
-
         return this.builder.build([
-
-
 
 
 
@@ -58,23 +59,17 @@ export class MarketBubbleMessageFormatter {
 
 
 
-
-
             "💰 قیمت بازار",
 
 
 
-            `${this.formatNumber(
+            `${this.copyFormat(
                 bubble.marketPrice
             )} تومان`,
 
 
 
-
-
             "",
-
-
 
 
 
@@ -82,17 +77,13 @@ export class MarketBubbleMessageFormatter {
 
 
 
-            `${this.formatNumber(
+            `${this.copyFormat(
                 bubble.intrinsicPrice
             )} تومان`,
 
 
 
-
-
             "",
-
-
 
 
 
@@ -100,11 +91,9 @@ export class MarketBubbleMessageFormatter {
 
 
 
-            `${this.formatNumber(
+            `${this.copyFormat(
                 bubble.bubbleAmount
             )} تومان`,
-
-
 
 
 
@@ -112,16 +101,15 @@ export class MarketBubbleMessageFormatter {
 
 
 
-
-
             "📊 درصد حباب",
 
 
 
-            this.formatPercent(
-                bubble.bubblePercentage
-            )
+            this.copyPercentFormat(
 
+                bubble.bubblePercentage
+
+            )
 
 
 
@@ -139,9 +127,32 @@ export class MarketBubbleMessageFormatter {
 
 
 
+    private copyFormat(
+
+        value:
+
+            number
+
+    ): string {
+
+
+        return `\`${this.formatNumber(value)}\``;
+
+
+    }
+
+
+
+
+
+
+
+
+
     private formatNumber(
 
         value:
+
             number
 
     ): string {
@@ -171,9 +182,10 @@ export class MarketBubbleMessageFormatter {
 
 
 
-    private formatPercent(
+    private copyPercentFormat(
 
         value:
+
             number
 
     ): string {
@@ -182,33 +194,40 @@ export class MarketBubbleMessageFormatter {
 
         return (
 
-            new Intl.NumberFormat(
+            `\`${
 
-                "fa-IR",
+                new Intl.NumberFormat(
 
-                {
+                    "fa-IR",
 
-                    minimumFractionDigits:
-                        2,
+                    {
+
+                        minimumFractionDigits:
+
+                            2,
 
 
-                    maximumFractionDigits:
-                        2
+                        maximumFractionDigits:
 
-                }
+                            2
 
-            )
+                    }
 
-            .format(value)
+                )
 
-            +
+                .format(value)
 
-            "٪"
+            }٪`
+
+            + "`"
 
         );
 
 
+
     }
+
+
 
 
 
