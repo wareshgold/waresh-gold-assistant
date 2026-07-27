@@ -11,6 +11,12 @@ from "../TelegramCallbackContext";
 
 
 import {
+    TelegramCommandResponse,
+}
+from "../../commands/TelegramCommandHandler";
+
+
+import {
     GetMarketHistoryUseCase
 }
 from "../../../market/GetMarketHistoryUseCase";
@@ -26,6 +32,7 @@ import {
     TelegramNavigationService
 }
 from "../../navigation/TelegramNavigationService";
+
 
 
 
@@ -69,6 +76,7 @@ implements TelegramCallbackHandler {
 
 
 
+
     canHandle(
 
         context:
@@ -104,7 +112,9 @@ implements TelegramCallbackHandler {
         context:
             TelegramCallbackContext
 
-    ): Promise<any> {
+    ):
+
+        Promise<TelegramCommandResponse> {
 
 
 
@@ -117,10 +127,17 @@ implements TelegramCallbackHandler {
 
 
 
+
         if (!result.items.length) {
 
 
             return {
+
+
+                type:
+
+                    "text",
+
 
                 content:
 
@@ -174,6 +191,7 @@ implements TelegramCallbackHandler {
                 }
 
             );
+
 
 
 

@@ -11,6 +11,12 @@ from "../TelegramCallbackContext";
 
 
 import {
+    TelegramCommandResponse,
+}
+from "../../commands/TelegramCommandHandler";
+
+
+import {
     GetGoldPriceUseCase
 }
 from "../../../usecases/GetGoldPriceUseCase";
@@ -25,9 +31,14 @@ from "../../navigation/TelegramNavigationService";
 
 
 
+
+
+
 export class GetGoldPriceCallbackHandler
 
 implements TelegramCallbackHandler {
+
+
 
 
 
@@ -93,7 +104,9 @@ implements TelegramCallbackHandler {
         context:
             TelegramCallbackContext
 
-    ): Promise<any> {
+    ):
+
+        Promise<TelegramCommandResponse> {
 
 
 
@@ -107,76 +120,76 @@ implements TelegramCallbackHandler {
 
 
 
+
         return {
 
 
-            ...response,
+            type:
+
+                "text",
 
 
 
-            replyMarkup: {
+            content:
 
-
-                type:
-
-                    "INLINE",
+                response.content,
 
 
 
-                rows: [
+            replyMarkup:
+
+
+                {
+
+                    type:
+
+                        "INLINE",
 
 
 
+                    rows:
 
-                    [
+                        [
 
+                            [
 
-                        {
+                                {
 
-                            text:
+                                    text:
 
-                                "⬅️ بازگشت به بازار",
-
-
-                            actionId:
-
-                                "menu:market",
+                                        "⬅️ بازگشت به بازار",
 
 
-                        }
+                                    actionId:
 
+                                        "menu:market",
 
-                    ],
+                                }
 
-
+                            ],
 
 
 
-                    [
+                            [
+
+                                {
+
+                                    text:
+
+                                        "🏠 منوی اصلی",
 
 
-                        {
+                                    actionId:
 
-                            text:
+                                        "menu:main",
 
-                                "🏠 منوی اصلی",
+                                }
 
+                            ]
 
-                            actionId:
+                        ]
 
-                                "menu:main",
-
-
-                        }
-
-
-                    ]
-
-
-
-                ]
-
-            }
+                }
 
 
         };

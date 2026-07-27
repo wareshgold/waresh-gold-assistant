@@ -11,6 +11,12 @@ from "../TelegramCallbackContext";
 
 
 import {
+    TelegramCommandResponse,
+}
+from "../../commands/TelegramCommandHandler";
+
+
+import {
     GetMarketAnalyticsUseCase
 }
 from "../../../market/GetMarketAnalyticsUseCase";
@@ -30,9 +36,15 @@ from "../../navigation/TelegramNavigationService";
 
 
 
+
+
+
+
 export class GetMarketAnalyticsCallbackHandler
 
 implements TelegramCallbackHandler {
+
+
 
 
 
@@ -52,6 +64,7 @@ implements TelegramCallbackHandler {
 
 
     ) {}
+
 
 
 
@@ -90,12 +103,15 @@ implements TelegramCallbackHandler {
 
 
 
+
     async execute(
 
         context:
             TelegramCallbackContext
 
-    ): Promise<any> {
+    ):
+
+        Promise<TelegramCommandResponse> {
 
 
         const result =
@@ -108,10 +124,16 @@ implements TelegramCallbackHandler {
 
 
 
+
         if (!result.analytics) {
 
 
             return {
+
+
+                type:
+
+                    "text",
 
 
                 content:

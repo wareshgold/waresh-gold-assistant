@@ -11,6 +11,12 @@ from "../TelegramCallbackContext";
 
 
 import {
+    TelegramCommandResponse,
+}
+from "../../commands/TelegramCommandHandler";
+
+
+import {
     GetGoldBubbleUseCase
 }
 from "../../../market/GetGoldBubbleUseCase";
@@ -32,9 +38,13 @@ from "../../navigation/TelegramNavigationService";
 
 
 
+
+
 export class GetGoldBubbleCallbackHandler
 
 implements TelegramCallbackHandler {
+
+
 
 
 
@@ -103,7 +113,9 @@ implements TelegramCallbackHandler {
         context:
             TelegramCallbackContext
 
-    ): Promise<any> {
+    ):
+
+        Promise<TelegramCommandResponse> {
 
 
 
