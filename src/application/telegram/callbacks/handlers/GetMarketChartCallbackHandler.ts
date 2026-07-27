@@ -145,6 +145,7 @@ implements TelegramCallbackHandler {
 
 
 
+
         if (!result.items.length) {
 
 
@@ -177,6 +178,7 @@ implements TelegramCallbackHandler {
 
 
 
+
         const chart =
 
             this.marketChartRenderer.render(
@@ -184,6 +186,7 @@ implements TelegramCallbackHandler {
                 result.items
 
             );
+
 
 
 
@@ -205,12 +208,13 @@ implements TelegramCallbackHandler {
 
 
 
+
         return {
 
 
             type:
 
-                "photo",
+                "document",
 
 
 
@@ -220,12 +224,18 @@ implements TelegramCallbackHandler {
 
 
 
-            photo: {
+            document: {
 
 
-                photo:
+                document:
 
                     image,
+
+
+
+                fileName:
+
+                    "gold-chart.svg",
 
 
 
@@ -248,7 +258,6 @@ implements TelegramCallbackHandler {
 
 
     }
-
 
 
 

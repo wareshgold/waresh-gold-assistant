@@ -150,6 +150,7 @@ export class TelegramUpdateProcessor {
 
 
 
+
         const response =
 
 
@@ -201,13 +202,16 @@ export class TelegramUpdateProcessor {
 
     private async sendResponse(
 
+
         response:
 
             Awaited<ReturnType<TelegramCallbackProcessor["process"]>>,
 
+
         chatId:
 
             string
+
 
     ): Promise<void> {
 
@@ -233,6 +237,8 @@ export class TelegramUpdateProcessor {
                     )
 
                     : undefined;
+
+
 
 
 
@@ -288,6 +294,71 @@ export class TelegramUpdateProcessor {
 
 
         }
+
+
+
+
+
+
+
+
+
+        if (
+
+            typeof response !== "string"
+
+            &&
+
+            response.type === "document"
+
+            &&
+
+            response.document
+
+        ) {
+
+
+
+            await this.botClient.sendDocument({
+
+
+
+                chatId,
+
+
+
+                document:
+
+                    response.document.document,
+
+
+
+                fileName:
+
+                    response.document.fileName,
+
+
+
+                caption:
+
+                    response.document.caption,
+
+
+
+                replyMarkup
+
+
+
+            });
+
+
+
+            return;
+
+
+        }
+
+
 
 
 
