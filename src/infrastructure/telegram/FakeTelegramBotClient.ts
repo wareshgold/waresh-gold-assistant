@@ -1,9 +1,20 @@
-import { TelegramBotClient } from "./TelegramBotClient";
-import { TelegramOutgoingMessage } from "./models/TelegramOutgoingMessage";
+import {
+    TelegramBotClient
+}
+from "./TelegramBotClient";
+
+
+import {
+    TelegramOutgoingMessage
+}
+from "./models/TelegramOutgoingMessage";
+
 
 
 export class FakeTelegramBotClient
+
 implements TelegramBotClient {
+
 
 
     public messages:
@@ -11,13 +22,21 @@ implements TelegramBotClient {
 
 
 
+
+
     async sendMessage(
-        message: TelegramOutgoingMessage
-    ): Promise<void> {
+
+        message:
+            TelegramOutgoingMessage
+
+    ):
+        Promise<void> {
 
 
         this.messages.push(
+
             message
+
         );
 
 
@@ -25,13 +44,55 @@ implements TelegramBotClient {
 
 
 
-    getLastMessage(){
 
-        return this.messages[
-            this.messages.length - 1
-        ];
+
+    async sendPhoto(
+
+        message: {
+
+            chatId:
+                string;
+
+
+            photo:
+                Uint8Array;
+
+
+            caption?:
+                string;
+
+
+            replyMarkup?:
+                TelegramOutgoingMessage["replyMarkup"];
+
+        }
+
+    ):
+        Promise<void> {
+
+
+        this.messages.push({
+
+            chatId:
+
+                message.chatId,
+
+
+            text:
+
+                message.caption ?? "📊 Chart",
+
+
+            replyMarkup:
+
+                message.replyMarkup
+
+
+        });
+
 
     }
+
 
 
 }

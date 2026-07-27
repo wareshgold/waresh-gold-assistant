@@ -1,20 +1,31 @@
-import { TelegramBotClient }
+import {
+    TelegramBotClient
+}
 from "../TelegramBotClient";
 
 
-import { TelegramOutgoingMessage }
+import {
+    TelegramOutgoingMessage
+}
 from "../models/TelegramOutgoingMessage";
 
 
 
+
 export class TelegramHttpBotClient
+
 implements TelegramBotClient {
 
 
 
     constructor(
-        private readonly botToken: string
+
+        private readonly botToken:
+            string
+
     ) {}
+
+
 
 
 
@@ -49,7 +60,6 @@ implements TelegramBotClient {
                     },
 
 
-
                     body:
 
                         JSON.stringify({
@@ -59,11 +69,9 @@ implements TelegramBotClient {
                                 message.chatId,
 
 
-
                             text:
 
                                 message.text,
-
 
 
                             ...(message.parseMode
@@ -77,7 +85,6 @@ implements TelegramBotClient {
                                 }
 
                                 : {}),
-
 
 
 
@@ -105,21 +112,12 @@ implements TelegramBotClient {
 
 
 
-
-
         if (!response.ok) {
-
-
-
-            const error =
-
-                await response.text();
-
 
 
             throw new Error(
 
-                error
+                await response.text()
 
             );
 
@@ -129,6 +127,182 @@ implements TelegramBotClient {
 
 
     }
+
+
+
+
+
+
+
+    async sendPhoto(
+
+        message: {
+
+            chatId:
+                string;
+
+
+            photo:
+                string | Uint8Array;
+
+
+            caption?:
+                string;
+
+
+            replyMarkup?:
+                TelegramOutgoingMessage["replyMarkup"];
+
+        }
+
+    ): Promise<void> {
+
+
+
+        const formData =
+
+            new FormData();
+
+
+
+
+        formData.append(
+
+            "chat_id",
+
+            message.chatId
+
+        );
+
+
+
+
+        if (
+
+            typeof message.photo === "string"
+
+        ) {
+
+
+            formData.append(
+
+                "photo",
+
+                message.photo
+
+            );
+
+
+        }
+
+        else {
+
+
+            formData.append(
+
+                "photo",
+
+                new Blob(
+
+                    [message.photo]
+
+                )
+
+            );
+
+
+        }
+
+
+
+
+
+        if (message.caption) {
+
+
+            formData.append(
+
+                "caption",
+
+                message.caption
+
+            );
+
+
+        }
+
+
+
+
+
+        if (message.replyMarkup) {
+
+
+            formData.append(
+
+                "reply_markup",
+
+                JSON.stringify(
+
+                    message.replyMarkup
+
+                )
+
+            );
+
+
+        }
+
+
+
+
+
+
+
+        const response =
+
+            await fetch(
+
+                `https://api.telegram.org/bot${this.botToken}/sendPhoto`,
+
+                {
+
+                    method:
+
+                        "POST",
+
+
+                    body:
+
+                        formData
+
+
+                }
+
+            );
+
+
+
+
+
+
+
+        if (!response.ok) {
+
+
+            throw new Error(
+
+                await response.text()
+
+            );
+
+
+        }
+
+
+    }
+
+
 
 
 }
