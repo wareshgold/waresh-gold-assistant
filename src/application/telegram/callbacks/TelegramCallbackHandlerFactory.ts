@@ -59,6 +59,12 @@ from "./handlers/OpenMainMenuCallbackHandler";
 
 
 import {
+    BackNavigationCallbackHandler
+}
+from "./handlers/BackNavigationCallbackHandler";
+
+
+import {
     GetGoldPriceUseCase
 }
 from "../../usecases/GetGoldPriceUseCase";
@@ -106,12 +112,20 @@ import {
 from "../navigation/TelegramNavigationService";
 
 
+import {
+    TelegramNavigationStateService
+}
+from "../navigation/TelegramNavigationStateService";
+
+
 
 
 
 
 
 export class TelegramCallbackHandlerFactory {
+
+
 
 
 
@@ -159,7 +173,13 @@ export class TelegramCallbackHandlerFactory {
 
         telegramNavigationService:
 
-            TelegramNavigationService
+            TelegramNavigationService,
+
+
+
+        telegramNavigationStateService:
+
+            TelegramNavigationStateService
 
 
 
@@ -171,6 +191,16 @@ export class TelegramCallbackHandlerFactory {
 
 
         return [
+
+
+
+            new BackNavigationCallbackHandler(
+
+                telegramNavigationService,
+
+                telegramNavigationStateService
+
+            ),
 
 
 

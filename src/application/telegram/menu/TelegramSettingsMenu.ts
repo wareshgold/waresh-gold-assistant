@@ -13,32 +13,29 @@ import {
 } from "./TelegramMenuItems";
 
 
+import {
+    NavigationAction,
+} from "../navigation/NavigationAction";
+
+
 
 export const TelegramSettingsMenu: TelegramMenuItem[] = [
 
 
     {
-
         id:
-
             "settings.alerts",
 
-
         label:
-
             "🔔 تنظیم اعلان‌ها",
 
-
         action: {
 
             type:
-
                 TelegramMenuActionType.CALLBACK,
 
-
             value:
-
-                "settings:alerts",
+                NavigationAction.SETTINGS_ALERTS,
 
         },
 
@@ -46,71 +43,47 @@ export const TelegramSettingsMenu: TelegramMenuItem[] = [
 
 
 
-
-
     {
-
         id:
-
             "settings.account",
 
-
         label:
-
             "👤 حساب کاربری",
-
 
         action: {
 
             type:
-
                 TelegramMenuActionType.CALLBACK,
 
-
             value:
-
-                "settings:account",
+                NavigationAction.SETTINGS_ACCOUNT,
 
         },
 
     },
-
-
 
 
 
     {
-
         id:
-
             "settings.bot",
 
-
         label:
-
             "⚙️ تنظیمات ربات",
-
 
         action: {
 
             type:
-
                 TelegramMenuActionType.CALLBACK,
 
-
             value:
-
-                "settings:bot",
+                NavigationAction.SETTINGS_BOT,
 
         },
 
     },
-
-
-
 
 
     TelegramBackMenuItem,
-
 
 ];

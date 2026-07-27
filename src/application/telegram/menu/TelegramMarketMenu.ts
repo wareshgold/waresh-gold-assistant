@@ -13,8 +13,14 @@ import {
 } from "./TelegramMenuItems";
 
 
+import {
+    NavigationAction,
+} from "../navigation/NavigationAction";
+
+
 
 export const TelegramMarketMenu: TelegramMenuItem[] = [
+
 
     {
         id: "gold.price",
@@ -23,7 +29,7 @@ export const TelegramMarketMenu: TelegramMenuItem[] = [
 
         action: {
             type: TelegramMenuActionType.CALLBACK,
-            value: "gold:price",
+            value: NavigationAction.GOLD_PRICE,
         },
     },
 
@@ -35,7 +41,7 @@ export const TelegramMarketMenu: TelegramMenuItem[] = [
 
         action: {
             type: TelegramMenuActionType.CALLBACK,
-            value: "market:history",
+            value: NavigationAction.MARKET_HISTORY,
         },
     },
 
@@ -47,7 +53,7 @@ export const TelegramMarketMenu: TelegramMenuItem[] = [
 
         action: {
             type: TelegramMenuActionType.CALLBACK,
-            value: "gold:bubble",
+            value: NavigationAction.GOLD_BUBBLE,
         },
     },
 
@@ -59,7 +65,7 @@ export const TelegramMarketMenu: TelegramMenuItem[] = [
 
         action: {
             type: TelegramMenuActionType.CALLBACK,
-            value: "market:analytics",
+            value: NavigationAction.MARKET_ANALYTICS,
         },
     },
 

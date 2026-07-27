@@ -13,28 +13,29 @@ import {
 } from "./TelegramMenuItems";
 
 
+import {
+    NavigationAction,
+} from "../navigation/NavigationAction";
+
+
 
 export const TelegramAssistantMenu: TelegramMenuItem[] = [
 
 
     {
-
         id:
             "assistant.ai",
-
 
         label:
             "🤖 گفتگو با AI",
 
-
         action: {
 
             type:
                 TelegramMenuActionType.CALLBACK,
 
-
             value:
-                "assistant:ai",
+                NavigationAction.ASSISTANT_AI,
 
         },
 
@@ -42,63 +43,47 @@ export const TelegramAssistantMenu: TelegramMenuItem[] = [
 
 
 
-
-
     {
-
         id:
             "assistant.learn",
-
 
         label:
             "📚 آموزش طلا",
 
-
         action: {
 
             type:
                 TelegramMenuActionType.CALLBACK,
 
-
             value:
-                "assistant:learn",
+                NavigationAction.ASSISTANT_LEARN,
 
         },
 
     },
-
-
 
 
 
     {
-
         id:
             "assistant.help",
 
-
         label:
             "❓ راهنما",
-
 
         action: {
 
             type:
                 TelegramMenuActionType.CALLBACK,
 
-
             value:
-                "assistant:help",
+                NavigationAction.ASSISTANT_HELP,
 
         },
 
     },
 
 
-
-
-
     TelegramBackMenuItem,
-
 
 ];

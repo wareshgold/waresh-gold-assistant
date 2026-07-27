@@ -10,6 +10,9 @@ export interface TelegramUserSession {
     data: Record<string, unknown>;
 
 
+    navigationStack?: string[];
+
+
     updatedAt: number;
 
 

@@ -13,28 +13,29 @@ import {
 } from "./TelegramMenuItems";
 
 
+import {
+    NavigationAction,
+} from "../navigation/NavigationAction";
+
+
 
 export const TelegramCalculatorMenu: TelegramMenuItem[] = [
 
 
     {
-
         id:
             "calculate.gold-price",
-
 
         label:
             "🧮 محاسبه قیمت طلا",
 
-
         action: {
 
             type:
                 TelegramMenuActionType.CALLBACK,
 
-
             value:
-                "calculate:gold-price",
+                NavigationAction.CALCULATE_GOLD_PRICE,
 
         },
 
@@ -42,63 +43,47 @@ export const TelegramCalculatorMenu: TelegramMenuItem[] = [
 
 
 
-
-
     {
-
         id:
             "calculate.invoice",
-
 
         label:
             "🧾 محاسبه فاکتور",
 
-
         action: {
 
             type:
                 TelegramMenuActionType.CALLBACK,
 
-
             value:
-                "calculate:invoice",
+                NavigationAction.CALCULATE_INVOICE,
 
         },
 
     },
-
-
 
 
 
     {
-
         id:
             "calculate.formula",
 
-
         label:
             "📐 حل فرمول طلا",
-
 
         action: {
 
             type:
                 TelegramMenuActionType.CALLBACK,
 
-
             value:
-                "calculate:formula",
+                NavigationAction.CALCULATE_FORMULA,
 
         },
 
     },
 
 
-
-
-
     TelegramBackMenuItem,
-
 
 ];

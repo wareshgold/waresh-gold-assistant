@@ -5,6 +5,7 @@ import {
 
 import {
     TelegramNavigationCatalog,
+    TelegramNavigationMenuId,
 } from "./TelegramNavigationCatalog";
 
 
@@ -13,10 +14,24 @@ import {
 } from "../keyboards/TelegramInlineKeyboardBuilder";
 
 
+import {
+    NavigationAction,
+} from "./NavigationAction";
+
+
+import {
+    TelegramNavigationStateService,
+} from "./TelegramNavigationStateService";
 
 
 
 export interface TelegramNavigationService {
+
+
+    getMenu(
+        menuId: TelegramNavigationMenuId
+    ):
+        TelegramKeyboardMarkup;
 
 
 
@@ -63,7 +78,6 @@ export interface TelegramNavigationService {
 
 
 
-
 export class DefaultTelegramNavigationService
 
 implements TelegramNavigationService {
@@ -81,10 +95,43 @@ implements TelegramNavigationService {
 
         private readonly keyboardBuilder:
 
-            TelegramInlineKeyboardBuilder = new TelegramInlineKeyboardBuilder()
+            TelegramInlineKeyboardBuilder = new TelegramInlineKeyboardBuilder(),
+
+
+
+        private readonly navigationState:
+
+            TelegramNavigationStateService | null = null
 
 
     ) {}
+
+
+
+
+
+
+
+    getMenu(
+
+        menuId:
+
+            TelegramNavigationMenuId
+
+    ):
+
+        TelegramKeyboardMarkup {
+
+
+        return this.keyboardBuilder.build(
+
+            this.catalog.get(menuId)
+
+        );
+
+
+    }
+
 
 
 
@@ -98,14 +145,11 @@ implements TelegramNavigationService {
         TelegramKeyboardMarkup {
 
 
-        return this.keyboardBuilder.build(
-
-            this.catalog.get("main")
-
-        );
+        return this.getMenu("main");
 
 
     }
+
 
 
 
@@ -119,14 +163,11 @@ implements TelegramNavigationService {
         TelegramKeyboardMarkup {
 
 
-        return this.keyboardBuilder.build(
-
-            this.catalog.get("market")
-
-        );
+        return this.getMenu("market");
 
 
     }
+
 
 
 
@@ -140,14 +181,11 @@ implements TelegramNavigationService {
         TelegramKeyboardMarkup {
 
 
-        return this.keyboardBuilder.build(
-
-            this.catalog.get("calculate")
-
-        );
+        return this.getMenu("calculate");
 
 
     }
+
 
 
 
@@ -161,14 +199,11 @@ implements TelegramNavigationService {
         TelegramKeyboardMarkup {
 
 
-        return this.keyboardBuilder.build(
-
-            this.catalog.get("assistant")
-
-        );
+        return this.getMenu("assistant");
 
 
     }
+
 
 
 
@@ -182,14 +217,11 @@ implements TelegramNavigationService {
         TelegramKeyboardMarkup {
 
 
-        return this.keyboardBuilder.build(
-
-            this.catalog.get("settings")
-
-        );
+        return this.getMenu("settings");
 
 
     }
+
 
 
 
@@ -220,9 +252,10 @@ implements TelegramNavigationService {
 
                             "⬅️ بازگشت",
 
+
                         actionId:
 
-                            "menu:main",
+                            NavigationAction.BACK,
 
                     }
 

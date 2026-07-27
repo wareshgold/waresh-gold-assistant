@@ -8,26 +8,31 @@ import {
 } from "./TelegramMenuAction";
 
 
+import {
+    NavigationAction,
+} from "../navigation/NavigationAction";
+
+
 
 export const TelegramBackMenuItem: TelegramMenuItem = {
 
 
-    id: "menu.main",
+    id:
+        "menu.main",
 
 
-    label: "⬅️ بازگشت",
+    label:
+        "⬅️ بازگشت",
 
 
     action: {
-
 
         type:
             TelegramMenuActionType.CALLBACK,
 
 
         value:
-            "menu:main",
-
+            NavigationAction.HOME,
 
     },
 

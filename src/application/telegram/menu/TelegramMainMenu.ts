@@ -8,6 +8,11 @@ import {
 } from "./TelegramMenuAction";
 
 
+import {
+  NavigationAction,
+} from "../navigation/NavigationAction";
+
+
 
 export const TelegramMainMenu: TelegramMenuItem[] = [
 
@@ -19,7 +24,7 @@ export const TelegramMainMenu: TelegramMenuItem[] = [
 
     action: {
       type: TelegramMenuActionType.CALLBACK,
-      value: "menu:market",
+      value: NavigationAction.MARKET,
     },
   },
 
@@ -31,7 +36,7 @@ export const TelegramMainMenu: TelegramMenuItem[] = [
 
     action: {
       type: TelegramMenuActionType.CALLBACK,
-      value: "menu:calculate",
+      value: NavigationAction.CALCULATE,
     },
   },
 
@@ -43,7 +48,7 @@ export const TelegramMainMenu: TelegramMenuItem[] = [
 
     action: {
       type: TelegramMenuActionType.CALLBACK,
-      value: "menu:assistant",
+      value: NavigationAction.ASSISTANT,
     },
   },
 
@@ -55,7 +60,7 @@ export const TelegramMainMenu: TelegramMenuItem[] = [
 
     action: {
       type: TelegramMenuActionType.CALLBACK,
-      value: "menu:settings",
+      value: NavigationAction.SETTINGS,
     },
   },
 

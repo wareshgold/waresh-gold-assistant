@@ -52,6 +52,12 @@ import {
 from "../navigation/TelegramNavigationService";
 
 
+import {
+    TelegramNavigationStateService
+}
+from "../navigation/TelegramNavigationStateService";
+
+
 
 
 
@@ -107,13 +113,20 @@ export class TelegramCallbackRegistry {
 
         telegramNavigationService:
 
-            TelegramNavigationService
+            TelegramNavigationService,
+
+
+
+        telegramNavigationStateService:
+
+            TelegramNavigationStateService
 
 
 
     ):
 
         TelegramCallbackRouter {
+
 
 
 
@@ -150,12 +163,15 @@ export class TelegramCallbackRegistry {
 
 
 
-                telegramNavigationService
+                telegramNavigationService,
+
+
+
+                telegramNavigationStateService
 
 
 
             );
-
 
 
 
