@@ -45,6 +45,7 @@ export class GetGoldPriceUseCase {
 
 
 
+
         return {
 
 
@@ -59,35 +60,38 @@ export class GetGoldPriceUseCase {
 
                     "",
 
-                    `💰 طلای ۱۸ عیار:`,
+                    "💰 طلای ۱۸ عیار:",
 
-                    `${this.formatNumber(price.gold18Price)} تومان`,
-
-                    "",
-
-                    `💵 دلار:`,
-
-                    `${this.formatNumber(price.currencyPrice)} تومان`,
+                    `${this.copyFormat(price.gold18Price)} تومان`,
 
                     "",
 
-                    `🌎 اونس جهانی:`,
+                    "💵 دلار:",
+
+                    `${this.copyFormat(price.currencyPrice)} تومان`,
+
+                    "",
+
+                    "🌎 اونس جهانی:",
 
                     `${
                         price.ouncePrice !== null
-                            ? this.formatNumber(price.ouncePrice)
+                            ? this.copyFormat(price.ouncePrice)
                             : "ناموجود"
                     } دلار`,
 
                     "",
 
-                    `🕒 بروزرسانی:`,
+                    "🕒 بروزرسانی:",
 
                     price.updatedAt.toLocaleString(
+
                         "fa-IR",
+
                         {
                             timeZone: "Asia/Tehran"
                         }
+
                     )
 
                 ].join("\n"),
@@ -126,6 +130,25 @@ export class GetGoldPriceUseCase {
 
 
     }
+
+
+
+
+
+
+    private copyFormat(
+
+        value: number
+
+    ): string {
+
+
+        return `\`${this.formatNumber(value)}\``;
+
+
+    }
+
+
 
 
 

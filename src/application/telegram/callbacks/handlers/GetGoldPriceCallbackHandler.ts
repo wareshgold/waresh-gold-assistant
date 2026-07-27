@@ -40,6 +40,7 @@ implements TelegramCallbackHandler {
 
 
 
+
     constructor(
 
 
@@ -55,7 +56,6 @@ implements TelegramCallbackHandler {
 
 
     ) {}
-
 
 
 
@@ -145,24 +145,6 @@ implements TelegramCallbackHandler {
 
 
                         [
-
-                            [
-
-                                {
-
-                                    text:
-
-                                        "📋 کپی قیمت",
-
-
-                                    actionId:
-
-                                        "gold:copy_price",
-
-                                }
-
-                            ],
-
 
 
                             [

@@ -11,12 +11,6 @@ from "./handlers/GetGoldPriceCallbackHandler";
 
 
 import {
-    CopyGoldPriceCallbackHandler
-}
-from "./handlers/CopyGoldPriceCallbackHandler";
-
-
-import {
     GetGoldBubbleCallbackHandler
 }
 from "./handlers/GetGoldBubbleCallbackHandler";
@@ -252,16 +246,6 @@ export class TelegramCallbackHandlerFactory {
 
 
             new GetGoldPriceCallbackHandler(
-
-                getGoldPriceUseCase,
-
-                telegramNavigationService
-
-            ),
-
-
-
-            new CopyGoldPriceCallbackHandler(
 
                 getGoldPriceUseCase,
 
