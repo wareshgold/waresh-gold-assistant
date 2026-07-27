@@ -59,7 +59,7 @@ export class GoldPriceMessageFormatter {
 
             "💰 طلای ۱۸ عیار",
 
-            `${this.number(metadata.gold18Price)} تومان`,
+            `${this.copyNumber(metadata.gold18Price)} تومان`,
 
 
             "",
@@ -67,7 +67,7 @@ export class GoldPriceMessageFormatter {
 
             "💵 دلار",
 
-            `${this.number(metadata.currencyPrice)} تومان`,
+            `${this.copyNumber(metadata.currencyPrice)} تومان`,
 
 
             "",
@@ -75,7 +75,7 @@ export class GoldPriceMessageFormatter {
 
             "🌎 اونس جهانی",
 
-            `${this.number(metadata.ouncePrice)} دلار`,
+            `${this.copyNumber(metadata.ouncePrice)} دلار`,
 
 
             "",
@@ -95,7 +95,9 @@ export class GoldPriceMessageFormatter {
 
 
 
-    private number(
+
+
+    private copyNumber(
 
         value:
             unknown
@@ -105,17 +107,23 @@ export class GoldPriceMessageFormatter {
 
         return typeof value === "number"
 
-            ? new Intl.NumberFormat(
+            ? `\`${new Intl.NumberFormat(
+
                 "fa-IR"
+
             )
             .format(
+
                 Math.round(value)
-            )
+
+            )}\``
 
             : "-";
 
 
     }
+
+
 
 
 
