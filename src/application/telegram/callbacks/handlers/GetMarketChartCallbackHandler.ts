@@ -23,9 +23,9 @@ from "../../../market/GetMarketChartUseCase";
 
 
 import {
-    TelegramDateFormatter
+    MarketChartRenderer
 }
-from "../../presentation/TelegramDateFormatter";
+from "../../../market/chart/MarketChartRenderer";
 
 
 import {
@@ -47,6 +47,7 @@ implements TelegramCallbackHandler {
 
 
 
+
     constructor(
 
 
@@ -57,9 +58,9 @@ implements TelegramCallbackHandler {
 
 
 
-        private readonly dateFormatter:
+        private readonly marketChartRenderer:
 
-            TelegramDateFormatter,
+            MarketChartRenderer,
 
 
 
@@ -98,7 +99,6 @@ implements TelegramCallbackHandler {
 
 
     }
-
 
 
 
@@ -163,20 +163,35 @@ implements TelegramCallbackHandler {
 
 
 
+        const chart =
+
+            this.marketChartRenderer.render(
+
+                result.items
+
+            );
+
+
+
+
+
+
+
+
+
         const lines =
 
-            result.items.map(
+            chart.labels.map(
 
-                (item, index) => {
+                (label, index) => {
 
 
                     return (
 
-                        `${index + 1}️⃣ ` +
+                        `${label} : ` +
 
-                        `💰 ${item.gold18Price.toLocaleString("fa-IR")} تومان ` +
-
-                        `🕒 ${this.dateFormatter.format(item.capturedAt)}`
+                        `${chart.values[index]
+                            .toLocaleString("fa-IR")} تومان`
 
                     );
 
@@ -184,7 +199,6 @@ implements TelegramCallbackHandler {
                 }
 
             );
-
 
 
 
@@ -206,7 +220,7 @@ implements TelegramCallbackHandler {
             content:
 
 
-                "📊 نمودار قیمت طلا\n\n" +
+                "📊 نمودار قیمت طلای ۱۸ عیار\n\n" +
 
                 lines.join("\n") +
 

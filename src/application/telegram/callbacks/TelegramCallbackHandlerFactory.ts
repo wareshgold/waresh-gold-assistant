@@ -101,6 +101,12 @@ from "../../market/GetMarketChartUseCase";
 
 
 import {
+    MarketChartRenderer
+}
+from "../../market/chart/MarketChartRenderer";
+
+
+import {
     MarketAnalyticsMessageFormatter
 }
 from "../presentation/MarketAnalyticsMessageFormatter";
@@ -210,9 +216,8 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
         return [
-
-
 
 
 
@@ -226,15 +231,11 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
             new OpenMainMenuCallbackHandler(
 
                 telegramNavigationService
 
             ),
-
-
 
 
 
@@ -246,15 +247,11 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
             new OpenCalculatorMenuCallbackHandler(
 
                 telegramNavigationService
 
             ),
-
-
 
 
 
@@ -266,15 +263,11 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
             new OpenSettingsMenuCallbackHandler(
 
                 telegramNavigationService
 
             ),
-
-
 
 
 
@@ -285,8 +278,6 @@ export class TelegramCallbackHandlerFactory {
                 telegramNavigationService
 
             ),
-
-
 
 
 
@@ -302,8 +293,6 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
             new GetMarketAnalyticsCallbackHandler(
 
                 getMarketAnalyticsUseCase,
@@ -313,8 +302,6 @@ export class TelegramCallbackHandlerFactory {
                 telegramNavigationService
 
             ),
-
-
 
 
 
@@ -330,13 +317,11 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
             new GetMarketChartCallbackHandler(
 
                 getMarketChartUseCase,
 
-                new TelegramDateFormatter(),
+                new MarketChartRenderer(),
 
                 telegramNavigationService
 
