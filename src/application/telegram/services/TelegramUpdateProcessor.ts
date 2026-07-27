@@ -29,6 +29,8 @@ from "./TelegramCallbackProcessor";
 
 
 
+
+
 export class TelegramUpdateProcessor {
 
 
@@ -112,76 +114,24 @@ export class TelegramUpdateProcessor {
 
 
 
-            const formattedResponse =
+            await this.sendResponse(
 
-                this.formatter.format(
+                response,
 
-                    response
+                String(
 
-                );
+                    update.callback_query.message?.chat?.id
 
+                )
 
-
-
-
-            const replyMarkup =
-
-
-                typeof response === "string"
-
-
-                    ? undefined
-
-
-                    : response.replyMarkup
-
-                        ? this.keyboardMapper.map(
-
-                            response.replyMarkup
-
-                        )
-
-                        : undefined;
-
-
-
-
-
-
-            await this.botClient.sendMessage({
-
-
-                chatId:
-
-                    String(
-
-                        update.callback_query.message?.chat?.id
-
-                    ),
-
-
-                text:
-
-                    formattedResponse,
-
-
-                replyMarkup,
-
-
-                parseMode:
-
-                    "HTML"
-
-
-            });
+            );
 
 
 
             return;
 
+
         }
-
-
 
 
 
@@ -193,8 +143,6 @@ export class TelegramUpdateProcessor {
 
 
             this.mapper.map(update);
-
-
 
 
 
@@ -227,20 +175,41 @@ export class TelegramUpdateProcessor {
 
 
 
+        await this.sendResponse(
+
+            response,
+
+            String(
+
+                message.chatId
+
+            )
+
+        );
 
 
-        const formattedResponse =
 
-
-            this.formatter.format(
-
-                response
-
-            );
+    }
 
 
 
 
+
+
+
+
+
+    private async sendResponse(
+
+        response:
+
+            Awaited<ReturnType<TelegramCallbackProcessor["process"]>>,
+
+        chatId:
+
+            string
+
+    ): Promise<void> {
 
 
 
@@ -271,16 +240,81 @@ export class TelegramUpdateProcessor {
 
 
 
+        if (
+
+            typeof response !== "string"
+
+            &&
+
+            response.type === "photo"
+
+            &&
+
+            response.photo
+
+        ) {
+
+
+
+            await this.botClient.sendPhoto({
+
+
+
+                chatId,
+
+
+
+                photo:
+
+                    response.photo.photo,
+
+
+
+                caption:
+
+                    response.photo.caption,
+
+
+
+                replyMarkup
+
+
+
+            });
+
+
+
+            return;
+
+
+        }
+
+
+
+
+
+
+
+        const formattedResponse =
+
+
+            this.formatter.format(
+
+                response
+
+            );
+
+
+
+
+
 
 
         await this.botClient.sendMessage({
 
 
 
-            chatId:
-
-                String(message.chatId),
-
+            chatId,
 
 
 
@@ -290,9 +324,7 @@ export class TelegramUpdateProcessor {
 
 
 
-
             replyMarkup,
-
 
 
 
@@ -307,6 +339,7 @@ export class TelegramUpdateProcessor {
 
 
     }
+
 
 
 

@@ -29,6 +29,12 @@ from "../../../market/chart/MarketChartRenderer";
 
 
 import {
+    MarketChartImageGenerator
+}
+from "../../../../infrastructure/chart/MarketChartImageGenerator";
+
+
+import {
     TelegramNavigationService
 }
 from "../../navigation/TelegramNavigationService";
@@ -42,6 +48,8 @@ from "../../navigation/TelegramNavigationService";
 export class GetMarketChartCallbackHandler
 
 implements TelegramCallbackHandler {
+
+
 
 
 
@@ -64,6 +72,12 @@ implements TelegramCallbackHandler {
 
 
 
+        private readonly marketChartImageGenerator:
+
+            MarketChartImageGenerator,
+
+
+
         private readonly telegramNavigationService:
 
             TelegramNavigationService
@@ -71,6 +85,7 @@ implements TelegramCallbackHandler {
 
 
     ) {}
+
 
 
 
@@ -119,6 +134,7 @@ implements TelegramCallbackHandler {
 
 
 
+
         const result =
 
             await this.getMarketChartUseCase.execute(48);
@@ -133,7 +149,9 @@ implements TelegramCallbackHandler {
         if (!result.items.length) {
 
 
+
             return {
+
 
 
                 type:
@@ -141,9 +159,11 @@ implements TelegramCallbackHandler {
                     "text",
 
 
+
                 content:
 
                     "📊 داده‌ای برای نمودار پیدا نشد",
+
 
 
                 replyMarkup:
@@ -151,10 +171,12 @@ implements TelegramCallbackHandler {
                     this.telegramNavigationService.getMarketMenu()
 
 
+
             };
 
 
         }
+
 
 
 
@@ -178,28 +200,13 @@ implements TelegramCallbackHandler {
 
 
 
+        const image =
 
-        const lines =
+            await this.marketChartImageGenerator.generate(
 
-            chart.labels.map(
-
-                (label, index) => {
-
-
-                    return (
-
-                        `${label} : ` +
-
-                        `${chart.values[index]
-                            .toLocaleString("fa-IR")} تومان`
-
-                    );
-
-
-                }
+                chart
 
             );
-
 
 
 
@@ -211,20 +218,37 @@ implements TelegramCallbackHandler {
         return {
 
 
+
             type:
 
-                "text",
+                "photo",
+
 
 
 
             content:
 
+                "📊 نمودار قیمت طلای ۱۸ عیار\n\n🟡 Waresh Gold",
 
-                "📊 نمودار قیمت طلای ۱۸ عیار\n\n" +
 
-                lines.join("\n") +
 
-                "\n\n🟡 Waresh Gold",
+
+            photo: {
+
+
+                photo:
+
+                    image,
+
+
+
+                caption:
+
+                    "📊 نمودار قیمت طلای ۱۸ عیار\n🟡 Waresh Gold"
+
+
+
+            },
 
 
 
@@ -238,7 +262,11 @@ implements TelegramCallbackHandler {
         };
 
 
+
     }
+
+
+
 
 
 

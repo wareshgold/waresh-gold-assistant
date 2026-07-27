@@ -5,7 +5,10 @@ from "./models/TelegramOutgoingMessage";
 
 
 
+
+
 export interface TelegramBotClient {
+
 
 
 
@@ -21,6 +24,9 @@ export interface TelegramBotClient {
 
 
 
+
+
+
     sendPhoto(
 
         message: {
@@ -29,16 +35,21 @@ export interface TelegramBotClient {
                 string;
 
 
+
             photo:
-                Uint8Array;
+                string | Uint8Array;
+
 
 
             caption?:
                 string;
 
 
+
             replyMarkup?:
                 TelegramOutgoingMessage["replyMarkup"];
+
+
 
         }
 

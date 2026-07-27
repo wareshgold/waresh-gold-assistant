@@ -1,18 +1,51 @@
-import { TelegramCommandContext }
+import {
+    TelegramCommandContext
+}
 from "./TelegramCommandContext";
+
+
+
+
+
+export interface TelegramPhotoPayload {
+
+
+    photo:
+        string | Uint8Array;
+
+
+
+    caption?:
+        string;
+
+
+
+}
+
+
+
+
 
 
 
 export interface TelegramCommandResponse {
 
 
+
     type?:
-        "text";
+        "text"
+        |
+        "photo";
 
 
 
     content:
         string;
+
+
+
+    photo?:
+        TelegramPhotoPayload;
 
 
 
@@ -22,6 +55,8 @@ export interface TelegramCommandResponse {
 
 
 }
+
+
 
 
 
@@ -41,6 +76,8 @@ export interface TelegramCommandMetadata {
 
 
 }
+
+
 
 
 

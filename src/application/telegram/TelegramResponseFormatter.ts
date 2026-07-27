@@ -1,19 +1,51 @@
-import { TelegramCommandResponse }
+import {
+    TelegramCommandResponse
+}
 from "./commands/TelegramCommandHandler";
+
+
+
 
 
 export class TelegramResponseFormatter {
 
 
 
+
+
     format(
 
-        response: TelegramCommandResponse | string
+        response:
+            TelegramCommandResponse | string
 
     ): string {
 
 
+
+        if (
+
+            typeof response !== "string"
+
+            &&
+
+            response.type === "photo"
+
+        ) {
+
+
+            return response.content;
+
+
+        }
+
+
+
+
+
+
+
         const text =
+
 
 
             typeof response === "string"
@@ -21,6 +53,10 @@ export class TelegramResponseFormatter {
                 ? response
 
                 : response.content;
+
+
+
+
 
 
 
@@ -37,9 +73,14 @@ export class TelegramResponseFormatter {
 
 
 
+
+
+
+
     private formatCopyableNumbers(
 
-        text: string
+        text:
+            string
 
     ): string {
 
@@ -47,7 +88,9 @@ export class TelegramResponseFormatter {
 
         return text.replace(
 
+
             /(<code>.*?<\/code>)|(?<!\d)(\d{4,})(?!\d)/g,
+
 
             (
 
@@ -61,7 +104,9 @@ export class TelegramResponseFormatter {
 
                 if (existingCode) {
 
+
                     return existingCode;
+
 
                 }
 
@@ -69,12 +114,17 @@ export class TelegramResponseFormatter {
 
                 return `<code>${match}</code>`;
 
+
             }
+
 
         );
 
 
     }
+
+
+
 
 
 }

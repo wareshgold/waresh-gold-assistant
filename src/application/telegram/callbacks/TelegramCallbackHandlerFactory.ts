@@ -136,6 +136,13 @@ import {
 from "../navigation/TelegramNavigationStateService";
 
 
+import {
+    MarketChartImageGenerator
+}
+from "../../../infrastructure/chart/MarketChartImageGenerator";
+
+
+
 
 
 
@@ -153,9 +160,13 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
         getGoldPriceUseCase:
 
             GetGoldPriceUseCase,
+
+
 
 
 
@@ -165,9 +176,13 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
         getMarketAnalyticsUseCase:
 
             GetMarketAnalyticsUseCase,
+
+
 
 
 
@@ -177,9 +192,13 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
         getMarketChartUseCase:
 
             GetMarketChartUseCase,
+
+
 
 
 
@@ -189,9 +208,13 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
         marketBubbleMessageFormatter:
 
             MarketBubbleMessageFormatter,
+
+
 
 
 
@@ -201,9 +224,13 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
         telegramNavigationStateService:
 
             TelegramNavigationStateService
+
+
 
 
 
@@ -217,7 +244,12 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
         return [
+
+
+
+
 
 
 
@@ -231,11 +263,19 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
+
+
             new OpenMainMenuCallbackHandler(
 
                 telegramNavigationService
 
             ),
+
+
+
+
 
 
 
@@ -247,11 +287,19 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
+
+
             new OpenCalculatorMenuCallbackHandler(
 
                 telegramNavigationService
 
             ),
+
+
+
+
 
 
 
@@ -263,11 +311,19 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
+
+
             new OpenSettingsMenuCallbackHandler(
 
                 telegramNavigationService
 
             ),
+
+
+
+
 
 
 
@@ -278,6 +334,10 @@ export class TelegramCallbackHandlerFactory {
                 telegramNavigationService
 
             ),
+
+
+
+
 
 
 
@@ -293,6 +353,10 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
+
+
             new GetMarketAnalyticsCallbackHandler(
 
                 getMarketAnalyticsUseCase,
@@ -302,6 +366,10 @@ export class TelegramCallbackHandlerFactory {
                 telegramNavigationService
 
             ),
+
+
+
+
 
 
 
@@ -317,11 +385,17 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
+
+
             new GetMarketChartCallbackHandler(
 
                 getMarketChartUseCase,
 
                 new MarketChartRenderer(),
+
+                new MarketChartImageGenerator(),
 
                 telegramNavigationService
 
