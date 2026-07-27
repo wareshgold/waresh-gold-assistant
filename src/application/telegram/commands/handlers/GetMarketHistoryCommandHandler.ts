@@ -13,6 +13,7 @@ from "../../../market/GetMarketHistoryUseCase";
 
 
 export class GetMarketHistoryCommandHandler
+
 implements TelegramCommandHandler {
 
 
@@ -23,6 +24,8 @@ implements TelegramCommandHandler {
             GetMarketHistoryUseCase
 
     ) {}
+
+
 
 
 
@@ -68,6 +71,7 @@ implements TelegramCommandHandler {
 
 
     }
+
 
 
 
@@ -141,7 +145,6 @@ implements TelegramCommandHandler {
 
 
 
-
         const lines =
 
             result.items.map(
@@ -152,14 +155,17 @@ implements TelegramCommandHandler {
 
                     return [
 
-                        `${index + 1}) 🟡 ${item.gold18Price.toLocaleString("fa-IR")} تومان`,
+                        `${index + 1}) 🟡 ${this.copyNumber(item.gold18Price)} تومان`,
 
-                        `💵 دلار: ${item.currencyPrice.toLocaleString("fa-IR")}`,
+                        `💵 دلار: ${this.copyNumber(item.currencyPrice)}`,
 
                         `🌎 اونس: ${
                             item.ouncePrice !== null
-                                ? item.ouncePrice.toLocaleString("fa-IR")
+
+                                ? this.copyNumber(item.ouncePrice)
+
                                 : "ناموجود"
+
                         }`,
 
                         `🕒 ${item.capturedAt.toLocaleString("fa-IR")}`
@@ -170,6 +176,7 @@ implements TelegramCommandHandler {
                 }
 
             );
+
 
 
 
@@ -198,6 +205,32 @@ implements TelegramCommandHandler {
 
 
         };
+
+
+    }
+
+
+
+
+
+
+
+    private copyNumber(
+
+        value: number
+
+    ): string {
+
+
+        return `\`${new Intl.NumberFormat(
+
+            "fa-IR"
+
+        ).format(
+
+            Math.round(value)
+
+        )}\``;
 
 
     }
