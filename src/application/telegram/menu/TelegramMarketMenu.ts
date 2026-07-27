@@ -47,6 +47,18 @@ export const TelegramMarketMenu: TelegramMenuItem[] = [
 
 
     {
+        id: "market.chart",
+
+        label: "📊 نمودار قیمت",
+
+        action: {
+            type: TelegramMenuActionType.CALLBACK,
+            value: NavigationAction.MARKET_CHART,
+        },
+    },
+
+
+    {
         id: "gold.bubble",
 
         label: "🫧 حباب طلا",

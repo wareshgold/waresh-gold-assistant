@@ -17,6 +17,8 @@ export enum NavigationAction {
 
     MARKET_HISTORY = "market:history",
 
+    MARKET_CHART = "market:chart",
+
     GOLD_BUBBLE = "gold:bubble",
 
     MARKET_ANALYTICS = "market:analytics",

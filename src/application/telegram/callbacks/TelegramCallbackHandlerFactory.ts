@@ -29,6 +29,12 @@ from "./handlers/GetMarketHistoryCallbackHandler";
 
 
 import {
+    GetMarketChartCallbackHandler
+}
+from "./handlers/GetMarketChartCallbackHandler";
+
+
+import {
     OpenMarketMenuCallbackHandler
 }
 from "./handlers/OpenMarketMenuCallbackHandler";
@@ -86,6 +92,12 @@ import {
     GetMarketHistoryUseCase
 }
 from "../../market/GetMarketHistoryUseCase";
+
+
+import {
+    GetMarketChartUseCase
+}
+from "../../market/GetMarketChartUseCase";
 
 
 import {
@@ -159,6 +171,12 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+        getMarketChartUseCase:
+
+            GetMarketChartUseCase,
+
+
+
         marketAnalyticsMessageFormatter:
 
             MarketAnalyticsMessageFormatter,
@@ -190,7 +208,11 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
         return [
+
+
 
 
 
@@ -204,11 +226,15 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
             new OpenMainMenuCallbackHandler(
 
                 telegramNavigationService
 
             ),
+
+
 
 
 
@@ -220,11 +246,15 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
             new OpenCalculatorMenuCallbackHandler(
 
                 telegramNavigationService
 
             ),
+
+
 
 
 
@@ -236,11 +266,15 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
             new OpenSettingsMenuCallbackHandler(
 
                 telegramNavigationService
 
             ),
+
+
 
 
 
@@ -251,6 +285,8 @@ export class TelegramCallbackHandlerFactory {
                 telegramNavigationService
 
             ),
+
+
 
 
 
@@ -266,6 +302,8 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
             new GetMarketAnalyticsCallbackHandler(
 
                 getMarketAnalyticsUseCase,
@@ -278,6 +316,8 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
             new GetMarketHistoryCallbackHandler(
 
                 getMarketHistoryUseCase,
@@ -286,7 +326,22 @@ export class TelegramCallbackHandlerFactory {
 
                 telegramNavigationService
 
+            ),
+
+
+
+
+
+            new GetMarketChartCallbackHandler(
+
+                getMarketChartUseCase,
+
+                new TelegramDateFormatter(),
+
+                telegramNavigationService
+
             )
+
 
 
         ];
@@ -294,6 +349,7 @@ export class TelegramCallbackHandlerFactory {
 
 
     }
+
 
 
 

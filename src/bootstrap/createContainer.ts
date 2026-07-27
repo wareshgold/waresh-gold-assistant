@@ -51,6 +51,10 @@ import { GetMarketHistoryUseCase }
 from "../application/market/GetMarketHistoryUseCase";
 
 
+import { GetMarketChartUseCase }
+from "../application/market/GetMarketChartUseCase";
+
+
 import { RefreshMarketPriceUseCase }
 from "../application/market/RefreshMarketPriceUseCase";
 
@@ -152,6 +156,7 @@ export function createContainer(
 
 
 
+
     const getSystemMetricsUseCase =
 
 
@@ -196,6 +201,7 @@ export function createContainer(
 
 
 
+
     const getGoldPriceUseCase =
 
 
@@ -204,6 +210,7 @@ export function createContainer(
             currentMarketPriceUseCase
 
         );
+
 
 
 
@@ -228,6 +235,7 @@ export function createContainer(
 
 
 
+
     const getGoldBubbleDataUseCase =
 
 
@@ -238,6 +246,7 @@ export function createContainer(
             gold.goldBubbleCalculator
 
         );
+
 
 
 
@@ -260,6 +269,7 @@ export function createContainer(
 
 
 
+
     const getMarketHistoryUseCase =
 
 
@@ -268,6 +278,23 @@ export function createContainer(
             market.snapshotService
 
         );
+
+
+
+
+
+
+
+
+    const getMarketChartUseCase =
+
+
+        new GetMarketChartUseCase(
+
+            market.snapshotService
+
+        );
+
 
 
 
@@ -290,6 +317,7 @@ export function createContainer(
 
 
 
+
     const refreshMarketPriceJob =
 
 
@@ -298,6 +326,7 @@ export function createContainer(
             refreshMarketPriceUseCase
 
         );
+
 
 
 
@@ -321,6 +350,8 @@ export function createContainer(
                 getMarketAnalyticsUseCase,
 
                 getMarketHistoryUseCase,
+
+                getMarketChartUseCase,
 
 
                 calculateGoldFormulaUseCase:
@@ -369,6 +400,7 @@ export function createContainer(
 
 
 
+
         systemMetricsController,
 
 
@@ -398,6 +430,10 @@ export function createContainer(
 
 
         getMarketHistoryUseCase,
+
+
+
+        getMarketChartUseCase,
 
 
 

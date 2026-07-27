@@ -35,6 +35,12 @@ from "../../market/GetMarketHistoryUseCase";
 
 
 import {
+    GetMarketChartUseCase
+}
+from "../../market/GetMarketChartUseCase";
+
+
+import {
     MarketAnalyticsMessageFormatter
 }
 from "../presentation/MarketAnalyticsMessageFormatter";
@@ -56,6 +62,7 @@ import {
     TelegramNavigationStateService
 }
 from "../navigation/TelegramNavigationStateService";
+
 
 
 
@@ -99,6 +106,12 @@ export class TelegramCallbackRegistry {
 
 
 
+        getMarketChartUseCase:
+
+            GetMarketChartUseCase,
+
+
+
         marketAnalyticsMessageFormatter:
 
             MarketAnalyticsMessageFormatter,
@@ -135,6 +148,7 @@ export class TelegramCallbackRegistry {
 
         const handlers =
 
+
             TelegramCallbackHandlerFactory.create(
 
 
@@ -152,6 +166,10 @@ export class TelegramCallbackRegistry {
 
 
                 getMarketHistoryUseCase,
+
+
+
+                getMarketChartUseCase,
 
 
 

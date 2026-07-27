@@ -93,6 +93,8 @@ from "../../application/telegram/navigation/TelegramNavigationService";
 
 
 
+
+
 interface Dependencies {
 
 
@@ -106,6 +108,9 @@ interface Dependencies {
 
 
     getMarketHistoryUseCase: any;
+
+
+    getMarketChartUseCase: any;
 
 
     calculateGoldFormulaUseCase: any;
@@ -168,7 +173,6 @@ export function createTelegramModule(
 
 
 
-
     const marketAnalyticsMessageFormatter =
 
 
@@ -179,7 +183,6 @@ export function createTelegramModule(
 
 
         );
-
 
 
 
@@ -206,13 +209,14 @@ export function createTelegramModule(
 
 
 
-
     const telegramNavigationService:
 
         TelegramNavigationService =
 
 
             new DefaultTelegramNavigationService();
+
+
 
 
 
@@ -227,7 +231,6 @@ export function createTelegramModule(
             dependencies.sessionStore
 
         );
-
 
 
 
@@ -272,7 +275,6 @@ export function createTelegramModule(
 
 
 
-
     const commandService =
 
 
@@ -294,7 +296,6 @@ export function createTelegramModule(
 
 
 
-
     const messageHandler =
 
 
@@ -308,7 +309,6 @@ export function createTelegramModule(
 
 
         );
-
 
 
 
@@ -339,7 +339,6 @@ export function createTelegramModule(
 
 
 
-
     const callbackRouter =
 
 
@@ -356,6 +355,9 @@ export function createTelegramModule(
 
 
             dependencies.getMarketHistoryUseCase,
+
+
+            dependencies.getMarketChartUseCase,
 
 
             marketAnalyticsMessageFormatter,
@@ -379,7 +381,6 @@ export function createTelegramModule(
 
 
 
-
     const callbackProcessor =
 
 
@@ -393,7 +394,6 @@ export function createTelegramModule(
 
 
         );
-
 
 
 
@@ -435,7 +435,6 @@ export function createTelegramModule(
 
 
 
-
     const webhookController =
 
 
@@ -462,7 +461,6 @@ export function createTelegramModule(
 
 
 
-
     return {
 
 
@@ -471,10 +469,12 @@ export function createTelegramModule(
 
         telegramMessageHandler:
 
+
             messageHandler,
 
 
         telegramWebhookController:
+
 
             webhookController
 
