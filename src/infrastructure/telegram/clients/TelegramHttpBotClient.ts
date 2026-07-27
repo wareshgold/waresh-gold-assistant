@@ -188,7 +188,18 @@ implements TelegramBotClient {
 
                 "photo",
 
-                message.photo
+                new Blob(
+
+                    [message.photo],
+
+                    {
+                        type:
+                            "image/svg+xml"
+                    }
+
+                ),
+
+                "chart.svg"
 
             );
 
