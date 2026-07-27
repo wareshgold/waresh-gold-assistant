@@ -45,6 +45,7 @@ implements TelegramCallbackHandler {
 
 
 
+
     constructor(
 
 
@@ -76,7 +77,6 @@ implements TelegramCallbackHandler {
 
 
 
-
     canHandle(
 
         context:
@@ -98,7 +98,6 @@ implements TelegramCallbackHandler {
 
 
     }
-
 
 
 
@@ -171,26 +170,30 @@ implements TelegramCallbackHandler {
 
                     return (
 
+
                         `${index + 1}️⃣\n` +
 
-                        `💰 طلا: ${item.gold18Price.toLocaleString("fa-IR")} تومان\n` +
+                        `💰 طلا: ${this.copyNumber(item.gold18Price)} تومان\n` +
 
-                        `💵 دلار: ${item.currencyPrice.toLocaleString("fa-IR")} تومان\n` +
+                        `💵 دلار: ${this.copyNumber(item.currencyPrice)} تومان\n` +
 
                         `🌎 اونس: ${
                             item.ouncePrice !== null
-                                ? item.ouncePrice.toLocaleString("fa-IR")
+                                ? this.copyNumber(item.ouncePrice)
                                 : "نامشخص"
                         } دلار\n` +
 
                         `🕒 ${this.dateFormatter.format(item.capturedAt)}\n`
+
 
                     );
 
 
                 }
 
+
             );
+
 
 
 
@@ -228,6 +231,31 @@ implements TelegramCallbackHandler {
 
 
         };
+
+
+    }
+
+
+
+
+
+
+    private copyNumber(
+
+        value: number
+
+    ): string {
+
+
+        return `\`${new Intl.NumberFormat(
+
+            "fa-IR"
+
+        ).format(
+
+            Math.round(value)
+
+        )}\``;
 
 
     }
