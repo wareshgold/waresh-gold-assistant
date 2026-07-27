@@ -31,7 +31,9 @@ from "./TelegramCallbackProcessor";
 
 
 
+
 export class TelegramUpdateProcessor {
+
 
 
 
@@ -139,10 +141,13 @@ export class TelegramUpdateProcessor {
 
 
 
+
         const message =
 
 
             this.mapper.map(update);
+
+
 
 
 
@@ -157,18 +162,33 @@ export class TelegramUpdateProcessor {
             await this.handler.handleResponse({
 
 
+
                 userId:
 
                     message.userId,
 
 
+
                 text:
 
-                    message.text
+                    message.text,
+
+
+
+                username:
+
+                    message.username,
+
+
+
+                firstName:
+
+                    message.firstName
 
 
 
             });
+
 
 
 
@@ -374,6 +394,7 @@ export class TelegramUpdateProcessor {
                 response
 
             );
+
 
 
 
