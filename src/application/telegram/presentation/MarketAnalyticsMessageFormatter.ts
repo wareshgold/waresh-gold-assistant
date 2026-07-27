@@ -28,6 +28,7 @@ export class MarketAnalyticsMessageFormatter {
 
 
 
+
     format(
 
         analytics:
@@ -58,6 +59,7 @@ export class MarketAnalyticsMessageFormatter {
 
 
 
+
         return this.builder.build([
 
 
@@ -70,7 +72,7 @@ export class MarketAnalyticsMessageFormatter {
 
             "🟡 قیمت فعلی",
 
-            `${this.copyFormat(
+            `${this.copyNumber(
                 analytics.getCurrentPrice()
             )} تومان`,
 
@@ -114,7 +116,7 @@ export class MarketAnalyticsMessageFormatter {
 
             "📉 محدوده قیمت",
 
-            `${this.copyFormat(range.formattedMin)} - ${this.copyFormat(range.formattedMax)}`,
+            `${this.copyValue(range.formattedMin)} - ${this.copyValue(range.formattedMax)}`,
 
 
 
@@ -124,7 +126,7 @@ export class MarketAnalyticsMessageFormatter {
 
             "📌 میانگین",
 
-            `${this.copyFormat(range.formattedAverage)} تومان`,
+            `${this.copyValue(range.formattedAverage)} تومان`,
 
 
 
@@ -155,6 +157,7 @@ export class MarketAnalyticsMessageFormatter {
         ]);
 
     }
+
 
 
 
@@ -211,11 +214,44 @@ export class MarketAnalyticsMessageFormatter {
 
 
 
-    private copyFormat(
+
+    private copyNumber(
 
         value:
 
-            number | string
+            number
+
+    ): string {
+
+
+        return `\`${new Intl.NumberFormat(
+
+            "fa-IR"
+
+        )
+
+        .format(
+
+            Math.round(value)
+
+        )}\``;
+
+
+    }
+
+
+
+
+
+
+
+
+
+    private copyValue(
+
+        value:
+
+            string
 
     ): string {
 
@@ -224,6 +260,7 @@ export class MarketAnalyticsMessageFormatter {
 
 
     }
+
 
 
 
@@ -247,7 +284,15 @@ export class MarketAnalyticsMessageFormatter {
 
                 new Intl.NumberFormat(
 
-                    "fa-IR"
+                    "fa-IR",
+
+                    {
+
+                        maximumFractionDigits:
+
+                            2
+
+                    }
 
                 )
 
