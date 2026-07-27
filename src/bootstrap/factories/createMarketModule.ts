@@ -6,6 +6,10 @@ import { MarketAnalyticsService }
 from "../../application/market/services/MarketAnalyticsService";
 
 
+import { MarketChartService }
+from "../../application/market/chart/MarketChartService";
+
+
 import { PriceRefreshService }
 from "../../application/market/services/PriceRefreshService";
 
@@ -49,6 +53,8 @@ from "../../shared/config/env";
 
 
 
+
+
 interface StorageModule {
 
 
@@ -62,6 +68,7 @@ interface StorageModule {
 
 
 
+
 interface CacheModule {
 
 
@@ -71,6 +78,7 @@ interface CacheModule {
 
 
 }
+
 
 
 
@@ -116,6 +124,11 @@ export interface MarketModule {
 
 
 
+    marketChartService:
+        MarketChartService;
+
+
+
     analyticsService:
         MarketAnalyticsService;
 
@@ -127,6 +140,7 @@ export interface MarketModule {
 
 
 }
+
 
 
 
@@ -158,6 +172,8 @@ export function createMarketModule(
 
 
 
+
+
     const snapshotService =
 
 
@@ -166,6 +182,24 @@ export function createMarketModule(
             storage.snapshotRepository
 
         );
+
+
+
+
+
+
+
+
+    const marketChartService =
+
+
+        new MarketChartService(
+
+            storage.snapshotRepository
+
+        );
+
+
 
 
 
@@ -196,6 +230,8 @@ export function createMarketModule(
 
 
 
+
+
     const telegramSource =
 
 
@@ -210,6 +246,7 @@ export function createMarketModule(
 
 
         );
+
 
 
 
@@ -240,9 +277,12 @@ export function createMarketModule(
 
 
 
+
     const marketProvider =
 
+
         new CompositeMarketPriceProvider(
+
 
             [
 
@@ -257,6 +297,7 @@ export function createMarketModule(
 
 
             monitoring.monitoringService
+
 
         );
 
@@ -295,6 +336,7 @@ export function createMarketModule(
 
 
 
+
     const priceRefreshService =
 
 
@@ -319,11 +361,13 @@ export function createMarketModule(
 
 
 
+
     return {
 
 
 
         cache:
+
 
             cacheModule.cache,
 
@@ -338,6 +382,10 @@ export function createMarketModule(
 
 
         snapshotService,
+
+
+
+        marketChartService,
 
 
 

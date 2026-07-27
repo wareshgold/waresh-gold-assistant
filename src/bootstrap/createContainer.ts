@@ -157,6 +157,7 @@ export function createContainer(
 
 
 
+
     const getSystemMetricsUseCase =
 
 
@@ -165,7 +166,6 @@ export function createContainer(
             monitoring.monitoringService
 
         );
-
 
 
 
@@ -201,7 +201,6 @@ export function createContainer(
 
 
 
-
     const getGoldPriceUseCase =
 
 
@@ -210,7 +209,6 @@ export function createContainer(
             currentMarketPriceUseCase
 
         );
-
 
 
 
@@ -235,7 +233,6 @@ export function createContainer(
 
 
 
-
     const getGoldBubbleDataUseCase =
 
 
@@ -246,7 +243,6 @@ export function createContainer(
             gold.goldBubbleCalculator
 
         );
-
 
 
 
@@ -269,7 +265,6 @@ export function createContainer(
 
 
 
-
     const getMarketHistoryUseCase =
 
 
@@ -285,16 +280,14 @@ export function createContainer(
 
 
 
-
     const getMarketChartUseCase =
 
 
         new GetMarketChartUseCase(
 
-            market.snapshotService
+            market.marketChartService
 
         );
-
 
 
 
@@ -317,7 +310,6 @@ export function createContainer(
 
 
 
-
     const refreshMarketPriceJob =
 
 
@@ -326,7 +318,6 @@ export function createContainer(
             refreshMarketPriceUseCase
 
         );
-
 
 
 

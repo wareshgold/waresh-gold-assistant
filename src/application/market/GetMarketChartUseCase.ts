@@ -1,9 +1,15 @@
-import { MarketSnapshotService }
-from "./services/MarketSnapshotService";
+import {
+    MarketChartService
+}
+from "./chart/MarketChartService";
 
 
-import { MarketSnapshot }
-from "../../domain/market/snapshots/MarketSnapshot";
+import {
+    MarketChartPoint
+}
+from "./chart/MarketChartPoint";
+
+
 
 
 
@@ -11,10 +17,13 @@ export interface GetMarketChartOutput {
 
 
     items:
-        MarketSnapshot[];
+        MarketChartPoint[];
 
 
 }
+
+
+
 
 
 
@@ -24,12 +33,16 @@ export class GetMarketChartUseCase {
 
 
 
+
+
     constructor(
 
         private readonly service:
-            MarketSnapshotService
+            MarketChartService
 
     ) {}
+
+
 
 
 
@@ -46,10 +59,15 @@ export class GetMarketChartUseCase {
 
 
 
-        const history =
+
+
+        const items =
 
             await this.service
-                .getHistory(limit);
+                .getChart(limit);
+
+
+
 
 
 
@@ -58,16 +76,19 @@ export class GetMarketChartUseCase {
         return {
 
 
-            items:
+            items
 
-                history
-                    .reverse()
 
 
         };
 
 
+
     }
+
+
+
+
 
 
 }
