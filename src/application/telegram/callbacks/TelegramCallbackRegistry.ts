@@ -5,63 +5,9 @@ from "./TelegramCallbackRouter";
 
 
 import {
-    TelegramCallbackHandler
+    TelegramCallbackHandlerFactory
 }
-from "./TelegramCallbackHandler";
-
-
-import {
-    GetGoldPriceCallbackHandler
-}
-from "./handlers/GetGoldPriceCallbackHandler";
-
-
-import {
-    GetGoldBubbleCallbackHandler
-}
-from "./handlers/GetGoldBubbleCallbackHandler";
-
-
-import {
-    GetMarketAnalyticsCallbackHandler
-}
-from "./handlers/GetMarketAnalyticsCallbackHandler";
-
-
-import {
-    GetMarketHistoryCallbackHandler
-}
-from "./handlers/GetMarketHistoryCallbackHandler";
-
-
-import {
-    OpenMarketMenuCallbackHandler
-}
-from "./handlers/OpenMarketMenuCallbackHandler";
-
-
-import {
-    OpenCalculatorMenuCallbackHandler
-}
-from "./handlers/OpenCalculatorMenuCallbackHandler";
-
-
-import {
-    OpenAssistantMenuCallbackHandler
-}
-from "./handlers/OpenAssistantMenuCallbackHandler";
-
-
-import {
-    OpenSettingsMenuCallbackHandler
-}
-from "./handlers/OpenSettingsMenuCallbackHandler";
-
-
-import {
-    OpenMainMenuCallbackHandler
-}
-from "./handlers/OpenMainMenuCallbackHandler";
+from "./TelegramCallbackHandlerFactory";
 
 
 import {
@@ -101,12 +47,6 @@ from "../presentation/MarketBubbleMessageFormatter";
 
 
 import {
-    TelegramDateFormatter
-}
-from "../presentation/TelegramDateFormatter";
-
-
-import {
     TelegramNavigationService
 }
 from "../navigation/TelegramNavigationService";
@@ -117,8 +57,8 @@ from "../navigation/TelegramNavigationService";
 
 
 
-
 export class TelegramCallbackRegistry {
+
 
 
 
@@ -179,66 +119,44 @@ export class TelegramCallbackRegistry {
 
 
 
-        const handlers:
 
-            TelegramCallbackHandler[] = [
+        const handlers =
 
-
-
-                ...TelegramCallbackRegistry.createMenuHandlers(
-
-                    telegramNavigationService
-
-                ),
+            TelegramCallbackHandlerFactory.create(
 
 
 
-                new GetGoldPriceCallbackHandler(
-
-                    getGoldPriceUseCase,
-
-                    telegramNavigationService
-
-                ),
+                getGoldPriceUseCase,
 
 
 
-                new GetGoldBubbleCallbackHandler(
-
-                    getGoldBubbleUseCase,
-
-                    marketBubbleMessageFormatter,
-
-                    telegramNavigationService
-
-                ),
+                getGoldBubbleUseCase,
 
 
 
-                new GetMarketAnalyticsCallbackHandler(
-
-                    getMarketAnalyticsUseCase,
-
-                    marketAnalyticsMessageFormatter,
-
-                    telegramNavigationService
-
-                ),
+                getMarketAnalyticsUseCase,
 
 
 
-                new GetMarketHistoryCallbackHandler(
-
-                    getMarketHistoryUseCase,
-
-                    new TelegramDateFormatter(),
-
-                    telegramNavigationService
-
-                )
+                getMarketHistoryUseCase,
 
 
-            ];
+
+                marketAnalyticsMessageFormatter,
+
+
+
+                marketBubbleMessageFormatter,
+
+
+
+                telegramNavigationService
+
+
+
+            );
+
+
 
 
 
@@ -252,76 +170,9 @@ export class TelegramCallbackRegistry {
         );
 
 
-    }
-
-
-
-
-
-
-
-
-
-    private static createMenuHandlers(
-
-
-        telegramNavigationService:
-
-            TelegramNavigationService
-
-
-    ):
-
-        TelegramCallbackHandler[] {
-
-
-        return [
-
-
-
-            new OpenMainMenuCallbackHandler(
-
-                telegramNavigationService
-
-            ),
-
-
-
-            new OpenMarketMenuCallbackHandler(
-
-                telegramNavigationService
-
-            ),
-
-
-
-            new OpenCalculatorMenuCallbackHandler(
-
-                telegramNavigationService
-
-            ),
-
-
-
-            new OpenAssistantMenuCallbackHandler(
-
-                telegramNavigationService
-
-            ),
-
-
-
-            new OpenSettingsMenuCallbackHandler(
-
-                telegramNavigationService
-
-            )
-
-
-        ];
-
 
     }
+
 
 
 
