@@ -1,16 +1,6 @@
 import {
-    TelegramCallbackHandler,
-} from "../TelegramCallbackHandler";
-
-
-import {
-    TelegramCallbackContext,
-} from "../TelegramCallbackContext";
-
-
-import {
-    TelegramCommandResponse,
-} from "../../commands/TelegramCommandHandler";
+    BaseMenuCallbackHandler,
+} from "./BaseMenuCallbackHandler";
 
 
 import {
@@ -21,78 +11,38 @@ import {
 
 
 
+
+
 export class OpenAssistantMenuCallbackHandler
 
-implements TelegramCallbackHandler {
+extends BaseMenuCallbackHandler {
+
 
 
 
     constructor(
 
-        private readonly navigationService:
+        navigationService:
             TelegramNavigationService
 
-    ) {}
+    ) {
 
 
+        super(
 
+            "menu:assistant",
 
+            "🤖 منوی دستیار",
 
-    canHandle(
+            () =>
 
-        context:
-            TelegramCallbackContext
+                navigationService.getAssistantMenu()
 
-    ): boolean {
-
-
-        return context.data === "menu:assistant";
-
-
-    }
-
-
-
-
-
-
-
-
-
-    async execute(
-
-        context:
-            TelegramCallbackContext
-
-    ):
-        Promise<TelegramCommandResponse> {
-
-
-
-        return {
-
-
-            type:
-
-                "text",
-
-
-
-            content:
-
-                "🤖 منوی دستیار",
-
-
-
-            replyMarkup:
-
-                this.navigationService.getAssistantMenu(),
-
-
-        };
+        );
 
 
     }
+
 
 
 

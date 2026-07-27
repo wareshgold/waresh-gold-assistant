@@ -1,16 +1,6 @@
 import {
-    TelegramCallbackHandler,
-} from "../TelegramCallbackHandler";
-
-
-import {
-    TelegramCallbackContext,
-} from "../TelegramCallbackContext";
-
-
-import {
-    TelegramCommandResponse,
-} from "../../commands/TelegramCommandHandler";
+    BaseMenuCallbackHandler,
+} from "./BaseMenuCallbackHandler";
 
 
 import {
@@ -21,78 +11,38 @@ import {
 
 
 
+
+
 export class OpenCalculatorMenuCallbackHandler
 
-implements TelegramCallbackHandler {
+extends BaseMenuCallbackHandler {
+
 
 
 
     constructor(
 
-        private readonly navigationService:
+        navigationService:
             TelegramNavigationService
 
-    ) {}
+    ) {
 
 
+        super(
 
+            "menu:calculate",
 
+            "🧮 منوی محاسبات",
 
-    canHandle(
+            () =>
 
-        context:
-            TelegramCallbackContext
+                navigationService.getCalculatorMenu()
 
-    ): boolean {
-
-
-        return context.data === "menu:calculate";
-
-
-    }
-
-
-
-
-
-
-
-
-
-    async execute(
-
-        context:
-            TelegramCallbackContext
-
-    ):
-        Promise<TelegramCommandResponse> {
-
-
-
-        return {
-
-
-            type:
-
-                "text",
-
-
-
-            content:
-
-                "🧮 منوی محاسبات",
-
-
-
-            replyMarkup:
-
-                this.navigationService.getCalculatorMenu(),
-
-
-        };
+        );
 
 
     }
+
 
 
 

@@ -1,16 +1,6 @@
 import {
-    TelegramCallbackHandler,
-} from "../TelegramCallbackHandler";
-
-
-import {
-    TelegramCallbackContext,
-} from "../TelegramCallbackContext";
-
-
-import {
-    TelegramCommandResponse,
-} from "../../commands/TelegramCommandHandler";
+    BaseMenuCallbackHandler,
+} from "./BaseMenuCallbackHandler";
 
 
 import {
@@ -21,86 +11,39 @@ import {
 
 
 
+
+
 export class OpenMainMenuCallbackHandler
 
-implements TelegramCallbackHandler {
+extends BaseMenuCallbackHandler {
 
 
 
 
     constructor(
 
-
-        private readonly telegramNavigationService:
-
+        navigationService:
             TelegramNavigationService
 
-
-    ) {}
-
+    ) {
 
 
+        super(
 
+            "menu:main",
 
+            "🟡 Waresh Gold",
 
+            () =>
 
+                navigationService.getMainMenu()
 
-    canHandle(
-
-        context:
-            TelegramCallbackContext
-
-    ): boolean {
-
-
-        return context.data === "menu:main";
+        );
 
 
     }
 
 
-
-
-
-
-
-
-
-    async execute(
-
-        context:
-            TelegramCallbackContext
-
-    ):
-
-        Promise<TelegramCommandResponse> {
-
-
-
-        return {
-
-
-            type:
-
-                "text",
-
-
-
-            content:
-
-                "🟡 Waresh Gold",
-
-
-
-            replyMarkup:
-
-                this.telegramNavigationService.getMainMenu(),
-
-
-        };
-
-
-    }
 
 
 
