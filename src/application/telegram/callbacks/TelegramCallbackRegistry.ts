@@ -119,7 +119,11 @@ from "../navigation/TelegramNavigationService";
 
 
 
+
+
 export class TelegramCallbackRegistry {
+
+
 
 
 
@@ -130,9 +134,11 @@ export class TelegramCallbackRegistry {
 
 
 
+
         getGoldPriceUseCase:
 
             GetGoldPriceUseCase,
+
 
 
 
@@ -142,9 +148,11 @@ export class TelegramCallbackRegistry {
 
 
 
+
         getMarketAnalyticsUseCase:
 
             GetMarketAnalyticsUseCase,
+
 
 
 
@@ -154,9 +162,11 @@ export class TelegramCallbackRegistry {
 
 
 
+
         marketAnalyticsMessageFormatter:
 
             MarketAnalyticsMessageFormatter,
+
 
 
 
@@ -166,9 +176,11 @@ export class TelegramCallbackRegistry {
 
 
 
+
         telegramNavigationService:
 
             TelegramNavigationService
+
 
 
 
@@ -178,11 +190,19 @@ export class TelegramCallbackRegistry {
 
 
 
+
+
+
         const handlers:
 
 
 
+
             TelegramCallbackHandler[] = [
+
+
+
+
 
 
 
@@ -199,28 +219,64 @@ export class TelegramCallbackRegistry {
 
 
 
-                new OpenMarketMenuCallbackHandler(),
+
+
+
+
+                new OpenMarketMenuCallbackHandler(
+
+                    telegramNavigationService
+
+                ),
 
 
 
 
 
 
-                new OpenCalculatorMenuCallbackHandler(),
+
+
+
+
+                new OpenCalculatorMenuCallbackHandler(
+
+                    telegramNavigationService
+
+                ),
 
 
 
 
 
 
-                new OpenAssistantMenuCallbackHandler(),
+
+
+
+
+                new OpenAssistantMenuCallbackHandler(
+
+                    telegramNavigationService
+
+                ),
 
 
 
 
 
 
-                new OpenSettingsMenuCallbackHandler(),
+
+
+
+
+                new OpenSettingsMenuCallbackHandler(
+
+                    telegramNavigationService
+
+                ),
+
+
+
+
 
 
 
@@ -235,6 +291,9 @@ export class TelegramCallbackRegistry {
                     telegramNavigationService
 
                 ),
+
+
+
 
 
 
@@ -260,6 +319,9 @@ export class TelegramCallbackRegistry {
 
 
 
+
+
+
                 new GetMarketAnalyticsCallbackHandler(
 
                     getMarketAnalyticsUseCase,
@@ -269,6 +331,9 @@ export class TelegramCallbackRegistry {
                     telegramNavigationService
 
                 ),
+
+
+
 
 
 
@@ -297,6 +362,8 @@ export class TelegramCallbackRegistry {
 
 
 
+
+
         return new TelegramCallbackRouter(
 
             handlers
@@ -306,6 +373,7 @@ export class TelegramCallbackRegistry {
 
 
     }
+
 
 
 

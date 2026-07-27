@@ -14,13 +14,8 @@ import {
 
 
 import {
-    TelegramInlineKeyboardBuilder,
-} from "../../keyboards/TelegramInlineKeyboardBuilder";
-
-
-import {
-    TelegramMarketMenu,
-} from "../../menu/TelegramMarketMenu";
+    TelegramNavigationService,
+} from "../../navigation/TelegramNavigationService";
 
 
 
@@ -32,11 +27,12 @@ implements TelegramCallbackHandler {
 
 
 
+    constructor(
 
-    private readonly keyboardBuilder =
-        new TelegramInlineKeyboardBuilder();
+        private readonly navigationService:
+            TelegramNavigationService
 
-
+    ) {}
 
 
 
@@ -73,18 +69,6 @@ implements TelegramCallbackHandler {
 
 
 
-
-        const items =
-
-            TelegramMarketMenu;
-
-
-
-
-
-
-
-
         return {
 
 
@@ -102,11 +86,7 @@ implements TelegramCallbackHandler {
 
             replyMarkup:
 
-                this.keyboardBuilder.build(
-
-                    items
-
-                ),
+                this.navigationService.getMarketMenu(),
 
 
         };

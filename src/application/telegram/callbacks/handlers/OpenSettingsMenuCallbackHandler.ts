@@ -1,31 +1,21 @@
 import {
     TelegramCallbackHandler,
-}
-from "../TelegramCallbackHandler";
+} from "../TelegramCallbackHandler";
 
 
 import {
     TelegramCallbackContext,
-}
-from "../TelegramCallbackContext";
+} from "../TelegramCallbackContext";
 
 
 import {
     TelegramCommandResponse,
-}
-from "../../commands/TelegramCommandHandler";
+} from "../../commands/TelegramCommandHandler";
 
 
 import {
-    TelegramInlineKeyboardBuilder,
-}
-from "../../keyboards/TelegramInlineKeyboardBuilder";
-
-
-import {
-    TelegramSettingsMenu,
-}
-from "../../menu/TelegramSettingsMenu";
+    TelegramNavigationService,
+} from "../../navigation/TelegramNavigationService";
 
 
 
@@ -37,12 +27,12 @@ implements TelegramCallbackHandler {
 
 
 
+    constructor(
 
-    private readonly keyboardBuilder =
+        private readonly navigationService:
+            TelegramNavigationService
 
-        new TelegramInlineKeyboardBuilder();
-
-
+    ) {}
 
 
 
@@ -79,18 +69,6 @@ implements TelegramCallbackHandler {
 
 
 
-
-        const items =
-
-            TelegramSettingsMenu;
-
-
-
-
-
-
-
-
         return {
 
 
@@ -108,12 +86,7 @@ implements TelegramCallbackHandler {
 
             replyMarkup:
 
-                this.keyboardBuilder.build(
-
-                    items
-
-                ),
-
+                this.navigationService.getSettingsMenu(),
 
 
         };
