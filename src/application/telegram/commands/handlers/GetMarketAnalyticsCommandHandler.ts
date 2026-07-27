@@ -13,6 +13,7 @@ from "../../../market/GetMarketAnalyticsUseCase";
 
 
 export class GetMarketAnalyticsCommandHandler
+
 implements TelegramCommandHandler {
 
 
@@ -23,6 +24,8 @@ implements TelegramCommandHandler {
             GetMarketAnalyticsUseCase
 
     ) {}
+
+
 
 
 
@@ -75,6 +78,8 @@ implements TelegramCommandHandler {
 
 
 
+
+
     async execute(
 
         context: TelegramCommandContext
@@ -91,6 +96,7 @@ implements TelegramCommandHandler {
 
 
 
+
         if (!result.analytics) {
 
 
@@ -99,6 +105,7 @@ implements TelegramCommandHandler {
                 type: "text",
 
                 content:
+
                     "⚠️ اطلاعات تحلیل بازار در دسترس نیست"
 
             };
@@ -113,8 +120,11 @@ implements TelegramCommandHandler {
 
 
 
+
+
         const analytics =
             result.analytics;
+
 
 
 
@@ -143,9 +153,14 @@ implements TelegramCommandHandler {
 
 
 
+
+
         const volatility =
 
             analytics.getVolatility();
+
+
+
 
 
 
@@ -172,6 +187,18 @@ implements TelegramCommandHandler {
 
 
 
+        const range =
+
+            analytics.getPriceRange();
+
+
+
+
+
+
+
+
+
         return {
 
 
@@ -189,9 +216,9 @@ implements TelegramCommandHandler {
 
 
                     `💰 قیمت فعلی:
-${analytics
-    .getCurrentPrice()
-    .toLocaleString("fa-IR")} تومان`,
+${this.copyNumber(
+    analytics.getCurrentPrice()
+)} تومان`,
 
 
                     "",
@@ -221,9 +248,7 @@ ${volatilityText} (${volatility.toFixed(2)}%)`,
 
 
                     `📌 محدوده ۵۰ رکورد اخیر:
-${analytics
-    .getPriceRange()
-    .toString()}`,
+${this.copyRange(range)}`,
 
 
                     "",
@@ -232,13 +257,83 @@ ${analytics
                     `🕒 آخرین تحلیل:
 ${analytics
     .getAnalyzedAt()
-    .toLocaleString("fa-IR")}`
+    .toLocaleString(
+        "fa-IR",
+        {
+            timeZone:
+                "Asia/Tehran"
+        }
+    )}`
 
 
                 ].join("\n")
 
 
         };
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+    private copyNumber(
+
+        value: number
+
+    ): string {
+
+
+        return `\`${new Intl.NumberFormat(
+
+            "fa-IR"
+
+        ).format(
+
+            Math.round(value)
+
+        )}\``;
+
+
+    }
+
+
+
+
+
+
+
+
+    private copyRange(
+
+        range: {
+
+            formattedMin: string;
+
+            formattedMax: string;
+
+            formattedAverage: string;
+
+        }
+
+    ): string {
+
+
+        return (
+
+            `\`${range.formattedMin}\` - ` +
+
+            `\`${range.formattedMax}\` - ` +
+
+            `میانگین: \`${range.formattedAverage}\``
+
+        );
 
 
     }
