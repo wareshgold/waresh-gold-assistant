@@ -119,6 +119,12 @@ implements TelegramCommandHandler {
 
 
 
+        const score =
+            result.score;
+
+
+
+
 
 
 
@@ -224,6 +230,13 @@ ${volatilityText} (${volatility.toFixed(2)}%)`,
 ${analytics
     .getPriceRange()
     .toString()}`,
+
+
+                    "",
+
+
+                    `🎯 امتیاز بازار:
+${score?.formatted ?? "نامشخص"}`,
 
 
                     "",
