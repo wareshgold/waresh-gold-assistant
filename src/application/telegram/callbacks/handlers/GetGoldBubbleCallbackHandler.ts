@@ -40,9 +40,12 @@ from "../../navigation/TelegramNavigationService";
 
 
 
+
 export class GetGoldBubbleCallbackHandler
 
 implements TelegramCallbackHandler {
+
+
 
 
 
@@ -142,7 +145,7 @@ implements TelegramCallbackHandler {
 
                 this.marketBubbleMessageFormatter.format(
 
-                    response.data as any
+                    response.data as never
 
                 ),
 
