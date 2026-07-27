@@ -7,7 +7,9 @@ from "./models/TelegramOutgoingMessage";
 
 
 
+
 export interface TelegramBotClient {
+
 
 
 
@@ -19,6 +21,7 @@ export interface TelegramBotClient {
 
     ):
         Promise<void>;
+
 
 
 
@@ -55,6 +58,49 @@ export interface TelegramBotClient {
 
     ):
         Promise<void>;
+
+
+
+
+
+
+
+
+
+    sendDocument(
+
+        message: {
+
+            chatId:
+                string;
+
+
+
+            document:
+                Uint8Array;
+
+
+
+            fileName:
+                string;
+
+
+
+            caption?:
+                string;
+
+
+
+            replyMarkup?:
+                TelegramOutgoingMessage["replyMarkup"];
+
+
+
+        }
+
+    ):
+        Promise<void>;
+
 
 
 

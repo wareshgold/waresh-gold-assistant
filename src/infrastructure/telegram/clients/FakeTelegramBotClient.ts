@@ -11,6 +11,7 @@ from "../models/TelegramOutgoingMessage";
 
 
 
+
 export class FakeTelegramBotClient
 
 implements TelegramBotClient {
@@ -19,6 +20,8 @@ implements TelegramBotClient {
 
     public messages:
         TelegramOutgoingMessage[] = [];
+
+
 
 
 
@@ -41,6 +44,10 @@ implements TelegramBotClient {
 
 
     }
+
+
+
+
 
 
 
@@ -92,6 +99,68 @@ implements TelegramBotClient {
 
 
     }
+
+
+
+
+
+
+
+
+
+    async sendDocument(
+
+        message: {
+
+            chatId:
+                string;
+
+
+            document:
+                Uint8Array;
+
+
+            fileName:
+                string;
+
+
+            caption?:
+                string;
+
+
+            replyMarkup?:
+                TelegramOutgoingMessage["replyMarkup"];
+
+        }
+
+    ):
+        Promise<void> {
+
+
+        this.messages.push({
+
+            chatId:
+
+                message.chatId,
+
+
+            text:
+
+                message.caption ?? message.fileName,
+
+
+            replyMarkup:
+
+                message.replyMarkup
+
+
+        });
+
+
+    }
+
+
+
 
 
 

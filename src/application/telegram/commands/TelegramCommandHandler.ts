@@ -7,6 +7,9 @@ from "./TelegramCommandContext";
 
 
 
+
+
+
 export interface TelegramPhotoPayload {
 
 
@@ -28,6 +31,35 @@ export interface TelegramPhotoPayload {
 
 
 
+
+export interface TelegramDocumentPayload {
+
+
+    document:
+        string | Uint8Array;
+
+
+
+    fileName:
+        string;
+
+
+
+    caption?:
+        string;
+
+
+
+}
+
+
+
+
+
+
+
+
+
 export interface TelegramCommandResponse {
 
 
@@ -35,7 +67,10 @@ export interface TelegramCommandResponse {
     type?:
         "text"
         |
-        "photo";
+        "photo"
+        |
+        "document";
+
 
 
 
@@ -44,8 +79,19 @@ export interface TelegramCommandResponse {
 
 
 
+
+
     photo?:
         TelegramPhotoPayload;
+
+
+
+
+
+    document?:
+        TelegramDocumentPayload;
+
+
 
 
 
@@ -55,6 +101,8 @@ export interface TelegramCommandResponse {
 
 
 }
+
+
 
 
 
@@ -83,6 +131,8 @@ export interface TelegramCommandMetadata {
 
 
 
+
+
 export interface TelegramCommandHandler {
 
 
@@ -92,12 +142,16 @@ export interface TelegramCommandHandler {
 
 
 
+
     canHandle(
 
         command:
             string
 
-    ): boolean;
+    ):
+        boolean;
+
+
 
 
 
