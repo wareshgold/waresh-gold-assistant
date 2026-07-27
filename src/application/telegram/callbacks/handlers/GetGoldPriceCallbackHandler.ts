@@ -32,8 +32,6 @@ from "../../navigation/TelegramNavigationService";
 
 
 
-
-
 export class GetGoldPriceCallbackHandler
 
 implements TelegramCallbackHandler {
@@ -42,9 +40,7 @@ implements TelegramCallbackHandler {
 
 
 
-
     constructor(
-
 
 
         private readonly getGoldPriceUseCase:
@@ -56,7 +52,6 @@ implements TelegramCallbackHandler {
         private readonly telegramNavigationService:
 
             TelegramNavigationService
-
 
 
     ) {}
@@ -72,10 +67,10 @@ implements TelegramCallbackHandler {
     canHandle(
 
         context:
+
             TelegramCallbackContext
 
     ): boolean {
-
 
 
         return (
@@ -102,6 +97,7 @@ implements TelegramCallbackHandler {
     async execute(
 
         context:
+
             TelegramCallbackContext
 
     ):
@@ -110,11 +106,9 @@ implements TelegramCallbackHandler {
 
 
 
-
         const response =
 
             await this.getGoldPriceUseCase.execute();
-
 
 
 
@@ -149,7 +143,27 @@ implements TelegramCallbackHandler {
 
                     rows:
 
+
                         [
+
+                            [
+
+                                {
+
+                                    text:
+
+                                        "📋 کپی قیمت",
+
+
+                                    actionId:
+
+                                        "gold:copy_price",
+
+                                }
+
+                            ],
+
+
 
                             [
 
