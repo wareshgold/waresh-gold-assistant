@@ -6,6 +6,10 @@ import { MarketAnalyticsService }
 from "../../application/market/services/MarketAnalyticsService";
 
 
+import { MarketAnalyticsFacade }
+from "../../application/market/services/MarketAnalyticsFacade";
+
+
 import { MarketChartService }
 from "../../application/market/chart/MarketChartService";
 
@@ -20,6 +24,10 @@ from "../../domain/market/analytics/services/TrendCalculator";
 
 import { VolatilityCalculator }
 from "../../domain/market/analytics/services/VolatilityCalculator";
+
+
+import { MarketScoreCalculator }
+from "../../domain/market/analytics/services/MarketScoreCalculator";
 
 
 import { HttpPriceSourceClient }
@@ -100,6 +108,7 @@ interface MonitoringModule {
 
 
 
+
 export interface MarketModule {
 
 
@@ -109,8 +118,10 @@ export interface MarketModule {
 
 
 
+
     marketProvider:
         CompositeMarketPriceProvider;
+
 
 
 
@@ -119,8 +130,10 @@ export interface MarketModule {
 
 
 
+
     snapshotService:
         MarketSnapshotService;
+
 
 
 
@@ -129,8 +142,10 @@ export interface MarketModule {
 
 
 
-    analyticsService:
-        MarketAnalyticsService;
+
+    analyticsFacade:
+        MarketAnalyticsFacade;
+
 
 
 
@@ -190,6 +205,7 @@ export function createMarketModule(
 
 
 
+
     const marketChartService =
 
 
@@ -220,6 +236,25 @@ export function createMarketModule(
 
 
             new VolatilityCalculator()
+
+
+        );
+
+
+
+
+
+
+    const analyticsFacade =
+
+
+        new MarketAnalyticsFacade(
+
+
+            analyticsService,
+
+
+            new MarketScoreCalculator()
 
 
         );
@@ -368,7 +403,6 @@ export function createMarketModule(
 
         cache:
 
-
             cacheModule.cache,
 
 
@@ -389,7 +423,7 @@ export function createMarketModule(
 
 
 
-        analyticsService,
+        analyticsFacade,
 
 
 

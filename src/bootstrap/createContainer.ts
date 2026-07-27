@@ -79,7 +79,6 @@ from "../application/system/HealthCheckService";
 
 
 
-
 export function createContainer(
 
     env: AppEnv
@@ -186,6 +185,7 @@ export function createContainer(
 
 
 
+
     const currentMarketPriceUseCase =
 
 
@@ -201,6 +201,7 @@ export function createContainer(
 
 
 
+
     const getGoldPriceUseCase =
 
 
@@ -209,6 +210,7 @@ export function createContainer(
             currentMarketPriceUseCase
 
         );
+
 
 
 
@@ -233,6 +235,7 @@ export function createContainer(
 
 
 
+
     const getGoldBubbleDataUseCase =
 
 
@@ -250,14 +253,16 @@ export function createContainer(
 
 
 
+
     const getMarketAnalyticsUseCase =
 
 
         new GetMarketAnalyticsUseCase(
 
-            market.analyticsService
+            market.analyticsFacade
 
         );
+
 
 
 
@@ -280,6 +285,7 @@ export function createContainer(
 
 
 
+
     const getMarketChartUseCase =
 
 
@@ -288,6 +294,7 @@ export function createContainer(
             market.marketChartService
 
         );
+
 
 
 
@@ -310,6 +317,7 @@ export function createContainer(
 
 
 
+
     const refreshMarketPriceJob =
 
 
@@ -318,6 +326,7 @@ export function createContainer(
             refreshMarketPriceUseCase
 
         );
+
 
 
 

@@ -1,22 +1,37 @@
 import { describe, expect, it } from "vitest";
 
+
 import { D1MarketSnapshotRepository }
 from "../../../src/infrastructure/market/repositories/d1/D1MarketSnapshotRepository";
+
 
 import { MarketSnapshot }
 from "../../../src/domain/market/snapshots/MarketSnapshot";
 
+
 import { MarketAnalyticsService }
 from "../../../src/application/market/services/MarketAnalyticsService";
+
+
+import { MarketAnalyticsFacade }
+from "../../../src/application/market/services/MarketAnalyticsFacade";
+
+
+import { MarketScoreCalculator }
+from "../../../src/domain/market/analytics/services/MarketScoreCalculator";
+
 
 import { GetMarketAnalyticsUseCase }
 from "../../../src/application/market/GetMarketAnalyticsUseCase";
 
+
 import { TrendCalculator }
 from "../../../src/domain/market/analytics/services/TrendCalculator";
 
+
 import { VolatilityCalculator }
 from "../../../src/domain/market/analytics/services/VolatilityCalculator";
+
 
 
 
@@ -94,6 +109,7 @@ class FakeD1Database {
                         return {
 
                             results:
+
                                 sortedRows()
 
                         };
@@ -130,6 +146,8 @@ class FakeD1Database {
 
 
 
+
+
 describe(
     "D1 Market Analytics Flow",
     () => {
@@ -143,16 +161,21 @@ describe(
 
 
                 const db =
+
                     new FakeD1Database();
 
 
 
+
+
                 const repository =
+
                     new D1MarketSnapshotRepository(
 
                         db as unknown as D1Database
 
                     );
+
 
 
 
@@ -178,6 +201,7 @@ describe(
 
 
 
+
                 await repository.save(
 
                     new MarketSnapshot(
@@ -199,6 +223,7 @@ describe(
 
 
 
+
                 const analyticsService =
 
                     new MarketAnalyticsService(
@@ -214,13 +239,29 @@ describe(
 
 
 
+
+                const facade =
+
+                    new MarketAnalyticsFacade(
+
+                        analyticsService,
+
+                        new MarketScoreCalculator()
+
+                    );
+
+
+
+
+
                 const useCase =
 
                     new GetMarketAnalyticsUseCase(
 
-                        analyticsService
+                        facade
 
                     );
+
 
 
 
@@ -232,38 +273,55 @@ describe(
 
 
 
+
                 expect(
+
                     result.analytics
+
                 )
+
                 .not
+
                 .toBeNull();
 
 
 
 
+
                 expect(
 
                     result.analytics
-                        ?.getCurrentPrice()
+
+                    ?.getCurrentPrice()
 
                 )
+
                 .toBe(
+
                     18600000
+
                 );
 
 
 
 
+
                 expect(
 
                     result.analytics
-                        ?.getChange()
-                        .isPositive
+
+                    ?.getChange()
+
+                    .isPositive
 
                 )
+
                 .toBe(
+
                     true
+
                 );
+
 
 
 
@@ -271,13 +329,19 @@ describe(
                 expect(
 
                     result.analytics
-                        ?.getPriceRange()
-                        .min
+
+                    ?.getPriceRange()
+
+                    .min
 
                 )
+
                 .toBe(
+
                     18000000
+
                 );
+
 
 
 
@@ -285,20 +349,39 @@ describe(
                 expect(
 
                     result.analytics
-                        ?.getPriceRange()
-                        .max
+
+                    ?.getPriceRange()
+
+                    .max
 
                 )
+
                 .toBe(
+
                     18600000
+
                 );
+
+
+
+                expect(
+
+                    result.score
+
+                )
+
+                .not
+
+                .toBeNull();
 
 
 
             }
+
         );
 
 
 
     }
+
 );

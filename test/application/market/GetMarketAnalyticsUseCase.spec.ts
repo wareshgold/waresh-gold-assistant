@@ -9,6 +9,14 @@ import { MarketAnalyticsService }
 from "../../../src/application/market/services/MarketAnalyticsService";
 
 
+import { MarketAnalyticsFacade }
+from "../../../src/application/market/services/MarketAnalyticsFacade";
+
+
+import { MarketScoreCalculator }
+from "../../../src/domain/market/analytics/services/MarketScoreCalculator";
+
+
 import { MemoryMarketSnapshotRepository }
 from "../../../src/infrastructure/market/repositories/MemoryMarketSnapshotRepository";
 
@@ -30,6 +38,7 @@ from "../../../src/domain/market/entities/MarketPrice";
 
 
 
+
 describe(
     "GetMarketAnalyticsUseCase",
     () => {
@@ -43,14 +52,20 @@ describe(
 
 
                 const repository =
+
                     new MemoryMarketSnapshotRepository();
 
 
 
+
                 const snapshotService =
+
                     new MarketSnapshotService(
+
                         repository
+
                     );
+
 
 
 
@@ -74,6 +89,8 @@ describe(
 
 
 
+
+
                 await snapshotService.savePrice(
 
                     new MarketPrice(
@@ -94,6 +111,8 @@ describe(
 
 
 
+
+
                 const analyticsService =
 
                     new MarketAnalyticsService(
@@ -108,13 +127,31 @@ describe(
 
 
 
+
+
+                const facade =
+
+                    new MarketAnalyticsFacade(
+
+                        analyticsService,
+
+                        new MarketScoreCalculator()
+
+                    );
+
+
+
+
+
                 const useCase =
 
                     new GetMarketAnalyticsUseCase(
 
-                        analyticsService
+                        facade
 
                     );
+
+
 
 
 
@@ -124,34 +161,70 @@ describe(
 
 
 
+
+
                 expect(
+
                     result.analytics
+
                 )
+
                 .not
+
                 .toBeNull();
 
 
 
+
+
                 expect(
+
                     result.analytics?.getCurrentPrice()
+
                 )
+
                 .toBe(
+
                     18500000
+
+                );
+
+
+
+
+
+                expect(
+
+                    result.analytics?.getChange().isPositive
+
+                )
+
+                .toBe(
+
+                    true
+
                 );
 
 
 
                 expect(
-                    result.analytics?.getChange().isPositive
+
+                    result.score
+
                 )
-                .toBe(true);
+
+                .not
+
+                .toBeNull();
 
 
 
             }
+
         );
 
 
 
     }
+
 );

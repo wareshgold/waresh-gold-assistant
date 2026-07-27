@@ -58,6 +58,12 @@ from "../application/market/services/MarketSnapshotService";
 import { MarketAnalyticsService }
 from "../application/market/services/MarketAnalyticsService";
 
+import { MarketAnalyticsFacade }
+from "../application/market/services/MarketAnalyticsFacade";
+
+import { MarketScoreCalculator }
+from "../domain/market/analytics/services/MarketScoreCalculator";
+
 import { GetMarketAnalyticsUseCase }
 from "../application/market/GetMarketAnalyticsUseCase";
 
@@ -93,6 +99,7 @@ from "../application/telegram/presentation/MarketBubbleMessageFormatter";
 
 
 
+
 export class ApplicationContainer {
 
 
@@ -104,6 +111,7 @@ export class ApplicationContainer {
 
     public readonly calculateReverseGoldUseCase:
         CalculateReverseGoldUseCase;
+
 
 
 
@@ -170,7 +178,11 @@ export class ApplicationContainer {
 
             );
 
-                const analyticsService =
+
+
+
+
+        const analyticsService =
 
             new MarketAnalyticsService(
 
@@ -186,11 +198,25 @@ export class ApplicationContainer {
 
 
 
+        const analyticsFacade =
+
+            new MarketAnalyticsFacade(
+
+                analyticsService,
+
+                new MarketScoreCalculator()
+
+            );
+
+
+
+
+
         const getMarketAnalyticsUseCase =
 
             new GetMarketAnalyticsUseCase(
 
-                analyticsService
+                analyticsFacade
 
             );
 
@@ -323,9 +349,12 @@ export class ApplicationContainer {
                 marketBubbleMessageFormatter
 
             );
-        
-         
-                 const actionResolver =
+
+
+
+
+
+        const actionResolver =
 
             new CompositeTelegramActionResolver(
 
@@ -391,4 +420,4 @@ export class ApplicationContainer {
 
 
 
-}   
+}

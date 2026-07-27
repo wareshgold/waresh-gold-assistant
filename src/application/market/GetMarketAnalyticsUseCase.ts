@@ -1,17 +1,34 @@
-import { MarketAnalyticsService }
-from "./services/MarketAnalyticsService";
+import { MarketAnalyticsFacade }
+from "./services/MarketAnalyticsFacade";
+
 
 import { MarketAnalytics }
 from "../../domain/market/analytics/entities/MarketAnalytics";
 
 
+import { MarketScore }
+from "../../domain/market/analytics/value-objects/MarketScore";
+
+
+
+
 
 export interface GetMarketAnalyticsOutput {
+
 
     analytics:
         MarketAnalytics | null;
 
+
+
+    score:
+        MarketScore | null;
+
+
 }
+
+
+
 
 
 
@@ -21,12 +38,21 @@ export class GetMarketAnalyticsUseCase {
 
 
 
+
+
     constructor(
 
-        private readonly service:
-            MarketAnalyticsService
+
+        private readonly facade:
+            MarketAnalyticsFacade
+
+
 
     ) {}
+
+
+
+
 
 
 
@@ -38,22 +64,69 @@ export class GetMarketAnalyticsUseCase {
 
 
 
-        const analytics =
 
-            await this.service
+        const result =
+
+            await this.facade
                 .analyze();
+
+
+
+
+
+
+
+        if (!result) {
+
+
+            return {
+
+
+                analytics:
+                    null,
+
+
+                score:
+                    null
+
+
+
+            };
+
+
+        }
+
+
+
+
 
 
 
 
         return {
 
-            analytics
+
+            analytics:
+
+                result.analytics,
+
+
+
+            score:
+
+                result.score
+
+
 
         };
 
 
+
     }
+
+
+
+
 
 
 }
