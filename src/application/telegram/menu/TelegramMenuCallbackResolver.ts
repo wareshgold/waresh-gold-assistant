@@ -32,7 +32,7 @@ export class TelegramMenuCallbackResolver {
 
 
 
-            case "gold.calculate":
+            case "calculate.gold-price":
 
                 return "command:calc";
 
@@ -47,6 +47,12 @@ export class TelegramMenuCallbackResolver {
             case "market.history":
 
                 return "market:history";
+
+
+
+            case "market.chart":
+
+                return "market:chart";
 
 
 
