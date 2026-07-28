@@ -77,36 +77,6 @@ export class TelegramCommandMenuService {
 
                         "قیمت لحظه‌ای طلا"
 
-                },
-
-
-
-                {
-
-                    command:
-
-                        "bubble",
-
-
-                    description:
-
-                        "بررسی حباب طلا"
-
-                },
-
-
-
-                {
-
-                    command:
-
-                        "calculate",
-
-
-                    description:
-
-                        "محاسبه قیمت طلا"
-
                 }
 
 
