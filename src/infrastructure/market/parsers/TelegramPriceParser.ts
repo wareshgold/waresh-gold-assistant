@@ -170,7 +170,17 @@ export class TelegramPriceParser {
 
 
 
-        if (!timeMatch) {
+        const dateMatch =
+            text.match(
+                /تاریخ\s*:\s*(\d{4})\/(\d{1,2})\/(\d{1,2})/
+            );
+
+
+
+        if (
+            !timeMatch ||
+            !dateMatch
+        ) {
 
             return new Date();
 
@@ -178,26 +188,182 @@ export class TelegramPriceParser {
 
 
 
-        const date =
-            new Date();
+        const jalaliYear =
+            Number(dateMatch[1]);
+
+        const jalaliMonth =
+            Number(dateMatch[2]);
+
+        const jalaliDay =
+            Number(dateMatch[3]);
 
 
 
-        date.setHours(
+        const gregorian =
+            this.jalaliToGregorian(
+                jalaliYear,
+                jalaliMonth,
+                jalaliDay
+            );
 
-            Number(timeMatch[1]),
 
-            Number(timeMatch[2]),
 
-            0,
+        return new Date(
 
-            0
+            Date.UTC(
+
+                gregorian.year,
+
+                gregorian.month - 1,
+
+                gregorian.day,
+
+                Number(timeMatch[1]) - 3,
+
+                Number(timeMatch[2]) - 30,
+
+                0
+
+            )
 
         );
 
+    }
 
 
-        return date;
+
+
+
+
+
+    private static jalaliToGregorian(
+        jy: number,
+        jm: number,
+        jd: number
+    ) {
+
+
+        jy += 1595;
+
+
+
+        const days =
+            -355668 +
+            (365 * jy) +
+            Math.floor(jy / 33) * 8 +
+            Math.floor(((jy % 33) + 3) / 4) +
+            jd +
+            (
+                jm < 7
+                    ? (jm - 1) * 31
+                    : ((jm - 7) * 30) + 186
+            );
+
+
+
+        let gy =
+            400 *
+            Math.floor(days / 146097);
+
+
+
+        let day =
+            days % 146097;
+
+
+
+        if (day > 36524) {
+
+            gy +=
+                100 *
+                Math.floor(--day / 36524);
+
+            day =
+                day % 36524;
+
+
+
+            if (day >= 365) {
+
+                day++;
+
+            }
+
+        }
+
+
+
+        gy +=
+            4 *
+            Math.floor(day / 1461);
+
+
+
+        day =
+            day % 1461;
+
+
+
+        if (day > 365) {
+
+            gy +=
+                Math.floor((day - 1) / 365);
+
+            day =
+                (day - 1) % 365;
+
+        }
+
+
+
+        let gm =
+            0;
+
+
+
+        const monthDays = [
+
+            31,
+            28,
+            31,
+            30,
+            31,
+            30,
+            31,
+            31,
+            30,
+            31,
+            30,
+            31
+
+        ];
+
+
+
+        while (
+
+            gm < 12 &&
+            day >= monthDays[gm]
+
+        ) {
+
+            day -= monthDays[gm];
+
+            gm++;
+
+        }
+
+
+
+        return {
+
+            year: gy,
+
+            month: gm + 1,
+
+            day: day + 1
+
+        };
 
     }
 
