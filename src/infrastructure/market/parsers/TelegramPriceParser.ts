@@ -19,10 +19,24 @@ export class TelegramPriceParser {
 
 
 
+        console.log(
+            "PARSER DEBUG:",
+            normalized
+                .replace(/\s+/g, " ")
+                .trim()
+        );
+
+
+
         const gold18Price =
             this.extractNumber(
                 normalized,
-                /(?:طلای\s*18\s*عیار|طلای\s*۱۸\s*عیار|۱۸\s*عیار)\s*[:：]\s*([\d,]+)/i
+                /طلای\s*18\s*عیار\s*:\s*([\d,]+)/i
+            )
+            ??
+            this.extractNumber(
+                normalized,
+                /طلای\s*.*?18\s*.*?عیار.*?([\d,]+)/i
             );
 
 
@@ -30,7 +44,12 @@ export class TelegramPriceParser {
         const currencyPrice =
             this.extractNumber(
                 normalized,
-                /(?:دلار\s*تهران|دلار)\s*[:：]\s*([\d,]+)/i
+                /دلار(?:\s*تهران)?\s*:\s*([\d,]+)/i
+            )
+            ??
+            this.extractNumber(
+                normalized,
+                /تتر\s*:\s*([\d,]+)/i
             );
 
 
@@ -38,7 +57,7 @@ export class TelegramPriceParser {
         const ouncePrice =
             this.extractNumber(
                 normalized,
-                /(?:اونس\s*طلا|اونس|انس\s*طلا)\s*[:：]\s*([\d,]+)/i
+                /اونس\s*طلا\s*:\s*([\d,]+)(?:\$)?/i
             );
 
 
@@ -74,6 +93,8 @@ export class TelegramPriceParser {
 
 
 
+
+
     private static extractNumber(
         text: string,
         regex: RegExp
@@ -94,11 +115,15 @@ export class TelegramPriceParser {
 
 
         return Number(
+
             match[1]
                 .replace(/,/g, "")
+
         );
 
     }
+
+
 
 
 
@@ -121,11 +146,13 @@ export class TelegramPriceParser {
             )
 
             .replace(
-                /[٬]/g,
+                /٬/g,
                 ","
             );
 
     }
+
+
 
 
 
@@ -138,7 +165,7 @@ export class TelegramPriceParser {
 
         const timeMatch =
             text.match(
-                /ساعت\s*[:：]\s*(\d{1,2}):(\d{1,2})/
+                /ساعت\s*:\s*(\d{1,2}):(\d{1,2})/
             );
 
 
@@ -156,7 +183,7 @@ export class TelegramPriceParser {
 
 
 
-        date.setUTCHours(
+        date.setHours(
 
             Number(timeMatch[1]),
 
