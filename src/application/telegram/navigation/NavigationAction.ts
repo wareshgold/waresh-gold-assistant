@@ -33,6 +33,8 @@ export enum NavigationAction {
 
     CALCULATE_FORMULA = "calculator:formula",
 
+    CALCULATE_REVERSE_LABOR = "calculator:reverse-labor",
+
 
 
     ASSISTANT_AI = "assistant:ai",

@@ -85,6 +85,12 @@ export class TelegramMenuCallbackResolver {
 
 
 
+            case "calculate.reverse-labor":
+
+                return NavigationAction.CALCULATE_REVERSE_LABOR;
+
+
+                
             default:
 
                 return item.id.replace(".", ":");

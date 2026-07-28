@@ -84,6 +84,28 @@ export const TelegramCalculatorMenu: TelegramMenuItem[] = [
     },
 
 
+
+    {
+        id:
+            "calculate.reverse-labor",
+
+        label:
+            "🔄 پیدا کردن اجرت محصول",
+
+        action: {
+
+            type:
+                TelegramMenuActionType.CALLBACK,
+
+            value:
+                NavigationAction.CALCULATE_REVERSE_LABOR,
+
+        },
+
+    },
+
+
+
     TelegramBackMenuItem,
 
 ];

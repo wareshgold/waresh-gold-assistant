@@ -41,6 +41,12 @@ from "./handlers/CalculateGoldCallbackHandler";
 
 
 import {
+    ComingSoonCalculationCallbackHandler
+}
+from "./handlers/ComingSoonCalculationCallbackHandler";
+
+
+import {
     OpenMarketMenuCallbackHandler
 }
 from "./handlers/OpenMarketMenuCallbackHandler";
@@ -150,6 +156,7 @@ from "../../../infrastructure/chart/MarketChartImageGenerator";
 
 
 
+
 export class TelegramCallbackHandlerFactory {
 
 
@@ -232,6 +239,8 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
             new BackNavigationCallbackHandler(
 
                 telegramNavigationService,
@@ -239,6 +248,8 @@ export class TelegramCallbackHandlerFactory {
                 telegramNavigationStateService
 
             ),
+
+
 
 
 
@@ -250,11 +261,15 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
             new OpenMarketMenuCallbackHandler(
 
                 telegramNavigationService
 
             ),
+
+
 
 
 
@@ -266,11 +281,15 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
             new OpenAssistantMenuCallbackHandler(
 
                 telegramNavigationService
 
             ),
+
+
 
 
 
@@ -282,11 +301,35 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
             new CalculateGoldCallbackHandler(
 
                 sessionStore
 
             ),
+
+
+
+
+
+            new ComingSoonCalculationCallbackHandler(
+
+                "invoice"
+
+            ),
+
+
+
+
+
+            new ComingSoonCalculationCallbackHandler(
+
+                "formula"
+
+            ),
+
+
 
 
 
@@ -297,6 +340,8 @@ export class TelegramCallbackHandlerFactory {
                 telegramNavigationService
 
             ),
+
+
 
 
 
@@ -312,6 +357,8 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
             new GetMarketAnalyticsCallbackHandler(
 
                 getMarketAnalyticsUseCase,
@@ -324,6 +371,8 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
             new GetMarketHistoryCallbackHandler(
 
                 getMarketHistoryUseCase,
@@ -333,6 +382,8 @@ export class TelegramCallbackHandlerFactory {
                 telegramNavigationService
 
             ),
+
+
 
 
 
