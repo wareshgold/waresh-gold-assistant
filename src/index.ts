@@ -12,15 +12,26 @@ from "./shared/config/env";
 
 
 
+
+
 let cachedContainer:
     ReturnType<typeof createContainer> | null = null;
 
 
 
 
+let commandsRegistered =
+    false;
+
+
+
+
+
 
 function getContainer(
+
     env: AppEnv
+
 ) {
 
 
@@ -45,16 +56,23 @@ function getContainer(
 
 
 
+
+
 export default {
+
 
 
     async fetch(
 
+
         request: Request,
+
 
         env: AppEnv,
 
+
         ctx: ExecutionContext
+
 
     ) {
 
@@ -63,6 +81,39 @@ export default {
         const container =
 
             getContainer(env);
+
+
+
+
+
+
+        if (
+
+            !commandsRegistered
+
+            && container.commandMenuService
+
+        ) {
+
+
+
+            await container
+
+                .commandMenuService
+
+                .registerCommands();
+
+
+
+            commandsRegistered =
+
+                true;
+
+
+        }
+
+
+
 
 
 
@@ -74,13 +125,20 @@ export default {
 
 
 
+
+
+
         return app.fetch(
+
 
             request,
 
+
             env,
 
+
             ctx
+
 
         );
 
@@ -92,13 +150,24 @@ export default {
 
 
 
+
+
+
     async scheduled(
+
+
 
         event: ScheduledEvent,
 
+
+
         env: AppEnv,
 
+
+
         ctx: ExecutionContext
+
+
 
     ) {
 
@@ -111,7 +180,11 @@ export default {
 
 
 
+
+
         try {
+
+
 
 
 
@@ -126,37 +199,60 @@ export default {
 
 
 
+
+
             console.log(
+
+
 
                 "Price refreshed:",
 
+
+
                 price
 
+
+
             );
+
+
 
 
 
         }
 
+
         catch(error) {
+
 
 
             console.error(
 
+
+
                 "Price refresh failed:",
+
+
 
                 error
 
+
+
             );
+
 
 
             throw error;
 
 
+
         }
 
 
+
     }
+
+
 
 
 };
