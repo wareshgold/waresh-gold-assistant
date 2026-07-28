@@ -4,6 +4,7 @@ export enum NavigationAction {
 
     BACK = "menu:back",
 
+
     MARKET = "menu:market",
 
     CALCULATE = "menu:calculate",
@@ -11,6 +12,7 @@ export enum NavigationAction {
     ASSISTANT = "menu:assistant",
 
     SETTINGS = "menu:settings",
+
 
 
     GOLD_PRICE = "gold:price",
@@ -24,11 +26,13 @@ export enum NavigationAction {
     MARKET_ANALYTICS = "market:analytics",
 
 
-    CALCULATE_GOLD_PRICE = "calculate:gold-price",
 
-    CALCULATE_INVOICE = "calculate:invoice",
+    CALCULATE_GOLD_PRICE = "calculator:gold-price",
 
-    CALCULATE_FORMULA = "calculate:formula",
+    CALCULATE_INVOICE = "calculator:invoice",
+
+    CALCULATE_FORMULA = "calculator:formula",
+
 
 
     ASSISTANT_AI = "assistant:ai",
@@ -36,6 +40,7 @@ export enum NavigationAction {
     ASSISTANT_LEARN = "assistant:learn",
 
     ASSISTANT_HELP = "assistant:help",
+
 
 
     SETTINGS_ALERTS = "settings:alerts",
