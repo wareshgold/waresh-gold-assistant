@@ -48,11 +48,9 @@ implements TelegramCommandHandler {
     constructor(
 
 
-
         private readonly welcomeMessageProvider:
 
             WelcomeMessageProvider,
-
 
 
         private readonly telegramMenuService:
@@ -60,11 +58,9 @@ implements TelegramCommandHandler {
             TelegramMenuService,
 
 
-
         private readonly telegramInlineKeyboardBuilder:
 
             TelegramInlineKeyboardBuilder,
-
 
 
         private readonly profileStore?:
@@ -72,8 +68,11 @@ implements TelegramCommandHandler {
             TelegramUserProfileStore
 
 
-
     ) {}
+
+
+
+
 
 
 
@@ -100,6 +99,10 @@ implements TelegramCommandHandler {
 
 
 
+
+
+
+
     canHandle(
 
         command:
@@ -115,6 +118,10 @@ implements TelegramCommandHandler {
 
 
 
+
+
+
+
     async execute(
 
         context:
@@ -124,7 +131,20 @@ implements TelegramCommandHandler {
 
 
 
-        let isNewUser = true;
+        console.log(
+
+            "START COMMAND CONTEXT:",
+
+            context
+
+        );
+
+
+
+
+        let isFirstTimeUser = true;
+
+
 
 
 
@@ -150,17 +170,22 @@ implements TelegramCommandHandler {
 
 
 
-            isNewUser =
+            isFirstTimeUser =
 
                 existingProfile === null;
 
 
 
+
+
             await this.profileStore.save({
+
+
 
                 userId:
 
                     context.userId,
+
 
 
                 username:
@@ -168,9 +193,11 @@ implements TelegramCommandHandler {
                     context.username,
 
 
+
                 firstName:
 
                     context.firstName,
+
 
 
                 createdAt:
@@ -182,9 +209,12 @@ implements TelegramCommandHandler {
                     Date.now(),
 
 
+
                 lastSeenAt:
 
                     Date.now()
+
+
 
             });
 
@@ -197,7 +227,10 @@ implements TelegramCommandHandler {
 
 
 
+
+
         const name =
+
 
             context.firstName
 
@@ -215,42 +248,60 @@ implements TelegramCommandHandler {
 
 
 
-        const welcomeMessage =
 
 
-            this.welcomeMessageProvider.getWelcomeMessage(
+        let welcomeMessage:
 
-                context.firstName,
-
-                context.username
-
-            );
+            string;
 
 
 
 
 
+        if (isFirstTimeUser) {
 
 
 
-        const personalizedMessage =
+            welcomeMessage =
+
+
+                `خوش آمدی ${name} 🌟\n\n`
+
+                +
+
+                this.welcomeMessageProvider.getWelcomeMessage(
+
+                    context.firstName,
+
+                    context.username
+
+                );
 
 
 
-            isNewUser
+        }
 
-
-                ?
-
-                `سلام ${name} 👋\n\n${welcomeMessage}`
+        else {
 
 
 
-                :
+            welcomeMessage =
+
+
+                `خوش برگشتی ${name} 👋\n\n`
+
+                +
+
+                `به وارش گلد برگشتی.\n\n`
+
+                +
+
+                `دوباره در خدمتت هستم. از منوی زیر می‌تونی استفاده کنی.`;
 
 
 
-                `خوش برگشتی ${name} 👋\n\nدوباره در خدمتت هستم.`;
+        }
+
 
 
 
@@ -263,7 +314,6 @@ implements TelegramCommandHandler {
 
 
             this.telegramMenuService.getMainMenu();
-
 
 
 
@@ -286,15 +336,12 @@ implements TelegramCommandHandler {
 
 
 
-
         return {
-
 
 
             content:
 
-                personalizedMessage,
-
+                welcomeMessage,
 
 
             replyMarkup:
@@ -302,9 +349,13 @@ implements TelegramCommandHandler {
                 inlineKeyboard
 
 
-
         };
 
+
     }
+
+
+
+
 
 }
