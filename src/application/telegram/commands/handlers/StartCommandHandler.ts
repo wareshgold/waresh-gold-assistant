@@ -70,6 +70,7 @@ implements TelegramCommandHandler {
 
 
 
+
     metadata() {
 
 
@@ -92,6 +93,7 @@ implements TelegramCommandHandler {
 
 
     }
+
 
 
 
@@ -130,8 +132,26 @@ implements TelegramCommandHandler {
 
 
 
-        const welcomeMessage =
+        const name =
 
+
+            context.firstName
+
+            ??
+
+            context.username
+
+            ??
+
+            "دوست عزیز";
+
+
+
+
+
+
+
+        const welcomeMessage =
 
 
             this.welcomeMessageProvider.getWelcomeMessage(
@@ -151,11 +171,29 @@ implements TelegramCommandHandler {
 
 
 
+        const personalizedMessage =
+
+
+
+            `سلام ${name} 👋\n\n`
+
+            +
+
+            welcomeMessage;
+
+
+
+
+
+
+
+
         const menuItems =
 
 
 
             this.telegramMenuService.getMainMenu();
+
 
 
 
@@ -181,16 +219,19 @@ implements TelegramCommandHandler {
 
 
 
+
         return {
 
 
             content:
 
-                welcomeMessage,
+
+                personalizedMessage,
 
 
 
             replyMarkup:
+
 
                 inlineKeyboard
 
@@ -200,6 +241,7 @@ implements TelegramCommandHandler {
 
 
     }
+
 
 
 
