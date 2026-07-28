@@ -22,11 +22,8 @@ export class ReverseGoldCalculator {
         if (input.target === "GOLD_PRICE") {
 
             if (!input.weight) {
-                throw new Error(
-                    "Weight is required"
-                );
+                throw new Error("Weight is required");
             }
-
 
             return {
                 goldPrice:
@@ -40,11 +37,8 @@ export class ReverseGoldCalculator {
         if (input.target === "WEIGHT") {
 
             if (!input.goldPrice) {
-                throw new Error(
-                    "Gold price is required"
-                );
+                throw new Error("Gold price is required");
             }
-
 
             return {
                 weight:
@@ -52,6 +46,21 @@ export class ReverseGoldCalculator {
             };
 
         }
+
+
+
+        if (input.target === "LABOR_PERCENT") {
+
+            if (!input.goldPrice || !input.weight) {
+                throw new Error(
+                    "Gold price and weight are required"
+                );
+            }
+
+            return this.solveLaborPercent(input);
+
+        }
+
 
 
         throw new Error(
@@ -81,10 +90,8 @@ export class ReverseGoldCalculator {
             i++
         ) {
 
-
             const middle =
                 (low + high) / 2;
-
 
 
             const result =
@@ -97,7 +104,7 @@ export class ReverseGoldCalculator {
                         middle,
 
                     laborPercent:
-                        input.laborPercent,
+                        input.laborPercent ?? 0,
 
                     profitPercent:
                         input.profitPercent,
@@ -119,13 +126,11 @@ export class ReverseGoldCalculator {
 
                 high = middle;
 
-            }
-            else {
+            } else {
 
                 low = middle;
 
             }
-
 
         }
 
@@ -135,6 +140,7 @@ export class ReverseGoldCalculator {
         );
 
     }
+
 
 
 
@@ -157,10 +163,8 @@ export class ReverseGoldCalculator {
             i++
         ) {
 
-
             const middle =
                 (low + high) / 2;
-
 
 
             const result =
@@ -173,7 +177,7 @@ export class ReverseGoldCalculator {
                         input.goldPrice ?? 0,
 
                     laborPercent:
-                        input.laborPercent,
+                        input.laborPercent ?? 0,
 
                     profitPercent:
                         input.profitPercent,
@@ -195,13 +199,11 @@ export class ReverseGoldCalculator {
 
                 high = middle;
 
-            }
-            else {
+            } else {
 
                 low = middle;
 
             }
-
 
         }
 
@@ -211,5 +213,118 @@ export class ReverseGoldCalculator {
         ) / 2;
 
     }
+
+
+
+
+    private solveLaborPercent(
+        input: ReverseCalculationInput
+    ): ReverseCalculationResult {
+
+
+        let low = 0;
+
+        let high = 100;
+
+
+
+        for (
+            let i = 0;
+            i < 50;
+            i++
+        ) {
+
+
+            const middle =
+                (low + high) / 2;
+
+
+
+            const result =
+                this.formulaCalculator.calculate({
+
+                    weight:
+                        input.weight ?? 0,
+
+                    goldPrice:
+                        input.goldPrice ?? 0,
+
+                    laborPercent:
+                        middle,
+
+                    profitPercent:
+                        input.profitPercent,
+
+                    taxPercent:
+                        input.taxPercent,
+
+                    discount:
+                        input.discount
+
+                });
+
+
+
+            if (
+                result.finalPrice >
+                input.finalPrice
+            ) {
+
+                high = middle;
+
+            } else {
+
+                low = middle;
+
+            }
+
+        }
+
+
+        const laborPercent =
+            (low + high) / 2;
+
+
+
+        const laborResult =
+            this.formulaCalculator.calculate({
+
+                weight:
+                    input.weight ?? 0,
+
+                goldPrice:
+                    input.goldPrice ?? 0,
+
+                laborPercent,
+
+                profitPercent:
+                    input.profitPercent,
+
+                taxPercent:
+                    input.taxPercent,
+
+                discount:
+                    input.discount
+
+            });
+
+
+
+        return {
+
+            laborPercent:
+                Number(
+                    laborPercent.toFixed(2)
+                ),
+
+            laborAmount:
+                roundMoney(
+                    laborResult.labor
+                )
+
+        };
+
+    }
+
 
 }

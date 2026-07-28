@@ -1,30 +1,24 @@
 export type ReverseCalculationTarget =
     | "GOLD_PRICE"
-    | "WEIGHT";
+    | "WEIGHT"
+    | "LABOR_PERCENT";
 
 
 export interface ReverseCalculationInput {
 
     target: ReverseCalculationTarget;
 
-
     finalPrice: number;
-
 
     goldPrice?: number;
 
-
     weight?: number;
 
-
-    laborPercent: number;
-
+    laborPercent?: number;
 
     profitPercent: number;
 
-
     taxPercent?: number;
-
 
     discount?: number;
 

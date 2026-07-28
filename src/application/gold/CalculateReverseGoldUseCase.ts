@@ -8,6 +8,10 @@ export interface CalculateReverseGoldOutput {
 
     weight?: number;
 
+    laborPercent?: number;
+
+    laborAmount?: number;
+
 }
 
 
