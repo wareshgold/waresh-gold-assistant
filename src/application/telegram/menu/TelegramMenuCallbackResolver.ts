@@ -3,6 +3,11 @@ import {
 } from "./TelegramMenuItem";
 
 
+import {
+    NavigationAction,
+} from "../navigation/NavigationAction";
+
+
 
 export class TelegramMenuCallbackResolver {
 
@@ -22,61 +27,61 @@ export class TelegramMenuCallbackResolver {
 
             case "gold.price":
 
-                return "gold:price";
+                return NavigationAction.GOLD_PRICE;
 
 
 
             case "gold.bubble":
 
-                return "gold:bubble";
+                return NavigationAction.GOLD_BUBBLE;
 
 
 
             case "calculate.gold-price":
 
-                return "command:calc";
+                return NavigationAction.CALCULATE_GOLD_PRICE;
 
 
 
             case "market.analytics":
 
-                return "market:analytics";
+                return NavigationAction.MARKET_ANALYTICS;
 
 
 
             case "market.history":
 
-                return "market:history";
+                return NavigationAction.MARKET_HISTORY;
 
 
 
             case "market.chart":
 
-                return "market:chart";
+                return NavigationAction.MARKET_CHART;
 
 
 
             case "menu.market":
 
-                return "menu:market";
+                return NavigationAction.MARKET;
 
 
 
             case "menu.calculate":
 
-                return "menu:calculate";
+                return NavigationAction.CALCULATE;
 
 
 
             case "menu.assistant":
 
-                return "menu:assistant";
+                return NavigationAction.ASSISTANT;
 
 
 
             case "menu.settings":
 
-                return "menu:settings";
+                return NavigationAction.SETTINGS;
 
 
 
