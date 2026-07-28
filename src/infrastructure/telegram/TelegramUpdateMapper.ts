@@ -2,7 +2,6 @@ import type { TelegramUpdate }
 from "./models/TelegramUpdate";
 
 
-
 export interface MappedTelegramMessage {
 
 
@@ -25,41 +24,42 @@ export interface MappedTelegramMessage {
 
 
 
-
-
 export class TelegramUpdateMapper {
-
 
 
     map(
 
         update: TelegramUpdate
 
-    ): MappedTelegramMessage {
+    ): MappedTelegramMessage | null {
+
+
+
+        const message = update.message;
+
+
+
+        if (!message) {
+
+            return null;
+
+        }
 
 
 
         const id =
 
-            update.message?.chat?.id ??
+            message.chat?.id ??
 
-            update.message?.from?.id;
-
+            message.from?.id;
 
 
 
         if (!id) {
 
-
-            throw new Error(
-
-                "Telegram chat id missing"
-
-            );
-
+            return null;
 
         }
-
 
 
 
@@ -73,7 +73,7 @@ export class TelegramUpdateMapper {
 
                 String(
 
-                    update.message?.from?.id ?? id
+                    message.from?.id ?? id
 
                 ),
 
@@ -81,19 +81,19 @@ export class TelegramUpdateMapper {
 
             username:
 
-                update.message?.from?.username,
+                message.from?.username,
 
 
 
             firstName:
 
-                update.message?.from?.first_name,
+                message.from?.first_name,
 
 
 
             text:
 
-                update.message?.text ?? ""
+                message.text ?? ""
 
 
 

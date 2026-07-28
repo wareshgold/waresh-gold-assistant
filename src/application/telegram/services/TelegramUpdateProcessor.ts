@@ -28,49 +28,35 @@ from "./TelegramCallbackProcessor";
 
 
 
-
-
-
-
 export class TelegramUpdateProcessor {
-
-
-
 
 
 
     constructor(
 
 
-
         private readonly mapper:
             TelegramUpdateMapper,
-
 
 
         private readonly handler:
             TelegramMessageHandler,
 
 
-
         private readonly formatter:
             TelegramResponseFormatter,
-
 
 
         private readonly botClient:
             TelegramBotClient,
 
 
-
         private readonly keyboardMapper:
             TelegramKeyboardMapper,
 
 
-
         private readonly callbackProcessor?:
             TelegramCallbackProcessor
-
 
 
     ) {}
@@ -79,14 +65,9 @@ export class TelegramUpdateProcessor {
 
 
 
-
-
-
-
     async process(
 
-        update:
-            TelegramUpdate
+        update: TelegramUpdate
 
     ): Promise<void> {
 
@@ -101,6 +82,26 @@ export class TelegramUpdateProcessor {
             this.callbackProcessor
 
         ) {
+
+
+
+            const chatId =
+
+                update.callback_query.message?.chat?.id;
+
+
+
+            if (!chatId) {
+
+                console.warn(
+
+                    "Ignoring callback query without chat id"
+
+                );
+
+                return;
+
+            }
 
 
 
@@ -120,11 +121,7 @@ export class TelegramUpdateProcessor {
 
                 response,
 
-                String(
-
-                    update.callback_query.message?.chat?.id
-
-                )
+                String(chatId)
 
             );
 
@@ -139,11 +136,7 @@ export class TelegramUpdateProcessor {
 
 
 
-
-
-
         const message =
-
 
             this.mapper.map(update);
 
@@ -151,6 +144,17 @@ export class TelegramUpdateProcessor {
 
 
 
+        if (!message) {
+
+            console.warn(
+
+                "Ignoring unsupported Telegram update"
+
+            );
+
+            return;
+
+        }
 
 
 
@@ -195,10 +199,11 @@ export class TelegramUpdateProcessor {
 
 
 
-
         await this.sendResponse(
 
+
             response,
+
 
             String(
 
@@ -206,8 +211,8 @@ export class TelegramUpdateProcessor {
 
             )
 
-        );
 
+        );
 
 
     }
@@ -219,8 +224,8 @@ export class TelegramUpdateProcessor {
 
 
 
-
     private async sendResponse(
+
 
 
         response:
@@ -228,9 +233,11 @@ export class TelegramUpdateProcessor {
             Awaited<ReturnType<TelegramCallbackProcessor["process"]>>,
 
 
+
         chatId:
 
             string
+
 
 
     ): Promise<void> {
@@ -257,8 +264,6 @@ export class TelegramUpdateProcessor {
 
 
 
-
-
         const replyMarkup =
 
 
@@ -266,6 +271,7 @@ export class TelegramUpdateProcessor {
 
 
                 ? undefined
+
 
                 : response.replyMarkup
 
@@ -276,8 +282,6 @@ export class TelegramUpdateProcessor {
                     )
 
                     : undefined;
-
-
 
 
 
@@ -304,9 +308,7 @@ export class TelegramUpdateProcessor {
             await this.botClient.sendPhoto({
 
 
-
                 chatId,
-
 
 
                 photo:
@@ -314,15 +316,12 @@ export class TelegramUpdateProcessor {
                     response.photo.photo,
 
 
-
                 caption:
 
                     response.photo.caption,
 
 
-
                 replyMarkup
-
 
 
             });
@@ -333,8 +332,6 @@ export class TelegramUpdateProcessor {
 
 
         }
-
-
 
 
 
@@ -361,9 +358,7 @@ export class TelegramUpdateProcessor {
             await this.botClient.sendDocument({
 
 
-
                 chatId,
-
 
 
                 document:
@@ -371,11 +366,9 @@ export class TelegramUpdateProcessor {
                     response.document.document,
 
 
-
                 fileName:
 
                     response.document.fileName,
-
 
 
                 caption:
@@ -383,9 +376,7 @@ export class TelegramUpdateProcessor {
                     response.document.caption,
 
 
-
                 replyMarkup
-
 
 
             });
@@ -396,8 +387,6 @@ export class TelegramUpdateProcessor {
 
 
         }
-
-
 
 
 
@@ -418,6 +407,8 @@ export class TelegramUpdateProcessor {
 
 
 
+
+
         console.log(
 
             "TELEGRAM OUTGOING MESSAGE:",
@@ -433,7 +424,6 @@ export class TelegramUpdateProcessor {
             }
 
         );
-
 
 
 
@@ -470,9 +460,6 @@ export class TelegramUpdateProcessor {
 
 
     }
-
-
-
 
 
 
