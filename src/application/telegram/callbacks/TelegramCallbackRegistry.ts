@@ -69,7 +69,6 @@ from "../navigation/TelegramNavigationStateService";
 
 
 
-
 export class TelegramCallbackRegistry {
 
 
@@ -82,9 +81,17 @@ export class TelegramCallbackRegistry {
 
 
 
+
+
+
+
         getGoldPriceUseCase:
 
             GetGoldPriceUseCase,
+
+
+
+
 
 
 
@@ -94,9 +101,17 @@ export class TelegramCallbackRegistry {
 
 
 
+
+
+
+
         getMarketAnalyticsUseCase:
 
             GetMarketAnalyticsUseCase,
+
+
+
+
 
 
 
@@ -106,9 +121,17 @@ export class TelegramCallbackRegistry {
 
 
 
+
+
+
+
         getMarketChartUseCase:
 
             GetMarketChartUseCase,
+
+
+
+
 
 
 
@@ -118,9 +141,17 @@ export class TelegramCallbackRegistry {
 
 
 
+
+
+
+
         marketBubbleMessageFormatter:
 
             MarketBubbleMessageFormatter,
+
+
+
+
 
 
 
@@ -130,9 +161,27 @@ export class TelegramCallbackRegistry {
 
 
 
+
+
+
+
         telegramNavigationStateService:
 
-            TelegramNavigationStateService
+            TelegramNavigationStateService,
+
+
+
+
+
+
+
+        sessionStore:
+
+            any
+
+
+
+
 
 
 
@@ -146,10 +195,17 @@ export class TelegramCallbackRegistry {
 
 
 
+
+
         const handlers =
 
 
+
             TelegramCallbackHandlerFactory.create(
+
+
+
+
 
 
 
@@ -157,7 +213,15 @@ export class TelegramCallbackRegistry {
 
 
 
+
+
+
+
                 getGoldBubbleUseCase,
+
+
+
+
 
 
 
@@ -165,7 +229,15 @@ export class TelegramCallbackRegistry {
 
 
 
+
+
+
+
                 getMarketHistoryUseCase,
+
+
+
+
 
 
 
@@ -173,7 +245,15 @@ export class TelegramCallbackRegistry {
 
 
 
+
+
+
+
                 marketAnalyticsMessageFormatter,
+
+
+
+
 
 
 
@@ -181,11 +261,31 @@ export class TelegramCallbackRegistry {
 
 
 
+
+
+
+
                 telegramNavigationService,
 
 
 
-                telegramNavigationStateService
+
+
+
+
+                telegramNavigationStateService,
+
+
+
+
+
+
+
+                sessionStore
+
+
+
+
 
 
 
@@ -197,11 +297,21 @@ export class TelegramCallbackRegistry {
 
 
 
+
+
+
+
         return new TelegramCallbackRouter(
+
+
 
             handlers
 
+
+
         );
+
+
 
 
 
