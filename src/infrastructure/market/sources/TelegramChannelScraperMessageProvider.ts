@@ -4,6 +4,12 @@ import {
 from "./MarketMessageProvider";
 
 
+import {
+    TelegramPriceParser
+}
+from "../parsers/TelegramPriceParser";
+
+
 
 export class TelegramChannelScraperMessageProvider
 implements MarketMessageProvider {
@@ -79,7 +85,6 @@ implements MarketMessageProvider {
 
                         headers: {
 
-
                             "User-Agent":
                                 "Mozilla/5.0",
 
@@ -96,7 +101,6 @@ implements MarketMessageProvider {
 
 
             if(!response.ok){
-
 
                 throw new Error(
 
@@ -142,64 +146,73 @@ implements MarketMessageProvider {
 
 
 
-            let message =
-
-                messages[
-                    messages.length - 1
-                ][1];
-
-
-
-            message =
-
-                message
-
-                .replace(
-                    /<br\s*\/?>/gi,
-                    "\n"
-                )
-
-                .replace(
-                    /<[^>]+>/g,
-                    ""
-                )
-
-                .replace(
-                    /&nbsp;/g,
-                    " "
-                )
-
-                .replace(
-                    /&amp;/g,
-                    "&"
-                )
-
-                .trim();
+            for(
+                let i = messages.length - 1;
+                i >= 0;
+                i--
+            ){
 
 
 
-            if(!message){
+                const message =
+
+                    this.cleanHtmlMessage(
+
+                        messages[i][1]
+
+                    );
 
 
-                throw new Error(
 
-                    "Telegram empty message"
+                if(!message){
 
-                );
+                    continue;
+
+                }
+
+
+
+                try {
+
+
+                    TelegramPriceParser.parse(
+
+                        message
+
+                    );
+
+
+
+                    console.log(
+
+                        "VALID TELEGRAM PRICE MESSAGE FOUND"
+
+                    );
+
+
+
+                    return message;
+
+
+
+                }
+                catch{
+
+
+                    continue;
+
+                }
+
 
             }
 
 
 
-            console.log(
+            throw new Error(
 
-                "TELEGRAM MESSAGE RECEIVED"
+                "No valid telegram price message found"
 
             );
-
-
-
-            return message;
 
 
 
@@ -228,7 +241,6 @@ implements MarketMessageProvider {
             throw error;
 
 
-
         }
         finally{
 
@@ -242,6 +254,41 @@ implements MarketMessageProvider {
 
         }
 
+
+    }
+
+
+
+
+
+    private cleanHtmlMessage(
+        html: string
+    ): string {
+
+
+        return html
+
+            .replace(
+                /<br\s*\/?>/gi,
+                "\n"
+            )
+
+            .replace(
+                /<[^>]+>/g,
+                ""
+            )
+
+            .replace(
+                /&nbsp;/g,
+                " "
+            )
+
+            .replace(
+                /&amp;/g,
+                "&"
+            )
+
+            .trim();
 
     }
 
