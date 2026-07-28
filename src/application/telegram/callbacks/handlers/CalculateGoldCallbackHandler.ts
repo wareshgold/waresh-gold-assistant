@@ -24,6 +24,7 @@ from "../../state/TelegramSessionStore";
 
 
 
+
 export class CalculateGoldCallbackHandler
 
 implements TelegramCallbackHandler {
@@ -61,14 +62,12 @@ implements TelegramCallbackHandler {
 
         return (
 
-            context.data === "command:calc"
+            context.data === "calculate:gold-price"
 
         );
 
 
     }
-
-
 
 
 
@@ -141,7 +140,7 @@ implements TelegramCallbackHandler {
             content:
 
 `
-💰 محاسبه طلا
+💰 محاسبه قیمت طلا
 
 
 لطفاً وزن طلا را وارد کنید:
