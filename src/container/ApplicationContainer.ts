@@ -43,6 +43,9 @@ from "../application/gold/CalculateGoldFormulaUseCase";
 import { MemoryTelegramSessionStore }
 from "../application/telegram/state/MemoryTelegramSessionStore";
 
+import { MemoryTelegramUserProfileStore }
+from "../application/telegram/profile/MemoryTelegramUserProfileStore";
+
 import { TelegramConversationManager }
 from "../application/telegram/flows/TelegramConversationManager";
 
@@ -88,10 +91,8 @@ from "../application/telegram/actions/TelegramTextActionResolver";
 import { TelegramCommandActionResolver }
 from "../application/telegram/actions/TelegramCommandActionResolver";
 
-
 import { TelegramMessageBuilder }
 from "../application/telegram/presentation/TelegramMessageBuilder";
-
 
 import { MarketBubbleMessageFormatter }
 from "../application/telegram/presentation/MarketBubbleMessageFormatter";
@@ -294,6 +295,14 @@ export class ApplicationContainer {
 
 
 
+        const profileStore =
+
+            new MemoryTelegramUserProfileStore();
+
+
+
+
+
         const conversationManager =
 
             new TelegramConversationManager(
@@ -345,6 +354,8 @@ export class ApplicationContainer {
                 calculateGoldFormulaUseCase,
 
                 sessionStore,
+
+                profileStore,
 
                 marketBubbleMessageFormatter
 

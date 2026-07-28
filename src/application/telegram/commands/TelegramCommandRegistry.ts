@@ -58,6 +58,10 @@ import { TelegramSessionStore }
 from "../state/TelegramSessionStore";
 
 
+import { TelegramUserProfileStore }
+from "../profile/TelegramUserProfileStore";
+
+
 import { RandomWelcomeMessageProvider }
 from "../welcome/RandomWelcomeMessageProvider";
 
@@ -126,6 +130,11 @@ export class TelegramCommandRegistry {
 
         sessionStore:
             TelegramSessionStore,
+
+
+
+        profileStore:
+            TelegramUserProfileStore,
 
 
 
@@ -217,7 +226,10 @@ export class TelegramCommandRegistry {
                     telegramMenuService,
 
 
-                    new TelegramInlineKeyboardBuilder()
+                    new TelegramInlineKeyboardBuilder(),
+
+
+                    profileStore
 
 
                 ),

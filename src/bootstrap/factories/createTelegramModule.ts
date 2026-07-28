@@ -90,11 +90,6 @@ import { DefaultTelegramNavigationService }
 from "../../application/telegram/navigation/TelegramNavigationService";
 
 
-import { TelegramCommandMenuService }
-from "../../application/telegram/services/TelegramCommandMenuService";
-
-
-
 
 
 
@@ -123,8 +118,10 @@ interface Dependencies {
 
     sessionStore: any;
 
-}
 
+    profileStore: any;
+
+}
 
 
 
@@ -139,6 +136,7 @@ export function createTelegramModule(
     dependencies: Dependencies
 
 ) {
+
 
 
 
@@ -230,7 +228,9 @@ export function createTelegramModule(
 
         new DefaultTelegramNavigationStateService(
 
+
             dependencies.sessionStore
+
 
         );
 
@@ -262,6 +262,9 @@ export function createTelegramModule(
 
 
             dependencies.sessionStore,
+
+
+            dependencies.profileStore,
 
 
             marketBubbleMessageFormatter
@@ -323,28 +326,13 @@ export function createTelegramModule(
 
             ? new TelegramHttpBotClient(
 
+
                 env.TELEGRAM_BOT_TOKEN
 
             )
 
 
             : new FakeTelegramBotClient();
-
-
-
-
-
-
-
-    const telegramCommandMenuService =
-
-
-        new TelegramCommandMenuService(
-
-
-            botClient
-
-        );
 
 
 
@@ -485,19 +473,7 @@ export function createTelegramModule(
         telegramWebhookController:
 
 
-            webhookController,
-
-
-        initialize:
-
-
-            async () => {
-
-
-                await telegramCommandMenuService.registerCommands();
-
-
-            }
+            webhookController
 
     };
 

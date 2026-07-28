@@ -80,7 +80,6 @@ from "../application/system/HealthCheckService";
 
 
 
-
 export function createContainer(
 
     env: AppEnv
@@ -97,8 +96,6 @@ export function createContainer(
 
 
 
-
-
     const cache =
 
         createCacheModule(env);
@@ -107,13 +104,9 @@ export function createContainer(
 
 
 
-
-
     const monitoring =
 
         createMonitoringModule(env);
-
-
 
 
 
@@ -130,8 +123,6 @@ export function createContainer(
             monitoring.metricsStore
 
         );
-
-
 
 
 
@@ -155,8 +146,6 @@ export function createContainer(
 
 
 
-
-
     const gold =
 
         createGoldModule();
@@ -165,10 +154,7 @@ export function createContainer(
 
 
 
-
-
     const getSystemMetricsUseCase =
-
 
         new GetSystemMetricsUseCase(
 
@@ -180,10 +166,7 @@ export function createContainer(
 
 
 
-
-
     const systemMetricsController =
-
 
         new SystemMetricsController(
 
@@ -195,10 +178,7 @@ export function createContainer(
 
 
 
-
-
     const currentMarketPriceUseCase =
-
 
         new GetCurrentMarketPriceUseCase(
 
@@ -210,10 +190,7 @@ export function createContainer(
 
 
 
-
-
     const getGoldPriceUseCase =
-
 
         new GetGoldPriceUseCase(
 
@@ -225,10 +202,7 @@ export function createContainer(
 
 
 
-
-
     const getGoldBubbleUseCase =
-
 
         new GetGoldBubbleUseCase(
 
@@ -242,10 +216,7 @@ export function createContainer(
 
 
 
-
-
     const getGoldBubbleDataUseCase =
-
 
         new GetGoldBubbleDataUseCase(
 
@@ -259,10 +230,7 @@ export function createContainer(
 
 
 
-
-
     const getMarketAnalyticsUseCase =
-
 
         new GetMarketAnalyticsUseCase(
 
@@ -274,10 +242,7 @@ export function createContainer(
 
 
 
-
-
     const getMarketHistoryUseCase =
-
 
         new GetMarketHistoryUseCase(
 
@@ -289,10 +254,7 @@ export function createContainer(
 
 
 
-
-
     const getMarketChartUseCase =
-
 
         new GetMarketChartUseCase(
 
@@ -304,10 +266,7 @@ export function createContainer(
 
 
 
-
-
     const refreshMarketPriceUseCase =
-
 
         new RefreshMarketPriceUseCase(
 
@@ -319,10 +278,7 @@ export function createContainer(
 
 
 
-
-
     const refreshMarketPriceJob =
-
 
         new RefreshMarketPriceJob(
 
@@ -334,10 +290,7 @@ export function createContainer(
 
 
 
-
-
     const telegram =
-
 
         createTelegramModule(
 
@@ -363,13 +316,16 @@ export function createContainer(
 
                 sessionStore:
 
-                    storage.sessionStore
+                    storage.sessionStore,
+
+
+                profileStore:
+
+                    storage.userProfileStore
 
             }
 
         );
-
-
 
 
 
@@ -382,17 +338,13 @@ export function createContainer(
         ...cache,
 
 
-
         ...market,
-
 
 
         ...gold,
 
 
-
         ...telegram,
-
 
 
         ...monitoring,
@@ -401,46 +353,34 @@ export function createContainer(
 
 
 
-
-
         systemMetricsController,
-
 
 
         healthCheckService,
 
 
-
         getSystemMetricsUseCase,
-
 
 
         getGoldPriceUseCase,
 
 
-
         getGoldBubbleUseCase,
-
 
 
         getGoldBubbleDataUseCase,
 
 
-
         getMarketAnalyticsUseCase,
-
 
 
         getMarketHistoryUseCase,
 
 
-
         getMarketChartUseCase,
 
 
-
         refreshMarketPriceUseCase,
-
 
 
         refreshMarketPriceJob

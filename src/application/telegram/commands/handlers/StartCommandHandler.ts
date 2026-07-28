@@ -28,6 +28,12 @@ import {
 from "../../keyboards/TelegramInlineKeyboardBuilder";
 
 
+import {
+    TelegramUserProfileStore
+}
+from "../../profile/TelegramUserProfileStore";
+
+
 
 
 
@@ -57,7 +63,13 @@ implements TelegramCommandHandler {
 
         private readonly telegramInlineKeyboardBuilder:
 
-            TelegramInlineKeyboardBuilder
+            TelegramInlineKeyboardBuilder,
+
+
+
+        private readonly profileStore?:
+
+            TelegramUserProfileStore
 
 
 
@@ -67,36 +79,22 @@ implements TelegramCommandHandler {
 
 
 
-
-
-
-
     metadata() {
 
-
         return {
-
 
             command:
 
                 "/start",
 
 
-
             description:
 
                 "شروع کار با ربات"
 
-
-
         };
 
-
     }
-
-
-
-
 
 
 
@@ -109,15 +107,9 @@ implements TelegramCommandHandler {
 
     ): boolean {
 
-
         return command === "/start";
 
-
     }
-
-
-
-
 
 
 
@@ -132,8 +124,80 @@ implements TelegramCommandHandler {
 
 
 
-        const name =
+        let isNewUser = true;
 
+
+
+        if (
+
+            this.profileStore
+
+            &&
+
+            context.userId
+
+        ) {
+
+
+
+            const existingProfile =
+
+                await this.profileStore.get(
+
+                    context.userId
+
+                );
+
+
+
+            isNewUser =
+
+                existingProfile === null;
+
+
+
+            await this.profileStore.save({
+
+                userId:
+
+                    context.userId,
+
+
+                username:
+
+                    context.username,
+
+
+                firstName:
+
+                    context.firstName,
+
+
+                createdAt:
+
+                    existingProfile?.createdAt
+
+                    ??
+
+                    Date.now(),
+
+
+                lastSeenAt:
+
+                    Date.now()
+
+            });
+
+
+        }
+
+
+
+
+
+
+
+        const name =
 
             context.firstName
 
@@ -156,14 +220,12 @@ implements TelegramCommandHandler {
 
             this.welcomeMessageProvider.getWelcomeMessage(
 
-
                 context.firstName,
-
 
                 context.username
 
-
             );
+
 
 
 
@@ -175,11 +237,20 @@ implements TelegramCommandHandler {
 
 
 
-            `سلام ${name} 👋\n\n`
+            isNewUser
 
-            +
 
-            welcomeMessage;
+                ?
+
+                `سلام ${name} 👋\n\n${welcomeMessage}`
+
+
+
+                :
+
+
+
+                `خوش برگشتی ${name} 👋\n\nدوباره در خدمتت هستم.`;
 
 
 
@@ -189,7 +260,6 @@ implements TelegramCommandHandler {
 
 
         const menuItems =
-
 
 
             this.telegramMenuService.getMainMenu();
@@ -204,12 +274,9 @@ implements TelegramCommandHandler {
         const inlineKeyboard =
 
 
-
             this.telegramInlineKeyboardBuilder.build(
 
-
                 menuItems
-
 
             );
 
@@ -223,8 +290,8 @@ implements TelegramCommandHandler {
         return {
 
 
-            content:
 
+            content:
 
                 personalizedMessage,
 
@@ -232,19 +299,12 @@ implements TelegramCommandHandler {
 
             replyMarkup:
 
-
                 inlineKeyboard
 
 
 
         };
 
-
     }
-
-
-
-
-
 
 }
