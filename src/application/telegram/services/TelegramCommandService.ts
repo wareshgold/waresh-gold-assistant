@@ -28,11 +28,8 @@ implements TelegramCommandExecutor {
 
 
 
-
     private readonly contextBuilder:
         TelegramCommandContextBuilder;
-
-
 
 
 
@@ -73,16 +70,12 @@ implements TelegramCommandExecutor {
 
 
 
-
-
-
     async execute(
 
         message:
             IncomingMessage | string
 
     ): Promise<any> {
-
 
 
 
@@ -110,9 +103,6 @@ implements TelegramCommandExecutor {
 
 
 
-
-
-
         console.log(
 
             "INCOMING MESSAGE:",
@@ -125,9 +115,104 @@ implements TelegramCommandExecutor {
 
 
 
+        const text =
+
+            normalizedMessage.text
+
+                .trim();
 
 
 
+
+
+        /*
+         * Commands همیشه اولویت دارند
+         */
+
+        if (
+
+            text.startsWith("/")
+
+        ) {
+
+
+            const context =
+
+                this.contextBuilder.build(
+
+                    text,
+
+                    normalizedMessage.userId,
+
+                    [],
+
+                    normalizedMessage.username,
+
+                    normalizedMessage.firstName
+
+                );
+
+
+
+            return this.router.execute(
+
+                context
+
+            );
+
+
+        }
+
+
+
+
+
+
+        /*
+         * Menu actions
+         */
+
+        if (
+
+            this.actionExecutor
+
+        ) {
+
+
+
+            const actionResponse =
+
+
+                await this.tryExecuteAction(
+
+                    text
+
+                );
+
+
+
+            if (
+
+                actionResponse
+
+            ) {
+
+                return actionResponse;
+
+            }
+
+
+        }
+
+
+
+
+
+
+
+        /*
+         * Active conversations
+         */
 
         if (
 
@@ -144,11 +229,9 @@ implements TelegramCommandExecutor {
 
                     normalizedMessage.userId,
 
-                    normalizedMessage.text
+                    text
 
                 );
-
-
 
 
 
@@ -173,58 +256,12 @@ implements TelegramCommandExecutor {
 
 
 
-
-
-        if (
-
-            this.actionExecutor
-
-        ) {
-
-
-
-            const actionResponse =
-
-
-                await this.tryExecuteAction(
-
-                    normalizedMessage.text
-
-                );
-
-
-
-
-
-            if (
-
-                actionResponse
-
-            ) {
-
-
-                return actionResponse;
-
-
-            }
-
-
-        }
-
-
-
-
-
-
-
-
-
         const context =
 
 
             this.contextBuilder.build(
 
-                normalizedMessage.text,
+                text,
 
                 normalizedMessage.userId,
 
@@ -240,8 +277,6 @@ implements TelegramCommandExecutor {
 
 
 
-
-
         return this.router.execute(
 
             context
@@ -250,7 +285,6 @@ implements TelegramCommandExecutor {
 
 
     }
-
 
 
 
@@ -290,7 +324,6 @@ implements TelegramCommandExecutor {
 
 
     }
-
 
 
 
