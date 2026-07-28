@@ -14,6 +14,8 @@ from "./models/TelegramOutgoingMessage";
 
 
 
+
+
 export class TelegramApiClient
 
 implements TelegramBotClient {
@@ -117,6 +119,7 @@ implements TelegramBotClient {
 
 
 
+
         if (!response.ok) {
 
 
@@ -131,9 +134,6 @@ implements TelegramBotClient {
 
 
     }
-
-
-
 
 
 
@@ -191,6 +191,7 @@ implements TelegramBotClient {
 
 
 
+
         formData.append(
 
             "photo",
@@ -216,6 +217,7 @@ implements TelegramBotClient {
             "chart.png"
 
         );
+
 
 
 
@@ -268,6 +270,7 @@ implements TelegramBotClient {
 
 
 
+
         const response =
 
             await fetch(
@@ -288,6 +291,7 @@ implements TelegramBotClient {
                 }
 
             );
+
 
 
 
@@ -358,6 +362,7 @@ implements TelegramBotClient {
 
 
 
+
         formData.append(
 
             "chat_id",
@@ -365,6 +370,7 @@ implements TelegramBotClient {
             message.chatId
 
         );
+
 
 
 
@@ -397,6 +403,7 @@ implements TelegramBotClient {
             message.fileName
 
         );
+
 
 
 
@@ -449,6 +456,7 @@ implements TelegramBotClient {
 
 
 
+
         const response =
 
             await fetch(
@@ -476,6 +484,7 @@ implements TelegramBotClient {
 
 
 
+
         if (!response.ok) {
 
 
@@ -490,6 +499,89 @@ implements TelegramBotClient {
 
 
     }
+
+
+
+
+
+
+
+
+
+    async setMyCommands(
+
+        commands: {
+
+            command:
+                string;
+
+
+            description:
+                string;
+
+        }[]
+
+    ):
+        Promise<void> {
+
+
+
+        const response =
+
+            await fetch(
+
+                `https://api.telegram.org/bot${this.botToken}/setMyCommands`,
+
+                {
+
+                    method:
+
+                        "POST",
+
+
+                    headers: {
+
+                        "Content-Type":
+
+                            "application/json"
+
+                    },
+
+
+                    body:
+
+                        JSON.stringify({
+
+                            commands
+
+                        })
+
+                }
+
+            );
+
+
+
+
+
+
+
+        if (!response.ok) {
+
+
+            throw new Error(
+
+                await response.text()
+
+            );
+
+
+        }
+
+
+    }
+
+
 
 
 

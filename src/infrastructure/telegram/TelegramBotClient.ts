@@ -7,7 +7,6 @@ from "./models/TelegramOutgoingMessage";
 
 
 
-
 export interface TelegramBotClient {
 
 
@@ -21,8 +20,6 @@ export interface TelegramBotClient {
 
     ):
         Promise<void>;
-
-
 
 
 
@@ -65,8 +62,6 @@ export interface TelegramBotClient {
 
 
 
-
-
     sendDocument(
 
         message: {
@@ -101,6 +96,28 @@ export interface TelegramBotClient {
     ):
         Promise<void>;
 
+
+
+
+
+
+
+    setMyCommands(
+
+        commands:
+            {
+
+                command:
+                    string;
+
+
+                description:
+                    string;
+
+            }[]
+
+    ):
+        Promise<void>;
 
 
 

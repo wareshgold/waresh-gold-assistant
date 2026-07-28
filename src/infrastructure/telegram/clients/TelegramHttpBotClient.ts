@@ -31,8 +31,6 @@ implements TelegramBotClient {
 
 
 
-
-
     async sendMessage(
 
         message:
@@ -53,7 +51,6 @@ implements TelegramBotClient {
                     method:
                         "POST",
 
-
                     headers: {
 
                         "Content-Type":
@@ -61,50 +58,34 @@ implements TelegramBotClient {
 
                     },
 
-
                     body:
 
                         JSON.stringify({
 
                             chat_id:
-
                                 message.chatId,
 
 
                             text:
-
                                 message.text,
 
 
                             ...(message.parseMode
-
                                 ? {
-
                                     parse_mode:
-
                                         message.parseMode
-
                                 }
-
                                 : {}),
 
 
-
                             ...(message.replyMarkup
-
                                 ? {
-
                                     reply_markup:
-
                                         message.replyMarkup
-
                                 }
-
                                 : {})
 
-
                         })
-
 
                 }
 
@@ -114,9 +95,7 @@ implements TelegramBotClient {
 
 
 
-
         if (!response.ok) {
-
 
             throw new Error(
 
@@ -124,14 +103,9 @@ implements TelegramBotClient {
 
             );
 
-
         }
 
-
-
     }
-
-
 
 
 
@@ -182,67 +156,31 @@ implements TelegramBotClient {
 
 
 
+        formData.append(
 
-        if (
+            "photo",
 
-            typeof message.photo === "string"
+            new Blob(
 
-        ) {
+                [
 
+                    typeof message.photo === "string"
 
+                        ? message.photo
 
-            formData.append(
+                        : message.photo
 
-                "photo",
+                ]
 
-                new Blob(
+            )
 
-                    [message.photo],
-
-                    {
-
-                        type:
-
-                            "image/svg+xml"
-
-                    }
-
-                ),
-
-                "chart.svg"
-
-            );
-
-
-        }
-
-        else {
-
-
-
-            formData.append(
-
-                "photo",
-
-                new Blob(
-
-                    [message.photo]
-
-                )
-
-            );
-
-
-        }
-
-
+        );
 
 
 
 
 
         if (message.caption) {
-
 
             formData.append(
 
@@ -252,16 +190,12 @@ implements TelegramBotClient {
 
             );
 
-
         }
 
 
 
 
-
-
         if (message.replyMarkup) {
-
 
             formData.append(
 
@@ -275,11 +209,7 @@ implements TelegramBotClient {
 
             );
 
-
         }
-
-
-
 
 
 
@@ -297,11 +227,9 @@ implements TelegramBotClient {
 
                         "POST",
 
-
                     body:
 
                         formData
-
 
                 }
 
@@ -311,10 +239,7 @@ implements TelegramBotClient {
 
 
 
-
-
         if (!response.ok) {
-
 
             throw new Error(
 
@@ -322,12 +247,10 @@ implements TelegramBotClient {
 
             );
 
-
         }
 
 
     }
-
 
 
 
@@ -372,7 +295,6 @@ implements TelegramBotClient {
 
 
 
-
         formData.append(
 
             "chat_id",
@@ -384,22 +306,17 @@ implements TelegramBotClient {
 
 
 
-
         formData.append(
 
             "document",
 
             new Blob(
 
-                [message.document],
+                [
 
-                {
+                    message.document
 
-                    type:
-
-                        "image/svg+xml"
-
-                }
+                ]
 
             ),
 
@@ -411,10 +328,7 @@ implements TelegramBotClient {
 
 
 
-
-
         if (message.caption) {
-
 
             formData.append(
 
@@ -424,17 +338,12 @@ implements TelegramBotClient {
 
             );
 
-
         }
 
 
 
 
-
-
-
         if (message.replyMarkup) {
-
 
             formData.append(
 
@@ -448,10 +357,7 @@ implements TelegramBotClient {
 
             );
 
-
         }
-
-
 
 
 
@@ -469,11 +375,9 @@ implements TelegramBotClient {
 
                         "POST",
 
-
                     body:
 
                         formData
-
 
                 }
 
@@ -483,10 +387,7 @@ implements TelegramBotClient {
 
 
 
-
-
         if (!response.ok) {
-
 
             throw new Error(
 
@@ -494,13 +395,85 @@ implements TelegramBotClient {
 
             );
 
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+    async setMyCommands(
+
+        commands: {
+
+            command:
+                string;
+
+
+            description:
+                string;
+
+        }[]
+
+    ): Promise<void> {
+
+
+
+        const response =
+
+            await fetch(
+
+                `https://api.telegram.org/bot${this.botToken}/setMyCommands`,
+
+                {
+
+                    method:
+
+                        "POST",
+
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+
+                    body:
+
+                        JSON.stringify({
+
+                            commands
+
+                        })
+
+                }
+
+            );
+
+
+
+
+
+        if (!response.ok) {
+
+            throw new Error(
+
+                await response.text()
+
+            );
 
         }
 
 
-
     }
-
 
 
 

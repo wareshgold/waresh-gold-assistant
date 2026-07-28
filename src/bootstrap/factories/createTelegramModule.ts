@@ -90,6 +90,11 @@ import { DefaultTelegramNavigationService }
 from "../../application/telegram/navigation/TelegramNavigationService";
 
 
+import { TelegramCommandMenuService }
+from "../../application/telegram/services/TelegramCommandMenuService";
+
+
+
 
 
 
@@ -119,6 +124,7 @@ interface Dependencies {
     sessionStore: any;
 
 }
+
 
 
 
@@ -172,7 +178,6 @@ export function createTelegramModule(
 
 
 
-
     const marketAnalyticsMessageFormatter =
 
 
@@ -183,7 +188,6 @@ export function createTelegramModule(
 
 
         );
-
 
 
 
@@ -208,14 +212,12 @@ export function createTelegramModule(
 
 
 
-
     const telegramNavigationService:
 
         TelegramNavigationService =
 
 
             new DefaultTelegramNavigationService();
-
 
 
 
@@ -231,7 +233,6 @@ export function createTelegramModule(
             dependencies.sessionStore
 
         );
-
 
 
 
@@ -274,7 +275,6 @@ export function createTelegramModule(
 
 
 
-
     const commandService =
 
 
@@ -288,7 +288,6 @@ export function createTelegramModule(
 
 
         );
-
 
 
 
@@ -316,7 +315,6 @@ export function createTelegramModule(
 
 
 
-
     const botClient =
 
 
@@ -332,6 +330,21 @@ export function createTelegramModule(
 
             : new FakeTelegramBotClient();
 
+
+
+
+
+
+
+    const telegramCommandMenuService =
+
+
+        new TelegramCommandMenuService(
+
+
+            botClient
+
+        );
 
 
 
@@ -380,7 +393,6 @@ export function createTelegramModule(
 
 
 
-
     const callbackProcessor =
 
 
@@ -394,7 +406,6 @@ export function createTelegramModule(
 
 
         );
-
 
 
 
@@ -434,7 +445,6 @@ export function createTelegramModule(
 
 
 
-
     const webhookController =
 
 
@@ -460,7 +470,6 @@ export function createTelegramModule(
 
 
 
-
     return {
 
 
@@ -476,7 +485,19 @@ export function createTelegramModule(
         telegramWebhookController:
 
 
-            webhookController
+            webhookController,
+
+
+        initialize:
+
+
+            async () => {
+
+
+                await telegramCommandMenuService.registerCommands();
+
+
+            }
 
     };
 

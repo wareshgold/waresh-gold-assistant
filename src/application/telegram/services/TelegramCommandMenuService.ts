@@ -1,0 +1,119 @@
+import {
+    TelegramBotClient
+}
+from "../../../infrastructure/telegram/TelegramBotClient";
+
+
+
+
+
+export class TelegramCommandMenuService {
+
+
+
+    constructor(
+
+        private readonly telegramBotClient:
+            TelegramBotClient
+
+    ) {}
+
+
+
+
+
+
+
+    async registerCommands():
+
+        Promise<void> {
+
+
+
+        await this.telegramBotClient
+
+            .setMyCommands([
+
+
+
+                {
+
+                    command:
+
+                        "start",
+
+
+                    description:
+
+                        "شروع کار با وارش گلد"
+
+                },
+
+
+
+                {
+
+                    command:
+
+                        "help",
+
+
+                    description:
+
+                        "راهنمای ربات"
+
+                },
+
+
+
+                {
+
+                    command:
+
+                        "price",
+
+
+                    description:
+
+                        "قیمت لحظه‌ای طلا"
+
+                },
+
+
+
+                {
+
+                    command:
+
+                        "bubble",
+
+
+                    description:
+
+                        "بررسی حباب طلا"
+
+                },
+
+
+
+                {
+
+                    command:
+
+                        "calculate",
+
+
+                    description:
+
+                        "محاسبه قیمت طلا"
+
+                }
+
+
+
+            ]);
+
+    }
+
+
+}

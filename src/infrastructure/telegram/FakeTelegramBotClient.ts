@@ -12,15 +12,30 @@ from "./models/TelegramOutgoingMessage";
 
 
 
+
 export class FakeTelegramBotClient
 
 implements TelegramBotClient {
 
 
 
+
     public messages:
         TelegramOutgoingMessage[] = [];
 
+
+
+    public commands:
+        {
+
+            command:
+                string;
+
+
+            description:
+                string;
+
+        }[] = [];
 
 
 
@@ -45,8 +60,6 @@ implements TelegramBotClient {
 
 
     }
-
-
 
 
 
@@ -107,8 +120,6 @@ implements TelegramBotClient {
 
 
 
-
-
     async sendDocument(
 
         message: {
@@ -156,6 +167,35 @@ implements TelegramBotClient {
 
 
         });
+
+
+    }
+
+
+
+
+
+
+
+    async setMyCommands(
+
+        commands:
+            {
+
+                command:
+                    string;
+
+
+                description:
+                    string;
+
+            }[]
+
+    ):
+        Promise<void> {
+
+
+        this.commands = commands;
 
 
     }

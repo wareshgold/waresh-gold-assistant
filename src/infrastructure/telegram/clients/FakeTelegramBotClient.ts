@@ -12,6 +12,7 @@ from "../models/TelegramOutgoingMessage";
 
 
 
+
 export class FakeTelegramBotClient
 
 implements TelegramBotClient {
@@ -20,6 +21,7 @@ implements TelegramBotClient {
 
     public messages:
         TelegramOutgoingMessage[] = [];
+
 
 
 
@@ -62,7 +64,7 @@ implements TelegramBotClient {
 
 
             photo:
-                Uint8Array;
+                string | Uint8Array;
 
 
             caption?:
@@ -79,6 +81,7 @@ implements TelegramBotClient {
 
 
         this.messages.push({
+
 
             chatId:
 
@@ -137,7 +140,9 @@ implements TelegramBotClient {
         Promise<void> {
 
 
+
         this.messages.push({
+
 
             chatId:
 
@@ -157,26 +162,40 @@ implements TelegramBotClient {
         });
 
 
+
+    }
+
+
+
+
+
+
+
+
+
+    async setMyCommands(
+
+        commands: {
+
+            command:
+                string;
+
+
+            description:
+                string;
+
+        }[]
+
+    ):
+        Promise<void> {
+
+
+        return;
+
+
     }
 
 
-
-
-
-
-
-
-    getLastMessage(){
-
-
-        return this.messages[
-
-            this.messages.length - 1
-
-        ];
-
-
-    }
 
 
 

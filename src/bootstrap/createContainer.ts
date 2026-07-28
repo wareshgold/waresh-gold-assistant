@@ -79,6 +79,8 @@ from "../application/system/HealthCheckService";
 
 
 
+
+
 export function createContainer(
 
     env: AppEnv
@@ -95,6 +97,8 @@ export function createContainer(
 
 
 
+
+
     const cache =
 
         createCacheModule(env);
@@ -103,9 +107,13 @@ export function createContainer(
 
 
 
+
+
     const monitoring =
 
         createMonitoringModule(env);
+
+
 
 
 
@@ -122,6 +130,8 @@ export function createContainer(
             monitoring.metricsStore
 
         );
+
+
 
 
 
@@ -145,11 +155,11 @@ export function createContainer(
 
 
 
+
+
     const gold =
 
         createGoldModule();
-
-
 
 
 
@@ -170,6 +180,8 @@ export function createContainer(
 
 
 
+
+
     const systemMetricsController =
 
 
@@ -178,7 +190,6 @@ export function createContainer(
             getSystemMetricsUseCase
 
         );
-
 
 
 
@@ -201,7 +212,6 @@ export function createContainer(
 
 
 
-
     const getGoldPriceUseCase =
 
 
@@ -210,7 +220,6 @@ export function createContainer(
             currentMarketPriceUseCase
 
         );
-
 
 
 
@@ -235,7 +244,6 @@ export function createContainer(
 
 
 
-
     const getGoldBubbleDataUseCase =
 
 
@@ -246,7 +254,6 @@ export function createContainer(
             gold.goldBubbleCalculator
 
         );
-
 
 
 
@@ -269,7 +276,6 @@ export function createContainer(
 
 
 
-
     const getMarketHistoryUseCase =
 
 
@@ -278,7 +284,6 @@ export function createContainer(
             market.snapshotService
 
         );
-
 
 
 
@@ -301,7 +306,6 @@ export function createContainer(
 
 
 
-
     const refreshMarketPriceUseCase =
 
 
@@ -317,7 +321,6 @@ export function createContainer(
 
 
 
-
     const refreshMarketPriceJob =
 
 
@@ -326,7 +329,6 @@ export function createContainer(
             refreshMarketPriceUseCase
 
         );
-
 
 
 
@@ -373,8 +375,6 @@ export function createContainer(
 
 
 
-
-
     return {
 
 
@@ -396,6 +396,8 @@ export function createContainer(
 
 
         ...monitoring,
+
+
 
 
 
