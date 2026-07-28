@@ -239,6 +239,26 @@ export class TelegramUpdateProcessor {
 
 
 
+        console.log(
+
+            "TELEGRAM OUTGOING RESPONSE:",
+
+            {
+
+                chatId,
+
+                response
+
+            }
+
+        );
+
+
+
+
+
+
+
         const replyMarkup =
 
 
@@ -246,7 +266,6 @@ export class TelegramUpdateProcessor {
 
 
                 ? undefined
-
 
                 : response.replyMarkup
 
@@ -394,6 +413,26 @@ export class TelegramUpdateProcessor {
                 response
 
             );
+
+
+
+
+
+        console.log(
+
+            "TELEGRAM OUTGOING MESSAGE:",
+
+            {
+
+                chatId,
+
+                text: formattedResponse,
+
+                replyMarkup
+
+            }
+
+        );
 
 
 
