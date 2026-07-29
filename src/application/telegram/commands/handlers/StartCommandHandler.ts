@@ -36,11 +36,9 @@ from "../../profile/TelegramUserProfileStore";
 
 
 
-
 export class StartCommandHandler
 
 implements TelegramCommandHandler {
-
 
 
 
@@ -74,10 +72,6 @@ implements TelegramCommandHandler {
 
 
 
-
-
-
-
     metadata() {
 
         return {
@@ -89,15 +83,11 @@ implements TelegramCommandHandler {
 
             description:
 
-                "شروع کار با ربات"
+                "شروع دستیار طلای ورش"
 
         };
 
     }
-
-
-
-
 
 
 
@@ -118,10 +108,6 @@ implements TelegramCommandHandler {
 
 
 
-
-
-
-
     async execute(
 
         context:
@@ -131,19 +117,7 @@ implements TelegramCommandHandler {
 
 
 
-        console.log(
-
-            "START COMMAND CONTEXT:",
-
-            context
-
-        );
-
-
-
-
         let isFirstTimeUser = true;
-
 
 
 
@@ -157,7 +131,6 @@ implements TelegramCommandHandler {
             context.userId
 
         ) {
-
 
 
             const existingProfile =
@@ -177,9 +150,7 @@ implements TelegramCommandHandler {
 
 
 
-
             await this.profileStore.save({
-
 
 
                 userId:
@@ -187,17 +158,14 @@ implements TelegramCommandHandler {
                     context.userId,
 
 
-
                 username:
 
                     context.username,
 
 
-
                 firstName:
 
                     context.firstName,
-
 
 
                 createdAt:
@@ -209,15 +177,12 @@ implements TelegramCommandHandler {
                     Date.now(),
 
 
-
                 lastSeenAt:
 
                     Date.now()
 
 
-
             });
-
 
         }
 
@@ -225,12 +190,7 @@ implements TelegramCommandHandler {
 
 
 
-
-
-
-
         const name =
-
 
             context.firstName
 
@@ -246,65 +206,68 @@ implements TelegramCommandHandler {
 
 
 
+        const welcomeMessage =
 
 
+            isFirstTimeUser
+
+                ?
 
 
-        let welcomeMessage:
+`
+🟡 به Waresh Gold Assistant خوش آمدید ${name}
 
-            string;
-
-
-
+دستیار هوشمند بازار طلا و جواهر
 
 
-        if (isFirstTimeUser) {
+امکانات فعلی:
+
+🟡 قیمت لحظه‌ای طلا
+
+🧮 محاسبه قیمت طلا
+
+🧾 محاسبه فاکتور
+
+📐 حل فرمول‌های طلا
+
+🔄 محاسبه معکوس اجرت محصول
+
+📊 تحلیل بازار و تاریخچه قیمت
 
 
+━━━━━━━━━━━━━━
 
-            welcomeMessage =
+🚀 در حال توسعه:
 
+🤖 دستیار هوش مصنوعی طلا
 
-                `خوش آمدی ${name} 🌟\n\n`
+📷 تحلیل هوشمند فاکتور
 
-                +
+👤 مدیریت مشتریان
 
-                this.welcomeMessageProvider.getWelcomeMessage(
-
-                    context.firstName,
-
-                    context.username
-
-                );
+🏪 اتصال به کسب‌وکارهای طلا
 
 
+`
 
-        }
-
-        else {
-
+                :
 
 
-            welcomeMessage =
+`
+👋 خوش برگشتی ${name}
 
+به Waresh Gold Assistant خوش آمدید.
 
-                `خوش برگشتی ${name} 👋\n\n`
+از منوی زیر می‌توانید خدمات موردنظر را انتخاب کنید.
 
-                +
+━━━━━━━━━━━━━━
 
-                `به وارش گلد برگشتی.\n\n`
+🟡 قیمت طلا
+🧮 ماشین حساب طلا
+📊 تحلیل بازار
+🤖 دستیار هوشمند
 
-                +
-
-                `دوباره در خدمتت هستم. از منوی زیر می‌تونی استفاده کنی.`;
-
-
-
-        }
-
-
-
-
+`;
 
 
 
@@ -312,10 +275,7 @@ implements TelegramCommandHandler {
 
         const menuItems =
 
-
             this.telegramMenuService.getMainMenu();
-
-
 
 
 
@@ -334,14 +294,12 @@ implements TelegramCommandHandler {
 
 
 
-
-
         return {
 
 
             content:
 
-                welcomeMessage,
+                welcomeMessage.trim(),
 
 
             replyMarkup:
