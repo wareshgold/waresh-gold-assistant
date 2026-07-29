@@ -41,6 +41,12 @@ from "./handlers/CalculateGoldCallbackHandler";
 
 
 import {
+    CalculateReverseLaborCallbackHandler
+}
+from "./handlers/CalculateReverseLaborCallbackHandler";
+
+
+import {
     ComingSoonCalculationCallbackHandler
 }
 from "./handlers/ComingSoonCalculationCallbackHandler";
@@ -239,8 +245,6 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
             new BackNavigationCallbackHandler(
 
                 telegramNavigationService,
@@ -248,8 +252,6 @@ export class TelegramCallbackHandlerFactory {
                 telegramNavigationStateService
 
             ),
-
-
 
 
 
@@ -261,15 +263,11 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
             new OpenMarketMenuCallbackHandler(
 
                 telegramNavigationService
 
             ),
-
-
 
 
 
@@ -281,15 +279,11 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
             new OpenAssistantMenuCallbackHandler(
 
                 telegramNavigationService
 
             ),
-
-
 
 
 
@@ -301,8 +295,6 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
             new CalculateGoldCallbackHandler(
 
                 sessionStore
@@ -310,6 +302,12 @@ export class TelegramCallbackHandlerFactory {
             ),
 
 
+
+            new CalculateReverseLaborCallbackHandler(
+
+                sessionStore
+
+            ),
 
 
 
@@ -321,15 +319,11 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
             new ComingSoonCalculationCallbackHandler(
 
                 "formula"
 
             ),
-
-
 
 
 
@@ -340,8 +334,6 @@ export class TelegramCallbackHandlerFactory {
                 telegramNavigationService
 
             ),
-
-
 
 
 
@@ -357,8 +349,6 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
             new GetMarketAnalyticsCallbackHandler(
 
                 getMarketAnalyticsUseCase,
@@ -371,8 +361,6 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
             new GetMarketHistoryCallbackHandler(
 
                 getMarketHistoryUseCase,
@@ -382,8 +370,6 @@ export class TelegramCallbackHandlerFactory {
                 telegramNavigationService
 
             ),
-
-
 
 
 

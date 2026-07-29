@@ -31,6 +31,9 @@ from "../../application/telegram/flows/TelegramConversationManager";
 import { GoldCalculationConversationFlow }
 from "../../application/telegram/flows/GoldCalculationConversationFlow";
 
+import { ReverseGoldConversationFlow }
+from "../../application/telegram/flows/ReverseGoldConversationFlow";
+
 import { TelegramWebhookController }
 from "../../interfaces/telegram/TelegramWebhookController";
 
@@ -88,6 +91,8 @@ interface Dependencies {
 
     calculateGoldFormulaUseCase:any;
 
+    calculateReverseGoldUseCase:any;
+
     sessionStore:any;
 
     profileStore:any;
@@ -120,6 +125,15 @@ export function createTelegramModule(
                     dependencies.sessionStore,
 
                     dependencies.calculateGoldFormulaUseCase
+
+                ),
+
+
+                new ReverseGoldConversationFlow(
+
+                    dependencies.sessionStore,
+
+                    dependencies.calculateReverseGoldUseCase
 
                 )
 

@@ -314,6 +314,11 @@ export function createContainer(
                     gold.calculateGoldFormulaUseCase,
 
 
+                calculateReverseGoldUseCase:
+
+                    gold.calculateReverseGoldUseCase,
+
+
                 sessionStore:
 
                     storage.sessionStore,
