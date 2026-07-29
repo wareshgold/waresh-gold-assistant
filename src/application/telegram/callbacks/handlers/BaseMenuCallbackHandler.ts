@@ -18,6 +18,9 @@ import {
 } from "../../keyboards/TelegramKeyboardMarkup";
 
 
+import {
+    TelegramNavigationStateService,
+} from "../../navigation/TelegramNavigationStateService";
 
 
 
@@ -45,7 +48,19 @@ implements TelegramCallbackHandler {
 
         private readonly menuProvider:
 
-            () => TelegramKeyboardMarkup
+            () => TelegramKeyboardMarkup,
+
+
+
+        private readonly routeId?:
+
+            string,
+
+
+
+        private readonly navigationState?:
+
+            TelegramNavigationStateService
 
 
 
@@ -79,7 +94,6 @@ implements TelegramCallbackHandler {
 
 
 
-
     async execute(
 
         context:
@@ -88,6 +102,33 @@ implements TelegramCallbackHandler {
     ):
 
         Promise<TelegramCommandResponse> {
+
+
+
+        if (
+
+            this.routeId &&
+
+            this.navigationState &&
+
+            context.userId
+
+        ) {
+
+
+            await this.navigationState.pushRoute(
+
+                context.userId,
+
+                this.routeId
+
+            );
+
+
+        }
+
+
+
 
 
 
@@ -116,9 +157,5 @@ implements TelegramCallbackHandler {
 
 
     }
-
-
-
-
 
 }

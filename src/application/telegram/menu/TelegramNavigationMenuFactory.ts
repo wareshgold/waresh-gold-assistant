@@ -8,6 +8,11 @@ import {
 } from "./TelegramMenuAction";
 
 
+import {
+    NavigationAction,
+} from "../navigation/NavigationAction";
+
+
 
 export class TelegramNavigationMenuFactory {
 
@@ -20,10 +25,12 @@ export class TelegramNavigationMenuFactory {
         return {
 
 
-            id: "menu.main",
+            id:
+                "menu.back",
 
 
-            label: "⬅️ بازگشت",
+            label:
+                "⬅️ بازگشت",
 
 
             action: {
@@ -34,7 +41,7 @@ export class TelegramNavigationMenuFactory {
 
 
                 value:
-                    "menu:main",
+                    NavigationAction.BACK,
 
 
             },

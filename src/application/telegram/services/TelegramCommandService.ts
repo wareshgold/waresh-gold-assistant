@@ -18,10 +18,6 @@ import { TelegramConversationManager }
 from "../flows/TelegramConversationManager";
 
 
-import { TelegramActionExecutor }
-from "../actions/TelegramActionExecutor";
-
-
 
 export class TelegramCommandService
 implements TelegramCommandExecutor {
@@ -45,11 +41,7 @@ implements TelegramCommandExecutor {
 
 
         contextBuilder?:
-            TelegramCommandContextBuilder,
-
-
-        private readonly actionExecutor?:
-            TelegramActionExecutor
+            TelegramCommandContextBuilder
 
 
 
@@ -64,6 +56,7 @@ implements TelegramCommandExecutor {
 
 
     }
+
 
 
 
@@ -103,6 +96,7 @@ implements TelegramCommandExecutor {
 
 
 
+
         console.log(
 
             "INCOMING MESSAGE:",
@@ -110,6 +104,7 @@ implements TelegramCommandExecutor {
             normalizedMessage
 
         );
+
 
 
 
@@ -125,8 +120,10 @@ implements TelegramCommandExecutor {
 
 
 
+
+
         /*
-         * Commands همیشه اولویت دارند
+         * Slash commands have highest priority
          */
 
         if (
@@ -163,46 +160,6 @@ implements TelegramCommandExecutor {
 
         }
 
-
-
-
-
-
-        /*
-         * Menu actions
-         */
-
-        if (
-
-            this.actionExecutor
-
-        ) {
-
-
-
-            const actionResponse =
-
-
-                await this.tryExecuteAction(
-
-                    text
-
-                );
-
-
-
-            if (
-
-                actionResponse
-
-            ) {
-
-                return actionResponse;
-
-            }
-
-
-        }
 
 
 
@@ -256,6 +213,11 @@ implements TelegramCommandExecutor {
 
 
 
+
+        /*
+         * Natural text fallback
+         */
+
         const context =
 
 
@@ -277,50 +239,12 @@ implements TelegramCommandExecutor {
 
 
 
+
         return this.router.execute(
 
             context
 
         );
-
-
-    }
-
-
-
-
-
-
-
-
-    private async tryExecuteAction(
-
-        text:
-            string
-
-    ): Promise<any | undefined> {
-
-
-
-        try {
-
-
-            return await this.actionExecutor!.execute(
-
-                text
-
-            );
-
-
-        }
-
-        catch {
-
-
-            return undefined;
-
-
-        }
 
 
     }

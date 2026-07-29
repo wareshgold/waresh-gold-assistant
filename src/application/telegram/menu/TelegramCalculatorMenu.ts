@@ -22,6 +22,7 @@ import {
 export const TelegramCalculatorMenu: TelegramMenuItem[] = [
 
 
+
     {
         id:
             "calculate.gold-price",
@@ -34,12 +35,14 @@ export const TelegramCalculatorMenu: TelegramMenuItem[] = [
             type:
                 TelegramMenuActionType.CALLBACK,
 
+
             value:
                 NavigationAction.CALCULATE_GOLD_PRICE,
 
         },
 
     },
+
 
 
 
@@ -55,12 +58,14 @@ export const TelegramCalculatorMenu: TelegramMenuItem[] = [
             type:
                 TelegramMenuActionType.CALLBACK,
 
+
             value:
                 NavigationAction.CALCULATE_INVOICE,
 
         },
 
     },
+
 
 
 
@@ -76,12 +81,14 @@ export const TelegramCalculatorMenu: TelegramMenuItem[] = [
             type:
                 TelegramMenuActionType.CALLBACK,
 
+
             value:
                 NavigationAction.CALCULATE_REVERSE_LABOR,
 
         },
 
     },
+
 
 
 
@@ -97,12 +104,14 @@ export const TelegramCalculatorMenu: TelegramMenuItem[] = [
             type:
                 TelegramMenuActionType.CALLBACK,
 
+
             value:
                 NavigationAction.CALCULATE_FORMULA,
 
         },
 
     },
+
 
 
     TelegramBackMenuItem,

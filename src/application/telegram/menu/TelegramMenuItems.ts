@@ -18,7 +18,7 @@ export const TelegramBackMenuItem: TelegramMenuItem = {
 
 
     id:
-        "menu.main",
+        "menu.back",
 
 
     label:
@@ -27,12 +27,14 @@ export const TelegramBackMenuItem: TelegramMenuItem = {
 
     action: {
 
+
         type:
             TelegramMenuActionType.CALLBACK,
 
 
         value:
-            NavigationAction.HOME,
+            NavigationAction.BACK,
+
 
     },
 
