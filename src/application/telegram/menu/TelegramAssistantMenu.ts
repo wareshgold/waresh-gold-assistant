@@ -27,7 +27,7 @@ export const TelegramAssistantMenu: TelegramMenuItem[] = [
             "assistant.ai",
 
         label:
-            "🤖 گفتگو با AI",
+            "🤖 دستیار هوشمند",
 
         action: {
 
@@ -48,7 +48,7 @@ export const TelegramAssistantMenu: TelegramMenuItem[] = [
             "assistant.learn",
 
         label:
-            "📚 آموزش طلا",
+            "📚 آموزش و اطلاعات طلا",
 
         action: {
 

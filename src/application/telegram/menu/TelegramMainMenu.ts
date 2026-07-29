@@ -20,10 +20,11 @@ export const TelegramMainMenu: TelegramMenuItem[] = [
   {
     id: "menu.market",
 
-    label: "📊 بازار",
+    label: "🟡 بازار طلا",
 
     action: {
       type: TelegramMenuActionType.CALLBACK,
+
       value: NavigationAction.MARKET,
     },
   },
@@ -32,10 +33,11 @@ export const TelegramMainMenu: TelegramMenuItem[] = [
   {
     id: "menu.calculate",
 
-    label: "🧮 محاسبات",
+    label: "🧮 ماشین حساب طلا",
 
     action: {
       type: TelegramMenuActionType.CALLBACK,
+
       value: NavigationAction.CALCULATE,
     },
   },
@@ -44,10 +46,11 @@ export const TelegramMainMenu: TelegramMenuItem[] = [
   {
     id: "menu.assistant",
 
-    label: "🤖 دستیار",
+    label: "🤖 دستیار هوشمند",
 
     action: {
       type: TelegramMenuActionType.CALLBACK,
+
       value: NavigationAction.ASSISTANT,
     },
   },
@@ -60,6 +63,7 @@ export const TelegramMainMenu: TelegramMenuItem[] = [
 
     action: {
       type: TelegramMenuActionType.CALLBACK,
+
       value: NavigationAction.SETTINGS,
     },
   },

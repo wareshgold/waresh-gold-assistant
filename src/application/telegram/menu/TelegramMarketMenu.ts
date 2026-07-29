@@ -29,31 +29,8 @@ export const TelegramMarketMenu: TelegramMenuItem[] = [
 
         action: {
             type: TelegramMenuActionType.CALLBACK,
+
             value: NavigationAction.GOLD_PRICE,
-        },
-    },
-
-
-    {
-        id: "market.history",
-
-        label: "📜 تاریخچه قیمت",
-
-        action: {
-            type: TelegramMenuActionType.CALLBACK,
-            value: NavigationAction.MARKET_HISTORY,
-        },
-    },
-
-
-    {
-        id: "market.chart",
-
-        label: "📊 نمودار قیمت",
-
-        action: {
-            type: TelegramMenuActionType.CALLBACK,
-            value: NavigationAction.MARKET_CHART,
         },
     },
 
@@ -65,7 +42,34 @@ export const TelegramMarketMenu: TelegramMenuItem[] = [
 
         action: {
             type: TelegramMenuActionType.CALLBACK,
+
             value: NavigationAction.GOLD_BUBBLE,
+        },
+    },
+
+
+    {
+        id: "market.chart",
+
+        label: "📊 نمودار قیمت",
+
+        action: {
+            type: TelegramMenuActionType.CALLBACK,
+
+            value: NavigationAction.MARKET_CHART,
+        },
+    },
+
+
+    {
+        id: "market.history",
+
+        label: "📜 تاریخچه قیمت",
+
+        action: {
+            type: TelegramMenuActionType.CALLBACK,
+
+            value: NavigationAction.MARKET_HISTORY,
         },
     },
 
@@ -77,6 +81,7 @@ export const TelegramMarketMenu: TelegramMenuItem[] = [
 
         action: {
             type: TelegramMenuActionType.CALLBACK,
+
             value: NavigationAction.MARKET_ANALYTICS,
         },
     },
