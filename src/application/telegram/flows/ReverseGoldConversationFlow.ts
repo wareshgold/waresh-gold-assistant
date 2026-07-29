@@ -38,6 +38,7 @@ implements TelegramConversationFlow {
 
 
 
+
     async execute(
 
         userId: string,
@@ -103,7 +104,6 @@ implements TelegramConversationFlow {
 
             case "REVERSE_LABOR_CALCULATION_WAITING_PRICE":
 
-
                 session.data.finalPrice =
                     value;
 
@@ -117,7 +117,6 @@ implements TelegramConversationFlow {
 
 
             case "REVERSE_WAITING_GOLD_PRICE":
-
 
                 session.data.goldPrice =
                     value;
@@ -133,7 +132,6 @@ implements TelegramConversationFlow {
 
             case "REVERSE_WAITING_WEIGHT":
 
-
                 session.data.weight =
                     value;
 
@@ -147,7 +145,6 @@ implements TelegramConversationFlow {
 
 
             case "REVERSE_WAITING_PROFIT":
-
 
                 session.data.profitPercent =
                     value;
@@ -225,14 +222,29 @@ implements TelegramConversationFlow {
 🔄 نتیجه محاسبه معکوس طلا
 
 
-درصد اجرت:
+⚖️ وزن:
+
+${this.formatNumber(session.data.weight)} گرم
+
+
+💰 قیمت هر گرم:
+
+${this.formatNumber(session.data.goldPrice)} تومان
+
+
+📈 درصد اجرت:
 
 ${result.laborPercent}%
 
 
-مبلغ اجرت:
+💵 مبلغ اجرت:
 
-${result.laborAmount}
+${this.formatNumber(result.laborAmount)} تومان
+
+
+━━━━━━━━━━━━━━
+
+🟡 Waresh Gold Assistant
 
 `.trim()
 
@@ -256,22 +268,25 @@ ${result.laborAmount}
 
             REVERSE_WAITING_GOLD_PRICE:
 
-                "قیمت هر گرم طلا را وارد کنید:",
+                "💰 قیمت هر گرم طلا را وارد کنید:",
+
 
 
             REVERSE_WAITING_WEIGHT:
 
-                "وزن طلا را وارد کنید:",
+                "⚖️ وزن طلا را وارد کنید:",
+
 
 
             REVERSE_WAITING_PROFIT:
 
-                "درصد سود را وارد کنید:",
+                "📈 درصد سود را وارد کنید:",
+
 
 
             REVERSE_WAITING_TAX:
 
-                "درصد مالیات را وارد کنید:"
+                "🧾 درصد مالیات را وارد کنید:"
 
         };
 
@@ -288,6 +303,32 @@ ${result.laborAmount}
 
         };
 
+    }
+
+
+
+
+
+    private formatNumber(
+        value: unknown
+    ): string {
+
+
+        if (
+            typeof value !== "number"
+        ) {
+
+            return "-";
+
+        }
+
+
+        return new Intl.NumberFormat(
+            "fa-IR"
+        )
+        .format(
+            Math.round(value)
+        );
 
     }
 
