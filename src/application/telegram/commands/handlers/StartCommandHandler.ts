@@ -41,10 +41,7 @@ export class StartCommandHandler
 implements TelegramCommandHandler {
 
 
-
-
     constructor(
-
 
         private readonly welcomeMessageProvider:
 
@@ -64,7 +61,6 @@ implements TelegramCommandHandler {
         private readonly profileStore?:
 
             TelegramUserProfileStore
-
 
     ) {}
 
@@ -116,7 +112,6 @@ implements TelegramCommandHandler {
     ) {
 
 
-
         let isFirstTimeUser = true;
 
 
@@ -152,7 +147,6 @@ implements TelegramCommandHandler {
 
             await this.profileStore.save({
 
-
                 userId:
 
                     context.userId,
@@ -181,7 +175,6 @@ implements TelegramCommandHandler {
 
                     Date.now()
 
-
             });
 
         }
@@ -206,6 +199,8 @@ implements TelegramCommandHandler {
 
 
 
+
+
         const welcomeMessage =
 
 
@@ -215,38 +210,43 @@ implements TelegramCommandHandler {
 
 
 `
-🟡 به Waresh Gold Assistant خوش آمدید ${name}
+🟡 به وارش گلد (Waresh Gold Assistant) خوش آمدید ${name}
+
 
 دستیار هوشمند بازار طلا و جواهر
 
 
-امکانات فعلی:
+امکانات فعال:
 
-🟡 قیمت لحظه‌ای طلا
 
-🧮 محاسبه قیمت طلا
+💰 قیمت لحظه‌ای طلا
+
+🧮 ماشین حساب حرفه‌ای طلا
 
 🧾 محاسبه فاکتور
 
 📐 حل فرمول‌های طلا
 
-🔄 محاسبه معکوس اجرت محصول
+🔄 محاسبات معکوس خرید و فروش
 
-📊 تحلیل بازار و تاریخچه قیمت
+📊 تحلیل و تاریخچه بازار
+
 
 
 ━━━━━━━━━━━━━━
 
-🚀 در حال توسعه:
 
-🤖 دستیار هوش مصنوعی طلا
+
+🚀 قابلیت‌های آینده پلتفرم:
+
+
+🤖 دستیار هوشمند طلا
 
 📷 تحلیل هوشمند فاکتور
 
-👤 مدیریت مشتریان
+👥 مدیریت مشتریان
 
 🏪 اتصال به کسب‌وکارهای طلا
-
 
 `
 
@@ -256,18 +256,26 @@ implements TelegramCommandHandler {
 `
 👋 خوش برگشتی ${name}
 
-به Waresh Gold Assistant خوش آمدید.
 
-از منوی زیر می‌توانید خدمات موردنظر را انتخاب کنید.
+به وارش گلد (Waresh Gold Assistant) خوش آمدید.
+
+
+از منوی زیر خدمات موردنظر خود را انتخاب کنید.
+
 
 ━━━━━━━━━━━━━━
 
-🟡 قیمت طلا
-🧮 ماشین حساب طلا
+
+🟡 بازار طلا
+
+🧮 ماشین حساب
+
 📊 تحلیل بازار
+
 🤖 دستیار هوشمند
 
 `;
+
 
 
 
@@ -306,14 +314,10 @@ implements TelegramCommandHandler {
 
                 inlineKeyboard
 
-
         };
 
 
     }
-
-
-
 
 
 }
