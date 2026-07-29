@@ -8,10 +8,15 @@ import { CalculateGoldFormulaUseCase }
 from "../../../../../src/application/gold/CalculateGoldFormulaUseCase";
 
 
+import { TelegramNumberFormatter }
+from "../../../../../src/application/telegram/presentation/TelegramNumberFormatter";
+
+
 
 describe(
     "CalculateGoldCommandHandler",
     () => {
+
 
 
         class FakeCalculateGoldFormulaUseCase
@@ -40,13 +45,41 @@ describe(
 
 
 
+
+        class FakeSessionStore {
+
+
+            async save() {
+
+                return;
+
+            }
+
+
+        }
+
+
+
+
+
         const createHandler = () => {
 
+
             return new CalculateGoldCommandHandler(
-                new FakeCalculateGoldFormulaUseCase()
+
+                new FakeCalculateGoldFormulaUseCase(),
+
+                new FakeSessionStore() as any,
+
+                new TelegramNumberFormatter()
+
             );
 
+
         };
+
+
+
 
 
 
@@ -68,6 +101,9 @@ describe(
 
             }
         );
+
+
+
 
 
 
@@ -101,6 +137,7 @@ describe(
 
 
 
+
                 expect(
                     result
                 )
@@ -114,12 +151,24 @@ describe(
                     result
                 )
                 .toContain(
-                    "112612050"
+                    "<code>"
+                );
+
+
+                expect(
+                    result
+                )
+                .toContain(
+                    "۱۱۲٬۶۱۲٬۰۵۰"
                 );
 
 
             }
         );
+
+
+
+
 
 
 

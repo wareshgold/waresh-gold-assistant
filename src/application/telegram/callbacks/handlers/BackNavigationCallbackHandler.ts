@@ -23,6 +23,12 @@ import {
 } from "../../navigation/TelegramNavigationStateService";
 
 
+import {
+    NavigationAction,
+} from "../../navigation/NavigationAction";
+
+
+
 
 export class BackNavigationCallbackHandler
 
@@ -30,18 +36,23 @@ implements TelegramCallbackHandler {
 
 
 
+
     constructor(
+
 
         private readonly navigationService:
 
             TelegramNavigationService,
 
 
+
         private readonly navigationState:
 
             TelegramNavigationStateService
 
+
     ) {}
+
 
 
 
@@ -57,10 +68,11 @@ implements TelegramCallbackHandler {
     ): boolean {
 
 
-        return context.data === "menu:back";
+        return context.data === NavigationAction.BACK;
 
 
     }
+
 
 
 
@@ -83,19 +95,27 @@ implements TelegramCallbackHandler {
 
         if (!context.userId) {
 
+
             return {
+
 
                 type:
 
                     "text",
 
+
                 content:
 
                     "❌ User context missing",
 
+
             };
 
+
         }
+
+
+
 
 
 
@@ -109,10 +129,14 @@ implements TelegramCallbackHandler {
 
 
 
+
+
+
         if (!previousRoute) {
 
 
             return {
+
 
                 type:
 
@@ -124,11 +148,14 @@ implements TelegramCallbackHandler {
                     "🟡 Waresh Gold",
 
 
+
                 replyMarkup:
 
                     this.navigationService.getMainMenu(),
 
+
             };
+
 
         }
 
@@ -147,9 +174,11 @@ implements TelegramCallbackHandler {
                 "text",
 
 
+
             content:
 
                 "⬅️ بازگشت",
+
 
 
             replyMarkup:
@@ -165,7 +194,6 @@ implements TelegramCallbackHandler {
 
 
     }
-
 
 
 }

@@ -6,9 +6,7 @@ from "./commands/TelegramCommandHandler";
 
 
 
-
 export class TelegramResponseFormatter {
-
 
 
 
@@ -22,31 +20,7 @@ export class TelegramResponseFormatter {
 
 
 
-        if (
-
-            typeof response !== "string"
-
-            &&
-
-            response.type === "photo"
-
-        ) {
-
-
-            return response.content;
-
-
-        }
-
-
-
-
-
-
-
-        const text =
-
-
+        const content =
 
             typeof response === "string"
 
@@ -58,13 +32,8 @@ export class TelegramResponseFormatter {
 
 
 
+        return this.formatNumbers(content);
 
-
-        return this.formatCopyableNumbers(
-
-            text
-
-        );
 
 
     }
@@ -74,10 +43,7 @@ export class TelegramResponseFormatter {
 
 
 
-
-
-
-    private formatCopyableNumbers(
+    private formatNumbers(
 
         text:
             string
@@ -85,44 +51,18 @@ export class TelegramResponseFormatter {
     ): string {
 
 
-
         return text.replace(
 
+            /\d+/g,
 
-            /(<code>.*?<\/code>)|(?<!\d)(\d{4,})(?!\d)/g,
+            value =>
 
-
-            (
-
-                match,
-
-                existingCode
-
-            ) => {
-
-
-
-                if (existingCode) {
-
-
-                    return existingCode;
-
-
-                }
-
-
-
-                return `<code>${match}</code>`;
-
-
-            }
-
+                `<code>${value}</code>`
 
         );
 
 
     }
-
 
 
 

@@ -1,171 +1,331 @@
-import { TelegramCommandHandler } from "../TelegramCommandHandler";
-import { TelegramCommandContext } from "../TelegramCommandContext";
+import {
+    TelegramCommandHandler
+}
+from "../TelegramCommandHandler";
+
+
+import {
+    TelegramCommandContext
+}
+from "../TelegramCommandContext";
+
 
 import {
     CalculateGoldFormulaUseCase
-} from "../../../gold/CalculateGoldFormulaUseCase";
+}
+from "../../../gold/CalculateGoldFormulaUseCase";
+
 
 import {
     TelegramSessionStore
-} from "../../state/TelegramSessionStore";
+}
+from "../../state/TelegramSessionStore";
+
+
+import {
+    TelegramNumberFormatter
+}
+from "../../presentation/TelegramNumberFormatter";
+
+
 
 
 export class CalculateGoldCommandHandler
+
 implements TelegramCommandHandler {
+
+
+
+
+    private readonly numberFormatter:
+        TelegramNumberFormatter;
+
 
 
     constructor(
 
+
         private readonly useCase:
+
             CalculateGoldFormulaUseCase,
 
 
-        private readonly sessionStore:
-            TelegramSessionStore
 
-    ) {}
+        private readonly sessionStore?:
+
+            TelegramSessionStore,
+
+
+
+        numberFormatter?:
+
+            TelegramNumberFormatter
+
+
+    ) {
+
+
+        this.numberFormatter =
+
+            numberFormatter ??
+
+            new TelegramNumberFormatter();
+
+
+    }
+
+
+
 
 
 
     metadata() {
 
+
         return {
 
+
             command:
+
                 "/calc",
 
+
+
             description:
+
                 "محاسبه قیمت طلا"
+
 
         };
 
+
     }
+
+
+
 
 
 
     canHandle(
-        command: string
+
+        command:
+            string
+
     ): boolean {
+
 
         return command === "/calc";
 
+
     }
+
+
+
+
+
 
 
 
     async execute(
 
-        context: TelegramCommandContext
+        context:
+            TelegramCommandContext
 
     ): Promise<string> {
 
 
 
+
         const userId =
+
             context.userId ||
+
             context.chatId;
 
 
 
+
+
+
         if (
+
             context.arguments.length === 0
+
         ) {
 
 
-            await this.sessionStore.save({
 
-                userId,
-
-
-                state:
-                    "GOLD_CALCULATION_WAITING_WEIGHT",
+            if (this.sessionStore) {
 
 
-                data:
-                    {},
+                await this.sessionStore.save({
 
 
-                updatedAt:
-                    Date.now()
+                    userId,
 
-            });
+
+                    state:
+
+                        "GOLD_CALCULATION_WAITING_WEIGHT",
+
+
+
+                    data:
+
+                        {},
+
+
+
+                    updatedAt:
+
+                        Date.now()
+
+
+                });
+
+
+            }
+
+
 
 
 
             return `
+
 💰 محاسبه طلا
 
+
 لطفاً وزن طلا را وارد کنید:
-            `.trim();
+
+`.trim();
+
 
         }
+
+
+
+
+
 
 
 
         const values =
+
             context.arguments.map(
+
                 Number
+
             );
+
+
+
+
+
 
 
 
         if (
 
+
             values.length < 5 ||
 
+
             values.some(
+
                 value =>
+
                     Number.isNaN(value)
+
             )
+
 
         ) {
 
 
+
             return `
+
 ❌ فرمت اشتباه است
+
 
 فرمت صحیح:
 
+
 /calc وزن قیمت_طلا اجرت سود مالیات
+
 
 مثال:
 
+
 /calc 5 18000000 15 7 9
-            `.trim();
+
+`.trim();
+
 
         }
 
 
 
+
+
+
+
+
         const [
+
             weight,
+
             goldPrice,
+
             laborPercent,
+
             profitPercent,
+
             taxPercent
+
 
         ] = values;
 
 
 
+
+
+
+
+
+
         const result =
+
 
             this.useCase.execute({
 
+
                 weight,
+
 
                 goldPrice,
 
+
                 laborPercent,
+
 
                 profitPercent,
 
+
                 taxPercent,
 
+
                 discount:
+
                     0
 
+
             });
+
+
+
+
+
 
 
 
@@ -174,36 +334,53 @@ implements TelegramCommandHandler {
 💰 محاسبه طلا
 
 
+
 وزن:
+
 ${weight} گرم
 
 
+
 ارزش طلا:
-${result.goldValue}
+
+${this.numberFormatter.money(result.goldValue)}
+
 
 
 اجرت:
-${result.labor}
+
+${this.numberFormatter.money(result.labor)}
+
 
 
 سود:
-${result.profit}
+
+${this.numberFormatter.money(result.profit)}
+
 
 
 مالیات:
-${result.tax}
+
+${this.numberFormatter.money(result.tax)}
+
 
 
 ----------------
 
+
+
 قیمت نهایی:
 
-${result.finalPrice}
 
-        `.trim();
+${this.numberFormatter.money(result.finalPrice)}
+
+`.trim();
+
+
 
 
     }
+
 
 
 }

@@ -4,27 +4,15 @@ import {
 
 
 import {
-    TelegramMenuCallbackResolver,
-} from "../menu/TelegramMenuCallbackResolver";
-
-
-import {
     TelegramKeyboardMarkup,
 } from "./TelegramKeyboardMarkup";
 
 
 
 
+
 export class TelegramInlineKeyboardBuilder {
 
-
-
-    constructor(
-
-        private readonly callbackResolver:
-            TelegramMenuCallbackResolver = new TelegramMenuCallbackResolver()
-
-    ) {}
 
 
 
@@ -43,6 +31,7 @@ export class TelegramInlineKeyboardBuilder {
             type: "INLINE",
 
 
+
             rows:
 
                 items.map(
@@ -59,7 +48,7 @@ export class TelegramInlineKeyboardBuilder {
 
                             actionId:
 
-                                this.callbackResolver.resolve(item),
+                                item.action.value,
 
 
                         }

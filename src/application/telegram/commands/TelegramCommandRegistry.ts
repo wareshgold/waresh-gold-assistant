@@ -86,12 +86,18 @@ import { MarketBubbleMessageFormatter }
 from "../presentation/MarketBubbleMessageFormatter";
 
 
+import { TelegramNumberFormatter }
+from "../presentation/TelegramNumberFormatter";
+
+
+
 
 
 
 
 
 export class TelegramCommandRegistry {
+
 
 
 
@@ -150,7 +156,6 @@ export class TelegramCommandRegistry {
 
 
 
-
         const welcomeMessageProvider =
 
             new RandomWelcomeMessageProvider();
@@ -160,11 +165,9 @@ export class TelegramCommandRegistry {
 
 
 
-
         const menuRegistry =
 
             new MemoryTelegramMenuRegistry();
-
 
 
 
@@ -184,7 +187,6 @@ export class TelegramCommandRegistry {
 
 
 
-
         telegramMenuService.registerMenu(
 
             TelegramMainMenu
@@ -196,11 +198,18 @@ export class TelegramCommandRegistry {
 
 
 
-
         let commandRouter:
 
             TelegramCommandRouter;
 
+
+
+
+
+
+        const telegramNumberFormatter =
+
+            new TelegramNumberFormatter();
 
 
 
@@ -240,6 +249,7 @@ export class TelegramCommandRegistry {
 
 
 
+
                 new HelpCommandHandler(
 
 
@@ -256,11 +266,13 @@ export class TelegramCommandRegistry {
 
 
 
+
                 new GoldPriceCommandHandler(
 
                     getGoldPriceUseCase
 
                 ),
+
 
 
 
@@ -282,11 +294,13 @@ export class TelegramCommandRegistry {
 
 
 
+
                 new GetMarketAnalyticsCommandHandler(
 
                     getMarketAnalyticsUseCase
 
                 ),
+
 
 
 
@@ -306,13 +320,17 @@ export class TelegramCommandRegistry {
 
 
 
+
                 new CalculateGoldCommandHandler(
 
                     calculateGoldFormulaUseCase,
 
-                    sessionStore
+                    sessionStore,
+
+                    telegramNumberFormatter
 
                 )
+
 
 
 
@@ -327,7 +345,6 @@ export class TelegramCommandRegistry {
 
 
 
-
         commandRouter =
 
             new TelegramCommandRouter(
@@ -335,7 +352,6 @@ export class TelegramCommandRegistry {
                 handlers
 
             );
-
 
 
 
