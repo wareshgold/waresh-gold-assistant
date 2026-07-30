@@ -1,70 +1,31 @@
 import {
-    TelegramCallbackRouter
+    TelegramCallbackRouter,
 }
 from "./TelegramCallbackRouter";
 
 
 import {
-    TelegramCallbackHandlerFactory
+    TelegramCallbackHandlerFactory,
 }
 from "./TelegramCallbackHandlerFactory";
 
 
 import {
-    GetGoldPriceUseCase
+    TelegramActionExecutor,
 }
-from "../../usecases/GetGoldPriceUseCase";
+from "../actions/TelegramActionExecutor";
 
 
 import {
-    GetGoldBubbleUseCase
-}
-from "../../market/GetGoldBubbleUseCase";
-
-
-import {
-    GetMarketAnalyticsUseCase
-}
-from "../../market/GetMarketAnalyticsUseCase";
-
-
-import {
-    GetMarketHistoryUseCase
-}
-from "../../market/GetMarketHistoryUseCase";
-
-
-import {
-    GetMarketChartUseCase
-}
-from "../../market/GetMarketChartUseCase";
-
-
-import {
-    MarketAnalyticsMessageFormatter
-}
-from "../presentation/MarketAnalyticsMessageFormatter";
-
-
-import {
-    MarketBubbleMessageFormatter
-}
-from "../presentation/MarketBubbleMessageFormatter";
-
-
-import {
-    TelegramNavigationService
+    TelegramNavigationService,
 }
 from "../navigation/TelegramNavigationService";
 
 
 import {
-    TelegramNavigationStateService
+    TelegramNavigationStateService,
 }
 from "../navigation/TelegramNavigationStateService";
-
-
-
 
 
 
@@ -77,74 +38,13 @@ export class TelegramCallbackRegistry {
 
 
 
-
     static create(
 
 
 
+        telegramActionExecutor:
 
-
-
-        getGoldPriceUseCase:
-
-            GetGoldPriceUseCase,
-
-
-
-
-
-
-        getGoldBubbleUseCase:
-
-            GetGoldBubbleUseCase,
-
-
-
-
-
-
-        getMarketAnalyticsUseCase:
-
-            GetMarketAnalyticsUseCase,
-
-
-
-
-
-
-        getMarketHistoryUseCase:
-
-            GetMarketHistoryUseCase,
-
-
-
-
-
-
-        getMarketChartUseCase:
-
-            GetMarketChartUseCase,
-
-
-
-
-
-
-        marketAnalyticsMessageFormatter:
-
-            MarketAnalyticsMessageFormatter,
-
-
-
-
-
-
-        marketBubbleMessageFormatter:
-
-            MarketBubbleMessageFormatter,
-
-
-
+            TelegramActionExecutor,
 
 
 
@@ -154,31 +54,15 @@ export class TelegramCallbackRegistry {
 
 
 
-
-
-
         telegramNavigationStateService:
 
-            TelegramNavigationStateService,
-
-
-
-
-
-
-        sessionStore:
-
-            any
-
-
-
+            TelegramNavigationStateService
 
 
 
     ):
 
         TelegramCallbackRouter {
-
 
 
 
@@ -193,55 +77,7 @@ export class TelegramCallbackRegistry {
 
 
 
-
-
-
-                getGoldPriceUseCase,
-
-
-
-
-
-
-                getGoldBubbleUseCase,
-
-
-
-
-
-
-                getMarketAnalyticsUseCase,
-
-
-
-
-
-
-                getMarketHistoryUseCase,
-
-
-
-
-
-
-                getMarketChartUseCase,
-
-
-
-
-
-
-                marketAnalyticsMessageFormatter,
-
-
-
-
-
-
-                marketBubbleMessageFormatter,
-
-
-
+                telegramActionExecutor,
 
 
 
@@ -249,20 +85,7 @@ export class TelegramCallbackRegistry {
 
 
 
-
-
-
-                telegramNavigationStateService,
-
-
-
-
-
-
-                sessionStore
-
-
-
+                telegramNavigationStateService
 
 
 
@@ -274,15 +97,12 @@ export class TelegramCallbackRegistry {
 
 
 
-        return new TelegramCallbackRouter(
 
+        return new TelegramCallbackRouter(
 
             handlers
 
-
         );
-
-
 
 
 

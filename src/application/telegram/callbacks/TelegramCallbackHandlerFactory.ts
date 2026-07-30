@@ -1,163 +1,67 @@
 import {
-    TelegramCallbackHandler
+    TelegramCallbackHandler,
 }
 from "./TelegramCallbackHandler";
 
 
 import {
-    GetGoldPriceCallbackHandler
+    ActionCallbackHandler,
 }
-from "./handlers/GetGoldPriceCallbackHandler";
+from "./handlers/ActionCallbackHandler";
 
 
 import {
-    GetGoldBubbleCallbackHandler
-}
-from "./handlers/GetGoldBubbleCallbackHandler";
-
-
-import {
-    GetMarketAnalyticsCallbackHandler
-}
-from "./handlers/GetMarketAnalyticsCallbackHandler";
-
-
-import {
-    GetMarketHistoryCallbackHandler
-}
-from "./handlers/GetMarketHistoryCallbackHandler";
-
-
-import {
-    GetMarketChartCallbackHandler
-}
-from "./handlers/GetMarketChartCallbackHandler";
-
-
-import {
-    CalculateGoldCallbackHandler
-}
-from "./handlers/CalculateGoldCallbackHandler";
-
-
-import {
-    CalculateReverseLaborCallbackHandler
-}
-from "./handlers/CalculateReverseLaborCallbackHandler";
-
-
-import {
-    ComingSoonCalculationCallbackHandler
-}
-from "./handlers/ComingSoonCalculationCallbackHandler";
-
-
-import {
-    OpenMarketMenuCallbackHandler
+    OpenMarketMenuCallbackHandler,
 }
 from "./handlers/OpenMarketMenuCallbackHandler";
 
 
 import {
-    OpenCalculatorMenuCallbackHandler
+    OpenCalculatorMenuCallbackHandler,
 }
 from "./handlers/OpenCalculatorMenuCallbackHandler";
 
 
 import {
-    OpenAssistantMenuCallbackHandler
+    OpenAssistantMenuCallbackHandler,
 }
 from "./handlers/OpenAssistantMenuCallbackHandler";
 
 
 import {
-    OpenSettingsMenuCallbackHandler
+    OpenSettingsMenuCallbackHandler,
 }
 from "./handlers/OpenSettingsMenuCallbackHandler";
 
 
 import {
-    OpenMainMenuCallbackHandler
+    OpenMainMenuCallbackHandler,
 }
 from "./handlers/OpenMainMenuCallbackHandler";
 
 
 import {
-    BackNavigationCallbackHandler
+    BackNavigationCallbackHandler,
 }
 from "./handlers/BackNavigationCallbackHandler";
 
 
 import {
-    GetGoldPriceUseCase
+    TelegramActionExecutor,
 }
-from "../../usecases/GetGoldPriceUseCase";
+from "../actions/TelegramActionExecutor";
 
 
 import {
-    GetGoldBubbleUseCase
-}
-from "../../market/GetGoldBubbleUseCase";
-
-
-import {
-    GetMarketAnalyticsUseCase
-}
-from "../../market/GetMarketAnalyticsUseCase";
-
-
-import {
-    GetMarketHistoryUseCase
-}
-from "../../market/GetMarketHistoryUseCase";
-
-
-import {
-    GetMarketChartUseCase
-}
-from "../../market/GetMarketChartUseCase";
-
-
-import {
-    MarketChartRenderer
-}
-from "../../market/chart/MarketChartRenderer";
-
-
-import {
-    MarketAnalyticsMessageFormatter
-}
-from "../presentation/MarketAnalyticsMessageFormatter";
-
-
-import {
-    MarketBubbleMessageFormatter
-}
-from "../presentation/MarketBubbleMessageFormatter";
-
-
-import {
-    TelegramDateFormatter
-}
-from "../presentation/TelegramDateFormatter";
-
-
-import {
-    TelegramNavigationService
+    TelegramNavigationService,
 }
 from "../navigation/TelegramNavigationService";
 
 
 import {
-    TelegramNavigationStateService
+    TelegramNavigationStateService,
 }
 from "../navigation/TelegramNavigationStateService";
-
-
-import {
-    MarketChartImageGenerator
-}
-from "../../../infrastructure/chart/MarketChartImageGenerator";
 
 
 
@@ -170,46 +74,9 @@ export class TelegramCallbackHandlerFactory {
     static create(
 
 
+        telegramActionExecutor:
 
-        getGoldPriceUseCase:
-
-            GetGoldPriceUseCase,
-
-
-
-        getGoldBubbleUseCase:
-
-            GetGoldBubbleUseCase,
-
-
-
-        getMarketAnalyticsUseCase:
-
-            GetMarketAnalyticsUseCase,
-
-
-
-        getMarketHistoryUseCase:
-
-            GetMarketHistoryUseCase,
-
-
-
-        getMarketChartUseCase:
-
-            GetMarketChartUseCase,
-
-
-
-        marketAnalyticsMessageFormatter:
-
-            MarketAnalyticsMessageFormatter,
-
-
-
-        marketBubbleMessageFormatter:
-
-            MarketBubbleMessageFormatter,
+            TelegramActionExecutor,
 
 
 
@@ -221,13 +88,7 @@ export class TelegramCallbackHandlerFactory {
 
         telegramNavigationStateService:
 
-            TelegramNavigationStateService,
-
-
-
-        sessionStore:
-
-            any
+            TelegramNavigationStateService
 
 
 
@@ -240,6 +101,11 @@ export class TelegramCallbackHandlerFactory {
 
         return [
 
+
+
+            /*
+             * Navigation callbacks
+             */
 
 
             new BackNavigationCallbackHandler(
@@ -292,95 +158,82 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-            new CalculateGoldCallbackHandler(
-
-                sessionStore
-
-            ),
 
 
-
-            new CalculateReverseLaborCallbackHandler(
-
-                sessionStore
-
-            ),
+            /*
+             * Action Engine callbacks
+             */
 
 
+            new ActionCallbackHandler(
 
-            new ComingSoonCalculationCallbackHandler(
+                telegramActionExecutor,
 
-                "invoice"
+                "gold",
+
+                "price"
 
             ),
 
 
 
-            new ComingSoonCalculationCallbackHandler(
+            new ActionCallbackHandler(
 
-                "formula"
+                telegramActionExecutor,
 
-            ),
+                "gold",
 
-
-
-            new GetGoldPriceCallbackHandler(
-
-                getGoldPriceUseCase,
-
-                telegramNavigationService
+                "bubble"
 
             ),
 
 
 
-            new GetGoldBubbleCallbackHandler(
+            new ActionCallbackHandler(
 
-                getGoldBubbleUseCase,
+                telegramActionExecutor,
 
-                marketBubbleMessageFormatter,
+                "gold",
 
-                telegramNavigationService
-
-            ),
-
-
-
-            new GetMarketAnalyticsCallbackHandler(
-
-                getMarketAnalyticsUseCase,
-
-                marketAnalyticsMessageFormatter,
-
-                telegramNavigationService
+                "calculate"
 
             ),
 
 
 
-            new GetMarketHistoryCallbackHandler(
+            new ActionCallbackHandler(
 
-                getMarketHistoryUseCase,
+                telegramActionExecutor,
 
-                new TelegramDateFormatter(),
+                "market",
 
-                telegramNavigationService
+                "analytics"
 
             ),
 
 
 
-            new GetMarketChartCallbackHandler(
+            new ActionCallbackHandler(
 
-                getMarketChartUseCase,
+                telegramActionExecutor,
 
-                new MarketChartRenderer(),
+                "market",
 
-                new MarketChartImageGenerator(),
+                "history"
 
-                telegramNavigationService
+            ),
 
-            )
+
+
+            new ActionCallbackHandler(
+
+                telegramActionExecutor,
+
+                "market",
+
+                "chart"
+
+            ),
 
 
 
@@ -388,7 +241,6 @@ export class TelegramCallbackHandlerFactory {
 
 
     }
-
 
 
 

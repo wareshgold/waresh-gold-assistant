@@ -1,11 +1,12 @@
 import {
-    TelegramActionResolver
+    TelegramActionResolver,
 }
 from "./TelegramActionResolver";
 
 
 
 export class TelegramCommandActionResolver
+
 implements TelegramActionResolver {
 
 
@@ -24,10 +25,12 @@ implements TelegramActionResolver {
         this.actions = new Map([
 
 
+
             [
                 "gold.price",
                 "/price"
             ],
+
 
 
             [
@@ -36,10 +39,19 @@ implements TelegramActionResolver {
             ],
 
 
+
             [
                 "gold.calculate",
                 "/calc"
             ],
+
+
+
+            [
+                "gold.reverse-labor",
+                "/reverse-labor"
+            ],
+
 
 
             [
@@ -48,9 +60,17 @@ implements TelegramActionResolver {
             ],
 
 
+
             [
                 "market.history",
                 "/history"
+            ],
+
+
+
+            [
+                "market.chart",
+                "/chart"
             ]
 
 
@@ -64,11 +84,15 @@ implements TelegramActionResolver {
 
 
 
+
     resolve(
 
-        actionId: string
+        actionId:
 
-    ): string | undefined {
+            string
+
+    ):
+        string | undefined {
 
 
         return this.actions.get(

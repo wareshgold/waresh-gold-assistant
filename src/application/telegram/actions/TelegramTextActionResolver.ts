@@ -1,13 +1,16 @@
 import {
-    TelegramActionResolver
+    TelegramActionResolver,
 }
 from "./TelegramActionResolver";
+
+
 
 
 
 export class TelegramTextActionResolver
 
 implements TelegramActionResolver {
+
 
 
 
@@ -18,10 +21,13 @@ implements TelegramActionResolver {
 
 
 
+
+
     constructor() {
 
 
         this.actions = new Map([
+
 
 
             [
@@ -30,10 +36,12 @@ implements TelegramActionResolver {
             ],
 
 
+
             [
                 "bubble",
                 "/bubble"
             ],
+
 
 
             [
@@ -42,16 +50,26 @@ implements TelegramActionResolver {
             ],
 
 
+
             [
                 "analytics",
                 "/analytics"
             ],
 
 
+
             [
                 "history",
                 "/history"
+            ],
+
+
+
+            [
+                "chart",
+                "/chart"
             ]
+
 
 
         ]);
@@ -63,12 +81,17 @@ implements TelegramActionResolver {
 
 
 
+
+
+
     resolve(
 
         actionId:
+
             string
 
-    ): string | undefined {
+    ):
+        string | undefined {
 
 
         return this.actions.get(
@@ -79,6 +102,7 @@ implements TelegramActionResolver {
 
 
     }
+
 
 
 }
