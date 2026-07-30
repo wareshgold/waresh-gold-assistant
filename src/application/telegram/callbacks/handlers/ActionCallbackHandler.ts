@@ -24,7 +24,6 @@ from "../../actions/TelegramActionExecutor";
 
 
 
-
 export class ActionCallbackHandler
 
 implements TelegramCallbackHandler {
@@ -33,15 +32,14 @@ implements TelegramCallbackHandler {
 
     constructor(
 
+
         private readonly actionExecutor:
+
             TelegramActionExecutor,
 
 
-        private readonly namespace:
-            string,
+        private readonly actionId:
 
-
-        private readonly action:
             string
 
 
@@ -56,20 +54,21 @@ implements TelegramCallbackHandler {
     canHandle(
 
         context:
+
             TelegramCallbackContext
 
     ): boolean {
 
 
-        return (
+        const callbackId =
 
-            context.callback.namespace === this.namespace
+            `${context.callback.namespace}.${context.callback.action}`;
 
-            &&
 
-            context.callback.action === this.action
 
-        );
+
+
+        return callbackId === this.actionId;
 
 
     }
@@ -85,6 +84,7 @@ implements TelegramCallbackHandler {
     async execute(
 
         context:
+
             TelegramCallbackContext
 
     ):
@@ -93,32 +93,32 @@ implements TelegramCallbackHandler {
 
 
 
-        const actionId =
-
-            `${this.namespace}.${this.action}`;
-
-
-
-
         return await this.actionExecutor.execute(
 
-            actionId,
+
+            this.actionId,
+
 
             {
 
+
                 userId:
+
                     context.userId,
 
 
                 username:
+
                     context.username,
 
 
                 firstName:
+
                     context.firstName,
 
 
             }
+
 
         );
 

@@ -53,6 +53,12 @@ from "../actions/TelegramActionExecutor";
 
 
 import {
+    TelegramActionCatalog,
+}
+from "../actions/TelegramActionCatalog";
+
+
+import {
     TelegramNavigationService,
 }
 from "../navigation/TelegramNavigationService";
@@ -67,6 +73,7 @@ from "../navigation/TelegramNavigationStateService";
 
 
 
+
 export class TelegramCallbackHandlerFactory {
 
 
@@ -76,11 +83,9 @@ export class TelegramCallbackHandlerFactory {
     static create(
 
 
-
         telegramActionExecutor:
 
             TelegramActionExecutor,
-
 
 
         telegramNavigationService:
@@ -88,11 +93,9 @@ export class TelegramCallbackHandlerFactory {
             TelegramNavigationService,
 
 
-
         telegramNavigationStateService:
 
             TelegramNavigationStateService
-
 
 
     ):
@@ -102,13 +105,31 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+        const actionHandlers =
+
+
+            TelegramActionCatalog.getAll()
+
+            .map(
+
+                action =>
+
+                    new ActionCallbackHandler(
+
+                        telegramActionExecutor,
+
+                        action.id
+
+                    )
+
+            );
+
+
+
+
+
+
         return [
-
-
-
-            /*
-             * Navigation
-             */
 
 
 
@@ -162,256 +183,7 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
-
-            /*
-             * Gold Actions
-             */
-
-
-
-            new ActionCallbackHandler(
-
-                telegramActionExecutor,
-
-                "gold",
-
-                "price"
-
-            ),
-
-
-
-            new ActionCallbackHandler(
-
-                telegramActionExecutor,
-
-                "gold",
-
-                "bubble"
-
-            ),
-
-
-
-            new ActionCallbackHandler(
-
-                telegramActionExecutor,
-
-                "gold",
-
-                "calculate"
-
-            ),
-
-
-
-            new ActionCallbackHandler(
-
-                telegramActionExecutor,
-
-                "gold",
-
-                "reverse-labor"
-
-            ),
-
-
-
-
-
-
-
-            /*
-             * Market Actions
-             */
-
-
-
-            new ActionCallbackHandler(
-
-                telegramActionExecutor,
-
-                "market",
-
-                "analytics"
-
-            ),
-
-
-
-            new ActionCallbackHandler(
-
-                telegramActionExecutor,
-
-                "market",
-
-                "history"
-
-            ),
-
-
-
-            new ActionCallbackHandler(
-
-                telegramActionExecutor,
-
-                "market",
-
-                "chart"
-
-            ),
-
-
-
-
-
-
-
-            /*
-             * Calculator Actions
-             */
-
-
-
-            new ActionCallbackHandler(
-
-                telegramActionExecutor,
-
-                "calculator",
-
-                "gold-price"
-
-            ),
-
-
-
-            new ActionCallbackHandler(
-
-                telegramActionExecutor,
-
-                "calculator",
-
-                "invoice"
-
-            ),
-
-
-
-            new ActionCallbackHandler(
-
-                telegramActionExecutor,
-
-                "calculator",
-
-                "formula"
-
-            ),
-
-
-
-            new ActionCallbackHandler(
-
-                telegramActionExecutor,
-
-                "calculator",
-
-                "reverse-labor"
-
-            ),
-
-
-
-
-
-
-
-            /*
-             * Assistant Actions
-             */
-
-
-
-            new ActionCallbackHandler(
-
-                telegramActionExecutor,
-
-                "assistant",
-
-                "ai"
-
-            ),
-
-
-
-            new ActionCallbackHandler(
-
-                telegramActionExecutor,
-
-                "assistant",
-
-                "learn"
-
-            ),
-
-
-
-            new ActionCallbackHandler(
-
-                telegramActionExecutor,
-
-                "assistant",
-
-                "help"
-
-            ),
-
-
-
-
-
-
-
-            /*
-             * Settings Actions
-             */
-
-
-
-            new ActionCallbackHandler(
-
-                telegramActionExecutor,
-
-                "settings",
-
-                "alerts"
-
-            ),
-
-
-
-            new ActionCallbackHandler(
-
-                telegramActionExecutor,
-
-                "settings",
-
-                "account"
-
-            ),
-
-
-
-            new ActionCallbackHandler(
-
-                telegramActionExecutor,
-
-                "settings",
-
-                "bot"
-
-            )
+            ...actionHandlers
 
 
 
@@ -420,8 +192,6 @@ export class TelegramCallbackHandlerFactory {
 
 
     }
-
-
 
 
 
