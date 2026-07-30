@@ -17,6 +17,7 @@ from "../commands/TelegramCommandContextBuilder";
 
 
 
+
 export interface TelegramActionExecutionContext {
 
     userId?: string;
@@ -38,6 +39,7 @@ export class TelegramActionExecutor {
 
 
     private readonly contextBuilder:
+
         TelegramCommandContextBuilder;
 
 
@@ -48,14 +50,17 @@ export class TelegramActionExecutor {
 
 
         private readonly resolver:
+
             TelegramActionResolver,
 
 
         private readonly router:
+
             TelegramCommandRouter,
 
 
         contextBuilder?:
+
             TelegramCommandContextBuilder
 
 
@@ -78,16 +83,14 @@ export class TelegramActionExecutor {
 
 
 
-
-
     async execute(
 
 
-        actionId:
-            string,
+        actionId:string,
 
 
         executionContext:
+
             TelegramActionExecutionContext = {}
 
 
@@ -108,7 +111,6 @@ export class TelegramActionExecutor {
 
 
 
-
         if (!command) {
 
 
@@ -120,9 +122,6 @@ export class TelegramActionExecutor {
 
 
         }
-
-
-
 
 
 
@@ -148,9 +147,7 @@ export class TelegramActionExecutor {
                 executionContext.firstName
 
 
-
             );
-
 
 
 
@@ -164,7 +161,6 @@ export class TelegramActionExecutor {
 
 
     }
-
 
 
 }
