@@ -66,12 +66,15 @@ from "../navigation/TelegramNavigationStateService";
 
 
 
+
 export class TelegramCallbackHandlerFactory {
 
 
 
 
+
     static create(
+
 
 
         telegramActionExecutor:
@@ -104,8 +107,9 @@ export class TelegramCallbackHandlerFactory {
 
 
             /*
-             * Navigation callbacks
+             * Navigation
              */
+
 
 
             new BackNavigationCallbackHandler(
@@ -160,9 +164,11 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
             /*
-             * Action Engine callbacks
+             * Gold Actions
              */
+
 
 
             new ActionCallbackHandler(
@@ -205,6 +211,28 @@ export class TelegramCallbackHandlerFactory {
 
                 telegramActionExecutor,
 
+                "gold",
+
+                "reverse-labor"
+
+            ),
+
+
+
+
+
+
+
+            /*
+             * Market Actions
+             */
+
+
+
+            new ActionCallbackHandler(
+
+                telegramActionExecutor,
+
                 "market",
 
                 "analytics"
@@ -237,10 +265,163 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
+
+
+            /*
+             * Calculator Actions
+             */
+
+
+
+            new ActionCallbackHandler(
+
+                telegramActionExecutor,
+
+                "calculator",
+
+                "gold-price"
+
+            ),
+
+
+
+            new ActionCallbackHandler(
+
+                telegramActionExecutor,
+
+                "calculator",
+
+                "invoice"
+
+            ),
+
+
+
+            new ActionCallbackHandler(
+
+                telegramActionExecutor,
+
+                "calculator",
+
+                "formula"
+
+            ),
+
+
+
+            new ActionCallbackHandler(
+
+                telegramActionExecutor,
+
+                "calculator",
+
+                "reverse-labor"
+
+            ),
+
+
+
+
+
+
+
+            /*
+             * Assistant Actions
+             */
+
+
+
+            new ActionCallbackHandler(
+
+                telegramActionExecutor,
+
+                "assistant",
+
+                "ai"
+
+            ),
+
+
+
+            new ActionCallbackHandler(
+
+                telegramActionExecutor,
+
+                "assistant",
+
+                "learn"
+
+            ),
+
+
+
+            new ActionCallbackHandler(
+
+                telegramActionExecutor,
+
+                "assistant",
+
+                "help"
+
+            ),
+
+
+
+
+
+
+
+            /*
+             * Settings Actions
+             */
+
+
+
+            new ActionCallbackHandler(
+
+                telegramActionExecutor,
+
+                "settings",
+
+                "alerts"
+
+            ),
+
+
+
+            new ActionCallbackHandler(
+
+                telegramActionExecutor,
+
+                "settings",
+
+                "account"
+
+            ),
+
+
+
+            new ActionCallbackHandler(
+
+                telegramActionExecutor,
+
+                "settings",
+
+                "bot"
+
+            )
+
+
+
         ];
 
 
+
     }
+
+
 
 
 

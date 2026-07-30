@@ -5,6 +5,7 @@ from "./TelegramActionResolver";
 
 
 
+
 export class TelegramCommandActionResolver
 
 implements TelegramActionResolver {
@@ -71,6 +72,76 @@ implements TelegramActionResolver {
             [
                 "market.chart",
                 "/chart"
+            ],
+
+
+
+            [
+                "calculator.gold-price",
+                "/calc"
+            ],
+
+
+
+            [
+                "calculator.invoice",
+                "/invoice"
+            ],
+
+
+
+            [
+                "calculator.formula",
+                "/formula"
+            ],
+
+
+
+            [
+                "calculator.reverse-labor",
+                "/reverse-labor"
+            ],
+
+
+
+            [
+                "assistant.ai",
+                "/help"
+            ],
+
+
+
+            [
+                "assistant.learn",
+                "/help"
+            ],
+
+
+
+            [
+                "assistant.help",
+                "/help"
+            ],
+
+
+
+            [
+                "settings.alerts",
+                "/help"
+            ],
+
+
+
+            [
+                "settings.account",
+                "/help"
+            ],
+
+
+
+            [
+                "settings.bot",
+                "/help"
             ]
 
 
@@ -79,6 +150,7 @@ implements TelegramActionResolver {
 
 
     }
+
 
 
 

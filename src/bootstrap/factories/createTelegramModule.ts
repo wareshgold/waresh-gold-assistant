@@ -116,6 +116,7 @@ from "../../shared/config/env";
 
 
 
+
 interface Dependencies {
 
     getGoldPriceUseCase:any;
@@ -137,6 +138,7 @@ interface Dependencies {
     profileStore:any;
 
 }
+
 
 
 
@@ -201,6 +203,7 @@ export function createTelegramModule(
 
 
 
+
     const marketAnalyticsMessageFormatter =
 
 
@@ -211,6 +214,7 @@ export function createTelegramModule(
 
 
         );
+
 
 
 
@@ -234,6 +238,7 @@ export function createTelegramModule(
 
 
 
+
     const telegramNavigationService:
 
 
@@ -241,6 +246,7 @@ export function createTelegramModule(
 
 
             new DefaultTelegramNavigationService();
+
 
 
 
@@ -258,6 +264,7 @@ export function createTelegramModule(
 
 
         );
+
 
 
 
@@ -303,6 +310,7 @@ export function createTelegramModule(
 
 
 
+
     const actionResolver =
 
 
@@ -322,6 +330,7 @@ export function createTelegramModule(
 
 
         );
+
 
 
 
@@ -351,6 +360,7 @@ export function createTelegramModule(
 
 
 
+
     const commandService =
 
 
@@ -371,6 +381,7 @@ export function createTelegramModule(
 
 
 
+
     const messageHandler =
 
 
@@ -384,6 +395,7 @@ export function createTelegramModule(
 
 
         );
+
 
 
 
@@ -414,6 +426,7 @@ export function createTelegramModule(
 
 
 
+
     const commandMenuService =
 
 
@@ -432,26 +445,25 @@ export function createTelegramModule(
 
 
 
+
+
     const callbackRouter =
 
 
         TelegramCallbackRegistry.create(
 
 
-
             telegramActionExecutor,
-
 
 
             telegramNavigationService,
 
 
-
             telegramNavigationStateService
 
 
-
         );
+
 
 
 
@@ -472,6 +484,7 @@ export function createTelegramModule(
 
 
         );
+
 
 
 
@@ -511,6 +524,7 @@ export function createTelegramModule(
 
 
 
+
     const webhookController =
 
 
@@ -530,6 +544,7 @@ export function createTelegramModule(
 
 
         );
+
 
 
 
