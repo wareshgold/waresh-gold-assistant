@@ -70,10 +70,13 @@ export class TelegramCommandRouter {
 
 
         return handler.execute(
+
             context
+
         );
 
 
     }
+
 
 }

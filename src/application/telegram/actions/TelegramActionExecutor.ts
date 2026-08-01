@@ -151,6 +151,16 @@ export class TelegramActionExecutor {
 
 
 
+        context.metadata = {
+
+            ...(context.metadata ?? {}),
+
+            actionId
+
+        };
+
+
+
 
 
         return this.router.execute(

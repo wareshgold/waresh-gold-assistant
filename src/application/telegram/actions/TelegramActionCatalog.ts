@@ -42,12 +42,6 @@ export class TelegramActionCatalog {
 
 
         {
-            id:"gold.calculate",
-            command:"/calc"
-        },
-
-
-        {
             id:"gold.reverse-labor",
             command:"/reverse-labor"
         },
@@ -72,12 +66,10 @@ export class TelegramActionCatalog {
         },
 
 
-
         {
             id:"calculator.gold-price",
             command:"/calc"
         },
-
 
         {
             id:"calculator.invoice",

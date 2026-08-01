@@ -19,4 +19,7 @@ export interface TelegramCommandContext {
     arguments: string[];
 
 
+    metadata?: Record<string, unknown>;
+
+
 }
