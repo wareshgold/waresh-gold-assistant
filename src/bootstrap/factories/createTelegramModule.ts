@@ -109,9 +109,16 @@ import { TelegramTextActionResolver }
 from "../../application/telegram/actions/TelegramTextActionResolver";
 
 
+import { MarketChartRenderer }
+from "../../application/market/chart/MarketChartRenderer";
+
+
+import { MarketChartImageGenerator }
+from "../../infrastructure/chart/MarketChartImageGenerator";
+
+
 import { AppEnv }
 from "../../shared/config/env";
-
 
 
 
@@ -143,8 +150,6 @@ interface Dependencies {
 
 
 
-
-
 export function createTelegramModule(
 
     env: AppEnv,
@@ -152,7 +157,6 @@ export function createTelegramModule(
     dependencies: Dependencies
 
 ) {
-
 
 
     const conversationManager =
@@ -201,9 +205,6 @@ export function createTelegramModule(
 
 
 
-
-
-
     const marketAnalyticsMessageFormatter =
 
 
@@ -214,8 +215,6 @@ export function createTelegramModule(
 
 
         );
-
-
 
 
 
@@ -236,6 +235,21 @@ export function createTelegramModule(
 
 
 
+    const marketChartRenderer =
+
+
+        new MarketChartRenderer();
+
+
+
+
+
+    const marketChartImageGenerator =
+
+
+        new MarketChartImageGenerator();
+
+
 
 
 
@@ -251,9 +265,6 @@ export function createTelegramModule(
 
 
 
-
-
-
     const telegramNavigationStateService =
 
 
@@ -264,9 +275,6 @@ export function createTelegramModule(
 
 
         );
-
-
-
 
 
 
@@ -301,9 +309,6 @@ export function createTelegramModule(
 
 
 
-
-
-
     const actionResolver =
 
 
@@ -328,10 +333,6 @@ export function createTelegramModule(
 
 
 
-
-
-
-
     const telegramActionExecutor =
 
 
@@ -345,10 +346,6 @@ export function createTelegramModule(
 
 
         );
-
-
-
-
 
 
 
@@ -372,9 +369,6 @@ export function createTelegramModule(
 
 
 
-
-
-
     const messageHandler =
 
 
@@ -393,9 +387,6 @@ export function createTelegramModule(
 
 
 
-
-
-
     const botClient =
 
 
@@ -404,17 +395,12 @@ export function createTelegramModule(
 
             ? new TelegramHttpBotClient(
 
-
                 env.TELEGRAM_BOT_TOKEN
-
 
             )
 
 
             : new FakeTelegramBotClient();
-
-
-
 
 
 
@@ -435,11 +421,6 @@ export function createTelegramModule(
 
 
 
-
-
-
-
-
     const callbackRouter =
 
 
@@ -452,13 +433,19 @@ export function createTelegramModule(
             telegramNavigationService,
 
 
-            telegramNavigationStateService
+            telegramNavigationStateService,
+
+
+            dependencies.getMarketChartUseCase,
+
+
+            marketChartRenderer,
+
+
+            marketChartImageGenerator
 
 
         );
-
-
-
 
 
 
@@ -477,9 +464,6 @@ export function createTelegramModule(
 
 
         );
-
-
-
 
 
 
@@ -515,9 +499,6 @@ export function createTelegramModule(
 
 
 
-
-
-
     const webhookController =
 
 
@@ -537,9 +518,6 @@ export function createTelegramModule(
 
 
         );
-
-
-
 
 
 
@@ -573,7 +551,6 @@ export function createTelegramModule(
 
 
     };
-
 
 
 }

@@ -47,6 +47,12 @@ from "./handlers/BackNavigationCallbackHandler";
 
 
 import {
+    GetMarketChartCallbackHandler,
+}
+from "./handlers/GetMarketChartCallbackHandler";
+
+
+import {
     TelegramActionExecutor,
 }
 from "../actions/TelegramActionExecutor";
@@ -70,12 +76,27 @@ import {
 from "../navigation/TelegramNavigationStateService";
 
 
+import {
+    GetMarketChartUseCase,
+}
+from "../../market/GetMarketChartUseCase";
+
+
+import {
+    MarketChartRenderer,
+}
+from "../../market/chart/MarketChartRenderer";
+
+
+import {
+    MarketChartImageGenerator,
+}
+from "../../../infrastructure/chart/MarketChartImageGenerator";
 
 
 
 
 export class TelegramCallbackHandlerFactory {
-
 
 
 
@@ -95,7 +116,23 @@ export class TelegramCallbackHandlerFactory {
 
         telegramNavigationStateService:
 
-            TelegramNavigationStateService
+            TelegramNavigationStateService,
+
+
+        getMarketChartUseCase:
+
+            GetMarketChartUseCase,
+
+
+        marketChartRenderer:
+
+            MarketChartRenderer,
+
+
+        marketChartImageGenerator:
+
+            MarketChartImageGenerator
+
 
 
     ):
@@ -104,11 +141,18 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
         const actionHandlers =
 
 
             TelegramActionCatalog.getAll()
+
+            .filter(
+
+                action =>
+
+                    action.id !== "market.chart"
+
+            )
 
             .map(
 
@@ -123,7 +167,6 @@ export class TelegramCallbackHandlerFactory {
                     )
 
             );
-
 
 
 
@@ -183,16 +226,26 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+            new GetMarketChartCallbackHandler(
+
+                getMarketChartUseCase,
+
+                marketChartRenderer,
+
+                marketChartImageGenerator,
+
+                telegramNavigationService
+
+            ),
+
+
+
             ...actionHandlers
 
 
 
         ];
 
-
-
     }
-
-
 
 }

@@ -28,13 +28,28 @@ import {
 from "../navigation/TelegramNavigationStateService";
 
 
+import {
+    GetMarketChartUseCase,
+}
+from "../../market/GetMarketChartUseCase";
+
+
+import {
+    MarketChartRenderer,
+}
+from "../../market/chart/MarketChartRenderer";
+
+
+import {
+    MarketChartImageGenerator,
+}
+from "../../../infrastructure/chart/MarketChartImageGenerator";
+
+
 
 
 
 export class TelegramCallbackRegistry {
-
-
-
 
 
 
@@ -56,16 +71,31 @@ export class TelegramCallbackRegistry {
 
         telegramNavigationStateService:
 
-            TelegramNavigationStateService
+            TelegramNavigationStateService,
+
+
+
+        getMarketChartUseCase:
+
+            GetMarketChartUseCase,
+
+
+
+        marketChartRenderer:
+
+            MarketChartRenderer,
+
+
+
+        marketChartImageGenerator:
+
+            MarketChartImageGenerator
 
 
 
     ):
 
         TelegramCallbackRouter {
-
-
-
 
 
 
@@ -85,14 +115,23 @@ export class TelegramCallbackRegistry {
 
 
 
-                telegramNavigationStateService
+                telegramNavigationStateService,
+
+
+
+                getMarketChartUseCase,
+
+
+
+                marketChartRenderer,
+
+
+
+                marketChartImageGenerator
 
 
 
             );
-
-
-
 
 
 
@@ -105,13 +144,7 @@ export class TelegramCallbackRegistry {
         );
 
 
-
     }
-
-
-
-
-
 
 
 }
