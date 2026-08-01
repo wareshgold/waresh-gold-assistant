@@ -46,8 +46,41 @@ export class MarketSnapshotService {
 
 
 
+
+        const latest =
+            await this.repository.getLatest();
+
+
+
+
+        if (
+
+            latest &&
+
+            this.isDuplicate(
+
+                latest,
+
+                snapshot
+
+            )
+
+        ) {
+
+
+            return latest;
+
+
+        }
+
+
+
+
+
         await this.repository.save(
+
             snapshot
+
         );
 
 
@@ -55,6 +88,9 @@ export class MarketSnapshotService {
         return snapshot;
 
     }
+
+
+
 
 
 
@@ -74,6 +110,8 @@ export class MarketSnapshotService {
 
 
 
+
+
     async getHistory(
 
         limit?: number
@@ -86,6 +124,88 @@ export class MarketSnapshotService {
             .getHistory(limit);
 
     }
+
+
+
+
+
+
+
+
+
+    private isDuplicate(
+
+        previous:
+            MarketSnapshot,
+
+        current:
+            MarketSnapshot
+
+    ):
+
+        boolean {
+
+
+
+        const samePrice =
+
+
+            previous.gold18Price ===
+                current.gold18Price
+
+
+            &&
+
+
+            previous.currencyPrice ===
+                current.currencyPrice
+
+
+            &&
+
+
+            previous.ouncePrice ===
+                current.ouncePrice;
+
+
+
+        if (!samePrice) {
+
+
+            return false;
+
+        }
+
+
+
+
+        const timeDifference =
+
+
+            Math.abs(
+
+                current.capturedAt.getTime()
+
+                -
+
+                previous.capturedAt.getTime()
+
+            );
+
+
+
+
+        return (
+
+            timeDifference <
+
+            5 * 60 * 1000
+
+        );
+
+
+    }
+
 
 
 }
