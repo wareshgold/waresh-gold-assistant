@@ -144,32 +144,33 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
         const actionHandlers =
 
 
-            TelegramActionCatalog.getAll()
+            TelegramActionCatalog
 
-            .filter(
+                .getCallbackActions()
 
-                action =>
+                .map(
 
-                    action.id !== "market.chart"
 
-            )
+                    action =>
 
-            .map(
 
-                action =>
+                        new ActionCallbackHandler(
 
-                    new ActionCallbackHandler(
+                            telegramActionExecutor,
 
-                        telegramActionExecutor,
+                            action.id
 
-                        action.id
+                        )
 
-                    )
 
-            );
+                );
+
+
 
 
 

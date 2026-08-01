@@ -11,6 +11,12 @@ export interface TelegramActionDefinition {
         string;
 
 
+    enabled?: boolean;
+
+
+    callbackEnabled?: boolean;
+
+
 }
 
 
@@ -33,97 +39,113 @@ export class TelegramActionCatalog {
 
         {
             id: "gold.price",
-            command: "/price"
+            command: "/price",
+            callbackEnabled: true
         },
 
 
         {
             id: "gold.bubble",
-            command: "/bubble"
+            command: "/bubble",
+            callbackEnabled: true
         },
 
 
         {
             id: "gold.reverse-labor",
-            command: "/reverse-labor"
+            command: "/reverse-labor",
+            callbackEnabled: true
         },
 
 
         {
             id: "market.analytics",
-            command: "/analytics"
+            command: "/analytics",
+            callbackEnabled: true
         },
 
 
         {
             id: "market.history",
-            command: "/history"
+            command: "/history",
+            callbackEnabled: true
         },
 
 
         {
             id: "market.chart",
-            command: "/chart"
+            command: "/chart",
+            callbackEnabled: false
         },
 
 
         {
             id: "calculator.gold-price",
-            command: "/calc"
+            command: "/calc",
+            callbackEnabled: true
         },
 
 
         {
             id: "calculator.invoice",
-            command: "/invoice"
+            command: "/invoice",
+            callbackEnabled: true
         },
 
 
         {
             id: "calculator.formula",
-            command: "/formula"
+            command: "/formula",
+            callbackEnabled: true
         },
 
 
         {
             id: "calculator.reverse-labor",
-            command: "/reverse-labor"
+            command: "/reverse-labor",
+            callbackEnabled: true
         },
 
 
         {
             id: "assistant.ai",
-            command: "/help"
+            command: "/help",
+            callbackEnabled: true
         },
 
 
         {
             id: "assistant.learn",
-            command: "/help"
+            command: "/help",
+            callbackEnabled: true
         },
 
 
         {
             id: "assistant.help",
-            command: "/help"
+            command: "/help",
+            callbackEnabled: true
         },
 
 
         {
             id: "settings.alerts",
-            command: "/help"
+            command: "/help",
+            callbackEnabled: true
         },
 
 
         {
             id: "settings.account",
-            command: "/help"
+            command: "/help",
+            callbackEnabled: true
         },
 
 
         {
             id: "settings.bot",
-            command: "/help"
+            command: "/help",
+            callbackEnabled: true
         }
 
 
@@ -145,6 +167,28 @@ export class TelegramActionCatalog {
 
 
     }
+
+
+
+
+
+
+    static getCallbackActions():
+
+        TelegramActionDefinition[] {
+
+
+        return this.actions.filter(
+
+            action =>
+
+                action.callbackEnabled === true
+
+        );
+
+
+    }
+
 
 
 

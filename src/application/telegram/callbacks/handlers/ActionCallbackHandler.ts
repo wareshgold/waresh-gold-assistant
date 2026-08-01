@@ -55,7 +55,6 @@ implements TelegramCallbackHandler {
 
 
 
-
     canHandle(
 
         context:
@@ -70,8 +69,17 @@ implements TelegramCallbackHandler {
 
         const callbackAction =
 
-
             `${context.callback.namespace}.${context.callback.action}`;
+
+
+
+
+
+        const normalizedData =
+
+            context.data
+
+                .replace(":", ".");
 
 
 
@@ -83,7 +91,7 @@ implements TelegramCallbackHandler {
 
             ||
 
-            context.data.replace(":", ".") === this.actionId
+            normalizedData === this.actionId
 
         );
 
