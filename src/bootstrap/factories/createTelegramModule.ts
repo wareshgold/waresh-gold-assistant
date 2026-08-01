@@ -277,30 +277,23 @@ export function createTelegramModule(
 
         TelegramCommandRegistry.create(
 
-
             dependencies.getGoldPriceUseCase,
-
 
             dependencies.getGoldBubbleUseCase,
 
-
             dependencies.getMarketAnalyticsUseCase,
-
 
             dependencies.getMarketHistoryUseCase,
 
-
             dependencies.calculateGoldFormulaUseCase,
 
+            dependencies.calculateReverseGoldUseCase,
 
             dependencies.sessionStore,
 
-
             dependencies.profileStore,
 
-
             marketBubbleMessageFormatter
-
 
         );
 

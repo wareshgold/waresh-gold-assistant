@@ -314,19 +314,21 @@ export class ApplicationContainer {
 
                 getGoldPriceUseCase,
 
-                getGoldBubbleUseCase,
+                    getGoldBubbleUseCase,
 
-                getMarketAnalyticsUseCase,
+                    getMarketAnalyticsUseCase,
 
-                getMarketHistoryUseCase,
+                    getMarketHistoryUseCase,
 
-                calculateGoldFormulaUseCase,
+                    calculateGoldFormulaUseCase,
 
-                sessionStore,
+                    this.calculateReverseGoldUseCase,
 
-                profileStore,
+                    sessionStore,
 
-                marketBubbleMessageFormatter
+                    profileStore,
+
+                    marketBubbleMessageFormatter
 
             );
 

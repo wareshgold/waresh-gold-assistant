@@ -34,6 +34,10 @@ import { CalculateGoldCommandHandler }
 from "./handlers/CalculateGoldCommandHandler";
 
 
+import { ReverseGoldCommandHandler }
+from "./handlers/ReverseGoldCommandHandler";
+
+
 import { GetGoldPriceUseCase }
 from "../../usecases/GetGoldPriceUseCase";
 
@@ -52,6 +56,10 @@ from "../../market/GetMarketHistoryUseCase";
 
 import { CalculateGoldFormulaUseCase }
 from "../../gold/CalculateGoldFormulaUseCase";
+
+
+import { CalculateReverseGoldUseCase }
+from "../../gold/CalculateReverseGoldUseCase";
 
 
 import { TelegramSessionStore }
@@ -92,56 +100,43 @@ from "../presentation/TelegramNumberFormatter";
 
 
 
-
-
-
-
 export class TelegramCommandRegistry {
-
-
-
-
-
 
 
 
     static create(
 
 
-
         getGoldPriceUseCase:
             GetGoldPriceUseCase,
-
 
 
         getGoldBubbleUseCase:
             GetGoldBubbleUseCase,
 
 
-
         getMarketAnalyticsUseCase:
             GetMarketAnalyticsUseCase,
-
 
 
         getMarketHistoryUseCase:
             GetMarketHistoryUseCase,
 
 
-
         calculateGoldFormulaUseCase:
             CalculateGoldFormulaUseCase,
 
+
+        calculateReverseGoldUseCase:
+            CalculateReverseGoldUseCase,
 
 
         sessionStore:
             TelegramSessionStore,
 
 
-
         profileStore:
             TelegramUserProfileStore,
-
 
 
         marketBubbleMessageFormatter:
@@ -153,9 +148,6 @@ export class TelegramCommandRegistry {
 
 
 
-
-
-
         const welcomeMessageProvider =
 
             new RandomWelcomeMessageProvider();
@@ -163,13 +155,9 @@ export class TelegramCommandRegistry {
 
 
 
-
-
         const menuRegistry =
 
             new MemoryTelegramMenuRegistry();
-
-
 
 
 
@@ -185,15 +173,11 @@ export class TelegramCommandRegistry {
 
 
 
-
-
         telegramMenuService.registerMenu(
 
             TelegramMainMenu
 
         );
-
-
 
 
 
@@ -205,13 +189,9 @@ export class TelegramCommandRegistry {
 
 
 
-
-
         const telegramNumberFormatter =
 
             new TelegramNumberFormatter();
-
-
 
 
 
@@ -222,48 +202,27 @@ export class TelegramCommandRegistry {
 
 
 
-
-
-
-
                 new StartCommandHandler(
-
 
                     welcomeMessageProvider,
 
-
                     telegramMenuService,
-
 
                     new TelegramInlineKeyboardBuilder(),
 
-
                     profileStore
 
-
                 ),
-
-
-
-
-
 
 
 
                 new HelpCommandHandler(
 
-
                     () =>
 
                         commandRouter.getHandlers()
 
-
                 ),
-
-
-
-
-
 
 
 
@@ -272,11 +231,6 @@ export class TelegramCommandRegistry {
                     getGoldPriceUseCase
 
                 ),
-
-
-
-
-
 
 
 
@@ -290,21 +244,11 @@ export class TelegramCommandRegistry {
 
 
 
-
-
-
-
-
                 new GetMarketAnalyticsCommandHandler(
 
                     getMarketAnalyticsUseCase
 
                 ),
-
-
-
-
-
 
 
 
@@ -316,11 +260,6 @@ export class TelegramCommandRegistry {
 
 
 
-
-
-
-
-
                 new CalculateGoldCommandHandler(
 
                     calculateGoldFormulaUseCase,
@@ -329,18 +268,19 @@ export class TelegramCommandRegistry {
 
                     telegramNumberFormatter
 
+                ),
+
+
+
+                new ReverseGoldCommandHandler(
+
+                    sessionStore
+
                 )
 
 
 
-
-
-
-
-
             ];
-
-
 
 
 
@@ -356,17 +296,11 @@ export class TelegramCommandRegistry {
 
 
 
-
-
         return commandRouter;
 
 
 
     }
-
-
-
-
 
 
 
