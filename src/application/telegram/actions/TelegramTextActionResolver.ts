@@ -4,81 +4,19 @@ import {
 from "./TelegramActionResolver";
 
 
+import {
+    TelegramActionCatalog,
+}
+from "./TelegramActionCatalog";
+
+
+
 
 
 
 export class TelegramTextActionResolver
 
 implements TelegramActionResolver {
-
-
-
-
-    private readonly actions:
-
-        Map<string, string>;
-
-
-
-
-
-
-    constructor() {
-
-
-        this.actions = new Map([
-
-
-
-            [
-                "price",
-                "/price"
-            ],
-
-
-
-            [
-                "bubble",
-                "/bubble"
-            ],
-
-
-
-            [
-                "calc",
-                "/calc"
-            ],
-
-
-
-            [
-                "analytics",
-                "/analytics"
-            ],
-
-
-
-            [
-                "history",
-                "/history"
-            ],
-
-
-
-            [
-                "chart",
-                "/chart"
-            ]
-
-
-
-        ]);
-
-
-    }
-
-
-
 
 
 
@@ -91,17 +29,103 @@ implements TelegramActionResolver {
             string
 
     ):
+
         string | undefined {
 
 
-        return this.actions.get(
 
-            actionId
+        const normalizedId =
 
-        );
+            actionId.includes(".")
+
+                ? actionId
+
+                : this.normalizeLegacyActionId(actionId);
+
+
+
+
+        return TelegramActionCatalog
+
+            .find(normalizedId)
+
+            ?.command;
 
 
     }
+
+
+
+
+
+
+
+
+    private normalizeLegacyActionId(
+
+        actionId:
+
+            string
+
+    ):
+
+        string {
+
+
+
+        const mapping:
+
+            Record<string, string> = {
+
+
+
+                price:
+
+                    "gold.price",
+
+
+
+                bubble:
+
+                    "gold.bubble",
+
+
+
+                calc:
+
+                    "calculator.gold-price",
+
+
+
+                analytics:
+
+                    "market.analytics",
+
+
+
+                history:
+
+                    "market.history",
+
+
+
+                chart:
+
+                    "market.chart"
+
+
+            };
+
+
+
+
+        return mapping[actionId] ?? actionId;
+
+
+    }
+
+
+
 
 
 
