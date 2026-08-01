@@ -1,17 +1,42 @@
 export enum CallbackNamespace {
-  GOLD = "gold",
-  MARKET = "market",
-  CALCULATOR = "calculator",
-  HELP = "help",
-  SYSTEM = "system",
+
+    MENU = "menu",
+
+    GOLD = "gold",
+
+    MARKET = "market",
+
+    CALCULATOR = "calculator",
+
+    ASSISTANT = "assistant",
+
+    SETTINGS = "settings",
+
+    SYSTEM = "system",
+
 }
+
+
 
 
 export interface CallbackAction {
 
-  namespace: CallbackNamespace;
 
-  action: string;
+    namespace:
 
-  payload?: string;
+        CallbackNamespace;
+
+
+
+    action:
+
+        string;
+
+
+
+    payload?:
+
+        string;
+
+
 }

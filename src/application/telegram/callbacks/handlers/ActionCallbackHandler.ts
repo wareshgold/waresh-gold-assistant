@@ -24,6 +24,8 @@ from "../../actions/TelegramActionExecutor";
 
 
 
+
+
 export class ActionCallbackHandler
 
 implements TelegramCallbackHandler {
@@ -51,24 +53,37 @@ implements TelegramCallbackHandler {
 
 
 
+
     canHandle(
 
         context:
 
             TelegramCallbackContext
 
-    ): boolean {
+    ):
 
-
-        const callbackId =
-
-            `${context.callback.namespace}.${context.callback.action}`;
+        boolean {
 
 
 
+        const callbackAction =
 
 
-        return callbackId === this.actionId;
+            `${context.callback.namespace}:${context.callback.action}`;
+
+
+
+
+
+        return (
+
+            callbackAction === this.actionId
+
+            ||
+
+            context.data === this.actionId
+
+        );
 
 
     }
@@ -93,7 +108,7 @@ implements TelegramCallbackHandler {
 
 
 
-        return await this.actionExecutor.execute(
+        return this.actionExecutor.execute(
 
 
             this.actionId,
@@ -120,6 +135,7 @@ implements TelegramCallbackHandler {
                 args:
 
                     []
+
 
             }
 

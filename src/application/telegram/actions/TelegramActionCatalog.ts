@@ -17,6 +17,8 @@ export interface TelegramActionDefinition {
 
 
 
+
+
 export class TelegramActionCatalog {
 
 
@@ -30,105 +32,102 @@ export class TelegramActionCatalog {
 
 
         {
-            id:"gold.price",
-            command:"/price"
+            id: "gold.price",
+            command: "/price"
         },
 
 
         {
-            id:"gold.bubble",
-            command:"/bubble"
+            id: "gold.bubble",
+            command: "/bubble"
         },
 
 
         {
-            id:"gold.reverse-labor",
-            command:"/reverse-labor"
-        },
-
-
-
-        {
-            id:"market.analytics",
-            command:"/analytics"
+            id: "gold.reverse-labor",
+            command: "/reverse-labor"
         },
 
 
         {
-            id:"market.history",
-            command:"/history"
+            id: "market.analytics",
+            command: "/analytics"
         },
 
 
         {
-            id:"market.chart",
-            command:"/chart"
+            id: "market.history",
+            command: "/history"
         },
 
 
         {
-            id:"calculator.gold-price",
-            command:"/calc"
-        },
-
-        {
-            id:"calculator.invoice",
-            command:"/invoice"
+            id: "market.chart",
+            command: "/chart"
         },
 
 
         {
-            id:"calculator.formula",
-            command:"/formula"
+            id: "calculator.gold-price",
+            command: "/calc"
         },
 
 
         {
-            id:"calculator.reverse-labor",
-            command:"/reverse-labor"
-        },
-
-
-
-        {
-            id:"assistant.ai",
-            command:"/help"
+            id: "calculator.invoice",
+            command: "/invoice"
         },
 
 
         {
-            id:"assistant.learn",
-            command:"/help"
+            id: "calculator.formula",
+            command: "/formula"
         },
 
 
         {
-            id:"assistant.help",
-            command:"/help"
-        },
-
-
-
-        {
-            id:"settings.alerts",
-            command:"/help"
+            id: "calculator.reverse-labor",
+            command: "/reverse-labor"
         },
 
 
         {
-            id:"settings.account",
-            command:"/help"
+            id: "assistant.ai",
+            command: "/help"
         },
 
 
         {
-            id:"settings.bot",
-            command:"/help"
+            id: "assistant.learn",
+            command: "/help"
+        },
+
+
+        {
+            id: "assistant.help",
+            command: "/help"
+        },
+
+
+        {
+            id: "settings.alerts",
+            command: "/help"
+        },
+
+
+        {
+            id: "settings.account",
+            command: "/help"
+        },
+
+
+        {
+            id: "settings.bot",
+            command: "/help"
         }
 
 
     ];
-
 
 
 
@@ -140,7 +139,9 @@ export class TelegramActionCatalog {
         TelegramActionDefinition[] {
 
 
-        return this.actions;
+        return [
+            ...this.actions
+        ];
 
 
     }
@@ -166,7 +167,9 @@ export class TelegramActionCatalog {
 
         return this.actions.find(
 
-            item => item.id === id
+            action =>
+
+                action.id === id
 
         );
 

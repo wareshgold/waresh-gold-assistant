@@ -96,7 +96,10 @@ from "../../../infrastructure/chart/MarketChartImageGenerator";
 
 
 
+
+
 export class TelegramCallbackHandlerFactory {
+
 
 
 
@@ -134,10 +137,10 @@ export class TelegramCallbackHandlerFactory {
             MarketChartImageGenerator
 
 
-
     ):
 
         TelegramCallbackHandler[] {
+
 
 
 
@@ -167,6 +170,7 @@ export class TelegramCallbackHandlerFactory {
                     )
 
             );
+
 
 
 
@@ -243,9 +247,10 @@ export class TelegramCallbackHandlerFactory {
             ...actionHandlers
 
 
-
         ];
 
+
     }
+
 
 }
