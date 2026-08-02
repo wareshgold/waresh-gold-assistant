@@ -57,6 +57,7 @@ implements TelegramConversationFlow {
 
 
 
+
     canHandle(
 
         state: string
@@ -108,7 +109,7 @@ implements TelegramConversationFlow {
 
         const session =
 
-            await this.sessionStore.get(
+            await this.sessionStore.get<GoldCalculationSessionData>(
 
                 userId
 
@@ -151,6 +152,7 @@ implements TelegramConversationFlow {
 
 
 
+
         if (
 
             Number.isNaN(value)
@@ -179,8 +181,7 @@ implements TelegramConversationFlow {
 
         const data =
 
-            session.data as unknown as GoldCalculationSessionData;
-
+            session.data;
 
 
 
@@ -227,6 +228,7 @@ implements TelegramConversationFlow {
 
 
         }
+
 
 
 
@@ -297,6 +299,8 @@ ${result.result?.finalPrice}
 
 
 
+
+
         session.state =
 
             result.nextStep!;
@@ -305,13 +309,14 @@ ${result.result?.finalPrice}
 
         session.data =
 
-            data as unknown as Record<string, unknown>;
+            data;
 
 
 
         session.updatedAt =
 
             Date.now();
+
 
 
 
@@ -367,6 +372,7 @@ ${result.result?.finalPrice}
                     "وزن طلا را وارد کنید:"
 
             };
+
 
 
 
