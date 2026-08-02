@@ -28,6 +28,19 @@ import {
 from "../../presentation/TelegramNumberFormatter";
 
 
+import {
+    GoldCalculationSessionData
+}
+from "../../../gold/workflows/GoldCalculationSessionData";
+
+
+import {
+    GoldCalculationStep
+}
+from "../../../gold/workflows/GoldCalculationStep";
+
+
+
 
 
 export class CalculateGoldCommandHandler
@@ -126,6 +139,7 @@ implements TelegramCommandHandler {
 
 
 
+
     async execute(
 
         context:
@@ -147,6 +161,8 @@ implements TelegramCommandHandler {
 
 
 
+
+
         if (
 
             context.arguments.length === 0
@@ -158,6 +174,39 @@ implements TelegramCommandHandler {
             if (this.sessionStore) {
 
 
+                const sessionData:
+
+                    GoldCalculationSessionData = {
+
+
+                        weight:
+                            null,
+
+
+                        goldPrice:
+                            null,
+
+
+                        laborPercent:
+                            null,
+
+
+                        profitPercent:
+                            null,
+
+
+                        taxPercent:
+                            null,
+
+
+                        discount:
+                            null
+
+
+                    };
+
+
+
                 await this.sessionStore.save({
 
 
@@ -166,13 +215,13 @@ implements TelegramCommandHandler {
 
                     state:
 
-                        "GOLD_CALCULATION_WAITING_WEIGHT",
+                        GoldCalculationStep.WAITING_WEIGHT,
 
 
 
                     data:
 
-                        {},
+                        sessionData,
 
 
 
@@ -185,6 +234,7 @@ implements TelegramCommandHandler {
 
 
             }
+
 
 
 
@@ -209,6 +259,8 @@ implements TelegramCommandHandler {
 
 
 
+
+
         const values =
 
             context.arguments.map(
@@ -216,6 +268,7 @@ implements TelegramCommandHandler {
                 Number
 
             );
+
 
 
 
@@ -263,6 +316,8 @@ implements TelegramCommandHandler {
 
 
         }
+
+
 
 
 
@@ -321,6 +376,7 @@ implements TelegramCommandHandler {
 
 
             });
+
 
 
 
