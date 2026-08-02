@@ -1,15 +1,22 @@
 export interface GoldCalculationSessionData {
 
-    weight?: number;
 
-    goldPrice?: number;
+    weight: number | null;
 
-    laborPercent?: number;
 
-    profitPercent?: number;
+    goldPrice: number | null;
 
-    taxPercent?: number;
 
-    discount?: number;
+    laborPercent: number | null;
+
+
+    profitPercent: number | null;
+
+
+    taxPercent: number | null;
+
+
+    discount: number | null;
+
 
 }

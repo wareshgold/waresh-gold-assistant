@@ -15,6 +15,8 @@ export interface GoldCalculationValidationResult {
 
 
 
+
+
 export class GoldCalculationValidator {
 
 
@@ -35,19 +37,17 @@ export class GoldCalculationValidator {
 
         if (
 
-            data.weight === undefined ||
+            data.weight === null
+
+            ||
 
             data.weight <= 0
 
         ) {
 
-
             errors.push(
-
                 "Invalid weight"
-
             );
-
 
         }
 
@@ -55,21 +55,20 @@ export class GoldCalculationValidator {
 
 
 
+
         if (
 
-            data.goldPrice === undefined ||
+            data.goldPrice === null
+
+            ||
 
             data.goldPrice <= 0
 
         ) {
 
-
             errors.push(
-
                 "Invalid gold price"
-
             );
-
 
         }
 
@@ -77,21 +76,20 @@ export class GoldCalculationValidator {
 
 
 
+
         if (
 
-            data.laborPercent === undefined ||
+            data.laborPercent === null
+
+            ||
 
             data.laborPercent < 0
 
         ) {
 
-
             errors.push(
-
                 "Invalid labor percent"
-
             );
-
 
         }
 
@@ -99,23 +97,23 @@ export class GoldCalculationValidator {
 
 
 
+
         if (
 
-            data.profitPercent === undefined ||
+            data.profitPercent === null
+
+            ||
 
             data.profitPercent < 0
 
         ) {
 
-
             errors.push(
-
                 "Invalid profit percent"
-
             );
 
-
         }
+
 
 
 
@@ -123,21 +121,41 @@ export class GoldCalculationValidator {
 
         if (
 
-            data.taxPercent !== undefined &&
+            data.taxPercent !== null
+
+            &&
 
             data.taxPercent < 0
 
         ) {
 
-
             errors.push(
-
                 "Invalid tax percent"
-
             );
 
+        }
+
+
+
+
+
+
+        if (
+
+            data.discount !== null
+
+            &&
+
+            data.discount < 0
+
+        ) {
+
+            errors.push(
+                "Invalid discount"
+            );
 
         }
+
 
 
 

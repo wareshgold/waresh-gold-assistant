@@ -1,20 +1,30 @@
-import { TelegramConversationFlow }
+import {
+    TelegramConversationFlow
+}
 from "./TelegramConversationFlow";
 
 
-import { TelegramSessionStore }
+import {
+    TelegramSessionStore
+}
 from "../state/TelegramSessionStore";
 
 
-import { GoldCalculationWorkflow }
+import {
+    GoldCalculationWorkflow
+}
 from "../../gold/workflows/GoldCalculationWorkflow";
 
 
-import { GoldCalculationSessionData }
+import {
+    GoldCalculationSessionData
+}
 from "../../gold/workflows/GoldCalculationSessionData";
 
 
-import { GoldCalculationStep }
+import {
+    GoldCalculationStep
+}
 from "../../gold/workflows/GoldCalculationStep";
 
 
@@ -47,7 +57,6 @@ implements TelegramConversationFlow {
 
 
 
-
     canHandle(
 
         state: string
@@ -67,10 +76,6 @@ implements TelegramConversationFlow {
 
 
     }
-
-
-
-
 
 
 
@@ -110,20 +115,16 @@ implements TelegramConversationFlow {
 
 
 
-
         if (!session) {
 
 
             return {
 
-
                 type: "text",
-
 
                 content:
 
                     "Session not found"
-
 
             };
 
@@ -155,14 +156,11 @@ implements TelegramConversationFlow {
 
             return {
 
-
                 type: "text",
-
 
                 content:
 
                     "Please enter a valid number"
-
 
             };
 
@@ -173,11 +171,9 @@ implements TelegramConversationFlow {
 
 
 
-
         const data =
 
-            session.data as GoldCalculationSessionData;
-
+            session.data as unknown as GoldCalculationSessionData;
 
 
 
@@ -199,6 +195,26 @@ implements TelegramConversationFlow {
 
 
             );
+
+
+
+
+
+        if (result.error) {
+
+
+            return {
+
+                type: "text",
+
+                content:
+
+                    result.error.join("\n")
+
+            };
+
+
+        }
 
 
 
@@ -230,9 +246,7 @@ implements TelegramConversationFlow {
                 content:
 
 `
-
 نتیجه محاسبه طلا:
-
 
 ارزش طلا:
 
@@ -274,11 +288,9 @@ ${result.result?.finalPrice}
 
 
 
-
         session.state =
 
             result.nextStep!;
-
 
 
 
@@ -291,13 +303,11 @@ ${result.result?.finalPrice}
 
 
 
-
         await this.sessionStore.save(
 
             session
 
         );
-
 
 
 
@@ -337,7 +347,6 @@ ${result.result?.finalPrice}
                 [GoldCalculationStep.WAITING_WEIGHT]:
 
                     "وزن طلا را وارد کنید:"
-
 
             };
 

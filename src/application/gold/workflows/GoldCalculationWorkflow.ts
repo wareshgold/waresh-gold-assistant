@@ -24,7 +24,6 @@ from "../validation/GoldCalculationValidator";
 
 
 
-
 export interface GoldCalculationWorkflowResult {
 
 
@@ -58,8 +57,6 @@ export interface GoldCalculationWorkflowResult {
 
 
 
-
-
 export class GoldCalculationWorkflow {
 
 
@@ -78,9 +75,6 @@ export class GoldCalculationWorkflow {
 
 
     ) {}
-
-
-
 
 
 
@@ -110,8 +104,6 @@ export class GoldCalculationWorkflow {
 
 
 
-
-
         switch(step) {
 
 
@@ -135,8 +127,6 @@ export class GoldCalculationWorkflow {
 
 
 
-
-
             case GoldCalculationStep.WAITING_PRICE:
 
 
@@ -152,9 +142,6 @@ export class GoldCalculationWorkflow {
                         GoldCalculationStep.WAITING_LABOR
 
                 };
-
-
-
 
 
 
@@ -178,9 +165,6 @@ export class GoldCalculationWorkflow {
 
 
 
-
-
-
             case GoldCalculationStep.WAITING_PROFIT:
 
 
@@ -200,14 +184,10 @@ export class GoldCalculationWorkflow {
 
 
 
-
-
-
             case GoldCalculationStep.WAITING_TAX: {
 
 
                 data.taxPercent = value;
-
 
 
 
@@ -218,7 +198,6 @@ export class GoldCalculationWorkflow {
                         data
 
                     );
-
 
 
 
@@ -241,6 +220,15 @@ export class GoldCalculationWorkflow {
 
 
 
+                const weight = data.weight as number;
+
+                const goldPrice = data.goldPrice as number;
+
+                const laborPercent = data.laborPercent as number;
+
+                const profitPercent = data.profitPercent as number;
+
+
 
 
                 const result =
@@ -248,29 +236,16 @@ export class GoldCalculationWorkflow {
                     this.useCase.execute({
 
 
-
-                        weight:
-
-                            data.weight!,
+                        weight,
 
 
-
-                        goldPrice:
-
-                            data.goldPrice!,
+                        goldPrice,
 
 
-
-                        laborPercent:
-
-                            data.laborPercent!,
+                        laborPercent,
 
 
-
-                        profitPercent:
-
-                            data.profitPercent!,
-
+                        profitPercent,
 
 
                         taxPercent:
@@ -278,16 +253,12 @@ export class GoldCalculationWorkflow {
                             data.taxPercent ?? 0,
 
 
-
                         discount:
 
                             data.discount ?? 0
 
 
-
                     });
-
-
 
 
 
@@ -311,9 +282,7 @@ export class GoldCalculationWorkflow {
         }
 
 
-
     }
-
 
 
 }
