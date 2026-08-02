@@ -1,19 +1,29 @@
 import { describe, expect, it } from "vitest";
 
+
 import { GoldCalculationConversationFlow }
 from "./GoldCalculationConversationFlow";
+
 
 import { MemoryTelegramSessionStore }
 from "../state/MemoryTelegramSessionStore";
 
+
 import { CalculateGoldFormulaUseCase }
 from "../../gold/CalculateGoldFormulaUseCase";
+
+
+import { GoldCalculationWorkflow }
+from "../../gold/workflows/GoldCalculationWorkflow";
+
+
+import { GoldCalculationValidator }
+from "../../gold/validation/GoldCalculationValidator";
+
 
 import { createGoldRuleEngine }
 from "../../../domain/gold/services/createGoldRuleEngine";
 
-import { GoldCalculationWorkflow }
-from "../../gold/workflows/GoldCalculationWorkflow";
 
 
 
@@ -41,7 +51,11 @@ describe(
 
                 const workflow =
                     new GoldCalculationWorkflow(
-                        useCase
+
+                        useCase,
+
+                        new GoldCalculationValidator()
+
                     );
 
 
@@ -115,6 +129,15 @@ describe(
                 )
                 .toBe(
                     "text"
+                );
+
+
+
+                expect(
+                    result.content
+                )
+                .contain(
+                    "نتیجه محاسبه طلا"
                 );
 
 

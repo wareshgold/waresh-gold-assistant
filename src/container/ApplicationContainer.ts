@@ -4,9 +4,6 @@ from "../application/telegram/TelegramMessageHandler";
 import { TelegramCommandService }
 from "../application/telegram/services/TelegramCommandService";
 
-import { GoldCalculationWorkflow }
-from "../application/gold/workflows/GoldCalculationWorkflow";
-
 import { TelegramResponseFormatter }
 from "../application/telegram/TelegramResponseFormatter";
 
@@ -54,6 +51,12 @@ from "../application/telegram/flows/TelegramConversationManager";
 
 import { GoldCalculationConversationFlow }
 from "../application/telegram/flows/GoldCalculationConversationFlow";
+
+import { GoldCalculationWorkflow }
+from "../application/gold/workflows/GoldCalculationWorkflow";
+
+import { GoldCalculationValidator }
+from "../application/gold/validation/GoldCalculationValidator";
 
 import { MemoryMarketSnapshotRepository }
 from "../infrastructure/market/repositories/MemoryMarketSnapshotRepository";
@@ -106,6 +109,7 @@ export class ApplicationContainer {
 
 
 
+
     constructor() {
 
 
@@ -127,6 +131,7 @@ export class ApplicationContainer {
 
 
 
+
         const marketProvider =
 
             new TelegramMarketPriceProvider(
@@ -134,6 +139,7 @@ export class ApplicationContainer {
                 messageProvider
 
             );
+
 
 
 
@@ -149,9 +155,11 @@ export class ApplicationContainer {
 
 
 
+
         const snapshotRepository =
 
             new MemoryMarketSnapshotRepository();
+
 
 
 
@@ -163,6 +171,7 @@ export class ApplicationContainer {
                 snapshotRepository
 
             );
+
 
 
 
@@ -182,6 +191,7 @@ export class ApplicationContainer {
 
 
 
+
         const analyticsFacade =
 
             new MarketAnalyticsFacade(
@@ -191,6 +201,7 @@ export class ApplicationContainer {
                 new MarketScoreCalculator()
 
             );
+
 
 
 
@@ -206,6 +217,7 @@ export class ApplicationContainer {
 
 
 
+
         const getMarketHistoryUseCase =
 
             new GetMarketHistoryUseCase(
@@ -217,6 +229,7 @@ export class ApplicationContainer {
 
 
 
+
         const getGoldPriceUseCase =
 
             new GetGoldPriceUseCase(
@@ -224,6 +237,7 @@ export class ApplicationContainer {
                 getCurrentMarketPriceUseCase
 
             );
+
 
 
 
@@ -241,6 +255,7 @@ export class ApplicationContainer {
 
 
 
+
         this.calculateReverseGoldUseCase =
 
             new CalculateReverseGoldUseCase(
@@ -248,6 +263,7 @@ export class ApplicationContainer {
                 new ReverseGoldCalculator()
 
             );
+
 
 
 
@@ -263,9 +279,25 @@ export class ApplicationContainer {
 
 
 
+
+        const goldCalculationWorkflow =
+
+            new GoldCalculationWorkflow(
+
+                calculateGoldFormulaUseCase,
+
+                new GoldCalculationValidator()
+
+            );
+
+
+
+
+
         const sessionStore =
 
             new MemoryTelegramSessionStore();
+
 
 
 
@@ -275,15 +307,6 @@ export class ApplicationContainer {
             new MemoryTelegramUserProfileStore();
 
 
-
-
-        const goldCalculationWorkflow =
-
-    new GoldCalculationWorkflow(
-
-        calculateGoldFormulaUseCase
-
-    );
 
 
 
@@ -310,6 +333,7 @@ export class ApplicationContainer {
 
 
 
+
         const marketBubbleMessageFormatter =
 
             new MarketBubbleMessageFormatter(
@@ -321,29 +345,31 @@ export class ApplicationContainer {
 
 
 
+
         const router =
 
             TelegramCommandRegistry.create(
 
                 getGoldPriceUseCase,
 
-                    getGoldBubbleUseCase,
+                getGoldBubbleUseCase,
 
-                    getMarketAnalyticsUseCase,
+                getMarketAnalyticsUseCase,
 
-                    getMarketHistoryUseCase,
+                getMarketHistoryUseCase,
 
-                    calculateGoldFormulaUseCase,
+                calculateGoldFormulaUseCase,
 
-                    this.calculateReverseGoldUseCase,
+                this.calculateReverseGoldUseCase,
 
-                    sessionStore,
+                sessionStore,
 
-                    profileStore,
+                profileStore,
 
-                    marketBubbleMessageFormatter
+                marketBubbleMessageFormatter
 
             );
+
 
 
 
@@ -357,6 +383,7 @@ export class ApplicationContainer {
                 conversationManager
 
             );
+
 
 
 
