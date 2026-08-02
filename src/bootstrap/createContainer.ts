@@ -128,6 +128,8 @@ export function createContainer(
 
 
 
+
+
     const market =
 
         createMarketModule(
@@ -146,9 +148,13 @@ export function createContainer(
 
 
 
+
+
     const gold =
 
         createGoldModule();
+
+
 
 
 
@@ -178,7 +184,10 @@ export function createContainer(
 
 
 
+
+
     const currentMarketPriceUseCase =
+
 
         new GetCurrentMarketPriceUseCase(
 
@@ -190,7 +199,10 @@ export function createContainer(
 
 
 
+
+
     const getGoldPriceUseCase =
+
 
         new GetGoldPriceUseCase(
 
@@ -202,7 +214,10 @@ export function createContainer(
 
 
 
+
+
     const getGoldBubbleUseCase =
+
 
         new GetGoldBubbleUseCase(
 
@@ -216,7 +231,10 @@ export function createContainer(
 
 
 
+
+
     const getGoldBubbleDataUseCase =
+
 
         new GetGoldBubbleDataUseCase(
 
@@ -230,7 +248,10 @@ export function createContainer(
 
 
 
+
+
     const getMarketAnalyticsUseCase =
+
 
         new GetMarketAnalyticsUseCase(
 
@@ -242,7 +263,10 @@ export function createContainer(
 
 
 
+
+
     const getMarketHistoryUseCase =
+
 
         new GetMarketHistoryUseCase(
 
@@ -254,7 +278,10 @@ export function createContainer(
 
 
 
+
+
     const getMarketChartUseCase =
+
 
         new GetMarketChartUseCase(
 
@@ -266,7 +293,10 @@ export function createContainer(
 
 
 
+
+
     const refreshMarketPriceUseCase =
+
 
         new RefreshMarketPriceUseCase(
 
@@ -278,7 +308,10 @@ export function createContainer(
 
 
 
+
+
     const refreshMarketPriceJob =
+
 
         new RefreshMarketPriceJob(
 
@@ -290,7 +323,10 @@ export function createContainer(
 
 
 
+
+
     const telegram =
+
 
         createTelegramModule(
 
@@ -298,39 +334,64 @@ export function createContainer(
 
             {
 
+
+
                 getGoldPriceUseCase,
+
 
                 getGoldBubbleUseCase,
 
+
                 getMarketAnalyticsUseCase,
 
+
                 getMarketHistoryUseCase,
+
 
                 getMarketChartUseCase,
 
 
+
                 calculateGoldFormulaUseCase:
+
 
                     gold.calculateGoldFormulaUseCase,
 
 
+
                 calculateReverseGoldUseCase:
+
 
                     gold.calculateReverseGoldUseCase,
 
 
+
+                goldCalculationWorkflow:
+
+
+                    gold.goldCalculationWorkflow,
+
+
+
                 sessionStore:
+
 
                     storage.sessionStore,
 
 
+
                 profileStore:
 
+
                     storage.userProfileStore
+
+
 
             }
 
         );
+
+
 
 
 
