@@ -4,6 +4,9 @@ from "../application/telegram/TelegramMessageHandler";
 import { TelegramCommandService }
 from "../application/telegram/services/TelegramCommandService";
 
+import { GoldCalculationWorkflow }
+from "../application/gold/workflows/GoldCalculationWorkflow";
+
 import { TelegramResponseFormatter }
 from "../application/telegram/TelegramResponseFormatter";
 
@@ -274,6 +277,16 @@ export class ApplicationContainer {
 
 
 
+        const goldCalculationWorkflow =
+
+    new GoldCalculationWorkflow(
+
+        calculateGoldFormulaUseCase
+
+    );
+
+
+
         const conversationManager =
 
             new TelegramConversationManager(
@@ -286,7 +299,7 @@ export class ApplicationContainer {
 
                         sessionStore,
 
-                        calculateGoldFormulaUseCase
+                        goldCalculationWorkflow
 
                     )
 

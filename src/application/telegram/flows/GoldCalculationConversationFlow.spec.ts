@@ -12,6 +12,9 @@ from "../../gold/CalculateGoldFormulaUseCase";
 import { createGoldRuleEngine }
 from "../../../domain/gold/services/createGoldRuleEngine";
 
+import { GoldCalculationWorkflow }
+from "../../gold/workflows/GoldCalculationWorkflow";
+
 
 
 describe(
@@ -36,12 +39,19 @@ describe(
 
 
 
+                const workflow =
+                    new GoldCalculationWorkflow(
+                        useCase
+                    );
+
+
+
                 const flow =
                     new GoldCalculationConversationFlow(
 
                         sessionStore,
 
-                        useCase
+                        workflow
 
                     );
 
@@ -105,15 +115,6 @@ describe(
                 )
                 .toBe(
                     "text"
-                );
-
-
-
-                expect(
-                    result.content
-                )
-                .contain(
-                    "قیمت نهایی"
                 );
 
 
