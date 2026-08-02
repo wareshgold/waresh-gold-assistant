@@ -118,39 +118,71 @@ implements TelegramCallbackHandler {
 
 
 
-        return this.actionExecutor.execute(
+        const response =
+
+            await this.actionExecutor.execute(
 
 
-            this.actionId,
+                this.actionId,
 
 
-            {
+                {
 
 
-                userId:
+                    userId:
 
-                    context.userId,
-
-
-                username:
-
-                    context.username,
+                        context.userId,
 
 
-                firstName:
+                    username:
 
-                    context.firstName,
-
-
-                args:
-
-                    []
+                        context.username,
 
 
-            }
+                    firstName:
+
+                        context.firstName,
 
 
-        );
+                    args:
+
+                        []
+
+
+                }
+
+
+            );
+
+
+
+
+        if (
+
+            typeof response === "string"
+
+        ) {
+
+
+            return {
+
+                type:
+
+                    "text",
+
+
+                content:
+
+                    response
+
+            };
+
+        }
+
+
+
+
+        return response;
 
 
     }

@@ -16,6 +16,12 @@ import {
 from "../commands/TelegramCommandContextBuilder";
 
 
+import {
+    TelegramCommandResponse
+}
+from "../commands/TelegramCommandHandler";
+
+
 
 
 export interface TelegramActionExecutionContext {
@@ -34,6 +40,9 @@ export interface TelegramActionExecutionContext {
 
 
 
+
+
+
 export class TelegramActionExecutor {
 
 
@@ -41,6 +50,8 @@ export class TelegramActionExecutor {
     private readonly contextBuilder:
 
         TelegramCommandContextBuilder;
+
+
 
 
 
@@ -83,6 +94,8 @@ export class TelegramActionExecutor {
 
 
 
+
+
     async execute(
 
 
@@ -95,7 +108,7 @@ export class TelegramActionExecutor {
 
 
 
-    ): Promise<any> {
+    ): Promise<TelegramCommandResponse | string> {
 
 
 
@@ -127,6 +140,7 @@ export class TelegramActionExecutor {
 
 
 
+
         const context =
 
             this.contextBuilder.build(
@@ -151,13 +165,18 @@ export class TelegramActionExecutor {
 
 
 
+
         context.metadata = {
+
 
             ...(context.metadata ?? {}),
 
+
             actionId
 
+
         };
+
 
 
 

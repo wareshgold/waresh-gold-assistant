@@ -3,6 +3,23 @@ import { TelegramSessionStore } from "../state/TelegramSessionStore";
 import { CalculateGoldFormulaUseCase } from "../../gold/CalculateGoldFormulaUseCase";
 
 
+interface GoldCalculationSessionData {
+
+    weight?: number;
+
+    goldPrice?: number;
+
+    laborPercent?: number;
+
+    profitPercent?: number;
+
+    taxPercent?: number;
+
+}
+
+
+
+
 export class GoldCalculationConversationFlow
 implements TelegramConversationFlow {
 
@@ -20,22 +37,33 @@ implements TelegramConversationFlow {
 
 
 
+
+
     canHandle(
+
         state: string
+
     ): boolean {
 
 
         return [
 
             "GOLD_CALCULATION_WAITING_WEIGHT",
+
             "GOLD_CALCULATION_WAITING_PRICE",
+
             "GOLD_CALCULATION_WAITING_LABOR",
+
             "GOLD_CALCULATION_WAITING_PROFIT",
+
             "GOLD_CALCULATION_WAITING_TAX"
 
         ].includes(state);
 
     }
+
+
+
 
 
 
@@ -56,13 +84,19 @@ implements TelegramConversationFlow {
     }> {
 
 
+
         const session =
+
             await this.sessionStore.get(
+
                 userId
+
             );
 
 
+
         if (!session) {
+
 
             return {
 
@@ -77,23 +111,30 @@ implements TelegramConversationFlow {
 
 
 
+
         const value =
+
             Number(
+
                 message
+
             );
 
 
 
         if (
+
             Number.isNaN(value)
+
         ) {
+
 
             return {
 
                 type: "text",
 
                 content:
-                    "❌ لطفاً فقط عدد وارد کنید"
+                    "لطفا فقط عدد وارد کنید"
 
             };
 
@@ -101,15 +142,27 @@ implements TelegramConversationFlow {
 
 
 
+
+        const data =
+
+            session.data as GoldCalculationSessionData;
+
+
+
+
+
         switch (
+
             session.state
+
         ) {
+
 
 
             case "GOLD_CALCULATION_WAITING_WEIGHT":
 
-                session.data.weight =
-                    value;
+
+                data.weight = value;
 
 
                 session.state =
@@ -120,10 +173,12 @@ implements TelegramConversationFlow {
 
 
 
+
+
             case "GOLD_CALCULATION_WAITING_PRICE":
 
-                session.data.goldPrice =
-                    value;
+
+                data.goldPrice = value;
 
 
                 session.state =
@@ -134,10 +189,12 @@ implements TelegramConversationFlow {
 
 
 
+
+
             case "GOLD_CALCULATION_WAITING_LABOR":
 
-                session.data.laborPercent =
-                    value;
+
+                data.laborPercent = value;
 
 
                 session.state =
@@ -148,10 +205,12 @@ implements TelegramConversationFlow {
 
 
 
+
+
             case "GOLD_CALCULATION_WAITING_PROFIT":
 
-                session.data.profitPercent =
-                    value;
+
+                data.profitPercent = value;
 
 
                 session.state =
@@ -162,53 +221,76 @@ implements TelegramConversationFlow {
 
 
 
+
+
             case "GOLD_CALCULATION_WAITING_TAX": {
 
 
-                session.data.taxPercent =
-                    value;
+                data.taxPercent = value;
 
 
 
                 const result =
+
                     this.useCase.execute({
 
+
                         weight:
-                            Number(session.data.weight),
+
+                            data.weight ?? 0,
+
 
                         goldPrice:
-                            Number(session.data.goldPrice),
+
+                            data.goldPrice ?? 0,
+
 
                         laborPercent:
-                            Number(session.data.laborPercent),
+
+                            data.laborPercent ?? 0,
+
 
                         profitPercent:
-                            Number(session.data.profitPercent),
+
+                            data.profitPercent ?? 0,
+
 
                         taxPercent:
-                            Number(session.data.taxPercent),
+
+                            data.taxPercent ?? 0,
+
 
                         discount:
+
                             0
+
 
                     });
 
 
 
+
+
                 await this.sessionStore.delete(
+
                     userId
+
                 );
+
+
 
 
 
                 return {
 
+
                     type: "text",
+
 
                     content:
 
 `
-💰 نتیجه محاسبه طلا
+نتیجه محاسبه طلا
 
 ارزش طلا:
 ${result.goldValue}
@@ -230,7 +312,9 @@ ${result.tax}
 ${result.finalPrice}
 `.trim()
 
+
                 };
+
 
             }
 
@@ -239,45 +323,66 @@ ${result.finalPrice}
 
 
 
+
+
+
         await this.sessionStore.save(
+
             session
+
         );
 
 
 
-        const nextMessages: Record<string,string> = {
 
 
-            GOLD_CALCULATION_WAITING_PRICE:
-                "قیمت هر گرم طلا را وارد کنید:",
+        const nextMessages:
+
+            Record<string, string> = {
 
 
-            GOLD_CALCULATION_WAITING_LABOR:
-                "درصد اجرت را وارد کنید:",
+
+                GOLD_CALCULATION_WAITING_PRICE:
+
+                    "قیمت هر گرم طلا را وارد کنید:",
 
 
-            GOLD_CALCULATION_WAITING_PROFIT:
-                "درصد سود را وارد کنید:",
+
+                GOLD_CALCULATION_WAITING_LABOR:
+
+                    "درصد اجرت را وارد کنید:",
 
 
-            GOLD_CALCULATION_WAITING_TAX:
-                "درصد مالیات را وارد کنید:"
 
-        };
+                GOLD_CALCULATION_WAITING_PROFIT:
+
+                    "درصد سود را وارد کنید:",
+
+
+
+                GOLD_CALCULATION_WAITING_TAX:
+
+                    "درصد مالیات را وارد کنید:"
+
+
+            };
+
+
 
 
 
         return {
 
+
             type: "text",
 
+
             content:
-                nextMessages[
-                    session.state
-                ]
+
+                nextMessages[session.state]
+
 
         };
-
 
     }
 
