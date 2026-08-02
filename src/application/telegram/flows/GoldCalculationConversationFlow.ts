@@ -28,6 +28,13 @@ import {
 from "../../gold/workflows/GoldCalculationStep";
 
 
+import {
+    GoldCalculationResultFormatter
+}
+from "../presentation/GoldCalculationResultFormatter";
+
+
+
 
 
 
@@ -47,10 +54,17 @@ implements TelegramConversationFlow {
 
         private readonly workflow:
 
-            GoldCalculationWorkflow
+            GoldCalculationWorkflow,
+
+
+        private readonly resultFormatter:
+
+            GoldCalculationResultFormatter
 
 
     ) {}
+
+
 
 
 
@@ -153,6 +167,7 @@ implements TelegramConversationFlow {
 
 
 
+
         if (
 
             Number.isNaN(value)
@@ -182,6 +197,8 @@ implements TelegramConversationFlow {
         const data =
 
             session.data;
+
+
 
 
 
@@ -249,49 +266,23 @@ implements TelegramConversationFlow {
 
 
 
+
             return {
 
                 type: "text",
 
                 content:
 
-`
-نتیجه محاسبه طلا:
+                    this.resultFormatter.format(
 
-ارزش طلا:
+                        result.result!
 
-${result.result?.goldValue}
-
-
-اجرت:
-
-${result.result?.labor}
-
-
-سود:
-
-${result.result?.profit}
-
-
-مالیات:
-
-${result.result?.tax}
-
-
-----------------
-
-
-قیمت نهایی:
-
-${result.result?.finalPrice}
-`.trim()
+                    )
 
             };
 
 
         }
-
-
 
 
 
@@ -399,5 +390,6 @@ ${result.result?.finalPrice}
         };
 
     }
+
 
 }

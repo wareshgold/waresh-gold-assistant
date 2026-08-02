@@ -25,6 +25,15 @@ import { createGoldRuleEngine }
 from "../../../domain/gold/services/createGoldRuleEngine";
 
 
+import { GoldCalculationResultFormatter }
+from "../presentation/GoldCalculationResultFormatter";
+
+
+import { TelegramNumberFormatter }
+from "../presentation/TelegramNumberFormatter";
+
+
+
 
 
 describe(
@@ -60,12 +69,25 @@ describe(
 
 
 
+                const resultFormatter =
+
+                    new GoldCalculationResultFormatter(
+
+                        new TelegramNumberFormatter()
+
+                    );
+
+
+
                 const flow =
+
                     new GoldCalculationConversationFlow(
 
                         sessionStore,
 
-                        workflow
+                        workflow,
+
+                        resultFormatter
 
                     );
 
@@ -114,6 +136,7 @@ describe(
 
 
                 const result =
+
                     await flow.execute(
 
                         "user-1",
@@ -143,6 +166,7 @@ describe(
 
 
                 const session =
+
                     await sessionStore.get(
                         "user-1"
                     );

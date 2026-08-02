@@ -1,20 +1,36 @@
-import { TelegramSessionStore } from "../state/TelegramSessionStore";
-import { TelegramConversationFlow } from "./TelegramConversationFlow";
+import {
+    TelegramSessionStore
+}
+from "../state/TelegramSessionStore";
+
+
+import {
+    TelegramConversationFlow
+}
+from "./TelegramConversationFlow";
+
+
 
 
 export class TelegramConversationManager {
 
 
+
     constructor(
 
         private readonly sessionStore:
+
             TelegramSessionStore,
 
 
         private readonly flows:
+
             TelegramConversationFlow[]
 
     ) {}
+
+
+
 
 
 
@@ -24,77 +40,72 @@ export class TelegramConversationManager {
 
         message: string
 
-    ): Promise<any> {
+    ): Promise<{
 
+        type: "text";
 
+        content: string;
 
-        console.log(
-            "CONVERSATION CHECK:",
-            {
-                userId,
-                message
-            }
-        );
+        metadata?: Record<string, unknown>;
+
+    } | null> {
 
 
 
         const session =
+
             await this.sessionStore.get(
+
                 userId
+
             );
-
-
-
-        console.log(
-            "SESSION RESULT:",
-            session
-        );
 
 
 
         if (!session) {
 
-            console.log(
-                "NO ACTIVE SESSION"
-            );
 
             return null;
+
 
         }
 
 
 
-        console.log(
-            "SESSION STATE:",
-            session.state
-        );
 
 
 
         const flow =
+
             this.flows.find(
 
+
                 item =>
+
                     item.canHandle(
+
                         session.state
+
                     )
+
 
             );
 
 
 
-        console.log(
-            "FOUND FLOW:",
-            !!flow
-        );
 
 
 
         if (!flow) {
 
+
             return null;
 
+
         }
+
+
+
 
 
 

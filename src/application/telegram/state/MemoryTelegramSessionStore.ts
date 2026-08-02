@@ -1,5 +1,15 @@
-import { TelegramSessionStore } from "./TelegramSessionStore";
-import { TelegramUserSession } from "./TelegramUserSession";
+import {
+    TelegramSessionStore
+}
+from "./TelegramSessionStore";
+
+
+import {
+    TelegramUserSession
+}
+from "./TelegramUserSession";
+
+
 
 
 export class MemoryTelegramSessionStore
@@ -10,17 +20,31 @@ implements TelegramSessionStore {
 
     private readonly sessions =
 
-        new Map<string, TelegramUserSession>();
+        new Map<
+
+            string,
+
+            TelegramUserSession<any, any>
+
+        >();
 
 
 
 
 
-    async get<TData = Record<string, unknown>>(
+
+
+    async get<
+
+        TData = Record<string, unknown>,
+
+        TState = string
+
+    >(
 
         userId: string
 
-    ): Promise<TelegramUserSession<TData> | null> {
+    ): Promise<TelegramUserSession<TData, TState> | null> {
 
 
 
@@ -36,13 +60,15 @@ implements TelegramSessionStore {
 
         if (!session) {
 
+
             return null;
+
 
         }
 
 
 
-        return session as TelegramUserSession<TData>;
+        return session as TelegramUserSession<TData, TState>;
 
     }
 
@@ -51,9 +77,18 @@ implements TelegramSessionStore {
 
 
 
-    async save<TData = Record<string, unknown>>(
 
-        session: TelegramUserSession<TData>
+    async save<
+
+        TData = Record<string, unknown>,
+
+        TState = string
+
+    >(
+
+        session:
+
+            TelegramUserSession<TData, TState>
 
     ): Promise<void> {
 
@@ -63,11 +98,12 @@ implements TelegramSessionStore {
 
             session.userId,
 
-            session as TelegramUserSession
+            session as TelegramUserSession<any, any>
 
         );
 
     }
+
 
 
 

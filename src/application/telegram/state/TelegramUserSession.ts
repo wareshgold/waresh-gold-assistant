@@ -1,12 +1,13 @@
 export interface TelegramUserSession<
-    TData = Record<string, unknown>
+    TData = Record<string, unknown>,
+    TState = string
 > {
 
 
     userId: string;
 
 
-    state: string;
+    state: TState;
 
 
     data: TData;

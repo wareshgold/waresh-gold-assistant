@@ -8,17 +8,23 @@ from "./TelegramUserSession";
 export interface TelegramSessionStore {
 
 
-    get<TData = Record<string, unknown>>(
+    get<
+        TData = Record<string, unknown>,
+        TState = string
+    >(
 
         userId: string
 
-    ): Promise<TelegramUserSession<TData> | null>;
+    ): Promise<TelegramUserSession<TData, TState> | null>;
 
 
 
-    save<TData = Record<string, unknown>>(
+    save<
+        TData = Record<string, unknown>,
+        TState = string
+    >(
 
-        session: TelegramUserSession<TData>
+        session: TelegramUserSession<TData, TState>
 
     ): Promise<void>;
 

@@ -91,6 +91,12 @@ from "../application/telegram/presentation/TelegramMessageBuilder";
 import { MarketBubbleMessageFormatter }
 from "../application/telegram/presentation/MarketBubbleMessageFormatter";
 
+import { GoldCalculationResultFormatter }
+from "../application/telegram/presentation/GoldCalculationResultFormatter";
+
+import { TelegramNumberFormatter }
+from "../application/telegram/presentation/TelegramNumberFormatter";
+
 
 
 
@@ -310,6 +316,18 @@ export class ApplicationContainer {
 
 
 
+        const goldCalculationResultFormatter =
+
+            new GoldCalculationResultFormatter(
+
+                new TelegramNumberFormatter()
+
+            );
+
+
+
+
+
         const conversationManager =
 
             new TelegramConversationManager(
@@ -322,7 +340,9 @@ export class ApplicationContainer {
 
                         sessionStore,
 
-                        goldCalculationWorkflow
+                        goldCalculationWorkflow,
+
+                        goldCalculationResultFormatter
 
                     )
 

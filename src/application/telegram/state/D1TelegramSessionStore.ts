@@ -1,5 +1,15 @@
-import { TelegramSessionStore } from "./TelegramSessionStore";
-import { TelegramUserSession } from "./TelegramUserSession";
+import {
+    TelegramSessionStore
+}
+from "./TelegramSessionStore";
+
+
+import {
+    TelegramUserSession
+}
+from "./TelegramUserSession";
+
+
 
 
 export class D1TelegramSessionStore
@@ -20,11 +30,19 @@ implements TelegramSessionStore {
 
 
 
-    async get<TData = Record<string, unknown>>(
+
+
+    async get<
+
+        TData = Record<string, unknown>,
+
+        TState = string
+
+    >(
 
         userId: string
 
-    ): Promise<TelegramUserSession<TData> | null> {
+    ): Promise<TelegramUserSession<TData, TState> | null> {
 
 
 
@@ -64,11 +82,16 @@ implements TelegramSessionStore {
 
 
 
+
         if (!result) {
+
 
             return null;
 
+
         }
+
+
 
 
 
@@ -85,7 +108,7 @@ implements TelegramSessionStore {
 
             state:
 
-                result.state,
+                result.state as TState,
 
 
 
@@ -106,6 +129,7 @@ implements TelegramSessionStore {
 
         };
 
+
     }
 
 
@@ -114,9 +138,19 @@ implements TelegramSessionStore {
 
 
 
-    async save<TData = Record<string, unknown>>(
 
-        session: TelegramUserSession<TData>
+
+    async save<
+
+        TData = Record<string, unknown>,
+
+        TState = string
+
+    >(
+
+        session:
+
+            TelegramUserSession<TData, TState>
 
     ): Promise<void> {
 
@@ -180,6 +214,7 @@ implements TelegramSessionStore {
 
 
 
+
     async delete(
 
         userId: string
@@ -202,6 +237,7 @@ implements TelegramSessionStore {
             .bind(userId)
 
             .run();
+
 
     }
 

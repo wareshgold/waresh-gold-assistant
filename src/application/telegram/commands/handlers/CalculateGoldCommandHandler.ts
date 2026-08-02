@@ -29,16 +29,15 @@ from "../../presentation/TelegramNumberFormatter";
 
 
 import {
-    GoldCalculationSessionData
-}
-from "../../../gold/workflows/GoldCalculationSessionData";
-
-
-import {
     GoldCalculationStep
 }
 from "../../../gold/workflows/GoldCalculationStep";
 
+
+import {
+    createGoldCalculationSessionData
+}
+from "../../../gold/workflows/GoldCalculationSessionData";
 
 
 
@@ -50,8 +49,13 @@ implements TelegramCommandHandler {
 
 
 
+
     private readonly numberFormatter:
+
         TelegramNumberFormatter;
+
+
+
 
 
 
@@ -78,6 +82,7 @@ implements TelegramCommandHandler {
     ) {
 
 
+
         this.numberFormatter =
 
             numberFormatter ??
@@ -86,6 +91,9 @@ implements TelegramCommandHandler {
 
 
     }
+
+
+
 
 
 
@@ -119,10 +127,12 @@ implements TelegramCommandHandler {
 
 
 
+
+
+
     canHandle(
 
-        command:
-            string
+        command: string
 
     ): boolean {
 
@@ -143,10 +153,10 @@ implements TelegramCommandHandler {
     async execute(
 
         context:
+
             TelegramCommandContext
 
     ): Promise<string> {
-
 
 
 
@@ -155,7 +165,6 @@ implements TelegramCommandHandler {
             context.userId ||
 
             context.chatId;
-
 
 
 
@@ -174,43 +183,13 @@ implements TelegramCommandHandler {
             if (this.sessionStore) {
 
 
-                const sessionData:
-
-                    GoldCalculationSessionData = {
-
-
-                        weight:
-                            null,
-
-
-                        goldPrice:
-                            null,
-
-
-                        laborPercent:
-                            null,
-
-
-                        profitPercent:
-                            null,
-
-
-                        taxPercent:
-                            null,
-
-
-                        discount:
-                            null
-
-
-                    };
-
-
 
                 await this.sessionStore.save({
 
 
+
                     userId,
+
 
 
                     state:
@@ -221,7 +200,7 @@ implements TelegramCommandHandler {
 
                     data:
 
-                        sessionData,
+                        createGoldCalculationSessionData(),
 
 
 
@@ -233,7 +212,9 @@ implements TelegramCommandHandler {
                 });
 
 
+
             }
+
 
 
 
@@ -260,7 +241,6 @@ implements TelegramCommandHandler {
 
 
 
-
         const values =
 
             context.arguments.map(
@@ -275,12 +255,12 @@ implements TelegramCommandHandler {
 
 
 
-
-
         if (
 
 
+
             values.length < 5 ||
+
 
 
             values.some(
@@ -290,6 +270,7 @@ implements TelegramCommandHandler {
                     Number.isNaN(value)
 
             )
+
 
 
         ) {
@@ -316,7 +297,6 @@ implements TelegramCommandHandler {
 
 
         }
-
 
 
 
@@ -353,6 +333,7 @@ implements TelegramCommandHandler {
 
 
             this.useCase.execute({
+
 
 
                 weight,
@@ -431,7 +412,6 @@ ${this.numberFormatter.money(result.tax)}
 ${this.numberFormatter.money(result.finalPrice)}
 
 `.trim();
-
 
 
 
