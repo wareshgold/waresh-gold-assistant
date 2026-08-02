@@ -34,6 +34,9 @@ export interface GoldCalculationWorkflowResult {
     nextStep?: GoldCalculationStep;
 
 
+    error?: string[];
+
+
     result?: {
 
         goldValue: number;
@@ -50,7 +53,6 @@ export interface GoldCalculationWorkflowResult {
 
 
 }
-
 
 
 
@@ -76,7 +78,6 @@ export class GoldCalculationWorkflow {
 
 
     ) {}
-
 
 
 
@@ -136,8 +137,6 @@ export class GoldCalculationWorkflow {
 
 
 
-
-
             case GoldCalculationStep.WAITING_PRICE:
 
 
@@ -153,9 +152,6 @@ export class GoldCalculationWorkflow {
                         GoldCalculationStep.WAITING_LABOR
 
                 };
-
-
-
 
 
 
@@ -185,8 +181,6 @@ export class GoldCalculationWorkflow {
 
 
 
-
-
             case GoldCalculationStep.WAITING_PROFIT:
 
 
@@ -209,13 +203,10 @@ export class GoldCalculationWorkflow {
 
 
 
-
-
             case GoldCalculationStep.WAITING_TAX: {
 
 
                 data.taxPercent = value;
-
 
 
 
@@ -235,17 +226,17 @@ export class GoldCalculationWorkflow {
                 if (!validation.valid) {
 
 
-                    throw new Error(
+                    return {
 
-                        validation.errors.join(
-                            ", "
-                        )
+                        completed: false,
 
-                    );
+                        error:
 
+                            validation.errors
+
+                    };
 
                 }
-
 
 
 
@@ -301,7 +292,6 @@ export class GoldCalculationWorkflow {
 
 
 
-
                 return {
 
 
@@ -319,6 +309,7 @@ export class GoldCalculationWorkflow {
 
 
         }
+
 
 
     }

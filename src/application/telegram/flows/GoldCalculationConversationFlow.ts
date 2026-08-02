@@ -1,13 +1,28 @@
-import { TelegramConversationFlow } from "./TelegramConversationFlow";
-import { TelegramSessionStore } from "../state/TelegramSessionStore";
-import { GoldCalculationWorkflow } from "../../gold/workflows/GoldCalculationWorkflow";
-import { GoldCalculationSessionData } from "../../gold/workflows/GoldCalculationSessionData";
-import { GoldCalculationStep } from "../../gold/workflows/GoldCalculationStep";
+import { TelegramConversationFlow }
+from "./TelegramConversationFlow";
+
+
+import { TelegramSessionStore }
+from "../state/TelegramSessionStore";
+
+
+import { GoldCalculationWorkflow }
+from "../../gold/workflows/GoldCalculationWorkflow";
+
+
+import { GoldCalculationSessionData }
+from "../../gold/workflows/GoldCalculationSessionData";
+
+
+import { GoldCalculationStep }
+from "../../gold/workflows/GoldCalculationStep";
+
 
 
 
 
 export class GoldCalculationConversationFlow
+
 implements TelegramConversationFlow {
 
 
@@ -16,14 +31,17 @@ implements TelegramConversationFlow {
 
 
         private readonly sessionStore:
+
             TelegramSessionStore,
 
 
         private readonly workflow:
+
             GoldCalculationWorkflow
 
 
     ) {}
+
 
 
 
@@ -38,13 +56,20 @@ implements TelegramConversationFlow {
 
 
         return Object.values(
+
             GoldCalculationStep
+
         ).includes(
+
             state as GoldCalculationStep
+
         );
 
 
     }
+
+
+
 
 
 
@@ -84,6 +109,8 @@ implements TelegramConversationFlow {
 
 
 
+
+
         if (!session) {
 
 
@@ -95,14 +122,13 @@ implements TelegramConversationFlow {
 
                 content:
 
-                    "جلسه محاسبه پیدا نشد"
+                    "Session not found"
 
 
             };
 
 
         }
-
 
 
 
@@ -115,6 +141,7 @@ implements TelegramConversationFlow {
                 message
 
             );
+
 
 
 
@@ -134,7 +161,7 @@ implements TelegramConversationFlow {
 
                 content:
 
-                    "لطفا فقط عدد وارد کنید"
+                    "Please enter a valid number"
 
 
             };
@@ -147,10 +174,10 @@ implements TelegramConversationFlow {
 
 
 
-
         const data =
 
             session.data as GoldCalculationSessionData;
+
 
 
 
@@ -203,26 +230,37 @@ implements TelegramConversationFlow {
                 content:
 
 `
+
 نتیجه محاسبه طلا:
 
+
 ارزش طلا:
+
 ${result.result?.goldValue}
 
+
 اجرت:
+
 ${result.result?.labor}
 
+
 سود:
+
 ${result.result?.profit}
 
+
 مالیات:
+
 ${result.result?.tax}
 
 
 ----------------
 
+
 قیمت نهایی:
 
 ${result.result?.finalPrice}
+
 `.trim()
 
 
@@ -236,9 +274,12 @@ ${result.result?.finalPrice}
 
 
 
+
         session.state =
 
             result.nextStep!;
+
+
 
 
 
@@ -271,7 +312,7 @@ ${result.result?.finalPrice}
 
                 [GoldCalculationStep.WAITING_PRICE]:
 
-                    "قیمت هر گرم طلا را وارد کنید:",
+                    "قیمت طلا را وارد کنید:",
 
 
 
@@ -297,8 +338,8 @@ ${result.result?.finalPrice}
 
                     "وزن طلا را وارد کنید:"
 
-            };
 
+            };
 
 
 
@@ -318,7 +359,6 @@ ${result.result?.finalPrice}
                     result.nextStep!
 
                 ]
-
 
 
         };
