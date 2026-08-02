@@ -117,65 +117,43 @@ import { MarketChartImageGenerator }
 from "../../infrastructure/chart/MarketChartImageGenerator";
 
 
+import { GoldCalculationWorkflow }
+from "../../application/gold/workflows/GoldCalculationWorkflow";
+
+
+import { GoldCalculationValidator }
+from "../../application/gold/validation/GoldCalculationValidator";
+
+
 import { AppEnv }
 from "../../shared/config/env";
 
 
 
+
+
 interface Dependencies {
 
+    getGoldPriceUseCase:any;
 
-    getGoldPriceUseCase:
-        any;
+    getGoldBubbleUseCase:any;
 
+    getMarketAnalyticsUseCase:any;
 
+    getMarketHistoryUseCase:any;
 
-    getGoldBubbleUseCase:
-        any;
+    getMarketChartUseCase:any;
 
+    calculateGoldFormulaUseCase:any;
 
+    calculateReverseGoldUseCase:any;
 
-    getMarketAnalyticsUseCase:
-        any;
+    sessionStore:any;
 
-
-
-    getMarketHistoryUseCase:
-        any;
-
-
-
-    getMarketChartUseCase:
-        any;
-
-
-
-    calculateGoldFormulaUseCase:
-        any;
-
-
-
-    calculateReverseGoldUseCase:
-        any;
-
-
-
-    goldCalculationWorkflow:
-        any;
-
-
-
-    sessionStore:
-        any;
-
-
-
-    profileStore:
-        any;
-
-
+    profileStore:any;
 
 }
+
 
 
 
@@ -187,6 +165,17 @@ export function createTelegramModule(
     dependencies: Dependencies
 
 ) {
+
+
+    const goldCalculationWorkflow =
+
+        new GoldCalculationWorkflow(
+
+            dependencies.calculateGoldFormulaUseCase,
+
+            new GoldCalculationValidator()
+
+        );
 
 
 
@@ -202,18 +191,16 @@ export function createTelegramModule(
             [
 
 
-
                 new GoldCalculationConversationFlow(
 
 
                     dependencies.sessionStore,
 
 
-                    dependencies.goldCalculationWorkflow
+                    goldCalculationWorkflow
 
 
                 ),
-
 
 
 
@@ -229,244 +216,144 @@ export function createTelegramModule(
                 )
 
 
-
             ]
 
 
-
         );
-
-
-
-
 
 
 
     const marketAnalyticsMessageFormatter =
 
-
         new MarketAnalyticsMessageFormatter(
-
 
             new TelegramMessageBuilder()
 
-
         );
-
-
-
-
 
 
 
     const marketBubbleMessageFormatter =
 
-
         new MarketBubbleMessageFormatter(
-
 
             new TelegramMessageBuilder()
 
-
         );
-
-
-
-
 
 
 
     const marketChartRenderer =
 
-
         new MarketChartRenderer();
-
-
-
 
 
 
     const marketChartImageGenerator =
 
-
         new MarketChartImageGenerator();
-
-
-
-
 
 
 
     const telegramNavigationService:
 
-
         TelegramNavigationService =
-
 
             new DefaultTelegramNavigationService();
 
 
 
-
-
-
-
-
     const telegramNavigationStateService =
-
 
         new DefaultTelegramNavigationStateService(
 
-
             dependencies.sessionStore
 
-
         );
-
-
-
-
 
 
 
     const commandRouter =
 
-
         TelegramCommandRegistry.create(
-
 
             dependencies.getGoldPriceUseCase,
 
-
             dependencies.getGoldBubbleUseCase,
-
 
             dependencies.getMarketAnalyticsUseCase,
 
-
             dependencies.getMarketHistoryUseCase,
-
 
             dependencies.calculateGoldFormulaUseCase,
 
-
             dependencies.calculateReverseGoldUseCase,
-
 
             dependencies.sessionStore,
 
-
             dependencies.profileStore,
-
 
             marketBubbleMessageFormatter
 
-
-
         );
-
-
-
-
 
 
 
     const actionResolver =
 
-
         new CompositeTelegramActionResolver(
-
-
 
             [
 
-
-
                 new TelegramCommandActionResolver(),
-
-
 
                 new TelegramTextActionResolver()
 
-
-
             ]
 
-
-
         );
-
-
-
-
 
 
 
     const telegramActionExecutor =
 
-
         new TelegramActionExecutor(
-
 
             actionResolver,
 
-
             commandRouter
 
-
         );
-
-
-
-
 
 
 
     const commandService =
 
-
         new TelegramCommandService(
-
 
             commandRouter,
 
-
             conversationManager
 
-
         );
-
-
-
-
 
 
 
     const messageHandler =
 
-
         new TelegramMessageHandler(
-
 
             commandService,
 
-
             new TelegramResponseFormatter()
-
 
         );
 
 
 
-
-
-
-
     const botClient =
 
-
         env.TELEGRAM_BOT_TOKEN
-
 
             ? new TelegramHttpBotClient(
 
@@ -474,142 +361,85 @@ export function createTelegramModule(
 
             )
 
-
             : new FakeTelegramBotClient();
-
-
-
-
-
 
 
 
     const commandMenuService =
 
-
         new TelegramCommandMenuService(
-
 
             botClient
 
-
         );
-
-
-
-
 
 
 
     const callbackRouter =
 
-
         TelegramCallbackRegistry.create(
-
 
             telegramActionExecutor,
 
-
             telegramNavigationService,
-
 
             telegramNavigationStateService,
 
-
             dependencies.getMarketChartUseCase,
-
 
             marketChartRenderer,
 
-
             marketChartImageGenerator
 
-
-
         );
-
-
-
-
 
 
 
     const callbackProcessor =
 
-
         new TelegramCallbackProcessor(
-
 
             new TelegramCallbackMapper(),
 
-
             callbackRouter
 
-
         );
-
-
-
-
 
 
 
     const processor =
 
-
         new TelegramUpdateProcessor(
-
 
             new TelegramUpdateMapper(),
 
-
             messageHandler,
-
 
             new TelegramResponseFormatter(),
 
-
             botClient,
-
 
             new TelegramKeyboardMapper(),
 
-
             callbackProcessor
 
-
         );
-
-
-
-
 
 
 
     const webhookController =
 
-
         new TelegramWebhookController(
-
 
             processor,
 
-
             new TelegramWebhookSecurityGuard(
-
 
                 env.TELEGRAM_WEBHOOK_SECRET
 
-
             )
 
-
-
         );
-
-
-
-
 
 
 
@@ -619,34 +449,24 @@ export function createTelegramModule(
         messageHandler,
 
 
-
         telegramMessageHandler:
-
 
             messageHandler,
 
 
-
         telegramWebhookController:
-
 
             webhookController,
 
 
-
         telegramBotClient:
-
 
             botClient,
 
 
-
         commandMenuService
 
-
-
     };
-
 
 
 }

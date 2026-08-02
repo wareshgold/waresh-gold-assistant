@@ -27,6 +27,7 @@ from "../../application/gold/validation/GoldCalculationValidator";
 
 
 
+
 export interface GoldModule {
 
 
@@ -56,6 +57,9 @@ export interface GoldModule {
 
 
 
+
+
+
 export function createGoldModule()
 : GoldModule {
 
@@ -81,6 +85,7 @@ export function createGoldModule()
 
 
 
+
     const calculateReverseGoldUseCase =
 
         new CalculateReverseGoldUseCase(
@@ -93,9 +98,13 @@ export function createGoldModule()
 
 
 
+
+
     const goldBubbleCalculator =
 
         new GoldBubbleCalculator();
+
+
 
 
 
@@ -115,6 +124,8 @@ export function createGoldModule()
 
 
 
+
+
     return {
 
 
@@ -122,13 +133,10 @@ export function createGoldModule()
         calculateGoldFormulaUseCase,
 
 
-
         calculateReverseGoldUseCase,
 
 
-
         goldBubbleCalculator,
-
 
 
         goldCalculationWorkflow

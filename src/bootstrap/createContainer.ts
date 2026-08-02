@@ -129,7 +129,6 @@ export function createContainer(
 
 
 
-
     const market =
 
         createMarketModule(
@@ -149,11 +148,9 @@ export function createContainer(
 
 
 
-
     const gold =
 
         createGoldModule();
-
 
 
 
@@ -185,7 +182,6 @@ export function createContainer(
 
 
 
-
     const currentMarketPriceUseCase =
 
 
@@ -200,7 +196,6 @@ export function createContainer(
 
 
 
-
     const getGoldPriceUseCase =
 
 
@@ -209,7 +204,6 @@ export function createContainer(
             currentMarketPriceUseCase
 
         );
-
 
 
 
@@ -232,7 +226,6 @@ export function createContainer(
 
 
 
-
     const getGoldBubbleDataUseCase =
 
 
@@ -243,7 +236,6 @@ export function createContainer(
             gold.goldBubbleCalculator
 
         );
-
 
 
 
@@ -264,7 +256,6 @@ export function createContainer(
 
 
 
-
     const getMarketHistoryUseCase =
 
 
@@ -273,7 +264,6 @@ export function createContainer(
             market.snapshotService
 
         );
-
 
 
 
@@ -294,7 +284,6 @@ export function createContainer(
 
 
 
-
     const refreshMarketPriceUseCase =
 
 
@@ -303,7 +292,6 @@ export function createContainer(
             market.priceRefreshService
 
         );
-
 
 
 
@@ -324,7 +312,6 @@ export function createContainer(
 
 
 
-
     const telegram =
 
 
@@ -333,7 +320,6 @@ export function createContainer(
             env,
 
             {
-
 
 
                 getGoldPriceUseCase,
@@ -366,13 +352,6 @@ export function createContainer(
 
 
 
-                goldCalculationWorkflow:
-
-
-                    gold.goldCalculationWorkflow,
-
-
-
                 sessionStore:
 
 
@@ -384,7 +363,6 @@ export function createContainer(
 
 
                     storage.userProfileStore
-
 
 
             }
