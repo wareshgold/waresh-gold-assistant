@@ -4,23 +4,30 @@ import {
 from "./TelegramUserSession";
 
 
+
 export interface TelegramSessionStore {
 
 
-    get(
+    get<TData = Record<string, unknown>>(
+
         userId: string
-    ): Promise<TelegramUserSession | null>;
+
+    ): Promise<TelegramUserSession<TData> | null>;
 
 
 
-    save(
-        session: TelegramUserSession
+    save<TData = Record<string, unknown>>(
+
+        session: TelegramUserSession<TData>
+
     ): Promise<void>;
 
 
 
     delete(
+
         userId: string
+
     ): Promise<void>;
 
 

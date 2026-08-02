@@ -3,49 +3,89 @@ import { TelegramUserSession } from "./TelegramUserSession";
 
 
 export class MemoryTelegramSessionStore
+
 implements TelegramSessionStore {
 
 
+
     private readonly sessions =
+
         new Map<string, TelegramUserSession>();
 
 
 
-    async get(
+
+
+    async get<TData = Record<string, unknown>>(
+
         userId: string
-    ): Promise<TelegramUserSession | null> {
+
+    ): Promise<TelegramUserSession<TData> | null> {
 
 
-        return (
-            this.sessions.get(userId)
-            ?? null
-        );
+
+        const session =
+
+            this.sessions.get(
+
+                userId
+
+            );
+
+
+
+        if (!session) {
+
+            return null;
+
+        }
+
+
+
+        return session as TelegramUserSession<TData>;
 
     }
 
 
 
-    async save(
-        session: TelegramUserSession
+
+
+
+    async save<TData = Record<string, unknown>>(
+
+        session: TelegramUserSession<TData>
+
     ): Promise<void> {
 
 
+
         this.sessions.set(
+
             session.userId,
-            session
+
+            session as TelegramUserSession
+
         );
 
     }
+
+
+
 
 
 
     async delete(
+
         userId: string
+
     ): Promise<void> {
 
 
+
         this.sessions.delete(
+
             userId
+
         );
 
     }

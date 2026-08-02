@@ -3,28 +3,37 @@ import { TelegramUserSession } from "./TelegramUserSession";
 
 
 export class D1TelegramSessionStore
+
 implements TelegramSessionStore {
+
 
 
     constructor(
 
         private readonly db:
+
             D1Database
 
     ) {}
 
 
 
-    async get(
+
+
+    async get<TData = Record<string, unknown>>(
 
         userId: string
 
-    ): Promise<TelegramUserSession | null> {
+    ): Promise<TelegramUserSession<TData> | null> {
+
 
 
         const result =
+
             await this.db
+
                 .prepare(
+
                     `
                     SELECT
                         user_id,
@@ -34,8 +43,11 @@ implements TelegramSessionStore {
                     FROM telegram_sessions
                     WHERE user_id = ?
                     `
+
                 )
+
                 .bind(userId)
+
                 .first<{
 
                     user_id: string;
@@ -50,6 +62,8 @@ implements TelegramSessionStore {
 
 
 
+
+
         if (!result) {
 
             return null;
@@ -58,24 +72,37 @@ implements TelegramSessionStore {
 
 
 
+
+
         return {
 
+
             userId:
+
                 result.user_id,
 
 
+
             state:
+
                 result.state,
 
 
+
             data:
+
                 JSON.parse(
+
                     result.data
-                ),
+
+                ) as TData,
+
 
 
             updatedAt:
+
                 result.updated_at
+
 
         };
 
@@ -83,15 +110,22 @@ implements TelegramSessionStore {
 
 
 
-    async save(
 
-        session: TelegramUserSession
+
+
+
+    async save<TData = Record<string, unknown>>(
+
+        session: TelegramUserSession<TData>
 
     ): Promise<void> {
 
 
+
         await this.db
+
             .prepare(
+
                 `
                 INSERT INTO telegram_sessions
                 (
@@ -112,23 +146,37 @@ implements TelegramSessionStore {
 
                     updated_at = excluded.updated_at
                 `
+
             )
+
             .bind(
+
 
                 session.userId,
 
+
                 session.state,
 
+
                 JSON.stringify(
+
                     session.data
+
                 ),
+
 
                 session.updatedAt
 
+
             )
+
             .run();
 
     }
+
+
+
+
 
 
 
@@ -139,14 +187,20 @@ implements TelegramSessionStore {
     ): Promise<void> {
 
 
+
         await this.db
+
             .prepare(
+
                 `
                 DELETE FROM telegram_sessions
                 WHERE user_id = ?
                 `
+
             )
+
             .bind(userId)
+
             .run();
 
     }
