@@ -30,6 +30,7 @@ from "../../gold/workflows/GoldCalculationStep";
 
 
 
+
 export class GoldCalculationConversationFlow
 
 implements TelegramConversationFlow {
@@ -55,6 +56,7 @@ implements TelegramConversationFlow {
 
 
 
+
     canHandle(
 
         state: string
@@ -74,6 +76,8 @@ implements TelegramConversationFlow {
 
 
     }
+
+
 
 
 
@@ -134,6 +138,7 @@ implements TelegramConversationFlow {
 
 
 
+
         const value =
 
             Number(
@@ -171,9 +176,12 @@ implements TelegramConversationFlow {
 
 
 
+
         const data =
 
             session.data as unknown as GoldCalculationSessionData;
+
+
 
 
 
@@ -202,6 +210,8 @@ implements TelegramConversationFlow {
 
 
 
+
+
         if (result.error) {
 
 
@@ -217,6 +227,7 @@ implements TelegramConversationFlow {
 
 
         }
+
 
 
 
@@ -284,6 +295,8 @@ ${result.result?.finalPrice}
 
 
 
+
+
         session.state =
 
             result.nextStep!;
@@ -304,11 +317,14 @@ ${result.result?.finalPrice}
 
 
 
+
         await this.sessionStore.save(
 
             session
 
         );
+
+
 
 
 
@@ -351,6 +367,8 @@ ${result.result?.finalPrice}
                     "وزن طلا را وارد کنید:"
 
             };
+
+
 
 
 

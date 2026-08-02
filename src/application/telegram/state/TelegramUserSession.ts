@@ -1,4 +1,6 @@
-export interface TelegramUserSession {
+export interface TelegramUserSession<
+    TData = Record<string, unknown>
+> {
 
 
     userId: string;
@@ -7,7 +9,7 @@ export interface TelegramUserSession {
     state: string;
 
 
-    data: Record<string, unknown>;
+    data: TData;
 
 
     navigationStack?: string[];

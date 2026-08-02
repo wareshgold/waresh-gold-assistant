@@ -1,4 +1,7 @@
-import { TelegramUserSession } from "./TelegramUserSession";
+import {
+    TelegramUserSession
+}
+from "./TelegramUserSession";
 
 
 export interface TelegramSessionStore {
