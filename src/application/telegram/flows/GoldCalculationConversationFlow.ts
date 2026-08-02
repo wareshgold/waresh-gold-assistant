@@ -30,7 +30,6 @@ from "../../gold/workflows/GoldCalculationStep";
 
 
 
-
 export class GoldCalculationConversationFlow
 
 implements TelegramConversationFlow {
@@ -51,7 +50,6 @@ implements TelegramConversationFlow {
 
 
     ) {}
-
 
 
 
@@ -135,6 +133,7 @@ implements TelegramConversationFlow {
 
 
 
+
         const value =
 
             Number(
@@ -171,6 +170,7 @@ implements TelegramConversationFlow {
 
 
 
+
         const data =
 
             session.data as unknown as GoldCalculationSessionData;
@@ -200,6 +200,8 @@ implements TelegramConversationFlow {
 
 
 
+
+
         if (result.error) {
 
 
@@ -221,11 +223,8 @@ implements TelegramConversationFlow {
 
 
 
-        if (
 
-            result.completed
-
-        ) {
+        if (result.completed) {
 
 
 
@@ -239,9 +238,7 @@ implements TelegramConversationFlow {
 
             return {
 
-
                 type: "text",
-
 
                 content:
 
@@ -274,14 +271,13 @@ ${result.result?.tax}
 قیمت نهایی:
 
 ${result.result?.finalPrice}
-
 `.trim()
-
 
             };
 
 
         }
+
 
 
 
@@ -294,10 +290,15 @@ ${result.result?.finalPrice}
 
 
 
-
         session.data =
 
             data as unknown as Record<string, unknown>;
+
+
+
+        session.updatedAt =
+
+            Date.now();
 
 
 
@@ -314,6 +315,7 @@ ${result.result?.finalPrice}
 
 
 
+
         const nextMessages:
 
             Record<GoldCalculationStep,string> = {
@@ -322,7 +324,7 @@ ${result.result?.finalPrice}
 
                 [GoldCalculationStep.WAITING_PRICE]:
 
-                    "قیمت طلا را وارد کنید:",
+                    "قیمت هر گرم طلا را وارد کنید:",
 
 
 
@@ -372,8 +374,6 @@ ${result.result?.finalPrice}
 
         };
 
-
     }
-
 
 }

@@ -50,9 +50,7 @@ export interface GoldCalculationWorkflowResult {
 
     };
 
-
 }
-
 
 
 
@@ -82,25 +80,13 @@ export class GoldCalculationWorkflow {
 
     execute(
 
+        step: GoldCalculationStep,
 
-        step:
+        data: GoldCalculationSessionData,
 
-            GoldCalculationStep,
+        value: number
 
-
-        data:
-
-            GoldCalculationSessionData,
-
-
-        value:
-
-            number
-
-
-    ):
-
-        GoldCalculationWorkflowResult {
+    ): GoldCalculationWorkflowResult {
 
 
 
@@ -110,9 +96,7 @@ export class GoldCalculationWorkflow {
 
             case GoldCalculationStep.WAITING_WEIGHT:
 
-
                 data.weight = value;
-
 
                 return {
 
@@ -129,9 +113,7 @@ export class GoldCalculationWorkflow {
 
             case GoldCalculationStep.WAITING_PRICE:
 
-
                 data.goldPrice = value;
-
 
                 return {
 
@@ -148,9 +130,7 @@ export class GoldCalculationWorkflow {
 
             case GoldCalculationStep.WAITING_LABOR:
 
-
                 data.laborPercent = value;
-
 
                 return {
 
@@ -167,9 +147,7 @@ export class GoldCalculationWorkflow {
 
             case GoldCalculationStep.WAITING_PROFIT:
 
-
                 data.profitPercent = value;
-
 
                 return {
 
@@ -201,7 +179,6 @@ export class GoldCalculationWorkflow {
 
 
 
-
                 if (!validation.valid) {
 
 
@@ -220,32 +197,30 @@ export class GoldCalculationWorkflow {
 
 
 
-                const weight = data.weight as number;
-
-                const goldPrice = data.goldPrice as number;
-
-                const laborPercent = data.laborPercent as number;
-
-                const profitPercent = data.profitPercent as number;
-
-
-
 
                 const result =
 
                     this.useCase.execute({
 
 
-                        weight,
+                        weight:
+
+                            data.weight!,
 
 
-                        goldPrice,
+                        goldPrice:
+
+                            data.goldPrice!,
 
 
-                        laborPercent,
+                        laborPercent:
+
+                            data.laborPercent!,
 
 
-                        profitPercent,
+                        profitPercent:
+
+                            data.profitPercent!,
 
 
                         taxPercent:
@@ -257,8 +232,8 @@ export class GoldCalculationWorkflow {
 
                             data.discount ?? 0
 
-
                     });
+
 
 
 
@@ -276,7 +251,6 @@ export class GoldCalculationWorkflow {
 
 
             }
-
 
 
         }
