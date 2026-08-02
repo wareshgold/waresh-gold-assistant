@@ -38,6 +38,8 @@ from "../presentation/GoldCalculationResultFormatter";
 
 
 
+
+
 export class GoldCalculationConversationFlow
 
 implements TelegramConversationFlow {
@@ -167,7 +169,6 @@ implements TelegramConversationFlow {
 
 
 
-
         if (
 
             Number.isNaN(value)
@@ -194,18 +195,6 @@ implements TelegramConversationFlow {
 
 
 
-        const data =
-
-            session.data;
-
-
-
-
-
-
-
-
-
         const result =
 
             this.workflow.execute(
@@ -214,7 +203,7 @@ implements TelegramConversationFlow {
                 session.state as GoldCalculationStep,
 
 
-                data,
+                session.data,
 
 
                 value
@@ -245,6 +234,8 @@ implements TelegramConversationFlow {
 
 
         }
+
+
 
 
 
@@ -292,6 +283,8 @@ implements TelegramConversationFlow {
 
 
 
+
+
         session.state =
 
             result.nextStep!;
@@ -300,7 +293,7 @@ implements TelegramConversationFlow {
 
         session.data =
 
-            data;
+            result.updatedData!;
 
 
 
@@ -314,11 +307,14 @@ implements TelegramConversationFlow {
 
 
 
+
         await this.sessionStore.save(
 
             session
 
         );
+
+
 
 
 
