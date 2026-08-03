@@ -213,6 +213,7 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
         return [
 
 
@@ -323,7 +324,9 @@ export class TelegramCallbackHandlerFactory {
 
                 sessionStore,
 
-                getCurrentGoldPriceUseCase
+                getCurrentGoldPriceUseCase,
+
+                goldCalculationWorkflow
 
             ),
 
