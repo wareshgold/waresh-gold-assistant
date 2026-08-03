@@ -65,6 +65,12 @@ from "./handlers/CalculateGoldLivePriceCallbackHandler";
 
 
 import {
+    CalculateGoldPriceCallbackHandler,
+}
+from "./handlers/CalculateGoldPriceCallbackHandler";
+
+
+import {
     TelegramActionExecutor,
 }
 from "../actions/TelegramActionExecutor";
@@ -191,6 +197,7 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
         const actionHandlers =
 
 
@@ -221,7 +228,9 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
         return [
+
 
 
 
@@ -311,13 +320,24 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
             new CalculateGoldCallbackHandler(
 
                 sessionStore
 
             ),
 
+
+
+
+
+
+            new CalculateGoldPriceCallbackHandler(
+
+                sessionStore,
+
+                getCurrentGoldPriceUseCase
+
+            ),
 
 
 
