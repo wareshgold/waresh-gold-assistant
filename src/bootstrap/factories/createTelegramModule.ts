@@ -117,14 +117,6 @@ import { MarketChartImageGenerator }
 from "../../infrastructure/chart/MarketChartImageGenerator";
 
 
-import { GoldCalculationWorkflow }
-from "../../application/gold/workflows/GoldCalculationWorkflow";
-
-
-import { GoldCalculationValidator }
-from "../../application/gold/validation/GoldCalculationValidator";
-
-
 import { TelegramNumberFormatter }
 from "../../application/telegram/presentation/TelegramNumberFormatter";
 
@@ -135,6 +127,10 @@ from "../../application/telegram/presentation/GoldCalculationResultFormatter";
 
 import { GoldCalculationPromptFormatter }
 from "../../application/telegram/presentation/GoldCalculationPromptFormatter";
+
+
+import { GoldCalculationWorkflow }
+from "../../application/gold/workflows/GoldCalculationWorkflow";
 
 
 import { AppEnv }
@@ -179,6 +175,10 @@ interface Dependencies {
         any;
 
 
+    goldCalculationWorkflow:
+        GoldCalculationWorkflow;
+
+
     sessionStore:
         any;
 
@@ -189,6 +189,7 @@ interface Dependencies {
 
     saveGoldCalculationHistoryUseCase:
         any;
+
 
 
 }
@@ -204,20 +205,6 @@ export function createTelegramModule(
     dependencies: Dependencies
 
 ) {
-
-
-
-    const goldCalculationWorkflow =
-
-        new GoldCalculationWorkflow(
-
-            dependencies.calculateGoldFormulaUseCase,
-
-            new GoldCalculationValidator()
-
-        );
-
-
 
 
 
@@ -249,11 +236,13 @@ export function createTelegramModule(
 
             [
 
+
+
                 new GoldCalculationConversationFlow(
 
                     dependencies.sessionStore,
 
-                    goldCalculationWorkflow,
+                    dependencies.goldCalculationWorkflow,
 
                     goldCalculationResultFormatter,
 
@@ -272,6 +261,8 @@ export function createTelegramModule(
                     dependencies.calculateReverseGoldUseCase
 
                 )
+
+
 
             ]
 
@@ -562,6 +553,7 @@ export function createTelegramModule(
 
 
     };
+
 
 
 }

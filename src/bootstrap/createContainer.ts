@@ -359,6 +359,12 @@ export function createContainer(
 
 
 
+                goldCalculationWorkflow:
+
+                    gold.goldCalculationWorkflow,
+
+
+
                 sessionStore:
 
                     storage.sessionStore,
@@ -377,7 +383,6 @@ export function createContainer(
             }
 
         );
-
 
 
 
