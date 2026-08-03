@@ -1,346 +1,222 @@
 import {
     CalculateGoldFormulaUseCase,
     CalculateGoldFormulaOutput
-}
-from "../CalculateGoldFormulaUseCase";
-
+} from "../CalculateGoldFormulaUseCase";
 
 import {
     GoldCalculationStep
-}
-from "./GoldCalculationStep";
-
+} from "./GoldCalculationStep";
 
 import {
-    GoldCalculationSessionData
-}
-from "./GoldCalculationSessionData";
-
+    GoldCalculationSessionData,
+    GoldCalculationHistoryEntry
+} from "./GoldCalculationSessionData";
 
 import {
     GoldCalculationValidator
-}
-from "../validation/GoldCalculationValidator";
-
-
-
-
+} from "../validation/GoldCalculationValidator";
 
 
 export interface GoldCalculationWorkflowResult {
 
+    completed: boolean;
 
-    completed:
+    nextStep?: GoldCalculationStep;
 
-        boolean;
+    updatedData?: GoldCalculationSessionData;
 
+    error?: string[];
 
-
-    nextStep?:
-
-        GoldCalculationStep;
-
-
-
-    updatedData?:
-
-        GoldCalculationSessionData;
-
-
-
-    error?:
-
-        string[];
-
-
-
-    result?:
-
-        CalculateGoldFormulaOutput;
-
-
+    result?: CalculateGoldFormulaOutput;
 
 }
-
-
-
-
-
-
 
 
 export class GoldCalculationWorkflow {
 
 
-
-
-
     constructor(
 
+        private readonly useCase: CalculateGoldFormulaUseCase,
 
-
-        private readonly useCase:
-
-            CalculateGoldFormulaUseCase,
-
-
-
-        private readonly validator:
-
-            GoldCalculationValidator
-
-
+        private readonly validator: GoldCalculationValidator
 
     ) {}
 
 
-
-
-
-
-
-
-
     execute(
 
+        step: GoldCalculationStep,
 
+        data: GoldCalculationSessionData,
 
-        step:
-
-            GoldCalculationStep,
-
-
-
-        data:
-
-            GoldCalculationSessionData,
-
-
-
-        value:
-
-            number
-
-
+        value: number
 
     ): GoldCalculationWorkflowResult {
 
 
+        const updatedData: GoldCalculationSessionData = {
 
-        const updatedData:
+            ...data,
 
-            GoldCalculationSessionData = {
-
-
-            ...data
-
+            history: [
+                ...(data.history ?? [])
+            ]
 
         };
 
 
-
-
-
-
+        this.pushHistory(
+            updatedData,
+            step
+        );
 
 
         switch(step) {
 
 
-
-
-
             case GoldCalculationStep.WAITING_WEIGHT:
-
-
 
                 updatedData.weight = value;
 
-
-
                 return this.next(
-
                     GoldCalculationStep.WAITING_PRICE_SELECTION,
-
                     updatedData
-
                 );
-
-
-
-
-
-
 
 
             case GoldCalculationStep.WAITING_PRICE:
 
-
-
                 updatedData.goldPrice = value;
-
                 updatedData.priceSource = "MANUAL";
 
-
-
                 return this.next(
-
                     GoldCalculationStep.WAITING_LABOR,
-
                     updatedData
-
                 );
-
-
-
-
-
-
 
 
             case GoldCalculationStep.WAITING_LABOR:
 
-
-
                 updatedData.laborPercent = value;
 
-
-
                 return this.next(
-
                     GoldCalculationStep.WAITING_PROFIT,
-
                     updatedData
-
                 );
-
-
-
-
-
-
 
 
             case GoldCalculationStep.WAITING_PROFIT:
 
-
-
                 updatedData.profitPercent = value;
 
-
-
                 return this.next(
-
                     GoldCalculationStep.WAITING_TAX,
-
                     updatedData
-
                 );
-
-
-
-
-
-
 
 
             case GoldCalculationStep.WAITING_TAX:
 
-
-
                 updatedData.taxPercent = value;
 
-
-
-                return this.calculate(
-
-                    updatedData
-
-                );
-
-
-
-
-
-
+                return this.calculate(updatedData);
 
 
             default:
 
-
-
                 return {
 
-
-                    completed:
-
-                        false,
-
+                    completed: false,
 
                     updatedData,
 
-
-                    error:
-
-                    [
-
+                    error: [
                         "Unknown calculation step"
-
                     ]
 
                 };
 
-
         }
-
 
     }
 
 
 
+    goBack(
+
+        data: GoldCalculationSessionData
+
+    ): GoldCalculationWorkflowResult {
 
 
+        const history = [
+            ...(data.history ?? [])
+        ];
 
+
+        if (history.length === 0) {
+
+            return {
+
+                completed: false,
+
+                updatedData: data,
+
+                error: [
+                    "مرحله قبلی وجود ندارد"
+                ]
+
+            };
+
+        }
+
+
+        const previous = history.pop()!;
+
+
+        return {
+
+            completed: false,
+
+            nextStep: previous.step,
+
+            updatedData: {
+
+                ...previous.data,
+
+                history
+
+            }
+
+        };
+
+    }
 
 
 
     selectMarketPrice(
 
-        data:
+        data: GoldCalculationSessionData,
 
-            GoldCalculationSessionData,
-
-        currentPrice:
-
-            number
+        currentPrice: number
 
     ): GoldCalculationWorkflowResult {
 
 
-
-        const updatedData:
-
-            GoldCalculationSessionData = {
-
+        const updatedData = {
 
             ...data,
 
+            history: [
+                ...(data.history ?? [])
+            ],
 
-            goldPrice:
+            goldPrice: currentPrice,
 
-                currentPrice,
-
-
-            priceSource:
-
-                "MARKET"
-
+            priceSource: "MARKET" as const
 
         };
-
-
-
-
 
 
         return this.next(
@@ -351,43 +227,28 @@ export class GoldCalculationWorkflow {
 
         );
 
-
     }
-
-
-
-
-
-
 
 
 
     selectManualPrice(
 
-        data:
-
-            GoldCalculationSessionData
+        data: GoldCalculationSessionData
 
     ): GoldCalculationWorkflowResult {
 
 
-
-        const updatedData:
-
-            GoldCalculationSessionData = {
-
+        const updatedData = {
 
             ...data,
 
+            history: [
+                ...(data.history ?? [])
+            ],
 
-            priceSource:
-
-                "MANUAL"
-
+            priceSource: "MANUAL" as const
 
         };
-
-
 
 
         return this.next(
@@ -398,235 +259,134 @@ export class GoldCalculationWorkflow {
 
         );
 
-
     }
 
 
 
+    private pushHistory(
+
+        data: GoldCalculationSessionData,
+
+        step: GoldCalculationStep
+
+    ): void {
 
 
+        const snapshot: GoldCalculationHistoryEntry = {
 
+
+            step,
+
+
+            data: {
+
+
+                weight: data.weight,
+
+                goldPrice: data.goldPrice,
+
+                priceSource: data.priceSource,
+
+                laborPercent: data.laborPercent,
+
+                profitPercent: data.profitPercent,
+
+                taxPercent: data.taxPercent,
+
+                discount: data.discount
+
+            }
+
+        };
+
+
+        data.history.push(snapshot);
+
+    }
 
 
 
     private next(
 
+        step: GoldCalculationStep,
 
-
-        step:
-
-            GoldCalculationStep,
-
-
-
-        data:
-
-            GoldCalculationSessionData
-
-
+        data: GoldCalculationSessionData
 
     ): GoldCalculationWorkflowResult {
 
 
-
         return {
 
+            completed: false,
 
-            completed:
+            nextStep: step,
 
-                false,
-
-
-            nextStep:
-
-                step,
-
-
-            updatedData:
-
-                data
-
+            updatedData: data
 
         };
 
-
     }
-
-
-
-
-
-
 
 
 
     private calculate(
 
-
-
-        data:
-
-            GoldCalculationSessionData
-
-
+        data: GoldCalculationSessionData
 
     ): GoldCalculationWorkflowResult {
 
 
-
         const validation =
-
-            this.validator.validate(
-
-                data
-
-            );
-
-
-
-
-
+            this.validator.validate(data);
 
 
         if (!validation.valid) {
 
-
-
             return {
 
-
-
-                completed:
-
-                    false,
-
-
+                completed: false,
 
                 nextStep:
-
                     GoldCalculationStep.WAITING_TAX,
 
-
-
-                updatedData:
-
-                    data,
-
-
+                updatedData: data,
 
                 error:
-
                     validation.errors
 
-
-
             };
-
 
         }
 
 
-
-
-
-
-
-
-
         const result =
-
             this.useCase.execute({
 
+                weight: data.weight!,
 
+                goldPrice: data.goldPrice!,
 
+                laborPercent: data.laborPercent!,
 
+                profitPercent: data.profitPercent!,
 
-                weight:
+                taxPercent: data.taxPercent ?? 0,
 
-                    data.weight!,
-
-
-
-
-
-                goldPrice:
-
-                    data.goldPrice!,
-
-
-
-
-
-                laborPercent:
-
-                    data.laborPercent!,
-
-
-
-
-
-                profitPercent:
-
-                    data.profitPercent!,
-
-
-
-
-
-                taxPercent:
-
-                    data.taxPercent ?? 0,
-
-
-
-
-
-                discount:
-
-                    data.discount ?? 0
-
-
-
-
+                discount: data.discount ?? 0
 
             });
 
 
-
-
-
-
-
-
-
         return {
 
+            completed: true,
 
-
-            completed:
-
-                true,
-
-
-
-            updatedData:
-
-                data,
-
-
+            updatedData: data,
 
             result
 
-
-
         };
 
-
-
     }
-
-
-
-
 
 }

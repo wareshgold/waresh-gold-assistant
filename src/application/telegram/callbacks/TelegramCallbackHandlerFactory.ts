@@ -71,6 +71,12 @@ from "./handlers/CalculateGoldPriceCallbackHandler";
 
 
 import {
+    BackCalculationCallbackHandler,
+}
+from "./handlers/BackCalculationCallbackHandler";
+
+
+import {
     TelegramActionExecutor,
 }
 from "../actions/TelegramActionExecutor";
@@ -124,6 +130,10 @@ import {
 from "../../gold/GetCurrentGoldPriceUseCase";
 
 
+import {
+    GoldCalculationWorkflow,
+}
+from "../../gold/workflows/GoldCalculationWorkflow";
 
 
 
@@ -133,73 +143,52 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
-
     static create(
 
 
-
         telegramActionExecutor:
-
             TelegramActionExecutor,
 
 
-
         telegramNavigationService:
-
             TelegramNavigationService,
 
 
-
         telegramNavigationStateService:
-
             TelegramNavigationStateService,
 
 
-
         getMarketChartUseCase:
-
             GetMarketChartUseCase,
 
 
-
         marketChartRenderer:
-
             MarketChartRenderer,
 
 
-
         marketChartImageGenerator:
-
             MarketChartImageGenerator,
 
 
-
         sessionStore:
-
             TelegramSessionStore,
 
 
-
         getCurrentGoldPriceUseCase:
+            GetCurrentGoldPriceUseCase,
 
-            GetCurrentGoldPriceUseCase
+
+        goldCalculationWorkflow:
+            GoldCalculationWorkflow
 
 
 
     ):
-
         TelegramCallbackHandler[] {
 
 
 
-
-
-
-
         const actionHandlers =
-
 
             TelegramActionCatalog
 
@@ -207,9 +196,7 @@ export class TelegramCallbackHandlerFactory {
 
                 .map(
 
-
                     action =>
-
 
                         new ActionCallbackHandler(
 
@@ -219,19 +206,13 @@ export class TelegramCallbackHandlerFactory {
 
                         )
 
-
                 );
 
 
 
 
 
-
-
-
         return [
-
-
 
 
 
@@ -247,13 +228,11 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
             new OpenMainMenuCallbackHandler(
 
                 telegramNavigationService
 
             ),
-
 
 
 
@@ -269,13 +248,11 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
             new OpenCalculatorMenuCallbackHandler(
 
                 telegramNavigationService
 
             ),
-
 
 
 
@@ -291,13 +268,11 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
             new OpenSettingsMenuCallbackHandler(
 
                 telegramNavigationService
 
             ),
-
 
 
 
@@ -319,13 +294,11 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
             new CalculateGoldCallbackHandler(
 
                 sessionStore
 
             ),
-
 
 
 
@@ -343,7 +316,6 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
             new CalculateGoldLivePriceCallbackHandler(
 
                 sessionStore,
@@ -356,9 +328,19 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+            new BackCalculationCallbackHandler(
+
+                sessionStore,
+
+                goldCalculationWorkflow
+
+            ),
+
+
+
+
 
             ...actionHandlers
-
 
 
 
