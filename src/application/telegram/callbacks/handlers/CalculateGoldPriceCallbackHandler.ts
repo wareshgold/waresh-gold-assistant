@@ -197,9 +197,12 @@ implements TelegramCallbackHandler {
 
 
 
+
+
         const currentPrice =
 
             await this.getCurrentGoldPriceUseCase.execute();
+
 
 
 
@@ -217,7 +220,12 @@ implements TelegramCallbackHandler {
 
             goldPrice:
 
-                currentPrice.price
+                currentPrice.price,
+
+
+            priceSource:
+
+                "MARKET"
 
 
 
@@ -229,9 +237,11 @@ implements TelegramCallbackHandler {
 
 
 
+
         session.state =
 
             GoldCalculationStep.WAITING_LABOR;
+
 
 
 
@@ -251,11 +261,15 @@ implements TelegramCallbackHandler {
 
 
 
+
+
         await this.sessionStore.save(
 
             session
 
         );
+
+
 
 
 
@@ -283,8 +297,43 @@ ${this.formatNumber(currentPrice.price)} تومان
 
 
 📈 درصد اجرت را وارد کنید:
-`.trim()
+`.trim(),
 
+
+
+            replyMarkup:
+
+            {
+
+                type:
+
+                    "INLINE",
+
+
+                rows:
+
+                [
+
+                    [
+
+                        {
+
+                            text:
+
+                                "⬅️ اصلاح مرحله قبل",
+
+
+                            actionId:
+
+                                "calculator:back"
+
+                        }
+
+                    ]
+
+                ]
+
+            }
 
 
         };
