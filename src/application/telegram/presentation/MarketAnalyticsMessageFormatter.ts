@@ -3,6 +3,10 @@ import {
 }
 from "../../../domain/market/analytics/entities/MarketAnalytics";
 
+import {
+    MarketScore
+}
+from "../../../domain/market/analytics/value-objects/MarketScore";
 
 import {
     TelegramMessageBuilder
@@ -10,9 +14,7 @@ import {
 from "./TelegramMessageBuilder";
 
 
-
 export class MarketAnalyticsMessageFormatter {
-
 
 
     constructor(
@@ -23,14 +25,13 @@ export class MarketAnalyticsMessageFormatter {
     ) {}
 
 
-
-
-
-
     format(
 
         analytics:
-            MarketAnalytics
+            MarketAnalytics,
+
+        score:
+            MarketScore
 
     ): string {
 
@@ -39,112 +40,41 @@ export class MarketAnalyticsMessageFormatter {
             analytics.getChange();
 
 
-
         const trend =
             analytics.getTrend();
-
 
 
         const range =
             analytics.getPriceRange();
 
 
-
-
-
         return this.builder.build([
 
-
-
-            "📈 تحلیل بازار طلا",
+            "📊 تحلیل بازار طلا",
 
             "",
 
+            `امتیاز بازار: ${score.formatted}`,
 
+            "",
 
-            "🟡 قیمت فعلی",
+            `📈 روند: ${trend.emoji} ${this.translateTrend(trend.type)}`,
 
-            `${this.formatNumber(
+            `📊 تغییر: ${change.formatted}`,
+
+            `⚡ نوسان: ${this.formatNumber(analytics.getVolatility())}٪`,
+
+            "",
+
+            `💰 قیمت فعلی: ${this.formatNumber(
                 analytics.getCurrentPrice()
             )} تومان`,
 
-
-
-            "",
-
-
-
-            "📊 تغییرات",
-
-            change.formatted,
-
-
-
-            "",
-
-
-
-            "📈 روند بازار",
-
-            `${trend.emoji} ${this.translateTrend(trend.type)}`,
-
-
-
-            "",
-
-
-
-            "⚡ میزان نوسان",
-
-            `${this.formatNumber(
-                analytics.getVolatility()
-            )}٪`,
-
-
-
-            "",
-
-
-
-            "📉 محدوده قیمت",
-
-            `${range.formattedMin} - ${range.formattedMax}`,
-
-
-
-            "",
-
-
-
-            "📌 میانگین",
-
-            `${range.formattedAverage} تومان`,
-
-
-
-            "",
-
-
-
-            "🕒 زمان تحلیل",
-
-            analytics
-                .getAnalyzedAt()
-                .toLocaleString(
-                    "fa-IR",
-                    {
-                        timeZone:
-                            "Asia/Tehran"
-                    }
-                )
+            `📉 بازه: ${range.formattedMin} تا ${range.formattedMax} تومان`
 
         ]);
 
     }
-
-
-
-
 
 
     private translateTrend(
@@ -155,36 +85,26 @@ export class MarketAnalyticsMessageFormatter {
     ): string {
 
 
-        switch(trend) {
-
+        switch (trend) {
 
             case "UP":
                 return "صعودی";
 
-
             case "DOWN":
                 return "نزولی";
-
 
             case "STABLE":
                 return "متعادل";
 
-
             case "VOLATILE":
                 return "پرنوسان";
-
 
             default:
                 return "نامشخص";
 
         }
 
-
     }
-
-
-
-
 
 
     private formatNumber(
@@ -197,13 +117,10 @@ export class MarketAnalyticsMessageFormatter {
 
         return new Intl.NumberFormat(
             "fa-IR"
-        )
-        .format(
+        ).format(
             Math.round(value)
         );
 
-
     }
-
 
 }
