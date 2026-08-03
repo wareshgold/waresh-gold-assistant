@@ -56,6 +56,7 @@ from "../../gold/GetCurrentGoldPriceUseCase";
 
 
 
+
 export class GoldCalculationConversationFlow
 
 implements TelegramConversationFlow {
@@ -65,6 +66,8 @@ implements TelegramConversationFlow {
     private readonly promptFormatter:
 
         GoldCalculationPromptFormatter;
+
+
 
 
 
@@ -131,6 +134,7 @@ implements TelegramConversationFlow {
 
 
 
+
     canHandle(
 
         state:
@@ -154,6 +158,7 @@ implements TelegramConversationFlow {
 
 
     }
+
 
 
 
@@ -213,12 +218,165 @@ implements TelegramConversationFlow {
 
                 content:
 
-                    "Session not found"
+                    "❌ جلسه محاسبه پیدا نشد"
 
             };
 
 
         }
+
+
+
+
+
+
+
+
+
+        const normalizedMessage =
+
+            message.trim().toLowerCase();
+
+
+
+
+
+
+
+        if (
+
+            normalizedMessage === "back"
+
+            ||
+
+            normalizedMessage === "بازگشت"
+
+            ||
+
+            normalizedMessage === "⬅️ اصلاح"
+
+            ||
+
+            normalizedMessage === "اصلاح"
+
+        ) {
+
+
+
+            const result =
+
+                this.workflow.goBack(
+
+                    session.data
+
+                );
+
+
+
+
+
+
+
+            if (result.error) {
+
+
+                return {
+
+
+                    type:
+
+                        "text",
+
+
+                    content:
+
+                        result.error.join("\n")
+
+
+                };
+
+
+            }
+
+
+
+
+
+
+
+            session.state =
+
+                result.nextStep!;
+
+
+
+            session.data =
+
+                result.updatedData!;
+
+
+
+            session.updatedAt =
+
+                Date.now();
+
+
+
+
+
+
+
+            await this.sessionStore.save(
+
+                session
+
+            );
+
+
+
+
+
+
+
+
+            const prompt =
+
+                this.promptFormatter.format(
+
+                    result.nextStep!
+
+                );
+
+
+
+
+
+
+
+            return {
+
+
+                type:
+
+                    "text",
+
+
+                content:
+
+                    `⬅️ به مرحله قبل برگشتید\n\n${prompt.text}`,
+
+
+                replyMarkup:
+
+                    prompt.replyMarkup
+
+
+            };
+
+
+        }
+
+
 
 
 
@@ -248,6 +406,7 @@ implements TelegramConversationFlow {
 
                 return {
 
+
                     type:
 
                         "text" as const,
@@ -262,10 +421,12 @@ implements TelegramConversationFlow {
 
                         prompt.replyMarkup
 
+
                 };
 
 
             };
+
 
 
 
@@ -279,7 +440,6 @@ implements TelegramConversationFlow {
             session.state as GoldCalculationStep
 
         ) {
-
 
 
 
@@ -304,13 +464,16 @@ implements TelegramConversationFlow {
 
                         return {
 
+
                             type:
 
                                 "text",
 
+
                             content:
 
                                 "❌ سرویس قیمت بازار فعال نیست"
+
 
                         };
 
@@ -321,9 +484,13 @@ implements TelegramConversationFlow {
 
 
 
+
+
                     const marketPrice =
 
                         await this.getCurrentGoldPriceUseCase.execute();
+
+
 
 
 
@@ -343,9 +510,12 @@ implements TelegramConversationFlow {
 
 
 
+
+
                     session.state =
 
                         result.nextStep!;
+
 
 
                     session.data =
@@ -353,9 +523,12 @@ implements TelegramConversationFlow {
                         result.updatedData!;
 
 
+
                     session.updatedAt =
 
                         Date.now();
+
+
 
 
 
@@ -371,6 +544,8 @@ implements TelegramConversationFlow {
 
 
 
+
+
                     return createPromptResponse(
 
                         result.nextStep!
@@ -379,6 +554,8 @@ implements TelegramConversationFlow {
 
 
                 }
+
+
 
 
 
@@ -410,14 +587,18 @@ implements TelegramConversationFlow {
 
 
 
+
+
                     session.state =
 
                         result.nextStep!;
 
 
+
                     session.data =
 
                         result.updatedData!;
+
 
 
                     session.updatedAt =
@@ -428,11 +609,15 @@ implements TelegramConversationFlow {
 
 
 
+
+
                     await this.sessionStore.save(
 
                         session
 
                     );
+
+
 
 
 
@@ -452,15 +637,19 @@ implements TelegramConversationFlow {
 
 
 
+
                 return {
+
 
                     type:
 
                         "text",
 
+
                     content:
 
                         "لطفاً یکی از گزینه‌های قیمت بازار یا دستی را انتخاب کنید"
+
 
                 };
 
@@ -469,13 +658,8 @@ implements TelegramConversationFlow {
 
 
 
-
-            default:
-
-                break;
-
-
         }
+
 
 
 
@@ -497,6 +681,7 @@ implements TelegramConversationFlow {
 
 
 
+
         if (
 
             Number.isNaN(value)
@@ -506,18 +691,22 @@ implements TelegramConversationFlow {
 
             return {
 
+
                 type:
 
                     "text",
+
 
                 content:
 
                     "❌ لطفاً فقط عدد وارد کنید"
 
+
             };
 
 
         }
+
 
 
 
@@ -548,18 +737,23 @@ implements TelegramConversationFlow {
 
 
 
+
+
         if (result.error) {
 
 
             return {
 
+
                 type:
 
                     "text",
 
+
                 content:
 
                     result.error.join("\n")
+
 
             };
 
@@ -573,24 +767,77 @@ implements TelegramConversationFlow {
 
 
 
+
         if (result.completed) {
 
 
 
 
-            await this.saveHistoryUseCase.execute(
+            const response = {
 
 
-                userId,
+                type:
+
+                    "text" as const,
 
 
-                result.updatedData!,
+                content:
+
+                    this.resultFormatter.format(
+
+                        result.result!
+
+                    )
 
 
-                result.result!
+            };
 
 
-            );
+
+
+
+
+
+
+            try {
+
+
+                await this.saveHistoryUseCase.execute(
+
+
+                    userId,
+
+
+                    result.updatedData!,
+
+
+                    result.result!
+
+
+                );
+
+
+            }
+
+            catch(error) {
+
+
+                console.error(
+
+
+                    "GOLD CALCULATION HISTORY SAVE FAILED",
+
+
+                    error
+
+
+                );
+
+
+            }
+
+
+
 
 
 
@@ -606,24 +853,15 @@ implements TelegramConversationFlow {
 
 
 
-            return {
 
-                type:
 
-                    "text",
 
-                content:
-
-                    this.resultFormatter.format(
-
-                        result.result!
-
-                    )
-
-            };
+            return response;
 
 
         }
+
+
 
 
 
@@ -653,11 +891,13 @@ implements TelegramConversationFlow {
 
 
 
+
         await this.sessionStore.save(
 
             session
 
         );
+
 
 
 

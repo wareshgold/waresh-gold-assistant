@@ -147,7 +147,6 @@ from "../../application/gold/GetCurrentGoldPriceUseCase";
 
 
 
-
 interface Dependencies {
 
 
@@ -251,6 +250,7 @@ export function createTelegramModule(
 
 
 
+
     const conversationManager =
 
         new TelegramConversationManager(
@@ -291,13 +291,7 @@ export function createTelegramModule(
 
 
 
-    const marketAnalyticsMessageFormatter =
 
-        new MarketAnalyticsMessageFormatter(
-
-            new TelegramMessageBuilder()
-
-        );
 
 
 
@@ -323,11 +317,13 @@ export function createTelegramModule(
 
 
 
+
     const telegramNavigationService:
 
         TelegramNavigationService =
 
             new DefaultTelegramNavigationService();
+
 
 
 
@@ -338,6 +334,11 @@ export function createTelegramModule(
             dependencies.sessionStore
 
         );
+
+
+
+
+
     const commandRouter =
 
         TelegramCommandRegistry.create(
@@ -459,6 +460,7 @@ export function createTelegramModule(
 
 
 
+
     const commandMenuService =
 
         new TelegramCommandMenuService(
@@ -509,7 +511,11 @@ export function createTelegramModule(
 
 
 
-            dependencies.getCurrentGoldPriceUseCase
+            dependencies.getCurrentGoldPriceUseCase,
+
+
+
+            dependencies.goldCalculationWorkflow
 
 
 
