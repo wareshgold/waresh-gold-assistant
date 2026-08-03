@@ -34,6 +34,17 @@ import {
 from "../presentation/GoldCalculationResultFormatter";
 
 
+import {
+    GoldCalculationPromptFormatter
+}
+from "../presentation/GoldCalculationPromptFormatter";
+
+
+import {
+    SaveGoldCalculationHistoryUseCase
+}
+from "../../gold/SaveGoldCalculationHistoryUseCase";
+
 
 
 
@@ -43,6 +54,16 @@ from "../presentation/GoldCalculationResultFormatter";
 export class GoldCalculationConversationFlow
 
 implements TelegramConversationFlow {
+
+
+
+
+    private readonly promptFormatter:
+
+        GoldCalculationPromptFormatter;
+
+
+
 
 
 
@@ -61,10 +82,32 @@ implements TelegramConversationFlow {
 
         private readonly resultFormatter:
 
-            GoldCalculationResultFormatter
+            GoldCalculationResultFormatter,
 
 
-    ) {}
+        private readonly saveHistoryUseCase:
+
+            SaveGoldCalculationHistoryUseCase,
+
+
+        promptFormatter?:
+
+            GoldCalculationPromptFormatter
+
+
+    ) {
+
+
+        this.promptFormatter =
+
+            promptFormatter
+
+            ??
+
+            new GoldCalculationPromptFormatter();
+
+
+    }
 
 
 
@@ -123,6 +166,7 @@ implements TelegramConversationFlow {
 
 
 
+
         const session =
 
             await this.sessionStore.get<GoldCalculationSessionData>(
@@ -130,6 +174,7 @@ implements TelegramConversationFlow {
                 userId
 
             );
+
 
 
 
@@ -156,6 +201,7 @@ implements TelegramConversationFlow {
 
 
 
+
         const value =
 
             Number(
@@ -163,6 +209,7 @@ implements TelegramConversationFlow {
                 message
 
             );
+
 
 
 
@@ -195,9 +242,11 @@ implements TelegramConversationFlow {
 
 
 
+
         const result =
 
             this.workflow.execute(
+
 
 
                 session.state as GoldCalculationStep,
@@ -209,8 +258,8 @@ implements TelegramConversationFlow {
                 value
 
 
-            );
 
+            );
 
 
 
@@ -243,9 +292,25 @@ implements TelegramConversationFlow {
 
 
 
-
-
         if (result.completed) {
+
+
+
+
+            await this.saveHistoryUseCase.execute(
+
+
+                userId,
+
+
+                result.updatedData!,
+
+
+                result.result!
+
+            );
+
+
 
 
 
@@ -254,6 +319,8 @@ implements TelegramConversationFlow {
                 userId
 
             );
+
+
 
 
 
@@ -274,8 +341,6 @@ implements TelegramConversationFlow {
 
 
         }
-
-
 
 
 
@@ -307,7 +372,6 @@ implements TelegramConversationFlow {
 
 
 
-
         await this.sessionStore.save(
 
             session
@@ -320,72 +384,23 @@ implements TelegramConversationFlow {
 
 
 
-
-
-
-
-        const nextMessages:
-
-            Record<GoldCalculationStep,string> = {
-
-
-
-                [GoldCalculationStep.WAITING_PRICE]:
-
-                    "قیمت هر گرم طلا را وارد کنید:",
-
-
-
-                [GoldCalculationStep.WAITING_LABOR]:
-
-                    "درصد اجرت را وارد کنید:",
-
-
-
-                [GoldCalculationStep.WAITING_PROFIT]:
-
-                    "درصد سود را وارد کنید:",
-
-
-
-                [GoldCalculationStep.WAITING_TAX]:
-
-                    "درصد مالیات را وارد کنید:",
-
-
-
-                [GoldCalculationStep.WAITING_WEIGHT]:
-
-                    "وزن طلا را وارد کنید:"
-
-            };
-
-
-
-
-
-
-
-
-
         return {
-
 
             type: "text",
 
-
             content:
 
-                nextMessages[
+                this.promptFormatter.format(
 
                     result.nextStep!
 
-                ]
-
+                )
 
         };
 
+
     }
+
 
 
 }

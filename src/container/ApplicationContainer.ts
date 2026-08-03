@@ -1,6 +1,12 @@
 import { TelegramMessageHandler }
 from "../application/telegram/TelegramMessageHandler";
 
+import { SaveGoldCalculationHistoryUseCase }
+from "../application/gold/SaveGoldCalculationHistoryUseCase";
+
+import { GetGoldCalculationHistoryUseCase }
+from "../application/gold/GetGoldCalculationHistoryUseCase";
+
 import { TelegramCommandService }
 from "../application/telegram/services/TelegramCommandService";
 
@@ -135,9 +141,42 @@ export class ApplicationContainer {
             );
 
 
+        const saveGoldCalculationHistoryUseCase =
+
+            new SaveGoldCalculationHistoryUseCase(
+
+                {
+                    async save() {},
+
+                    async getByUserId() {
+
+                        return [];
+
+                    }
+
+                }
+
+            );
 
 
+        const getGoldCalculationHistoryUseCase =
 
+            new GetGoldCalculationHistoryUseCase(
+
+                {
+                    async save() {},
+
+                    async getByUserId() {
+
+                        return [];
+
+                    }
+
+                }
+
+        );
+
+        
         const marketProvider =
 
             new TelegramMarketPriceProvider(
@@ -342,7 +381,9 @@ export class ApplicationContainer {
 
                         goldCalculationWorkflow,
 
-                        goldCalculationResultFormatter
+                        goldCalculationResultFormatter,
+
+                        saveGoldCalculationHistoryUseCase
 
                     )
 
@@ -377,6 +418,8 @@ export class ApplicationContainer {
                 getMarketAnalyticsUseCase,
 
                 getMarketHistoryUseCase,
+
+                getGoldCalculationHistoryUseCase,
 
                 calculateGoldFormulaUseCase,
 

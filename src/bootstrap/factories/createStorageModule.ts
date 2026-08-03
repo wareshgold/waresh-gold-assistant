@@ -22,8 +22,18 @@ import { D1TelegramUserProfileStore }
 from "../../application/telegram/profile/D1TelegramUserProfileStore";
 
 
+import { D1GoldCalculationHistoryRepository }
+from "../../infrastructure/gold/repositories/d1/D1GoldCalculationHistoryRepository";
+
+
+import { GoldCalculationHistoryRepository }
+from "../../domain/gold/repositories/GoldCalculationHistoryRepository";
+
+
 import { AppEnv }
 from "../../shared/config/env";
+
+
 
 
 
@@ -51,6 +61,8 @@ export function createStorageModule(
 
 
 
+
+
     const sessionStore =
 
         env.ENVIRONMENT === "production"
@@ -62,6 +74,8 @@ export function createStorageModule(
             )
 
             : new MemoryTelegramSessionStore();
+
+
 
 
 
@@ -86,6 +100,42 @@ export function createStorageModule(
 
 
 
+
+
+
+    const goldCalculationHistoryRepository:
+
+        GoldCalculationHistoryRepository =
+
+
+            env.waresh_gold_db
+
+                ? new D1GoldCalculationHistoryRepository(
+
+                    env.waresh_gold_db
+
+                )
+
+                : {
+
+                    async save() {},
+
+
+                    async getByUserId() {
+
+                        return [];
+
+                    }
+
+                };
+
+
+
+
+
+
+
+
     return {
 
 
@@ -95,7 +145,10 @@ export function createStorageModule(
         sessionStore,
 
 
-        userProfileStore
+        userProfileStore,
+
+
+        goldCalculationHistoryRepository
 
 
     };

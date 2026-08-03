@@ -30,6 +30,10 @@ import { GetMarketHistoryCommandHandler }
 from "./handlers/GetMarketHistoryCommandHandler";
 
 
+import { GetGoldCalculationHistoryCommandHandler }
+from "./handlers/GetGoldCalculationHistoryCommandHandler";
+
+
 import { CalculateGoldCommandHandler }
 from "./handlers/CalculateGoldCommandHandler";
 
@@ -52,6 +56,10 @@ from "../../market/GetMarketAnalyticsUseCase";
 
 import { GetMarketHistoryUseCase }
 from "../../market/GetMarketHistoryUseCase";
+
+
+import { GetGoldCalculationHistoryUseCase }
+from "../../gold/GetGoldCalculationHistoryUseCase";
 
 
 import { CalculateGoldFormulaUseCase }
@@ -107,6 +115,7 @@ export class TelegramCommandRegistry {
     static create(
 
 
+
         getGoldPriceUseCase:
             GetGoldPriceUseCase,
 
@@ -121,6 +130,10 @@ export class TelegramCommandRegistry {
 
         getMarketHistoryUseCase:
             GetMarketHistoryUseCase,
+
+
+        getGoldCalculationHistoryUseCase:
+            GetGoldCalculationHistoryUseCase,
 
 
         calculateGoldFormulaUseCase:
@@ -145,6 +158,7 @@ export class TelegramCommandRegistry {
 
 
     ): TelegramCommandRouter {
+
 
 
 
@@ -182,9 +196,11 @@ export class TelegramCommandRegistry {
 
 
 
+
         let commandRouter:
 
             TelegramCommandRouter;
+
 
 
 
@@ -196,9 +212,12 @@ export class TelegramCommandRegistry {
 
 
 
+
         const handlers:
 
             TelegramCommandHandler[] = [
+
+
 
 
 
@@ -216,6 +235,8 @@ export class TelegramCommandRegistry {
 
 
 
+
+
                 new HelpCommandHandler(
 
                     () =>
@@ -226,11 +247,15 @@ export class TelegramCommandRegistry {
 
 
 
+
+
                 new GoldPriceCommandHandler(
 
                     getGoldPriceUseCase
 
                 ),
+
+
 
 
 
@@ -244,6 +269,8 @@ export class TelegramCommandRegistry {
 
 
 
+
+
                 new GetMarketAnalyticsCommandHandler(
 
                     getMarketAnalyticsUseCase
@@ -252,11 +279,25 @@ export class TelegramCommandRegistry {
 
 
 
+
+
                 new GetMarketHistoryCommandHandler(
 
                     getMarketHistoryUseCase
 
                 ),
+
+
+
+
+
+                new GetGoldCalculationHistoryCommandHandler(
+
+                    getGoldCalculationHistoryUseCase
+
+                ),
+
+
 
 
 
@@ -269,6 +310,8 @@ export class TelegramCommandRegistry {
                     telegramNumberFormatter
 
                 ),
+
+
 
 
 
@@ -285,6 +328,8 @@ export class TelegramCommandRegistry {
 
 
 
+
+
         commandRouter =
 
             new TelegramCommandRouter(
@@ -292,6 +337,7 @@ export class TelegramCommandRegistry {
                 handlers
 
             );
+
 
 
 

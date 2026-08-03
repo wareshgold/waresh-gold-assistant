@@ -26,7 +26,6 @@ import { createMonitoringModule }
 from "./factories/createMonitoringModule";
 
 
-
 import { GetCurrentMarketPriceUseCase }
 from "../application/market/GetCurrentMarketPriceUseCase";
 
@@ -75,6 +74,12 @@ import { HealthCheckService }
 from "../application/system/HealthCheckService";
 
 
+import { SaveGoldCalculationHistoryUseCase }
+from "../application/gold/SaveGoldCalculationHistoryUseCase";
+
+
+import { GetGoldCalculationHistoryUseCase }
+from "../application/gold/GetGoldCalculationHistoryUseCase";
 
 
 
@@ -128,7 +133,6 @@ export function createContainer(
 
 
 
-
     const market =
 
         createMarketModule(
@@ -147,11 +151,33 @@ export function createContainer(
 
 
 
-
     const gold =
 
         createGoldModule();
 
+
+
+
+
+    const saveGoldCalculationHistoryUseCase =
+
+        new SaveGoldCalculationHistoryUseCase(
+
+            storage.goldCalculationHistoryRepository
+
+        );
+
+
+
+
+
+    const getGoldCalculationHistoryUseCase =
+
+        new GetGoldCalculationHistoryUseCase(
+
+            storage.goldCalculationHistoryRepository
+
+        );
 
 
 
@@ -181,9 +207,7 @@ export function createContainer(
 
 
 
-
     const currentMarketPriceUseCase =
-
 
         new GetCurrentMarketPriceUseCase(
 
@@ -195,9 +219,7 @@ export function createContainer(
 
 
 
-
     const getGoldPriceUseCase =
-
 
         new GetGoldPriceUseCase(
 
@@ -209,9 +231,7 @@ export function createContainer(
 
 
 
-
     const getGoldBubbleUseCase =
-
 
         new GetGoldBubbleUseCase(
 
@@ -225,9 +245,7 @@ export function createContainer(
 
 
 
-
     const getGoldBubbleDataUseCase =
-
 
         new GetGoldBubbleDataUseCase(
 
@@ -241,9 +259,7 @@ export function createContainer(
 
 
 
-
     const getMarketAnalyticsUseCase =
-
 
         new GetMarketAnalyticsUseCase(
 
@@ -255,9 +271,7 @@ export function createContainer(
 
 
 
-
     const getMarketHistoryUseCase =
-
 
         new GetMarketHistoryUseCase(
 
@@ -269,9 +283,7 @@ export function createContainer(
 
 
 
-
     const getMarketChartUseCase =
-
 
         new GetMarketChartUseCase(
 
@@ -283,9 +295,7 @@ export function createContainer(
 
 
 
-
     const refreshMarketPriceUseCase =
-
 
         new RefreshMarketPriceUseCase(
 
@@ -297,9 +307,7 @@ export function createContainer(
 
 
 
-
     const refreshMarketPriceJob =
-
 
         new RefreshMarketPriceJob(
 
@@ -311,9 +319,7 @@ export function createContainer(
 
 
 
-
     const telegram =
-
 
         createTelegramModule(
 
@@ -334,12 +340,14 @@ export function createContainer(
                 getMarketHistoryUseCase,
 
 
+                getGoldCalculationHistoryUseCase,
+
+
                 getMarketChartUseCase,
 
 
 
                 calculateGoldFormulaUseCase:
-
 
                     gold.calculateGoldFormulaUseCase,
 
@@ -347,13 +355,11 @@ export function createContainer(
 
                 calculateReverseGoldUseCase:
 
-
                     gold.calculateReverseGoldUseCase,
 
 
 
                 sessionStore:
-
 
                     storage.sessionStore,
 
@@ -361,14 +367,16 @@ export function createContainer(
 
                 profileStore:
 
+                    storage.userProfileStore,
 
-                    storage.userProfileStore
+
+
+                saveGoldCalculationHistoryUseCase
 
 
             }
 
         );
-
 
 
 
@@ -427,7 +435,13 @@ export function createContainer(
         refreshMarketPriceUseCase,
 
 
-        refreshMarketPriceJob
+        refreshMarketPriceJob,
+
+
+        saveGoldCalculationHistoryUseCase,
+
+
+        getGoldCalculationHistoryUseCase
 
 
 

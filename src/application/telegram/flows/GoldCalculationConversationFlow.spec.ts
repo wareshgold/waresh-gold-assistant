@@ -33,6 +33,10 @@ import { TelegramNumberFormatter }
 from "../presentation/TelegramNumberFormatter";
 
 
+import { SaveGoldCalculationHistoryUseCase }
+from "../../gold/SaveGoldCalculationHistoryUseCase";
+
+
 
 
 
@@ -79,6 +83,31 @@ describe(
 
 
 
+                const historyRepository = {
+
+                    async save() {},
+
+
+                    async getByUserId() {
+
+                        return [];
+
+                    }
+
+                };
+
+
+
+                const saveHistoryUseCase =
+
+                    new SaveGoldCalculationHistoryUseCase(
+
+                        historyRepository
+
+                    );
+
+
+
                 const flow =
 
                     new GoldCalculationConversationFlow(
@@ -87,7 +116,9 @@ describe(
 
                         workflow,
 
-                        resultFormatter
+                        resultFormatter,
+
+                        saveHistoryUseCase
 
                     );
 
