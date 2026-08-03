@@ -24,6 +24,7 @@ export interface GoldCalculationPrompt {
 
 
 
+
 export class GoldCalculationPromptFormatter {
 
 
@@ -44,6 +45,8 @@ export class GoldCalculationPromptFormatter {
 
 
 
+
+
             case GoldCalculationStep.WAITING_WEIGHT:
 
 
@@ -61,7 +64,7 @@ export class GoldCalculationPromptFormatter {
 
 
 
-            case GoldCalculationStep.WAITING_PRICE:
+            case GoldCalculationStep.WAITING_PRICE_SELECTION:
 
 
                 return {
@@ -70,9 +73,10 @@ export class GoldCalculationPromptFormatter {
                     text:
 
 `
-💰 قیمت هر گرم طلا را انتخاب کنید:
+💰 انتخاب قیمت طلا
 
-در صورت تمایل می‌توانید قیمت را دستی وارد کنید.
+
+لطفاً روش تعیین قیمت هر گرم طلا را انتخاب کنید:
 `,
 
 
@@ -92,27 +96,35 @@ export class GoldCalculationPromptFormatter {
 
                         [
 
+
                             [
+
 
                                 {
 
+
                                     text:
 
-                                        "🟡 استفاده از قیمت لحظه‌ای",
+                                        "🟡 استفاده از قیمت لحظه‌ای بازار",
 
 
                                     actionId:
 
                                         "calculator:use-current-price"
 
+
                                 }
+
 
                             ],
 
 
+
                             [
 
+
                                 {
+
 
                                     text:
 
@@ -123,9 +135,12 @@ export class GoldCalculationPromptFormatter {
 
                                         "calculator:manual-price"
 
+
                                 }
 
+
                             ]
+
 
                         ]
 
@@ -133,6 +148,30 @@ export class GoldCalculationPromptFormatter {
 
 
                 };
+
+
+
+
+
+
+
+
+
+            case GoldCalculationStep.WAITING_PRICE:
+
+
+                return {
+
+
+                    text:
+
+`
+💰 قیمت هر گرم طلا را وارد کنید:
+`
+
+
+                };
+
 
 
 
@@ -158,6 +197,8 @@ export class GoldCalculationPromptFormatter {
 
 
 
+
+
             case GoldCalculationStep.WAITING_PROFIT:
 
 
@@ -175,6 +216,8 @@ export class GoldCalculationPromptFormatter {
 
 
 
+
+
             case GoldCalculationStep.WAITING_TAX:
 
 
@@ -185,6 +228,8 @@ export class GoldCalculationPromptFormatter {
                         "🧾 درصد مالیات را وارد کنید:"
 
                 };
+
+
 
 
 
