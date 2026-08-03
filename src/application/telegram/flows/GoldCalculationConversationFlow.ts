@@ -46,71 +46,38 @@ import {
 from "../../gold/SaveGoldCalculationHistoryUseCase";
 
 
-import {
-    GetCurrentGoldPriceUseCase
-}
-from "../../gold/GetCurrentGoldPriceUseCase";
-
-
-
-
-
-
 
 export class GoldCalculationConversationFlow
 
 implements TelegramConversationFlow {
 
 
-
     private readonly promptFormatter:
-
         GoldCalculationPromptFormatter;
-
-
-
-
 
 
 
     constructor(
 
 
-
         private readonly sessionStore:
-
             TelegramSessionStore,
 
 
-
         private readonly workflow:
-
             GoldCalculationWorkflow,
 
 
-
         private readonly resultFormatter:
-
             GoldCalculationResultFormatter,
 
 
-
         private readonly saveHistoryUseCase:
-
             SaveGoldCalculationHistoryUseCase,
 
 
-
         promptFormatter?:
-
-            GoldCalculationPromptFormatter,
-
-
-
-        private readonly getCurrentGoldPriceUseCase?:
-
-            GetCurrentGoldPriceUseCase
-
+            GoldCalculationPromptFormatter
 
 
     ) {
@@ -133,12 +100,9 @@ implements TelegramConversationFlow {
 
 
 
-
-
     canHandle(
 
         state:
-
             string
 
     ): boolean {
@@ -149,7 +113,6 @@ implements TelegramConversationFlow {
             GoldCalculationStep
 
         )
-
         .includes(
 
             state as GoldCalculationStep
@@ -166,19 +129,15 @@ implements TelegramConversationFlow {
 
 
 
-
     async execute(
 
 
         userId:
-
             string,
 
 
         message:
-
             string
-
 
 
     ): Promise<{
@@ -212,13 +171,14 @@ implements TelegramConversationFlow {
 
             return {
 
-                type:
 
+                type:
                     "text",
 
-                content:
 
+                content:
                     "❌ جلسه محاسبه پیدا نشد"
+
 
             };
 
@@ -230,14 +190,9 @@ implements TelegramConversationFlow {
 
 
 
-
-
-
         const normalizedMessage =
 
             message.trim().toLowerCase();
-
-
 
 
 
@@ -275,8 +230,6 @@ implements TelegramConversationFlow {
 
 
 
-
-
             if (result.error) {
 
 
@@ -284,12 +237,10 @@ implements TelegramConversationFlow {
 
 
                     type:
-
                         "text",
 
 
                     content:
-
                         result.error.join("\n")
 
 
@@ -302,18 +253,14 @@ implements TelegramConversationFlow {
 
 
 
-
-
             session.state =
 
                 result.nextStep!;
 
 
-
             session.data =
 
                 result.updatedData!;
-
 
 
             session.updatedAt =
@@ -324,16 +271,11 @@ implements TelegramConversationFlow {
 
 
 
-
-
             await this.sessionStore.save(
 
                 session
 
             );
-
-
-
 
 
 
@@ -351,13 +293,10 @@ implements TelegramConversationFlow {
 
 
 
-
-
             return {
 
 
                 type:
-
                     "text",
 
 
@@ -382,43 +321,29 @@ implements TelegramConversationFlow {
 
 
 
+        const promptResponse =
 
-
-        const createPromptResponse =
-
-            (
-
-                step:
-
-                    GoldCalculationStep
-
-            ) => {
+            (step: GoldCalculationStep) => {
 
 
                 const prompt =
 
-                    this.promptFormatter.format(
+                    this.promptFormatter.format(step);
 
-                        step
-
-                    );
 
 
                 return {
 
 
                     type:
-
                         "text" as const,
 
 
                     content:
-
                         prompt.text,
 
 
                     replyMarkup:
-
                         prompt.replyMarkup
 
 
@@ -434,233 +359,87 @@ implements TelegramConversationFlow {
 
 
 
+        if (
 
-        switch (
+            session.state ===
 
-            session.state as GoldCalculationStep
+            GoldCalculationStep.WAITING_PRICE_SELECTION
 
         ) {
 
 
 
-            case GoldCalculationStep.WAITING_PRICE_SELECTION: {
+            if (
 
+                message === "MANUAL"
 
+                ||
 
-                if (
+                message === "دستی"
 
-                    message === "MARKET"
+            ) {
 
-                    ||
 
-                    message === "بازار"
+                const result =
 
-                ) {
+                    this.workflow.selectManualPrice(
 
-
-
-                    if (!this.getCurrentGoldPriceUseCase) {
-
-
-                        return {
-
-
-                            type:
-
-                                "text",
-
-
-                            content:
-
-                                "❌ سرویس قیمت بازار فعال نیست"
-
-
-                        };
-
-
-                    }
-
-
-
-
-
-
-
-                    const marketPrice =
-
-                        await this.getCurrentGoldPriceUseCase.execute();
-
-
-
-
-
-
-
-                    const result =
-
-                        this.workflow.selectMarketPrice(
-
-                            session.data,
-
-                            marketPrice.price
-
-                        );
-
-
-
-
-
-
-
-                    session.state =
-
-                        result.nextStep!;
-
-
-
-                    session.data =
-
-                        result.updatedData!;
-
-
-
-                    session.updatedAt =
-
-                        Date.now();
-
-
-
-
-
-
-
-                    await this.sessionStore.save(
-
-                        session
+                        session.data
 
                     );
 
 
 
+                session.state =
+                    result.nextStep!;
 
 
+                session.data =
+                    result.updatedData!;
 
 
-                    return createPromptResponse(
+                session.updatedAt =
+                    Date.now();
 
-                        result.nextStep!
 
-                    );
 
 
-                }
+                await this.sessionStore.save(
 
+                    session
 
+                );
 
 
 
+                return promptResponse(
 
+                    result.nextStep!
 
-
-
-                if (
-
-                    message === "MANUAL"
-
-                    ||
-
-                    message === "دستی"
-
-                ) {
-
-
-
-                    const result =
-
-                        this.workflow.selectManualPrice(
-
-                            session.data
-
-                        );
-
-
-
-
-
-
-
-                    session.state =
-
-                        result.nextStep!;
-
-
-
-                    session.data =
-
-                        result.updatedData!;
-
-
-
-                    session.updatedAt =
-
-                        Date.now();
-
-
-
-
-
-
-
-                    await this.sessionStore.save(
-
-                        session
-
-                    );
-
-
-
-
-
-
-
-                    return createPromptResponse(
-
-                        result.nextStep!
-
-                    );
-
-
-                }
-
-
-
-
-
-
-
-                return {
-
-
-                    type:
-
-                        "text",
-
-
-                    content:
-
-                        "لطفاً یکی از گزینه‌های قیمت بازار یا دستی را انتخاب کنید"
-
-
-                };
+                );
 
 
             }
 
 
 
+
+
+            return {
+
+
+                type:
+                    "text",
+
+
+                content:
+                    "لطفاً یکی از گزینه‌های قیمت بازار یا دستی را انتخاب کنید"
+
+
+            };
+
+
         }
-
-
 
 
 
@@ -680,8 +459,6 @@ implements TelegramConversationFlow {
 
 
 
-
-
         if (
 
             Number.isNaN(value)
@@ -693,12 +470,10 @@ implements TelegramConversationFlow {
 
 
                 type:
-
                     "text",
 
 
                 content:
-
                     "❌ لطفاً فقط عدد وارد کنید"
 
 
@@ -706,8 +481,6 @@ implements TelegramConversationFlow {
 
 
         }
-
-
 
 
 
@@ -736,9 +509,6 @@ implements TelegramConversationFlow {
 
 
 
-
-
-
         if (result.error) {
 
 
@@ -746,12 +516,10 @@ implements TelegramConversationFlow {
 
 
                 type:
-
                     "text",
 
 
                 content:
-
                     result.error.join("\n")
 
 
@@ -766,18 +534,13 @@ implements TelegramConversationFlow {
 
 
 
-
-
         if (result.completed) {
-
-
 
 
             const response = {
 
 
                 type:
-
                     "text" as const,
 
 
@@ -796,23 +559,16 @@ implements TelegramConversationFlow {
 
 
 
-
-
-
             try {
 
 
                 await this.saveHistoryUseCase.execute(
 
-
                     userId,
-
 
                     result.updatedData!,
 
-
                     result.result!
-
 
                 );
 
@@ -824,19 +580,14 @@ implements TelegramConversationFlow {
 
                 console.error(
 
-
                     "GOLD CALCULATION HISTORY SAVE FAILED",
 
-
                     error
-
 
                 );
 
 
             }
-
-
 
 
 
@@ -851,17 +602,10 @@ implements TelegramConversationFlow {
 
 
 
-
-
-
-
-
             return response;
 
 
         }
-
-
 
 
 
@@ -889,9 +633,6 @@ implements TelegramConversationFlow {
 
 
 
-
-
-
         await this.sessionStore.save(
 
             session
@@ -902,17 +643,12 @@ implements TelegramConversationFlow {
 
 
 
-
-
-
-        return createPromptResponse(
+        return promptResponse(
 
             result.nextStep!
 
         );
 
-
     }
-
 
 }

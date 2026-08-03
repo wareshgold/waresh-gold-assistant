@@ -40,6 +40,11 @@ import {
 from "../../../gold/workflows/GoldCalculationSessionData";
 
 
+import {
+    GoldCalculationWorkflow
+}
+from "../../../gold/workflows/GoldCalculationWorkflow";
+
 
 
 
@@ -51,23 +56,19 @@ implements TelegramCallbackHandler {
 
 
 
-
-
-
     constructor(
 
 
-
         private readonly sessionStore:
-
             TelegramSessionStore,
 
 
-
         private readonly getCurrentGoldPriceUseCase:
+            GetCurrentGoldPriceUseCase,
 
-            GetCurrentGoldPriceUseCase
 
+        private readonly workflow:
+            GoldCalculationWorkflow
 
 
     ) {}
@@ -78,34 +79,21 @@ implements TelegramCallbackHandler {
 
 
 
-
-
     canHandle(
 
-
         context:
-
             TelegramCallbackContext
-
 
     ): boolean {
 
 
-
         return (
-
 
             context.callback.namespace === "calculator"
 
-
-
             &&
 
-
-
             context.callback.action === "use-current-price"
-
-
 
         );
 
@@ -118,21 +106,12 @@ implements TelegramCallbackHandler {
 
 
 
-
-
     async execute(
 
-
-
         context:
-
             TelegramCallbackContext
 
-
-
     ): Promise<TelegramCommandResponse> {
-
-
 
 
 
@@ -143,10 +122,6 @@ implements TelegramCallbackHandler {
             ??
 
             context.chatId;
-
-
-
-
 
 
 
@@ -164,35 +139,24 @@ implements TelegramCallbackHandler {
 
 
 
-
-
         if (!session) {
-
 
 
             return {
 
 
                 type:
-
                     "text",
 
 
                 content:
-
                     "❌ جلسه محاسبه پیدا نشد"
-
 
 
             };
 
 
         }
-
-
-
-
-
 
 
 
@@ -207,32 +171,15 @@ implements TelegramCallbackHandler {
 
 
 
+        const result =
 
+            this.workflow.selectMarketPrice(
 
+                session.data,
 
+                currentPrice.price
 
-
-        session.data = {
-
-
-            ...session.data,
-
-
-            goldPrice:
-
-                currentPrice.price,
-
-
-            priceSource:
-
-                "MARKET"
-
-
-
-        };
-
-
-
+            );
 
 
 
@@ -240,24 +187,19 @@ implements TelegramCallbackHandler {
 
         session.state =
 
-            GoldCalculationStep.WAITING_LABOR;
+            result.nextStep!;
 
 
 
+        session.data =
 
-
+            result.updatedData!;
 
 
 
         session.updatedAt =
 
             Date.now();
-
-
-
-
-
-
 
 
 
@@ -274,18 +216,11 @@ implements TelegramCallbackHandler {
 
 
 
-
-
-
-
-
         return {
 
 
             type:
-
                 "text",
-
 
 
             content:
@@ -306,7 +241,6 @@ ${this.formatNumber(currentPrice.price)} تومان
             {
 
                 type:
-
                     "INLINE",
 
 
@@ -319,12 +253,10 @@ ${this.formatNumber(currentPrice.price)} تومان
                         {
 
                             text:
-
                                 "⬅️ اصلاح مرحله قبل",
 
 
                             actionId:
-
                                 "calculator:back"
 
                         }
@@ -347,12 +279,9 @@ ${this.formatNumber(currentPrice.price)} تومان
 
 
 
-
-
     private formatNumber(
 
         value:
-
             number
 
     ): string {
@@ -363,7 +292,6 @@ ${this.formatNumber(currentPrice.price)} تومان
             "fa-IR"
 
         )
-
         .format(
 
             Math.round(value)
@@ -372,8 +300,6 @@ ${this.formatNumber(currentPrice.price)} تومان
 
 
     }
-
-
 
 
 }
