@@ -46,10 +46,28 @@ import {
 from "../../../infrastructure/chart/MarketChartImageGenerator";
 
 
+import {
+    TelegramSessionStore,
+}
+from "../state/TelegramSessionStore";
+
+
+import {
+    GetCurrentGoldPriceUseCase,
+}
+from "../../gold/GetCurrentGoldPriceUseCase";
+
+
+
+
 
 
 
 export class TelegramCallbackRegistry {
+
+
+
+
 
 
 
@@ -89,13 +107,28 @@ export class TelegramCallbackRegistry {
 
         marketChartImageGenerator:
 
-            MarketChartImageGenerator
+            MarketChartImageGenerator,
+
+
+
+        sessionStore:
+
+            TelegramSessionStore,
+
+
+
+        getCurrentGoldPriceUseCase:
+
+            GetCurrentGoldPriceUseCase
 
 
 
     ):
 
         TelegramCallbackRouter {
+
+
+
 
 
 
@@ -127,11 +160,21 @@ export class TelegramCallbackRegistry {
 
 
 
-                marketChartImageGenerator
+                marketChartImageGenerator,
+
+
+
+                sessionStore,
+
+
+
+                getCurrentGoldPriceUseCase
 
 
 
             );
+
+
 
 
 
@@ -144,7 +187,9 @@ export class TelegramCallbackRegistry {
         );
 
 
+
     }
+
 
 
 }

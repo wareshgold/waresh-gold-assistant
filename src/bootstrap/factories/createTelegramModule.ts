@@ -137,6 +137,14 @@ import { AppEnv }
 from "../../shared/config/env";
 
 
+import {
+    GetCurrentGoldPriceUseCase
+}
+from "../../application/gold/GetCurrentGoldPriceUseCase";
+
+
+
+
 
 
 
@@ -147,52 +155,69 @@ interface Dependencies {
         any;
 
 
+
     getGoldBubbleUseCase:
         any;
+
 
 
     getMarketAnalyticsUseCase:
         any;
 
 
+
+    getCurrentGoldPriceUseCase:
+        GetCurrentGoldPriceUseCase;
+
+
+
     getMarketHistoryUseCase:
         any;
+
 
 
     getGoldCalculationHistoryUseCase:
         any;
 
 
+
     getMarketChartUseCase:
         any;
+
 
 
     calculateGoldFormulaUseCase:
         any;
 
 
+
     calculateReverseGoldUseCase:
         any;
+
 
 
     goldCalculationWorkflow:
         GoldCalculationWorkflow;
 
 
+
     sessionStore:
         any;
+
 
 
     profileStore:
         any;
 
 
+
     saveGoldCalculationHistoryUseCase:
         any;
 
 
-
 }
+
+
 
 
 
@@ -218,8 +243,6 @@ export function createTelegramModule(
 
 
 
-
-
     const goldCalculationPromptFormatter =
 
         new GoldCalculationPromptFormatter();
@@ -235,7 +258,6 @@ export function createTelegramModule(
             dependencies.sessionStore,
 
             [
-
 
 
                 new GoldCalculationConversationFlow(
@@ -263,12 +285,9 @@ export function createTelegramModule(
                 )
 
 
-
             ]
 
         );
-
-
 
 
 
@@ -282,8 +301,6 @@ export function createTelegramModule(
 
 
 
-
-
     const marketBubbleMessageFormatter =
 
         new MarketBubbleMessageFormatter(
@@ -294,21 +311,15 @@ export function createTelegramModule(
 
 
 
-
-
     const marketChartRenderer =
 
         new MarketChartRenderer();
 
 
 
-
-
     const marketChartImageGenerator =
 
         new MarketChartImageGenerator();
-
-
 
 
 
@@ -320,8 +331,6 @@ export function createTelegramModule(
 
 
 
-
-
     const telegramNavigationStateService =
 
         new DefaultTelegramNavigationStateService(
@@ -329,11 +338,6 @@ export function createTelegramModule(
             dependencies.sessionStore
 
         );
-
-
-
-
-
     const commandRouter =
 
         TelegramCommandRegistry.create(
@@ -364,6 +368,7 @@ export function createTelegramModule(
 
 
 
+
     const actionResolver =
 
         new CompositeTelegramActionResolver(
@@ -377,6 +382,7 @@ export function createTelegramModule(
             ]
 
         );
+
 
 
 
@@ -396,6 +402,8 @@ export function createTelegramModule(
 
 
 
+
+
     const commandService =
 
         new TelegramCommandService(
@@ -405,6 +413,8 @@ export function createTelegramModule(
             conversationManager
 
         );
+
+
 
 
 
@@ -424,17 +434,26 @@ export function createTelegramModule(
 
 
 
+
+
     const botClient =
 
         env.TELEGRAM_BOT_TOKEN
 
-            ? new TelegramHttpBotClient(
+            ?
+
+            new TelegramHttpBotClient(
 
                 env.TELEGRAM_BOT_TOKEN
 
             )
 
-            : new FakeTelegramBotClient();
+            :
+
+            new FakeTelegramBotClient();
+
+
+
 
 
 
@@ -452,23 +471,53 @@ export function createTelegramModule(
 
 
 
+
+
+
+
     const callbackRouter =
 
         TelegramCallbackRegistry.create(
 
+
+
             telegramActionExecutor,
+
+
 
             telegramNavigationService,
 
+
+
             telegramNavigationStateService,
+
+
 
             dependencies.getMarketChartUseCase,
 
+
+
             marketChartRenderer,
 
-            marketChartImageGenerator
+
+
+            marketChartImageGenerator,
+
+
+
+            dependencies.sessionStore,
+
+
+
+            dependencies.getCurrentGoldPriceUseCase
+
+
 
         );
+
+
+
+
 
 
 
@@ -488,23 +537,45 @@ export function createTelegramModule(
 
 
 
+
+
+
+
     const processor =
 
         new TelegramUpdateProcessor(
 
+
+
             new TelegramUpdateMapper(),
+
+
 
             messageHandler,
 
+
+
             new TelegramResponseFormatter(),
+
+
 
             botClient,
 
+
+
             new TelegramKeyboardMapper(),
+
+
 
             callbackProcessor
 
+
+
         );
+
+
+
+
 
 
 
@@ -514,7 +585,11 @@ export function createTelegramModule(
 
         new TelegramWebhookController(
 
+
+
             processor,
+
+
 
             new TelegramWebhookSecurityGuard(
 
@@ -522,7 +597,13 @@ export function createTelegramModule(
 
             )
 
+
+
         );
+
+
+
+
 
 
 
@@ -531,7 +612,9 @@ export function createTelegramModule(
     return {
 
 
+
         messageHandler,
+
 
 
         telegramMessageHandler:
@@ -539,9 +622,11 @@ export function createTelegramModule(
             messageHandler,
 
 
+
         telegramWebhookController:
 
             webhookController,
+
 
 
         telegramBotClient:
@@ -549,7 +634,9 @@ export function createTelegramModule(
             botClient,
 
 
+
         commandMenuService
+
 
 
     };

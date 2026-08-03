@@ -26,6 +26,12 @@ import { TelegramCallbackProcessor }
 from "./TelegramCallbackProcessor";
 
 
+import {
+    TelegramCommandResponse
+}
+from "../commands/TelegramCommandHandler";
+
+
 
 
 export class TelegramUpdateProcessor {
@@ -65,9 +71,11 @@ export class TelegramUpdateProcessor {
 
 
 
+
     async process(
 
-        update: TelegramUpdate
+        update:
+            TelegramUpdate
 
     ): Promise<void> {
 
@@ -93,15 +101,19 @@ export class TelegramUpdateProcessor {
 
             if (!chatId) {
 
+
                 console.warn(
 
                     "Ignoring callback query without chat id"
 
                 );
 
+
                 return;
 
             }
+
+
 
 
 
@@ -126,11 +138,11 @@ export class TelegramUpdateProcessor {
             );
 
 
-
             return;
 
-
         }
+
+
 
 
 
@@ -146,15 +158,19 @@ export class TelegramUpdateProcessor {
 
         if (!message) {
 
+
             console.warn(
 
                 "Ignoring unsupported Telegram update"
 
             );
 
+
             return;
 
         }
+
+
 
 
 
@@ -201,9 +217,7 @@ export class TelegramUpdateProcessor {
 
         await this.sendResponse(
 
-
             response,
-
 
             String(
 
@@ -211,11 +225,12 @@ export class TelegramUpdateProcessor {
 
             )
 
-
         );
 
 
+
     }
+
 
 
 
@@ -230,7 +245,7 @@ export class TelegramUpdateProcessor {
 
         response:
 
-            Awaited<ReturnType<TelegramCallbackProcessor["process"]>>,
+            string | TelegramCommandResponse,
 
 
 
@@ -264,24 +279,53 @@ export class TelegramUpdateProcessor {
 
 
 
+        if (typeof response === "string") {
+
+
+
+            await this.botClient.sendMessage({
+
+
+                chatId,
+
+
+                text:
+
+                    response,
+
+
+                parseMode:
+
+                    "HTML"
+
+
+            });
+
+
+            return;
+
+        }
+
+
+
+
+
+
+
         const replyMarkup =
 
 
-            typeof response === "string"
+            response.replyMarkup
+
+                ? this.keyboardMapper.map(
+
+                    response.replyMarkup as any
+
+                )
+
+                : undefined;
 
 
-                ? undefined
-
-
-                : response.replyMarkup
-
-                    ? this.keyboardMapper.map(
-
-                        response.replyMarkup
-
-                    )
-
-                    : undefined;
 
 
 
@@ -291,9 +335,6 @@ export class TelegramUpdateProcessor {
 
         if (
 
-            typeof response !== "string"
-
-            &&
 
             response.type === "photo"
 
@@ -308,7 +349,9 @@ export class TelegramUpdateProcessor {
             await this.botClient.sendPhoto({
 
 
+
                 chatId,
+
 
 
                 photo:
@@ -316,12 +359,15 @@ export class TelegramUpdateProcessor {
                     response.photo.photo,
 
 
+
                 caption:
 
                     response.photo.caption,
 
 
+
                 replyMarkup
+
 
 
             });
@@ -329,7 +375,6 @@ export class TelegramUpdateProcessor {
 
 
             return;
-
 
         }
 
@@ -339,11 +384,10 @@ export class TelegramUpdateProcessor {
 
 
 
+
+
         if (
 
-            typeof response !== "string"
-
-            &&
 
             response.type === "document"
 
@@ -355,15 +399,36 @@ export class TelegramUpdateProcessor {
 
 
 
+            const document =
+
+                typeof response.document.document === "string"
+
+                    ?
+
+                    new TextEncoder().encode(
+
+                        response.document.document
+
+                    )
+
+                    :
+
+                    response.document.document;
+
+
+
+
+
             await this.botClient.sendDocument({
+
 
 
                 chatId,
 
 
-                document:
 
-                    response.document.document,
+                document,
+
 
 
                 fileName:
@@ -371,12 +436,15 @@ export class TelegramUpdateProcessor {
                     response.document.fileName,
 
 
+
                 caption:
 
                     response.document.caption,
 
 
+
                 replyMarkup
+
 
 
             });
@@ -385,8 +453,9 @@ export class TelegramUpdateProcessor {
 
             return;
 
-
         }
+
+
 
 
 
@@ -417,7 +486,9 @@ export class TelegramUpdateProcessor {
 
                 chatId,
 
-                text: formattedResponse,
+                text:
+
+                    formattedResponse,
 
                 replyMarkup
 

@@ -50,6 +50,12 @@ import { GetMarketHistoryUseCase }
 from "../application/market/GetMarketHistoryUseCase";
 
 
+import {
+    GetCurrentGoldPriceUseCase
+}
+from "../application/gold/GetCurrentGoldPriceUseCase";
+
+
 import { GetMarketChartUseCase }
 from "../application/market/GetMarketChartUseCase";
 
@@ -217,6 +223,14 @@ export function createContainer(
 
 
 
+    const getCurrentGoldPriceUseCase =
+
+        new GetCurrentGoldPriceUseCase(
+
+            market.cachedMarketProvider
+
+        );
+
 
 
     const getGoldPriceUseCase =
@@ -376,6 +390,9 @@ export function createContainer(
                     storage.userProfileStore,
 
 
+                getCurrentGoldPriceUseCase,
+
+
 
                 saveGoldCalculationHistoryUseCase
 
@@ -420,9 +437,12 @@ export function createContainer(
 
 
         getGoldPriceUseCase,
-
+        
 
         getGoldBubbleUseCase,
+
+        
+        getCurrentGoldPriceUseCase,
 
 
         getGoldBubbleDataUseCase,

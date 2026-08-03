@@ -5,6 +5,24 @@ from "../../gold/workflows/GoldCalculationStep";
 
 
 
+export interface GoldCalculationPrompt {
+
+
+    text:
+
+        string;
+
+
+
+    replyMarkup?:
+
+        unknown;
+
+
+}
+
+
+
 
 export class GoldCalculationPromptFormatter {
 
@@ -18,61 +36,178 @@ export class GoldCalculationPromptFormatter {
 
             GoldCalculationStep
 
-    ): string {
+    ): GoldCalculationPrompt {
 
 
 
-        const messages:
-
-            Record<GoldCalculationStep, string> = {
+        switch(step) {
 
 
 
-                [GoldCalculationStep.WAITING_WEIGHT]:
-
-                    "وزن طلا را وارد کنید:",
+            case GoldCalculationStep.WAITING_WEIGHT:
 
 
+                return {
 
-                [GoldCalculationStep.WAITING_PRICE]:
+                    text:
 
-                    "قیمت هر گرم طلا را وارد کنید:",
+                        "⚖️ وزن طلا را وارد کنید:"
 
-
-
-                [GoldCalculationStep.WAITING_LABOR]:
-
-                    "درصد اجرت را وارد کنید:",
-
-
-
-                [GoldCalculationStep.WAITING_PROFIT]:
-
-                    "درصد سود را وارد کنید:",
-
-
-
-                [GoldCalculationStep.WAITING_TAX]:
-
-                    "درصد مالیات را وارد کنید:"
-
-
-            };
+                };
 
 
 
 
 
 
-        return (
 
-            messages[step]
+            case GoldCalculationStep.WAITING_PRICE:
 
-            ??
 
-            "مرحله محاسبه نامشخص است"
+                return {
 
-        );
+
+                    text:
+
+`
+💰 قیمت هر گرم طلا را انتخاب کنید:
+
+در صورت تمایل می‌توانید قیمت را دستی وارد کنید.
+`,
+
+
+
+                    replyMarkup:
+
+
+                    {
+
+                        type:
+
+                            "INLINE",
+
+
+
+                        rows:
+
+                        [
+
+                            [
+
+                                {
+
+                                    text:
+
+                                        "🟡 استفاده از قیمت لحظه‌ای",
+
+
+                                    actionId:
+
+                                        "calculator:use-current-price"
+
+                                }
+
+                            ],
+
+
+                            [
+
+                                {
+
+                                    text:
+
+                                        "✍️ ورود دستی قیمت",
+
+
+                                    actionId:
+
+                                        "calculator:manual-price"
+
+                                }
+
+                            ]
+
+                        ]
+
+                    }
+
+
+                };
+
+
+
+
+
+
+
+
+            case GoldCalculationStep.WAITING_LABOR:
+
+
+                return {
+
+                    text:
+
+                        "📈 درصد اجرت را وارد کنید:"
+
+                };
+
+
+
+
+
+
+
+            case GoldCalculationStep.WAITING_PROFIT:
+
+
+                return {
+
+                    text:
+
+                        "💹 درصد سود را وارد کنید:"
+
+                };
+
+
+
+
+
+
+
+            case GoldCalculationStep.WAITING_TAX:
+
+
+                return {
+
+                    text:
+
+                        "🧾 درصد مالیات را وارد کنید:"
+
+                };
+
+
+
+
+
+
+
+            default:
+
+
+                return {
+
+
+                    text:
+
+                        "مرحله محاسبه نامشخص است"
+
+
+                };
+
+
+
+        }
 
 
     }

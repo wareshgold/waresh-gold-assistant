@@ -46,6 +46,11 @@ import {
 from "../../gold/SaveGoldCalculationHistoryUseCase";
 
 
+import {
+    GetCurrentGoldPriceUseCase
+}
+from "../../gold/GetCurrentGoldPriceUseCase";
+
 
 
 
@@ -57,7 +62,6 @@ implements TelegramConversationFlow {
 
 
 
-
     private readonly promptFormatter:
 
         GoldCalculationPromptFormatter;
@@ -66,8 +70,8 @@ implements TelegramConversationFlow {
 
 
 
-
     constructor(
+
 
 
         private readonly sessionStore:
@@ -75,9 +79,11 @@ implements TelegramConversationFlow {
             TelegramSessionStore,
 
 
+
         private readonly workflow:
 
             GoldCalculationWorkflow,
+
 
 
         private readonly resultFormatter:
@@ -85,14 +91,23 @@ implements TelegramConversationFlow {
             GoldCalculationResultFormatter,
 
 
+
         private readonly saveHistoryUseCase:
 
             SaveGoldCalculationHistoryUseCase,
 
 
+
         promptFormatter?:
 
-            GoldCalculationPromptFormatter
+            GoldCalculationPromptFormatter,
+
+
+
+        private readonly getCurrentGoldPriceUseCase?:
+
+            GetCurrentGoldPriceUseCase
+
 
 
     ) {
@@ -116,10 +131,11 @@ implements TelegramConversationFlow {
 
 
 
-
     canHandle(
 
-        state: string
+        state:
+
+            string
 
     ): boolean {
 
@@ -128,7 +144,9 @@ implements TelegramConversationFlow {
 
             GoldCalculationStep
 
-        ).includes(
+        )
+
+        .includes(
 
             state as GoldCalculationStep
 
@@ -144,14 +162,18 @@ implements TelegramConversationFlow {
 
 
 
-
     async execute(
 
 
-        userId: string,
+        userId:
+
+            string,
 
 
-        message: string
+        message:
+
+            string
+
 
 
     ): Promise<{
@@ -162,8 +184,9 @@ implements TelegramConversationFlow {
 
         metadata?: Record<string, unknown>;
 
-    }> {
+        replyMarkup?: unknown;
 
+    }> {
 
 
 
@@ -184,13 +207,272 @@ implements TelegramConversationFlow {
 
             return {
 
-                type: "text",
+                type:
+
+                    "text",
 
                 content:
 
                     "Session not found"
 
             };
+
+
+        }
+
+
+
+
+
+
+
+        const createPromptResponse =
+
+            (
+
+                step:
+
+                    GoldCalculationStep
+
+            ) => {
+
+
+                const prompt =
+
+                    this.promptFormatter.format(
+
+                        step
+
+                    );
+
+
+                return {
+
+                    type:
+
+                        "text" as const,
+
+
+                    content:
+
+                        prompt.text,
+
+
+                    replyMarkup:
+
+                        prompt.replyMarkup
+
+                };
+
+
+            };
+
+
+
+
+
+
+
+
+        switch (
+
+            session.state as GoldCalculationStep
+
+        ) {
+
+
+
+
+            case GoldCalculationStep.WAITING_PRICE_SELECTION: {
+
+
+
+                if (
+
+                    message === "MARKET"
+
+                    ||
+
+                    message === "بازار"
+
+                ) {
+
+
+
+                    if (!this.getCurrentGoldPriceUseCase) {
+
+
+                        return {
+
+                            type:
+
+                                "text",
+
+                            content:
+
+                                "❌ سرویس قیمت بازار فعال نیست"
+
+                        };
+
+
+                    }
+
+
+
+
+
+                    const marketPrice =
+
+                        await this.getCurrentGoldPriceUseCase.execute();
+
+
+
+
+
+                    const result =
+
+                        this.workflow.selectMarketPrice(
+
+                            session.data,
+
+                            marketPrice.price
+
+                        );
+
+
+
+
+
+                    session.state =
+
+                        result.nextStep!;
+
+
+                    session.data =
+
+                        result.updatedData!;
+
+
+                    session.updatedAt =
+
+                        Date.now();
+
+
+
+
+
+                    await this.sessionStore.save(
+
+                        session
+
+                    );
+
+
+
+
+
+                    return createPromptResponse(
+
+                        result.nextStep!
+
+                    );
+
+
+                }
+
+
+
+
+
+
+
+                if (
+
+                    message === "MANUAL"
+
+                    ||
+
+                    message === "دستی"
+
+                ) {
+
+
+
+                    const result =
+
+                        this.workflow.selectManualPrice(
+
+                            session.data
+
+                        );
+
+
+
+
+
+                    session.state =
+
+                        result.nextStep!;
+
+
+                    session.data =
+
+                        result.updatedData!;
+
+
+                    session.updatedAt =
+
+                        Date.now();
+
+
+
+
+
+                    await this.sessionStore.save(
+
+                        session
+
+                    );
+
+
+
+
+
+                    return createPromptResponse(
+
+                        result.nextStep!
+
+                    );
+
+
+                }
+
+
+
+
+
+
+                return {
+
+                    type:
+
+                        "text",
+
+                    content:
+
+                        "لطفاً یکی از گزینه‌های قیمت بازار یا دستی را انتخاب کنید"
+
+                };
+
+
+            }
+
+
+
+
+            default:
+
+                break;
 
 
         }
@@ -215,7 +497,6 @@ implements TelegramConversationFlow {
 
 
 
-
         if (
 
             Number.isNaN(value)
@@ -225,11 +506,13 @@ implements TelegramConversationFlow {
 
             return {
 
-                type: "text",
+                type:
+
+                    "text",
 
                 content:
 
-                    "Please enter a valid number"
+                    "❌ لطفاً فقط عدد وارد کنید"
 
             };
 
@@ -248,7 +531,6 @@ implements TelegramConversationFlow {
             this.workflow.execute(
 
 
-
                 session.state as GoldCalculationStep,
 
 
@@ -258,9 +540,7 @@ implements TelegramConversationFlow {
                 value
 
 
-
             );
-
 
 
 
@@ -273,7 +553,9 @@ implements TelegramConversationFlow {
 
             return {
 
-                type: "text",
+                type:
+
+                    "text",
 
                 content:
 
@@ -283,7 +565,6 @@ implements TelegramConversationFlow {
 
 
         }
-
 
 
 
@@ -308,6 +589,7 @@ implements TelegramConversationFlow {
 
                 result.result!
 
+
             );
 
 
@@ -324,10 +606,11 @@ implements TelegramConversationFlow {
 
 
 
-
             return {
 
-                type: "text",
+                type:
+
+                    "text",
 
                 content:
 
@@ -341,8 +624,6 @@ implements TelegramConversationFlow {
 
 
         }
-
-
 
 
 
@@ -384,23 +665,14 @@ implements TelegramConversationFlow {
 
 
 
-        return {
+        return createPromptResponse(
 
-            type: "text",
+            result.nextStep!
 
-            content:
-
-                this.promptFormatter.format(
-
-                    result.nextStep!
-
-                )
-
-        };
+        );
 
 
     }
-
 
 
 }

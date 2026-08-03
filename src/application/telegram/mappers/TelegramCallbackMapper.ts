@@ -12,16 +12,23 @@ from "../callbacks/CallbackDataParser";
 
 
 
+
+
+
 export class TelegramCallbackMapper {
+
+
 
 
 
     constructor(
 
         private readonly parser:
+
             CallbackDataParser
 
             =
+
             new CallbackDataParser()
 
     ) {}
@@ -30,17 +37,118 @@ export class TelegramCallbackMapper {
 
 
 
+
+
+
+
     map(
 
-        update: any
+        update:
 
-    ): TelegramCallbackContext {
+            unknown
+
+    ):
+
+        TelegramCallbackContext {
+
+
+
+
+
+        const telegramUpdate =
+
+            update as Record<string, unknown>;
+
+
+
+
 
 
 
         const callbackQuery =
 
-            update.callback_query;
+            telegramUpdate[
+
+                "callback_query"
+
+            ] as Record<string, unknown> | undefined;
+
+
+
+
+
+
+
+
+        const from =
+
+            callbackQuery?.[
+
+                "from"
+
+            ] as Record<string, unknown> | undefined;
+
+
+
+
+
+
+
+
+        const message =
+
+            callbackQuery?.[
+
+                "message"
+
+            ] as Record<string, unknown> | undefined;
+
+
+
+
+
+
+
+
+        const chat =
+
+            message?.[
+
+                "chat"
+
+            ] as Record<string, unknown> | undefined;
+
+
+
+
+
+
+
+
+        const data =
+
+            typeof callbackQuery?.[
+
+                "data"
+
+            ] === "string"
+
+                ?
+
+                callbackQuery[
+
+                    "data"
+
+                ] as string
+
+                :
+
+                "";
+
+
+
+
+
 
 
 
@@ -48,37 +156,109 @@ export class TelegramCallbackMapper {
         return {
 
 
+
             chatId:
 
                 String(
-                    callbackQuery.message.chat.id
+
+                    chat?.[
+
+                        "id"
+
+                    ]
+
+                    ??
+
+                    ""
+
                 ),
+
+
+
 
 
 
             userId:
 
                 String(
-                    callbackQuery.from.id
+
+                    from?.[
+
+                        "id"
+
+                    ]
+
+                    ??
+
+                    ""
+
                 ),
+
+
+
 
 
 
             username:
 
-                callbackQuery.from.username,
+                typeof from?.[
+
+                    "username"
+
+                ] === "string"
+
+                    ?
+
+                    from[
+
+                        "username"
+
+                    ] as string
+
+                    :
+
+                    undefined,
+
+
+
+
+
 
 
 
             firstName:
 
-                callbackQuery.from.first_name,
+                typeof from?.[
+
+                    "first_name"
+
+                ] === "string"
+
+                    ?
+
+                    from[
+
+                        "first_name"
+
+                    ] as string
+
+                    :
+
+                    undefined,
 
 
 
-            data:
 
-                callbackQuery.data ?? "",
+
+
+
+
+            data,
+
+
+
+
+
 
 
 
@@ -86,14 +266,18 @@ export class TelegramCallbackMapper {
 
                 this.parser.parse(
 
-                    callbackQuery.data ?? ""
+                    data
 
                 )
 
 
+
         };
 
+
+
     }
+
 
 
 }

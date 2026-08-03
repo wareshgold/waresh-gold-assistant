@@ -1,17 +1,29 @@
 import {
-  TelegramCallbackContext,
-} from "./TelegramCallbackContext";
+    TelegramCallbackContext,
+}
+from "./TelegramCallbackContext";
 
 
 import {
-  TelegramCallbackHandler,
-} from "./TelegramCallbackHandler";
+    TelegramCallbackHandler,
+}
+from "./TelegramCallbackHandler";
+
+
+import {
+    TelegramCommandResponse,
+}
+from "../commands/TelegramCommandHandler";
+
+
 
 
 
 
 
 export class TelegramCallbackRouter {
+
+
 
 
 
@@ -23,16 +35,24 @@ export class TelegramCallbackRouter {
 
 
 
+
+
     constructor(
 
         handlers:
+
             TelegramCallbackHandler[]
 
     ) {
 
+
         this.handlers = handlers;
 
+
     }
+
+
+
 
 
 
@@ -43,9 +63,17 @@ export class TelegramCallbackRouter {
 
         TelegramCallbackHandler[] {
 
-        return this.handlers;
+
+        return [
+
+            ...this.handlers
+
+        ];
+
 
     }
+
+
 
 
 
@@ -56,11 +84,14 @@ export class TelegramCallbackRouter {
     async execute(
 
         context:
+
             TelegramCallbackContext
 
     ):
 
-        Promise<any> {
+        Promise<TelegramCommandResponse> {
+
+
 
 
 
@@ -82,23 +113,98 @@ export class TelegramCallbackRouter {
 
 
 
+
+
+
         if (!handler) {
 
 
+
             console.log(
+
                 "UNKNOWN CALLBACK:",
+
                 context.data,
+
                 context.callback
+
             );
+
+
+
+
 
 
 
             return {
 
 
+
+                type:
+
+                    "text",
+
+
+
                 content:
 
+
+
                     `عملیات نامعتبر است\n\n${context.data}`
+
+
+
+            };
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+        const response =
+
+            await handler.execute(
+
+                context
+
+            );
+
+
+
+
+
+
+
+
+        if (
+
+            typeof response === "string"
+
+        ) {
+
+
+
+            return {
+
+
+
+                type:
+
+                    "text",
+
+
+
+                content:
+
+                    response
+
 
 
             };
@@ -110,15 +216,16 @@ export class TelegramCallbackRouter {
 
 
 
-        return handler.execute(
 
-            context
 
-        );
+
+        return response;
 
 
 
     }
+
+
 
 
 
