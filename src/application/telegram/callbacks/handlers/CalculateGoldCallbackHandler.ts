@@ -22,11 +22,30 @@ import {
 from "../../state/TelegramSessionStore";
 
 
+import {
+    GoldCalculationStep
+}
+from "../../../gold/workflows/GoldCalculationStep";
+
+
+import {
+    createGoldCalculationSessionData
+}
+from "../../../gold/workflows/GoldCalculationSessionData";
+
+
+
+
+
 
 
 export class CalculateGoldCallbackHandler
 
 implements TelegramCallbackHandler {
+
+
+
+
 
 
 
@@ -46,13 +65,20 @@ implements TelegramCallbackHandler {
 
 
 
+
+
+
     canHandle(
 
         context:
 
             TelegramCallbackContext
 
-    ): boolean {
+    ):
+
+        boolean {
+
+
 
 
         return (
@@ -66,7 +92,9 @@ implements TelegramCallbackHandler {
         );
 
 
+
     }
+
 
 
 
@@ -89,30 +117,55 @@ implements TelegramCallbackHandler {
 
 
 
+        const userId =
+
+            context.userId
+
+            ??
+
+            context.chatId;
+
+
+
+
+
+
+
+
         await this.sessionStore.save({
 
 
-            userId:
 
-                context.userId ?? context.chatId,
+
+
+            userId,
+
+
 
 
 
             state:
 
-                "GOLD_CALCULATION_WAITING_WEIGHT",
+                GoldCalculationStep.WAITING_WEIGHT,
+
+
 
 
 
             data:
 
-                {},
+                createGoldCalculationSessionData(),
+
+
 
 
 
             updatedAt:
 
                 Date.now()
+
+
+
 
 
         });
@@ -123,7 +176,12 @@ implements TelegramCallbackHandler {
 
 
 
+
+
         return {
+
+
+
 
 
             type:
@@ -132,14 +190,19 @@ implements TelegramCallbackHandler {
 
 
 
+
+
             content:
 
 `
-💰 محاسبه طلا
+💰 محاسبه قیمت طلا
 
 
-لطفاً وزن طلا را وارد کنید:
+⚖️ لطفاً وزن طلا را وارد کنید:
 `.trim(),
+
+
+
 
 
 
@@ -154,9 +217,14 @@ implements TelegramCallbackHandler {
 
 
 
+
+
                 rows:
 
                 [
+
+
+
 
                     [
 
@@ -167,13 +235,21 @@ implements TelegramCallbackHandler {
                                 "⬅️ بازگشت",
 
 
+
                             actionId:
 
                                 "menu:calculate"
 
+
+
                         }
 
+
+
                     ],
+
+
+
 
 
                     [
@@ -185,13 +261,22 @@ implements TelegramCallbackHandler {
                                 "🏠 منوی اصلی",
 
 
+
                             actionId:
 
                                 "menu:main"
 
+
+
                         }
 
+
+
                     ]
+
+
+
+
 
                 ]
 
@@ -199,7 +284,10 @@ implements TelegramCallbackHandler {
 
 
 
+
+
         };
+
 
 
     }

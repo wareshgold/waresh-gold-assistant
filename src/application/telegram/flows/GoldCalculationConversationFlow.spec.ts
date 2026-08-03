@@ -132,8 +132,23 @@ describe(
                     state:
                         "GOLD_CALCULATION_WAITING_WEIGHT",
 
-                    data:
-                        {},
+                    data: {
+
+                        weight: null,
+
+                        goldPrice: null,
+
+                        priceSource: null,
+
+                        laborPercent: null,
+
+                        profitPercent: null,
+
+                        taxPercent: null,
+
+                        discount: null
+
+                    },
 
                     updatedAt:
                         Date.now()
@@ -142,29 +157,79 @@ describe(
 
 
 
+
+
+                // Weight
+
                 await flow.execute(
+
                     "user-1",
+
                     "5"
+
                 );
 
 
+
+
+
+                // Select manual price
+
                 await flow.execute(
+
                     "user-1",
+
+                    "MANUAL"
+
+                );
+
+
+
+
+
+                // Gold price
+
+                await flow.execute(
+
+                    "user-1",
+
                     "18000000"
+
                 );
 
 
+
+
+
+                // Labor
+
                 await flow.execute(
+
                     "user-1",
+
                     "15"
+
                 );
 
+
+
+
+
+                // Profit
 
                 await flow.execute(
+
                     "user-1",
+
                     "7"
+
                 );
 
+
+
+
+
+                // Tax -> Calculate
 
                 const result =
 
@@ -178,39 +243,62 @@ describe(
 
 
 
+
+
                 expect(
+
                     result.type
+
                 )
+
                 .toBe(
+
                     "text"
+
                 );
+
+
 
 
 
                 expect(
+
                     result.content
+
                 )
+
                 .contain(
+
                     "نتیجه محاسبه طلا"
+
                 );
+
+
 
 
 
                 const session =
 
                     await sessionStore.get(
+
                         "user-1"
+
                     );
 
 
 
+
+
                 expect(session)
+
                     .toBeNull();
 
 
             }
+
         );
 
 
     }
+
 );

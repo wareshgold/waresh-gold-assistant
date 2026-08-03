@@ -19,6 +19,67 @@ export enum CallbackNamespace {
 
 
 
+
+
+
+export enum MenuCallbackAction {
+
+    MAIN = "main",
+
+    MARKET = "market",
+
+    CALCULATE = "calculate",
+
+    ASSISTANT = "assistant",
+
+    SETTINGS = "settings",
+
+    BACK = "back",
+
+}
+
+
+
+
+
+
+
+export enum CalculatorCallbackAction {
+
+    GOLD_PRICE = "gold-price",
+
+    LIVE_PRICE = "live-price",
+
+    INVOICE = "invoice",
+
+    FORMULA = "formula",
+
+    REVERSE_LABOR = "reverse-labor",
+
+}
+
+
+
+
+
+
+
+export enum MarketCallbackAction {
+
+    CHART = "chart",
+
+    HISTORY = "history",
+
+    ANALYTICS = "analytics",
+
+}
+
+
+
+
+
+
+
 export interface CallbackAction {
 
 
@@ -28,15 +89,18 @@ export interface CallbackAction {
 
 
 
+
     action:
 
         string;
 
 
 
+
     payload?:
 
         string;
+
 
 
 }

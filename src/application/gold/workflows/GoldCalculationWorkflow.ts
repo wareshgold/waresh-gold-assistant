@@ -25,25 +25,44 @@ from "../validation/GoldCalculationValidator";
 
 
 
+
+
 export interface GoldCalculationWorkflowResult {
 
 
-    completed: boolean;
+    completed:
+
+        boolean;
 
 
-    nextStep?: GoldCalculationStep;
+
+    nextStep?:
+
+        GoldCalculationStep;
 
 
-    updatedData?: GoldCalculationSessionData;
+
+    updatedData?:
+
+        GoldCalculationSessionData;
 
 
-    error?: string[];
+
+    error?:
+
+        string[];
 
 
-    result?: CalculateGoldFormulaOutput;
+
+    result?:
+
+        CalculateGoldFormulaOutput;
+
 
 
 }
+
+
 
 
 
@@ -54,7 +73,10 @@ export class GoldCalculationWorkflow {
 
 
 
+
+
     constructor(
+
 
 
         private readonly useCase:
@@ -62,9 +84,11 @@ export class GoldCalculationWorkflow {
             CalculateGoldFormulaUseCase,
 
 
+
         private readonly validator:
 
             GoldCalculationValidator
+
 
 
     ) {}
@@ -75,7 +99,10 @@ export class GoldCalculationWorkflow {
 
 
 
+
+
     execute(
+
 
 
         step:
@@ -83,9 +110,11 @@ export class GoldCalculationWorkflow {
             GoldCalculationStep,
 
 
+
         data:
 
             GoldCalculationSessionData,
+
 
 
         value:
@@ -93,11 +122,14 @@ export class GoldCalculationWorkflow {
             number
 
 
+
     ): GoldCalculationWorkflowResult {
 
 
 
-        const updatedData = {
+        const updatedData:
+
+            GoldCalculationSessionData = {
 
 
             ...data
@@ -109,19 +141,26 @@ export class GoldCalculationWorkflow {
 
 
 
+
+
+
         switch(step) {
+
+
 
 
 
             case GoldCalculationStep.WAITING_WEIGHT:
 
 
+
                 updatedData.weight = value;
+
 
 
                 return this.next(
 
-                    GoldCalculationStep.WAITING_PRICE,
+                    GoldCalculationStep.WAITING_PRICE_SELECTION,
 
                     updatedData
 
@@ -131,10 +170,17 @@ export class GoldCalculationWorkflow {
 
 
 
+
+
+
             case GoldCalculationStep.WAITING_PRICE:
 
 
+
                 updatedData.goldPrice = value;
+
+                updatedData.priceSource = "MANUAL";
+
 
 
                 return this.next(
@@ -149,10 +195,15 @@ export class GoldCalculationWorkflow {
 
 
 
+
+
+
             case GoldCalculationStep.WAITING_LABOR:
 
 
+
                 updatedData.laborPercent = value;
+
 
 
                 return this.next(
@@ -167,10 +218,15 @@ export class GoldCalculationWorkflow {
 
 
 
+
+
+
             case GoldCalculationStep.WAITING_PROFIT:
 
 
+
                 updatedData.profitPercent = value;
+
 
 
                 return this.next(
@@ -185,10 +241,15 @@ export class GoldCalculationWorkflow {
 
 
 
+
+
+
             case GoldCalculationStep.WAITING_TAX:
 
 
+
                 updatedData.taxPercent = value;
+
 
 
                 return this.calculate(
@@ -201,19 +262,27 @@ export class GoldCalculationWorkflow {
 
 
 
+
+
+
             default:
+
 
 
                 return {
 
 
-                    completed: false,
+                    completed:
+
+                        false,
 
 
                     updatedData,
 
 
-                    error: [
+                    error:
+
+                    [
 
                         "Unknown calculation step"
 
@@ -234,7 +303,114 @@ export class GoldCalculationWorkflow {
 
 
 
+
+    selectMarketPrice(
+
+        data:
+
+            GoldCalculationSessionData,
+
+        currentPrice:
+
+            number
+
+    ): GoldCalculationWorkflowResult {
+
+
+
+        const updatedData:
+
+            GoldCalculationSessionData = {
+
+
+            ...data,
+
+
+            goldPrice:
+
+                currentPrice,
+
+
+            priceSource:
+
+                "MARKET"
+
+
+        };
+
+
+
+
+
+
+        return this.next(
+
+            GoldCalculationStep.WAITING_LABOR,
+
+            updatedData
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    selectManualPrice(
+
+        data:
+
+            GoldCalculationSessionData
+
+    ): GoldCalculationWorkflowResult {
+
+
+
+        const updatedData:
+
+            GoldCalculationSessionData = {
+
+
+            ...data,
+
+
+            priceSource:
+
+                "MANUAL"
+
+
+        };
+
+
+
+
+        return this.next(
+
+            GoldCalculationStep.WAITING_PRICE,
+
+            updatedData
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
     private next(
+
 
 
         step:
@@ -242,24 +418,33 @@ export class GoldCalculationWorkflow {
             GoldCalculationStep,
 
 
+
         data:
 
             GoldCalculationSessionData
 
 
+
     ): GoldCalculationWorkflowResult {
+
 
 
         return {
 
 
-            completed: false,
+            completed:
+
+                false,
 
 
-            nextStep: step,
+            nextStep:
+
+                step,
 
 
-            updatedData: data
+            updatedData:
+
+                data
 
 
         };
@@ -278,9 +463,11 @@ export class GoldCalculationWorkflow {
     private calculate(
 
 
+
         data:
 
             GoldCalculationSessionData
+
 
 
     ): GoldCalculationWorkflowResult {
@@ -299,13 +486,20 @@ export class GoldCalculationWorkflow {
 
 
 
+
+
         if (!validation.valid) {
+
 
 
             return {
 
 
-                completed: false,
+
+                completed:
+
+                    false,
+
 
 
                 nextStep:
@@ -313,7 +507,11 @@ export class GoldCalculationWorkflow {
                     GoldCalculationStep.WAITING_TAX,
 
 
-                updatedData: data,
+
+                updatedData:
+
+                    data,
+
 
 
                 error:
@@ -321,38 +519,12 @@ export class GoldCalculationWorkflow {
                     validation.errors
 
 
+
             };
 
 
         }
 
-
-
-
-
-
-
-        const weight =
-
-            data.weight!;
-
-
-
-        const goldPrice =
-
-            data.goldPrice!;
-
-
-
-        const laborPercent =
-
-            data.laborPercent!;
-
-
-
-        const profitPercent =
-
-            data.profitPercent!;
 
 
 
@@ -367,16 +539,37 @@ export class GoldCalculationWorkflow {
 
 
 
-                weight,
 
 
-                goldPrice,
+                weight:
+
+                    data.weight!,
 
 
-                laborPercent,
 
 
-                profitPercent,
+
+                goldPrice:
+
+                    data.goldPrice!,
+
+
+
+
+
+                laborPercent:
+
+                    data.laborPercent!,
+
+
+
+
+
+                profitPercent:
+
+                    data.profitPercent!,
+
+
 
 
 
@@ -386,9 +579,14 @@ export class GoldCalculationWorkflow {
 
 
 
+
+
                 discount:
 
                     data.discount ?? 0
+
+
+
 
 
             });
@@ -400,22 +598,34 @@ export class GoldCalculationWorkflow {
 
 
 
+
         return {
 
 
-            completed: true,
+
+            completed:
+
+                true,
 
 
-            updatedData: data,
+
+            updatedData:
+
+                data,
+
 
 
             result
 
 
+
         };
 
 
+
     }
+
+
 
 
 

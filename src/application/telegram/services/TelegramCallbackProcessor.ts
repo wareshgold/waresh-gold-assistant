@@ -10,6 +10,14 @@ import {
 from "../mappers/TelegramCallbackMapper";
 
 
+import {
+    TelegramCommandResponse,
+}
+from "../commands/TelegramCommandHandler";
+
+
+
+
 
 
 
@@ -18,16 +26,21 @@ export class TelegramCallbackProcessor {
 
 
 
+
     constructor(
 
 
+
         private readonly mapper:
+
             TelegramCallbackMapper,
 
 
 
         private readonly router:
+
             TelegramCallbackRouter
+
 
 
     ) {}
@@ -39,12 +52,42 @@ export class TelegramCallbackProcessor {
 
 
 
+
     async process(
 
         update:
-            any
 
-    ): Promise<any> {
+            unknown
+
+    ):
+
+        Promise<TelegramCommandResponse> {
+
+
+
+
+
+        const telegramUpdate =
+
+            update as Record<string, unknown>;
+
+
+
+
+
+
+
+        const callbackQuery =
+
+            telegramUpdate[
+
+                "callback_query"
+
+            ] as Record<string, unknown> | undefined;
+
+
+
+
 
 
 
@@ -52,9 +95,15 @@ export class TelegramCallbackProcessor {
 
             "CALLBACK RAW DATA:",
 
-            update.callback_query?.data
+            callbackQuery?.["data"]
 
         );
+
+
+
+
+
+
 
 
 
@@ -65,6 +114,11 @@ export class TelegramCallbackProcessor {
                 update
 
             );
+
+
+
+
+
 
 
 
@@ -88,6 +142,11 @@ export class TelegramCallbackProcessor {
 
 
 
+
+
+
+
+
         const response =
 
             await this.router.execute(
@@ -95,6 +154,11 @@ export class TelegramCallbackProcessor {
                 context
 
             );
+
+
+
+
+
 
 
 
@@ -118,7 +182,12 @@ export class TelegramCallbackProcessor {
 
 
 
-        return response;
+
+
+
+
+        return response as TelegramCommandResponse;
+
 
 
     }
