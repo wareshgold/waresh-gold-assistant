@@ -188,6 +188,7 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
         const actionHandlers =
 
             TelegramActionCatalog
@@ -308,7 +309,9 @@ export class TelegramCallbackHandlerFactory {
 
                 sessionStore,
 
-                getCurrentGoldPriceUseCase
+                getCurrentGoldPriceUseCase,
+
+                goldCalculationWorkflow
 
             ),
 
