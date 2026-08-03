@@ -28,6 +28,19 @@ import {
 from "../../../gold/GetCurrentGoldPriceUseCase";
 
 
+import {
+    GoldCalculationSessionData
+}
+from "../../../gold/workflows/GoldCalculationSessionData";
+
+
+import {
+    GoldCalculationWorkflow
+}
+from "../../../gold/workflows/GoldCalculationWorkflow";
+
+
+
 
 
 
@@ -35,6 +48,8 @@ from "../../../gold/GetCurrentGoldPriceUseCase";
 export class CalculateGoldLivePriceCallbackHandler
 
 implements TelegramCallbackHandler {
+
+
 
 
 
@@ -50,7 +65,12 @@ implements TelegramCallbackHandler {
 
         private readonly getCurrentGoldPriceUseCase:
 
-            GetCurrentGoldPriceUseCase
+            GetCurrentGoldPriceUseCase,
+
+
+        private readonly workflow:
+
+            GoldCalculationWorkflow
 
 
     ) {}
@@ -107,17 +127,12 @@ implements TelegramCallbackHandler {
 
         const userId =
 
-            context.userId ?? context.chatId;
+            context.userId
 
+            ??
 
+            context.chatId;
 
-
-
-
-
-        const currentPrice =
-
-            await this.getCurrentGoldPriceUseCase.execute();
 
 
 
@@ -127,7 +142,7 @@ implements TelegramCallbackHandler {
 
         const session =
 
-            await this.sessionStore.get(
+            await this.sessionStore.get<GoldCalculationSessionData>(
 
                 userId
 
@@ -153,7 +168,6 @@ implements TelegramCallbackHandler {
 
                     "❌ جلسه محاسبه پیدا نشد"
 
-
             };
 
 
@@ -166,33 +180,44 @@ implements TelegramCallbackHandler {
 
 
 
-        session.data = {
+
+        const currentPrice =
+
+            await this.getCurrentGoldPriceUseCase.execute();
 
 
-            ...session.data,
 
 
-            goldPrice:
+
+
+
+
+        const result =
+
+            this.workflow.selectMarketPrice(
+
+                session.data,
 
                 currentPrice.price
 
-
-        };
-
+            );
 
 
 
 
+
+
+
+
+
+        session.data =
+
+            result.updatedData!;
 
 
         session.state =
 
-            "GOLD_CALCULATION_WAITING_LABOR";
-
-
-
-
-
+            result.nextStep!;
 
 
         session.updatedAt =
@@ -205,11 +230,13 @@ implements TelegramCallbackHandler {
 
 
 
+
         await this.sessionStore.save(
 
             session
 
         );
+
 
 
 
@@ -234,7 +261,7 @@ implements TelegramCallbackHandler {
 
 💰 قیمت هر گرم طلا:
 
-${new Intl.NumberFormat("fa-IR").format(currentPrice.price)} تومان
+${this.formatNumber(currentPrice.price)} تومان
 
 
 حالا درصد اجرت را وارد کنید:
@@ -261,12 +288,12 @@ ${new Intl.NumberFormat("fa-IR").format(currentPrice.price)} تومان
 
                             text:
 
-                                "⬅️ بازگشت",
+                                "⬅️ اصلاح مرحله قبل",
 
 
                             actionId:
 
-                                "menu:calculate"
+                                "calculator:back"
 
                         }
 
@@ -278,6 +305,37 @@ ${new Intl.NumberFormat("fa-IR").format(currentPrice.price)} تومان
 
 
         };
+
+
+    }
+
+
+
+
+
+
+
+
+    private formatNumber(
+
+        value:
+
+            number
+
+    ): string {
+
+
+        return new Intl.NumberFormat(
+
+            "fa-IR"
+
+        )
+
+        .format(
+
+            Math.round(value)
+
+        );
 
 
     }
