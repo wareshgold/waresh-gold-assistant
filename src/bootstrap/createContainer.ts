@@ -56,6 +56,12 @@ import {
 from "../application/gold/GetCurrentGoldPriceUseCase";
 
 
+import {
+    DefaultGoldPriceResolver
+}
+from "../application/gold/pricing/GoldPriceResolver";
+
+
 import { GetMarketChartUseCase }
 from "../application/market/GetMarketChartUseCase";
 
@@ -223,6 +229,8 @@ export function createContainer(
 
 
 
+
+
     const getCurrentGoldPriceUseCase =
 
         new GetCurrentGoldPriceUseCase(
@@ -230,6 +238,20 @@ export function createContainer(
             market.cachedMarketProvider
 
         );
+
+
+
+
+
+    const goldPriceResolver =
+
+        new DefaultGoldPriceResolver(
+
+            getCurrentGoldPriceUseCase
+
+        );
+
+
 
 
 
@@ -390,7 +412,8 @@ export function createContainer(
                     storage.userProfileStore,
 
 
-                getCurrentGoldPriceUseCase,
+
+                goldPriceResolver,
 
 
 
@@ -437,12 +460,15 @@ export function createContainer(
 
 
         getGoldPriceUseCase,
-        
+
 
         getGoldBubbleUseCase,
 
-        
+
         getCurrentGoldPriceUseCase,
+
+
+        goldPriceResolver,
 
 
         getGoldBubbleDataUseCase,

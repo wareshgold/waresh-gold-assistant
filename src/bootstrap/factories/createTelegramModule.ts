@@ -129,15 +129,14 @@ import { GoldCalculationWorkflow }
 from "../../application/gold/workflows/GoldCalculationWorkflow";
 
 
+import {
+    GoldPriceResolver
+}
+from "../../application/gold/pricing/GoldPriceResolver";
+
+
 import { AppEnv }
 from "../../shared/config/env";
-
-
-import {
-    GetCurrentGoldPriceUseCase
-}
-from "../../application/gold/GetCurrentGoldPriceUseCase";
-
 
 
 
@@ -157,8 +156,8 @@ interface Dependencies {
         any;
 
 
-    getCurrentGoldPriceUseCase:
-        GetCurrentGoldPriceUseCase;
+    goldPriceResolver:
+        GoldPriceResolver;
 
 
     getMarketHistoryUseCase:
@@ -200,6 +199,8 @@ interface Dependencies {
 
 
 
+
+
 export function createTelegramModule(
 
     env: AppEnv,
@@ -216,6 +217,7 @@ export function createTelegramModule(
 
 
 
+
     const goldCalculationResultFormatter =
 
         new GoldCalculationResultFormatter(
@@ -223,6 +225,7 @@ export function createTelegramModule(
             telegramNumberFormatter
 
         );
+
 
 
 
@@ -274,12 +277,7 @@ export function createTelegramModule(
             ]
 
         );
-
-
-
-
-
-    const marketBubbleMessageFormatter =
+            const marketBubbleMessageFormatter =
 
         new MarketBubbleMessageFormatter(
 
@@ -292,9 +290,12 @@ export function createTelegramModule(
 
 
 
+
     const marketChartRenderer =
 
         new MarketChartRenderer();
+
+
 
 
 
@@ -305,11 +306,13 @@ export function createTelegramModule(
 
 
 
+
     const telegramNavigationService:
 
         TelegramNavigationService =
 
             new DefaultTelegramNavigationService();
+
 
 
 
@@ -474,13 +477,14 @@ export function createTelegramModule(
             dependencies.sessionStore,
 
 
-            dependencies.getCurrentGoldPriceUseCase,
-
-
             dependencies.goldCalculationWorkflow,
 
 
-            telegramNumberFormatter
+            telegramNumberFormatter,
+
+
+            dependencies.goldPriceResolver
+
 
 
         );
