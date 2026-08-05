@@ -40,6 +40,12 @@ import {
 from "../../../gold/workflows/GoldCalculationWorkflow";
 
 
+import {
+    TelegramNumberFormatter
+}
+from "../../presentation/TelegramNumberFormatter";
+
+
 
 
 
@@ -70,7 +76,12 @@ implements TelegramCallbackHandler {
 
         private readonly workflow:
 
-            GoldCalculationWorkflow
+            GoldCalculationWorkflow,
+
+
+        private readonly numberFormatter:
+
+            TelegramNumberFormatter
 
 
     ) {}
@@ -147,6 +158,7 @@ implements TelegramCallbackHandler {
                 userId
 
             );
+
 
 
 
@@ -231,6 +243,7 @@ implements TelegramCallbackHandler {
 
 
 
+
         await this.sessionStore.save(
 
             session
@@ -259,9 +272,12 @@ implements TelegramCallbackHandler {
 `
 ✅ قیمت لحظه‌ای انتخاب شد
 
+
 💰 قیمت هر گرم طلا:
 
-${this.formatNumber(currentPrice.price)} تومان
+${this.numberFormatter.money(
+    currentPrice.price
+)}
 
 
 حالا درصد اجرت را وارد کنید:
@@ -311,34 +327,6 @@ ${this.formatNumber(currentPrice.price)} تومان
 
 
 
-
-
-
-
-
-    private formatNumber(
-
-        value:
-
-            number
-
-    ): string {
-
-
-        return new Intl.NumberFormat(
-
-            "fa-IR"
-
-        )
-
-        .format(
-
-            Math.round(value)
-
-        );
-
-
-    }
 
 
 
