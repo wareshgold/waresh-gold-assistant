@@ -125,12 +125,6 @@ from "../state/TelegramSessionStore";
 
 
 import {
-    GetCurrentGoldPriceUseCase,
-}
-from "../../gold/GetCurrentGoldPriceUseCase";
-
-
-import {
     GoldCalculationWorkflow,
 }
 from "../../gold/workflows/GoldCalculationWorkflow";
@@ -140,6 +134,12 @@ import {
     TelegramNumberFormatter
 }
 from "../presentation/TelegramNumberFormatter";
+
+
+import {
+    GoldPriceResolver
+}
+from "../../gold/pricing/GoldPriceResolver";
 
 
 
@@ -154,44 +154,54 @@ export class TelegramCallbackHandlerFactory {
     static create(
 
 
+
         telegramActionExecutor:
             TelegramActionExecutor,
+
 
 
         telegramNavigationService:
             TelegramNavigationService,
 
 
+
         telegramNavigationStateService:
             TelegramNavigationStateService,
+
 
 
         getMarketChartUseCase:
             GetMarketChartUseCase,
 
 
+
         marketChartRenderer:
             MarketChartRenderer,
+
 
 
         marketChartImageGenerator:
             MarketChartImageGenerator,
 
 
+
         sessionStore:
             TelegramSessionStore,
 
-
-        getCurrentGoldPriceUseCase:
-            GetCurrentGoldPriceUseCase,
 
 
         goldCalculationWorkflow:
             GoldCalculationWorkflow,
 
 
+
         numberFormatter:
-            TelegramNumberFormatter
+            TelegramNumberFormatter,
+
+
+
+        goldPriceResolver:
+            GoldPriceResolver
 
 
 
@@ -229,6 +239,8 @@ export class TelegramCallbackHandlerFactory {
 
 
         return [
+
+
 
 
 
@@ -324,7 +336,7 @@ export class TelegramCallbackHandlerFactory {
 
                 sessionStore,
 
-                getCurrentGoldPriceUseCase,
+                goldPriceResolver,
 
                 goldCalculationWorkflow,
 
@@ -340,7 +352,7 @@ export class TelegramCallbackHandlerFactory {
 
                 sessionStore,
 
-                getCurrentGoldPriceUseCase,
+                goldPriceResolver,
 
                 goldCalculationWorkflow,
 
@@ -368,7 +380,10 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+
+
         ];
+
 
 
     }

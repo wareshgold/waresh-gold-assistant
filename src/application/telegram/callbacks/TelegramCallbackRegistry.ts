@@ -53,12 +53,6 @@ from "../state/TelegramSessionStore";
 
 
 import {
-    GetCurrentGoldPriceUseCase,
-}
-from "../../gold/GetCurrentGoldPriceUseCase";
-
-
-import {
     GoldCalculationWorkflow,
 }
 from "../../gold/workflows/GoldCalculationWorkflow";
@@ -68,6 +62,13 @@ import {
     TelegramNumberFormatter,
 }
 from "../presentation/TelegramNumberFormatter";
+
+
+import {
+    GoldPriceResolver,
+}
+from "../../gold/pricing/GoldPriceResolver";
+
 
 
 
@@ -107,16 +108,16 @@ export class TelegramCallbackRegistry {
             TelegramSessionStore,
 
 
-        getCurrentGoldPriceUseCase:
-            GetCurrentGoldPriceUseCase,
-
-
         goldCalculationWorkflow:
             GoldCalculationWorkflow,
 
 
         numberFormatter:
-            TelegramNumberFormatter
+            TelegramNumberFormatter,
+
+
+        goldPriceResolver:
+            GoldPriceResolver
 
 
 
@@ -152,16 +153,18 @@ export class TelegramCallbackRegistry {
                 sessionStore,
 
 
-                getCurrentGoldPriceUseCase,
-
-
                 goldCalculationWorkflow,
 
 
-                numberFormatter
+                numberFormatter,
+
+
+                goldPriceResolver
+
 
 
             );
+
 
 
 

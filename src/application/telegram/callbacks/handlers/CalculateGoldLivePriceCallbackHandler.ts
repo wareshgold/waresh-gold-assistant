@@ -23,12 +23,6 @@ from "../../state/TelegramSessionStore";
 
 
 import {
-    GetCurrentGoldPriceUseCase
-}
-from "../../../gold/GetCurrentGoldPriceUseCase";
-
-
-import {
     GoldCalculationSessionData
 }
 from "../../../gold/workflows/GoldCalculationSessionData";
@@ -44,6 +38,19 @@ import {
     TelegramNumberFormatter
 }
 from "../../presentation/TelegramNumberFormatter";
+
+
+import {
+    GoldPriceResolver
+}
+from "../../../gold/pricing/GoldPriceResolver";
+
+
+import {
+    GoldPriceSource
+}
+from "../../../gold/pricing/GoldPriceSource";
+
 
 
 
@@ -64,8 +71,8 @@ implements TelegramCallbackHandler {
             TelegramSessionStore,
 
 
-        private readonly getCurrentGoldPriceUseCase:
-            GetCurrentGoldPriceUseCase,
+        private readonly goldPriceResolver:
+            GoldPriceResolver,
 
 
         private readonly workflow:
@@ -77,6 +84,7 @@ implements TelegramCallbackHandler {
 
 
     ) {}
+
 
 
 
@@ -142,8 +150,6 @@ implements TelegramCallbackHandler {
 
 
 
-
-
         const session =
 
             await this.sessionStore.get<GoldCalculationSessionData>(
@@ -151,8 +157,6 @@ implements TelegramCallbackHandler {
                 userId
 
             );
-
-
 
 
 
@@ -182,10 +186,13 @@ implements TelegramCallbackHandler {
 
 
 
-        const currentPrice =
+        const resolvedPrice =
 
-            await this.getCurrentGoldPriceUseCase.execute();
+            await this.goldPriceResolver.resolve(
 
+                GoldPriceSource.MARKET
+
+            );
 
 
 
@@ -198,7 +205,7 @@ implements TelegramCallbackHandler {
 
                 session.data,
 
-                currentPrice.price
+                resolvedPrice.price
 
             );
 
@@ -221,7 +228,6 @@ implements TelegramCallbackHandler {
         session.updatedAt =
 
             Date.now();
-
 
 
 
@@ -256,7 +262,7 @@ implements TelegramCallbackHandler {
 💰 قیمت هر گرم طلا:
 
 ${this.numberFormatter.money(
-    currentPrice.price
+    resolvedPrice.price
 )}
 
 
