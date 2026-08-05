@@ -49,13 +49,9 @@ from "../../presentation/TelegramNumberFormatter";
 
 
 
-
-
 export class CalculateGoldLivePriceCallbackHandler
 
 implements TelegramCallbackHandler {
-
-
 
 
 
@@ -65,22 +61,18 @@ implements TelegramCallbackHandler {
 
 
         private readonly sessionStore:
-
             TelegramSessionStore,
 
 
         private readonly getCurrentGoldPriceUseCase:
-
             GetCurrentGoldPriceUseCase,
 
 
         private readonly workflow:
-
             GoldCalculationWorkflow,
 
 
         private readonly numberFormatter:
-
             TelegramNumberFormatter
 
 
@@ -93,11 +85,9 @@ implements TelegramCallbackHandler {
 
 
 
-
     canHandle(
 
         context:
-
             TelegramCallbackContext
 
     ): boolean {
@@ -109,7 +99,15 @@ implements TelegramCallbackHandler {
 
             &&
 
-            context.callback.action === "live-price"
+            (
+
+                context.callback.action === "live-price"
+
+                ||
+
+                context.callback.action === "use-current-price"
+
+            )
 
         );
 
@@ -123,16 +121,12 @@ implements TelegramCallbackHandler {
 
 
 
-
     async execute(
 
         context:
-
             TelegramCallbackContext
 
-    ):
-
-        Promise<TelegramCommandResponse> {
+    ): Promise<TelegramCommandResponse> {
 
 
 
@@ -143,7 +137,6 @@ implements TelegramCallbackHandler {
             ??
 
             context.chatId;
-
 
 
 
@@ -164,28 +157,24 @@ implements TelegramCallbackHandler {
 
 
 
-
-
         if (!session) {
 
 
             return {
 
-                type:
 
+                type:
                     "text",
 
 
                 content:
-
                     "❌ جلسه محاسبه پیدا نشد"
+
 
             };
 
 
         }
-
-
 
 
 
@@ -203,7 +192,6 @@ implements TelegramCallbackHandler {
 
 
 
-
         const result =
 
             this.workflow.selectMarketPrice(
@@ -213,8 +201,6 @@ implements TelegramCallbackHandler {
                 currentPrice.price
 
             );
-
-
 
 
 
@@ -242,8 +228,6 @@ implements TelegramCallbackHandler {
 
 
 
-
-
         await this.sessionStore.save(
 
             session
@@ -256,13 +240,10 @@ implements TelegramCallbackHandler {
 
 
 
-
-
         return {
 
 
             type:
-
                 "text",
 
 
@@ -272,7 +253,6 @@ implements TelegramCallbackHandler {
 `
 ✅ قیمت لحظه‌ای انتخاب شد
 
-
 💰 قیمت هر گرم طلا:
 
 ${this.numberFormatter.money(
@@ -280,8 +260,9 @@ ${this.numberFormatter.money(
 )}
 
 
-حالا درصد اجرت را وارد کنید:
+📈 حالا درصد اجرت را وارد کنید:
 `.trim(),
+
 
 
 
@@ -290,7 +271,6 @@ ${this.numberFormatter.money(
             {
 
                 type:
-
                     "INLINE",
 
 
@@ -303,12 +283,10 @@ ${this.numberFormatter.money(
                         {
 
                             text:
-
                                 "⬅️ اصلاح مرحله قبل",
 
 
                             actionId:
-
                                 "calculator:back"
 
                         }
@@ -324,10 +302,6 @@ ${this.numberFormatter.money(
 
 
     }
-
-
-
-
 
 
 }

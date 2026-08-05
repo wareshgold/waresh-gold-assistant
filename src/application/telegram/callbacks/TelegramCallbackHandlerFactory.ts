@@ -326,7 +326,9 @@ export class TelegramCallbackHandlerFactory {
 
                 getCurrentGoldPriceUseCase,
 
-                goldCalculationWorkflow
+                goldCalculationWorkflow,
+
+                numberFormatter
 
             ),
 
