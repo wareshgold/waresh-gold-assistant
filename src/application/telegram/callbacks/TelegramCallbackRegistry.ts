@@ -64,6 +64,13 @@ import {
 from "../../gold/workflows/GoldCalculationWorkflow";
 
 
+import {
+    TelegramNumberFormatter,
+}
+from "../presentation/TelegramNumberFormatter";
+
+
+
 
 
 export class TelegramCallbackRegistry {
@@ -105,7 +112,11 @@ export class TelegramCallbackRegistry {
 
 
         goldCalculationWorkflow:
-            GoldCalculationWorkflow
+            GoldCalculationWorkflow,
+
+
+        numberFormatter:
+            TelegramNumberFormatter
 
 
 
@@ -118,7 +129,6 @@ export class TelegramCallbackRegistry {
 
 
             TelegramCallbackHandlerFactory.create(
-
 
 
                 telegramActionExecutor,
@@ -145,8 +155,10 @@ export class TelegramCallbackRegistry {
                 getCurrentGoldPriceUseCase,
 
 
-                goldCalculationWorkflow
+                goldCalculationWorkflow,
 
+
+                numberFormatter
 
 
             );

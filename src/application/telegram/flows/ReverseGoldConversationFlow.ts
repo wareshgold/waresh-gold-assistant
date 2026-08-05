@@ -1,114 +1,246 @@
-import { TelegramConversationFlow } from "./TelegramConversationFlow";
-import { TelegramSessionStore } from "../state/TelegramSessionStore";
-import { CalculateReverseGoldUseCase } from "../../gold/CalculateReverseGoldUseCase";
+import {
+    TelegramConversationFlow
+}
+from "./TelegramConversationFlow";
+
+
+import {
+    TelegramSessionStore
+}
+from "../state/TelegramSessionStore";
+
+
+import {
+    CalculateReverseGoldUseCase
+}
+from "../../gold/CalculateReverseGoldUseCase";
+
+
+import {
+    TelegramNumberFormatter
+}
+from "../presentation/TelegramNumberFormatter";
+
+
+
+
+
+interface ReverseGoldSessionData {
+
+
+    finalPrice?: number;
+
+
+    goldPrice?: number;
+
+
+    weight?: number;
+
+
+    profitPercent?: number;
+
+
+    taxPercent?: number;
+
+
+}
+
+
+
+
+
+
 
 
 export class ReverseGoldConversationFlow
+
 implements TelegramConversationFlow {
 
 
+
     constructor(
+
 
         private readonly sessionStore:
             TelegramSessionStore,
 
 
         private readonly useCase:
-            CalculateReverseGoldUseCase
+            CalculateReverseGoldUseCase,
+
+
+        private readonly numberFormatter:
+            TelegramNumberFormatter
+
 
     ) {}
 
 
 
+
+
+
+
+
+
+
     canHandle(
-        state: string
+
+        state:
+            string
+
     ): boolean {
+
 
         return [
 
+
             "REVERSE_LABOR_CALCULATION_WAITING_PRICE",
+
+
             "REVERSE_WAITING_GOLD_PRICE",
+
+
             "REVERSE_WAITING_WEIGHT",
+
+
             "REVERSE_WAITING_PROFIT",
+
+
             "REVERSE_WAITING_TAX"
 
+
         ].includes(state);
+
 
     }
 
 
 
 
+
+
+
+
+
     async execute(
 
-        userId: string,
 
-        message: string
+        userId:
+            string,
+
+
+        message:
+            string
+
 
     ): Promise<{
 
+
         type: "text";
 
+
         content: string;
+
 
     }> {
 
 
+
         const session =
-            await this.sessionStore.get(
+
+            await this.sessionStore.get<
+                ReverseGoldSessionData,
+                string
+            >(
+
                 userId
+
             );
+
+
+
 
 
         if (!session) {
 
+
             return {
+
 
                 type: "text",
 
+
                 content:
+
                     "جلسه محاسبه معکوس پیدا نشد"
+
 
             };
 
+
         }
+
+
+
+
+
 
 
 
         const value =
+
             Number(message);
 
 
 
+
+
+
         if (
+
             Number.isNaN(value)
+
         ) {
+
 
             return {
 
+
                 type: "text",
 
+
                 content:
+
                     "❌ لطفاً فقط عدد وارد کنید"
 
+
             };
+
 
         }
 
 
 
-        switch(
-            session.state
-        ) {
+
+
+
+
+
+        switch(session.state) {
+
 
 
             case "REVERSE_LABOR_CALCULATION_WAITING_PRICE":
 
+
                 session.data.finalPrice =
+
                     value;
 
 
                 session.state =
+
                     "REVERSE_WAITING_GOLD_PRICE";
 
 
@@ -116,13 +248,19 @@ implements TelegramConversationFlow {
 
 
 
+
+
+
             case "REVERSE_WAITING_GOLD_PRICE":
 
+
                 session.data.goldPrice =
+
                     value;
 
 
                 session.state =
+
                     "REVERSE_WAITING_WEIGHT";
 
 
@@ -130,13 +268,19 @@ implements TelegramConversationFlow {
 
 
 
+
+
+
             case "REVERSE_WAITING_WEIGHT":
 
+
                 session.data.weight =
+
                     value;
 
 
                 session.state =
+
                     "REVERSE_WAITING_PROFIT";
 
 
@@ -144,13 +288,19 @@ implements TelegramConversationFlow {
 
 
 
+
+
+
             case "REVERSE_WAITING_PROFIT":
 
+
                 session.data.profitPercent =
+
                     value;
 
 
                 session.state =
+
                     "REVERSE_WAITING_TAX";
 
 
@@ -158,65 +308,95 @@ implements TelegramConversationFlow {
 
 
 
+
+
+
+
+
             case "REVERSE_WAITING_TAX": {
 
 
                 session.data.taxPercent =
+
                     value;
 
 
 
+
+
                 const result =
+
                     this.useCase.execute({
 
+
+
                         target:
+
                             "LABOR_PERCENT",
 
 
+
                         finalPrice:
-                            Number(
-                                session.data.finalPrice
-                            ),
+
+                            session.data.finalPrice ?? 0,
+
 
 
                         goldPrice:
-                            Number(
-                                session.data.goldPrice
-                            ),
+
+                            session.data.goldPrice ?? 0,
+
 
 
                         weight:
-                            Number(
-                                session.data.weight
-                            ),
+
+                            session.data.weight ?? 0,
+
 
 
                         profitPercent:
-                            Number(
-                                session.data.profitPercent
-                            ),
+
+                            session.data.profitPercent ?? 0,
+
 
 
                         taxPercent:
-                            Number(
-                                session.data.taxPercent
-                            )
+
+                            session.data.taxPercent ?? 0
+
+
 
                     });
 
 
 
+
+
+
+
                 await this.sessionStore.delete(
+
                     userId
+
                 );
+
+
+
+
+
 
 
 
                 return {
 
+
                     type: "text",
 
+
+
                     content:
+
+
 
 `
 🔄 نتیجه محاسبه معکوس طلا
@@ -224,22 +404,28 @@ implements TelegramConversationFlow {
 
 ⚖️ وزن:
 
-${this.formatNumber(session.data.weight)} گرم
+${this.numberFormatter.weight(
+    session.data.weight ?? 0
+)}
 
 
 💰 قیمت هر گرم:
 
-${this.formatNumber(session.data.goldPrice)} تومان
+${this.numberFormatter.money(
+    session.data.goldPrice ?? 0
+)}
 
 
 📈 درصد اجرت:
 
-${result.laborPercent}%
+${result.laborPercent ?? 0}%
 
 
 💵 مبلغ اجرت:
 
-${this.formatNumber(result.laborAmount)} تومان
+${this.numberFormatter.money(
+    result.laborAmount ?? 0
+)}
 
 
 ━━━━━━━━━━━━━━
@@ -248,7 +434,10 @@ ${this.formatNumber(result.laborAmount)} تومان
 
 `.trim()
 
+
+
                 };
+
 
             }
 
@@ -257,13 +446,26 @@ ${this.formatNumber(result.laborAmount)} تومان
 
 
 
+
+
+
+
+
         await this.sessionStore.save(
+
             session
+
         );
 
 
 
+
+
+
+
+
         const nextMessages: Record<string,string> = {
+
 
 
             REVERSE_WAITING_GOLD_PRICE:
@@ -288,47 +490,31 @@ ${this.formatNumber(result.laborAmount)} تومان
 
                 "🧾 درصد مالیات را وارد کنید:"
 
+
         };
+
+
+
+
+
 
 
 
         return {
 
+
             type: "text",
 
+
+
             content:
-                nextMessages[
-                    session.state
-                ]
+
+                nextMessages[session.state]
+
+
 
         };
 
-    }
-
-
-
-
-
-    private formatNumber(
-        value: unknown
-    ): string {
-
-
-        if (
-            typeof value !== "number"
-        ) {
-
-            return "-";
-
-        }
-
-
-        return new Intl.NumberFormat(
-            "fa-IR"
-        )
-        .format(
-            Math.round(value)
-        );
 
     }
 

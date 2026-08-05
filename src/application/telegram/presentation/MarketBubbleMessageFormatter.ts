@@ -10,6 +10,13 @@ import {
 from "./TelegramMessageBuilder";
 
 
+import {
+    TelegramNumberFormatter
+}
+from "./TelegramNumberFormatter";
+
+
+
 
 
 
@@ -22,7 +29,11 @@ export class MarketBubbleMessageFormatter {
     constructor(
 
         private readonly builder:
-            TelegramMessageBuilder
+            TelegramMessageBuilder,
+
+
+        private readonly numberFormatter:
+            TelegramNumberFormatter
 
     ) {}
 
@@ -64,9 +75,11 @@ export class MarketBubbleMessageFormatter {
 
 
 
-            `${this.formatNumber(
+            this.numberFormatter.money(
+
                 bubble.marketPrice
-            )} تومان`,
+
+            ),
 
 
 
@@ -82,9 +95,11 @@ export class MarketBubbleMessageFormatter {
 
 
 
-            `${this.formatNumber(
+            this.numberFormatter.money(
+
                 bubble.intrinsicPrice
-            )} تومان`,
+
+            ),
 
 
 
@@ -100,9 +115,11 @@ export class MarketBubbleMessageFormatter {
 
 
 
-            `${this.formatNumber(
+            this.numberFormatter.money(
+
                 bubble.bubbleAmount
-            )} تومان`,
+
+            ),
 
 
 
@@ -119,7 +136,9 @@ export class MarketBubbleMessageFormatter {
 
 
             this.formatPercent(
+
                 bubble.bubblePercentage
+
             )
 
 
@@ -127,38 +146,6 @@ export class MarketBubbleMessageFormatter {
 
         ]);
 
-
-
-    }
-
-
-
-
-
-
-
-
-
-    private formatNumber(
-
-        value:
-            number
-
-    ): string {
-
-
-
-        return new Intl.NumberFormat(
-
-            "fa-IR"
-
-        )
-
-        .format(
-
-            Math.round(value)
-
-        );
 
 
     }
