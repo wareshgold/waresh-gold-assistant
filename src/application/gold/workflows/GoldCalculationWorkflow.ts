@@ -213,7 +213,6 @@ export class GoldCalculationWorkflow {
 
                     ]
 
-
                 };
 
 
@@ -365,7 +364,6 @@ export class GoldCalculationWorkflow {
 
                 ]
 
-
             };
 
 
@@ -491,6 +489,7 @@ export class GoldCalculationWorkflow {
 
 
 
+
         return {
 
 
@@ -594,6 +593,7 @@ export class GoldCalculationWorkflow {
 
 
         };
+
 
 
 

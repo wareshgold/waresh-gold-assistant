@@ -29,12 +29,6 @@ from "../../../gold/GetCurrentGoldPriceUseCase";
 
 
 import {
-    GoldCalculationStep
-}
-from "../../../gold/workflows/GoldCalculationStep";
-
-
-import {
     GoldCalculationSessionData
 }
 from "../../../gold/workflows/GoldCalculationSessionData";
@@ -45,6 +39,11 @@ import {
 }
 from "../../../gold/workflows/GoldCalculationWorkflow";
 
+
+import {
+    TelegramNumberFormatter
+}
+from "../../presentation/TelegramNumberFormatter";
 
 
 
@@ -68,7 +67,11 @@ implements TelegramCallbackHandler {
 
 
         private readonly workflow:
-            GoldCalculationWorkflow
+            GoldCalculationWorkflow,
+
+
+        private readonly numberFormatter:
+            TelegramNumberFormatter
 
 
     ) {}
@@ -163,6 +166,7 @@ implements TelegramCallbackHandler {
 
 
 
+
         const currentPrice =
 
             await this.getCurrentGoldPriceUseCase.execute();
@@ -185,16 +189,15 @@ implements TelegramCallbackHandler {
 
 
 
+
         session.state =
 
             result.nextStep!;
 
 
-
         session.data =
 
             result.updatedData!;
-
 
 
         session.updatedAt =
@@ -205,11 +208,13 @@ implements TelegramCallbackHandler {
 
 
 
+
         await this.sessionStore.save(
 
             session
 
         );
+
 
 
 
@@ -228,7 +233,9 @@ implements TelegramCallbackHandler {
 `
 🟡 قیمت لحظه‌ای استفاده شد:
 
-${this.formatNumber(currentPrice.price)} تومان
+💰 ${this.numberFormatter.money(
+    currentPrice.price
+)}
 
 
 📈 درصد اجرت را وارد کنید:
@@ -269,34 +276,6 @@ ${this.formatNumber(currentPrice.price)} تومان
 
 
         };
-
-
-    }
-
-
-
-
-
-
-
-    private formatNumber(
-
-        value:
-            number
-
-    ): string {
-
-
-        return new Intl.NumberFormat(
-
-            "fa-IR"
-
-        )
-        .format(
-
-            Math.round(value)
-
-        );
 
 
     }
