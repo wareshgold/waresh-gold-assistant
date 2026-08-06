@@ -23,9 +23,16 @@ from "../../state/TelegramSessionStore";
 
 
 import {
-    GoldCalculationStep
+    GoldCalculationWorkflow
 }
-from "../../../gold/workflows/GoldCalculationStep";
+from "../../../gold/workflows/GoldCalculationWorkflow";
+
+
+import {
+    GoldCalculationSessionData
+}
+from "../../../gold/workflows/GoldCalculationSessionData";
+
 
 
 
@@ -48,7 +55,12 @@ implements TelegramCallbackHandler {
 
         private readonly sessionStore:
 
-            TelegramSessionStore
+            TelegramSessionStore,
+
+
+        private readonly workflow:
+
+            GoldCalculationWorkflow
 
 
     ) {}
@@ -131,11 +143,13 @@ implements TelegramCallbackHandler {
 
         const session =
 
-            await this.sessionStore.get(
+            await this.sessionStore.get<GoldCalculationSessionData>(
 
                 userId
 
             );
+
+
 
 
 
@@ -172,9 +186,35 @@ implements TelegramCallbackHandler {
 
 
 
+        const result =
+
+            this.workflow.selectManualPrice(
+
+                session.data
+
+            );
+
+
+
+
+
+
+
+
+
         session.state =
 
-            GoldCalculationStep.WAITING_PRICE;
+            result.nextStep!;
+
+
+
+
+
+        session.data =
+
+            result.updatedData!;
+
+
 
 
 
@@ -204,6 +244,8 @@ implements TelegramCallbackHandler {
 
 
 
+
+
         return {
 
 
@@ -217,7 +259,43 @@ implements TelegramCallbackHandler {
 
 `
 ✍️ لطفاً قیمت هر گرم طلا را وارد کنید:
-`.trim()
+`.trim(),
+
+
+
+            replyMarkup:
+
+            {
+
+                type:
+
+                    "INLINE",
+
+
+                rows:
+
+                [
+
+                    [
+
+                        {
+
+                            text:
+
+                                "⬅️ اصلاح مرحله قبل",
+
+
+                            actionId:
+
+                                "calculator:back"
+
+                        }
+
+                    ]
+
+                ]
+
+            }
 
 
 

@@ -25,11 +25,16 @@ import {
 from "../../../src/application/gold/validation/GoldCalculationValidator";
 
 
-
 import {
     CalculateGoldFormulaUseCase
 }
 from "../../../src/application/gold/CalculateGoldFormulaUseCase";
+
+
+import {
+    GoldCalculationHistoryManager
+}
+from "../../../src/application/gold/workflows/GoldCalculationHistoryManager";
 
 
 
@@ -38,7 +43,9 @@ extends CalculateGoldFormulaUseCase {
 
 
     constructor() {
+
         super({} as any);
+
     }
 
 
@@ -78,7 +85,9 @@ describe(
 
                 new FakeCalculateGoldFormulaUseCase(),
 
-                new GoldCalculationValidator()
+                new GoldCalculationValidator(),
+
+                new GoldCalculationHistoryManager()
 
             );
 
@@ -129,6 +138,7 @@ describe(
 
             }
         );
+
 
 
 
@@ -188,6 +198,7 @@ describe(
 
 
 
+
         it(
             "should select manual price",
             () => {
@@ -224,6 +235,7 @@ describe(
 
             }
         );
+
 
 
 
@@ -292,6 +304,7 @@ describe(
 
             }
         );
+
 
 
 
