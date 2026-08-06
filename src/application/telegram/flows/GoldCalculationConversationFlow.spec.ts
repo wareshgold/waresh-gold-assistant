@@ -21,6 +21,10 @@ import { GoldCalculationValidator }
 from "../../gold/validation/GoldCalculationValidator";
 
 
+import { GoldCalculationHistoryManager }
+from "../../gold/workflows/GoldCalculationHistoryManager";
+
+
 import { createGoldRuleEngine }
 from "../../../domain/gold/services/createGoldRuleEngine";
 
@@ -67,7 +71,9 @@ describe(
 
                         useCase,
 
-                        new GoldCalculationValidator()
+                        new GoldCalculationValidator(),
+
+                        new GoldCalculationHistoryManager()
 
                     );
 
@@ -146,7 +152,9 @@ describe(
 
                         taxPercent: null,
 
-                        discount: null
+                        discount: null,
+
+                        history: []
 
                     },
 
@@ -158,8 +166,6 @@ describe(
 
 
 
-
-                // Weight
 
                 await flow.execute(
 
@@ -173,8 +179,6 @@ describe(
 
 
 
-                // Select manual price
-
                 await flow.execute(
 
                     "user-1",
@@ -186,8 +190,6 @@ describe(
 
 
 
-
-                // Gold price
 
                 await flow.execute(
 
@@ -201,8 +203,6 @@ describe(
 
 
 
-                // Labor
-
                 await flow.execute(
 
                     "user-1",
@@ -215,8 +215,6 @@ describe(
 
 
 
-                // Profit
-
                 await flow.execute(
 
                     "user-1",
@@ -228,8 +226,6 @@ describe(
 
 
 
-
-                // Tax -> Calculate
 
                 const result =
 

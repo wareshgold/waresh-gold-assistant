@@ -26,6 +26,11 @@ import { GoldCalculationValidator }
 from "../../application/gold/validation/GoldCalculationValidator";
 
 
+import { GoldCalculationHistoryManager }
+from "../../application/gold/workflows/GoldCalculationHistoryManager";
+
+
+
 
 
 export interface GoldModule {
@@ -60,6 +65,7 @@ export interface GoldModule {
 
 
 
+
 export function createGoldModule()
 : GoldModule {
 
@@ -73,6 +79,8 @@ export function createGoldModule()
 
 
 
+
+
     const calculateGoldFormulaUseCase =
 
         new CalculateGoldFormulaUseCase(
@@ -80,6 +88,8 @@ export function createGoldModule()
             goldRuleEngine
 
         );
+
+
 
 
 
@@ -100,9 +110,23 @@ export function createGoldModule()
 
 
 
+
+
     const goldBubbleCalculator =
 
         new GoldBubbleCalculator();
+
+
+
+
+
+
+
+
+    const goldCalculationHistoryManager =
+
+        new GoldCalculationHistoryManager();
+
 
 
 
@@ -116,9 +140,12 @@ export function createGoldModule()
 
             calculateGoldFormulaUseCase,
 
-            new GoldCalculationValidator()
+            new GoldCalculationValidator(),
+
+            goldCalculationHistoryManager
 
         );
+
 
 
 

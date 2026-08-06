@@ -12,9 +12,7 @@ from "./GoldCalculationStep";
 
 
 import {
-    GoldCalculationSessionData,
-    GoldCalculationHistoryEntry,
-    GoldCalculationSnapshot
+    GoldCalculationSessionData
 }
 from "./GoldCalculationSessionData";
 
@@ -23,6 +21,13 @@ import {
     GoldCalculationValidator
 }
 from "../validation/GoldCalculationValidator";
+
+
+import {
+    GoldCalculationHistoryManager
+}
+from "./GoldCalculationHistoryManager";
+
 
 
 
@@ -48,7 +53,10 @@ export interface GoldCalculationWorkflowResult {
 
 
 
+
+
 export class GoldCalculationWorkflow {
+
 
 
     constructor(
@@ -59,10 +67,18 @@ export class GoldCalculationWorkflow {
 
 
         private readonly validator:
-            GoldCalculationValidator
+            GoldCalculationValidator,
+
+
+        private readonly historyManager:
+            GoldCalculationHistoryManager
 
 
     ) {}
+
+
+
+
 
 
 
@@ -86,17 +102,22 @@ export class GoldCalculationWorkflow {
     ): GoldCalculationWorkflowResult {
 
 
-        const updatedData = this.cloneData(data);
+
+        const updatedData =
+
+            this.historyManager.clone(data);
 
 
 
-        this.pushHistory(
+
+        this.historyManager.pushHistory(
 
             updatedData,
 
             step
 
         );
+
 
 
 
@@ -108,7 +129,9 @@ export class GoldCalculationWorkflow {
             case GoldCalculationStep.WAITING_WEIGHT:
 
 
+
                 updatedData.weight = value;
+
 
 
                 return this.next(
@@ -123,12 +146,17 @@ export class GoldCalculationWorkflow {
 
 
 
+
+
             case GoldCalculationStep.WAITING_PRICE:
+
 
 
                 updatedData.goldPrice = value;
 
+
                 updatedData.priceSource = "MANUAL";
+
 
 
                 return this.next(
@@ -143,10 +171,15 @@ export class GoldCalculationWorkflow {
 
 
 
+
+
+
             case GoldCalculationStep.WAITING_LABOR:
 
 
+
                 updatedData.laborPercent = value;
+
 
 
                 return this.next(
@@ -161,10 +194,15 @@ export class GoldCalculationWorkflow {
 
 
 
+
+
+
             case GoldCalculationStep.WAITING_PROFIT:
 
 
+
                 updatedData.profitPercent = value;
+
 
 
                 return this.next(
@@ -179,10 +217,15 @@ export class GoldCalculationWorkflow {
 
 
 
+
+
+
             case GoldCalculationStep.WAITING_TAX:
 
 
+
                 updatedData.taxPercent = value;
+
 
 
                 return this.calculate(
@@ -195,7 +238,11 @@ export class GoldCalculationWorkflow {
 
 
 
+
+
+
             default:
+
 
 
                 return {
@@ -209,7 +256,9 @@ export class GoldCalculationWorkflow {
 
                     error: [
 
+
                         "Unknown calculation step"
+
 
                     ]
 
@@ -219,7 +268,10 @@ export class GoldCalculationWorkflow {
         }
 
 
+
     }
+
+
 
 
 
@@ -242,17 +294,23 @@ export class GoldCalculationWorkflow {
 
 
 
-        const updatedData = this.cloneData(data);
+        const updatedData =
+
+            this.historyManager.clone(data);
 
 
 
-        this.pushHistory(
+
+
+        this.historyManager.pushHistory(
 
             updatedData,
 
             GoldCalculationStep.WAITING_PRICE_SELECTION
 
         );
+
+
 
 
 
@@ -272,7 +330,10 @@ export class GoldCalculationWorkflow {
         );
 
 
+
     }
+
+
 
 
 
@@ -291,17 +352,23 @@ export class GoldCalculationWorkflow {
 
 
 
-        const updatedData = this.cloneData(data);
+        const updatedData =
+
+            this.historyManager.clone(data);
 
 
 
-        this.pushHistory(
+
+
+        this.historyManager.pushHistory(
 
             updatedData,
 
             GoldCalculationStep.WAITING_PRICE_SELECTION
 
         );
+
+
 
 
 
@@ -318,7 +385,10 @@ export class GoldCalculationWorkflow {
         );
 
 
+
     }
+
+
 
 
 
@@ -337,16 +407,21 @@ export class GoldCalculationWorkflow {
 
 
 
-        const history = [
+        const restored =
 
-            ...(data.history ?? [])
+            this.historyManager.restorePrevious(
 
-        ];
+                data
+
+            );
 
 
 
 
-        if(history.length === 0) {
+
+
+        if(!restored) {
+
 
 
             return {
@@ -360,7 +435,9 @@ export class GoldCalculationWorkflow {
 
                 error: [
 
+
                     "مرحله قبلی وجود ندارد"
+
 
                 ]
 
@@ -373,36 +450,35 @@ export class GoldCalculationWorkflow {
 
 
 
-        const previous = history.pop()!;
-
-
 
 
         return {
 
 
+
             completed: false,
 
 
-            nextStep: previous.step,
+
+            nextStep:
+
+                restored.step,
 
 
-            updatedData: {
 
+            updatedData:
 
-                ...previous.data,
+                restored.data
 
-
-                history
-
-
-            }
 
 
         };
 
 
+
     }
+
+
 
 
 
@@ -428,7 +504,10 @@ export class GoldCalculationWorkflow {
 
 
 
+
+
         if(!validation.valid) {
+
 
 
             return {
@@ -439,10 +518,13 @@ export class GoldCalculationWorkflow {
 
                 nextStep:
 
+
                     GoldCalculationStep.WAITING_TAX,
 
 
+
                 updatedData: data,
+
 
 
                 error:
@@ -453,7 +535,11 @@ export class GoldCalculationWorkflow {
             };
 
 
+
         }
+
+
+
 
 
 
@@ -465,22 +551,41 @@ export class GoldCalculationWorkflow {
             this.useCase.execute({
 
 
-                weight: data.weight!,
+
+                weight:
+
+                    data.weight!,
 
 
-                goldPrice: data.goldPrice!,
+
+                goldPrice:
+
+                    data.goldPrice!,
 
 
-                laborPercent: data.laborPercent!,
+
+                laborPercent:
+
+                    data.laborPercent!,
 
 
-                profitPercent: data.profitPercent!,
+
+                profitPercent:
+
+                    data.profitPercent!,
 
 
-                taxPercent: data.taxPercent ?? 0,
+
+                taxPercent:
+
+                    data.taxPercent ?? 0,
 
 
-                discount: data.discount ?? 0
+
+                discount:
+
+                    data.discount ?? 0
+
 
 
             });
@@ -490,133 +595,32 @@ export class GoldCalculationWorkflow {
 
 
 
+
+
+
         return {
+
 
 
             completed: true,
 
 
+
             updatedData: data,
+
 
 
             result
 
 
+
         };
+
 
 
     }
 
 
-
-
-
-
-
-    private cloneData(
-
-        data:
-            GoldCalculationSessionData
-
-    ): GoldCalculationSessionData {
-
-
-
-        return {
-
-
-            ...data,
-
-
-            history: [
-
-                ...(data.history ?? [])
-
-            ]
-
-
-        };
-
-
-    }
-
-
-
-
-
-
-
-    private pushHistory(
-
-
-        data:
-            GoldCalculationSessionData,
-
-
-        step:
-            GoldCalculationStep
-
-
-    ): void {
-
-
-
-        const snapshot: GoldCalculationSnapshot = {
-
-
-            weight:
-                data.weight,
-
-
-            goldPrice:
-                data.goldPrice,
-
-
-            priceSource:
-                data.priceSource,
-
-
-            laborPercent:
-                data.laborPercent,
-
-
-            profitPercent:
-                data.profitPercent,
-
-
-            taxPercent:
-                data.taxPercent,
-
-
-            discount:
-                data.discount
-
-
-        };
-
-
-
-
-
-
-        const entry: GoldCalculationHistoryEntry = {
-
-
-            step,
-
-
-            data: snapshot
-
-
-        };
-
-
-
-        data.history.push(entry);
-
-
-
-    }
 
 
 
@@ -642,19 +646,25 @@ export class GoldCalculationWorkflow {
         return {
 
 
+
             completed: false,
+
 
 
             nextStep: step,
 
 
+
             updatedData: data
+
 
 
         };
 
 
+
     }
+
 
 
 }

@@ -1,9 +1,15 @@
-import { GoldCalculationStep } from "./GoldCalculationStep";
+import {
+    GoldCalculationStep
+}
+from "./GoldCalculationStep";
+
 
 
 export type GoldCalculationPriceSource =
     | "MANUAL"
     | "MARKET";
+
+
 
 
 
@@ -30,7 +36,10 @@ export interface GoldCalculationSnapshot {
 
     discount: number | null;
 
+
 }
+
+
 
 
 
@@ -44,6 +53,8 @@ export interface GoldCalculationHistoryEntry {
 
 
 }
+
+
 
 
 
@@ -74,7 +85,11 @@ export interface GoldCalculationSessionData {
     history: GoldCalculationHistoryEntry[];
 
 
+
 }
+
+
+
 
 
 
@@ -108,7 +123,6 @@ GoldCalculationSessionData {
 
 
         history: []
-
 
     };
 

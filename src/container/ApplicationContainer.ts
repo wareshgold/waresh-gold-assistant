@@ -64,6 +64,9 @@ from "../application/telegram/flows/ReverseGoldConversationFlow";
 import { GoldCalculationWorkflow }
 from "../application/gold/workflows/GoldCalculationWorkflow";
 
+import { GoldCalculationHistoryManager }
+from "../application/gold/workflows/GoldCalculationHistoryManager";
+
 import { GoldCalculationValidator }
 from "../application/gold/validation/GoldCalculationValidator";
 
@@ -107,9 +110,7 @@ import { TelegramNumberFormatter }
 from "../application/telegram/presentation/TelegramNumberFormatter";
 
 
-
 export class ApplicationContainer {
-
 
     public readonly telegramMessageHandler:
         TelegramMessageHandler;
@@ -119,19 +120,13 @@ export class ApplicationContainer {
         CalculateReverseGoldUseCase;
 
 
-
     constructor() {
 
-
         const messageProvider =
-
             createTelegramMessageProvider({
-
                 TELEGRAM_MARKET_SOURCE_URL:
                     "https://example.com"
-
             } as any);
-
 
 
         const historyRepository = {
@@ -139,292 +134,175 @@ export class ApplicationContainer {
             async save() {},
 
             async getByUserId() {
-
                 return [];
-
             }
 
         };
 
 
-
         const saveGoldCalculationHistoryUseCase =
-
             new SaveGoldCalculationHistoryUseCase(
-
                 historyRepository
-
             );
-
 
 
         const getGoldCalculationHistoryUseCase =
-
             new GetGoldCalculationHistoryUseCase(
-
                 historyRepository
-
             );
-
 
 
         const marketProvider =
-
             new TelegramMarketPriceProvider(
-
                 messageProvider
-
             );
-
 
 
         const getCurrentMarketPriceUseCase =
-
             new GetCurrentMarketPriceUseCase(
-
                 marketProvider
-
             );
-
 
 
         const snapshotRepository =
-
             new MemoryMarketSnapshotRepository();
 
 
-
         const snapshotService =
-
             new MarketSnapshotService(
-
                 snapshotRepository
-
             );
-
 
 
         const analyticsService =
-
             new MarketAnalyticsService(
-
                 snapshotRepository,
-
                 new TrendCalculator(),
-
                 new VolatilityCalculator()
-
             );
-
 
 
         const analyticsFacade =
-
             new MarketAnalyticsFacade(
-
                 analyticsService,
-
                 new MarketScoreCalculator()
-
             );
-
 
 
         const getMarketAnalyticsUseCase =
-
             new GetMarketAnalyticsUseCase(
-
                 analyticsFacade
-
             );
-
 
 
         const getMarketHistoryUseCase =
-
             new GetMarketHistoryUseCase(
-
                 snapshotService
-
             );
-
 
 
         const getGoldPriceUseCase =
-
             new GetGoldPriceUseCase(
-
                 getCurrentMarketPriceUseCase
-
             );
-
 
 
         const getGoldBubbleUseCase =
-
             new GetGoldBubbleUseCase(
-
                 marketProvider,
-
                 new GoldBubbleCalculator()
-
             );
-
 
 
         this.calculateReverseGoldUseCase =
-
             new CalculateReverseGoldUseCase(
-
                 new ReverseGoldCalculator()
-
             );
+
+
         const calculateGoldFormulaUseCase =
-
             new CalculateGoldFormulaUseCase(
-
                 createGoldRuleEngine()
-
             );
-
 
 
         const goldCalculationWorkflow =
-
             new GoldCalculationWorkflow(
-
                 calculateGoldFormulaUseCase,
-
-                new GoldCalculationValidator()
-
+                new GoldCalculationValidator(),
+                new GoldCalculationHistoryManager()
             );
-
 
 
         const sessionStore =
-
             new MemoryTelegramSessionStore();
 
 
-
         const profileStore =
-
             new MemoryTelegramUserProfileStore();
 
 
-
         const goldCalculationResultFormatter =
-
             new GoldCalculationResultFormatter(
-
                 new TelegramNumberFormatter()
-
             );
-
 
 
         const conversationManager =
-
             new TelegramConversationManager(
-
                 sessionStore,
-
                 [
-
                     new GoldCalculationConversationFlow(
-
                         sessionStore,
-
                         goldCalculationWorkflow,
-
                         goldCalculationResultFormatter,
-
                         saveGoldCalculationHistoryUseCase
-
                     ),
 
-
-
                     new ReverseGoldConversationFlow(
-
                         sessionStore,
-
                         this.calculateReverseGoldUseCase,
-
                         new TelegramNumberFormatter()
-
                     )
-
                 ]
-
             );
-
 
 
         const marketBubbleMessageFormatter =
-
             new MarketBubbleMessageFormatter(
-
                 new TelegramMessageBuilder(),
-
                 new TelegramNumberFormatter()
-
             );
-
 
 
         const router =
-
             TelegramCommandRegistry.create(
-
                 getGoldPriceUseCase,
-
                 getGoldBubbleUseCase,
-
                 getMarketAnalyticsUseCase,
-
                 getMarketHistoryUseCase,
-
                 getGoldCalculationHistoryUseCase,
-
                 calculateGoldFormulaUseCase,
-
                 this.calculateReverseGoldUseCase,
-
                 sessionStore,
-
                 profileStore,
-
                 marketBubbleMessageFormatter
-
             );
-
 
 
         const commandService =
-
             new TelegramCommandService(
-
                 router,
-
                 conversationManager
-
             );
-
 
 
         this.telegramMessageHandler =
-
             new TelegramMessageHandler(
-
                 commandService,
-
                 new TelegramResponseFormatter()
-
             );
 
-
     }
-
 
 }
