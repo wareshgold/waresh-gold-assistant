@@ -73,11 +73,12 @@ from "../../gold/pricing/GoldPriceResolver";
 
 
 
-
 export class TelegramCallbackRegistry {
 
 
+
     static create(
+
 
 
         telegramActionExecutor:
@@ -132,6 +133,7 @@ export class TelegramCallbackRegistry {
             TelegramCallbackHandlerFactory.create(
 
 
+
                 telegramActionExecutor,
 
 
@@ -169,7 +171,6 @@ export class TelegramCallbackRegistry {
 
 
 
-
         return new TelegramCallbackRouter(
 
             handlers
@@ -177,7 +178,9 @@ export class TelegramCallbackRegistry {
         );
 
 
+
     }
+
 
 
 }

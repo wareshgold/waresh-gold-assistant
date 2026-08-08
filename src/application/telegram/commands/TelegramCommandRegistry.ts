@@ -102,9 +102,12 @@ import { MarketBubbleMessageFormatter }
 from "../presentation/MarketBubbleMessageFormatter";
 
 
+import { MarketAnalyticsMessageFormatter }
+from "../presentation/MarketAnalyticsMessageFormatter";
+
+
 import { TelegramNumberFormatter }
 from "../presentation/TelegramNumberFormatter";
-
 
 
 
@@ -153,7 +156,11 @@ export class TelegramCommandRegistry {
 
 
         marketBubbleMessageFormatter:
-            MarketBubbleMessageFormatter
+            MarketBubbleMessageFormatter,
+
+
+        marketAnalyticsMessageFormatter:
+            MarketAnalyticsMessageFormatter
 
 
 
@@ -169,9 +176,11 @@ export class TelegramCommandRegistry {
 
 
 
+
         const menuRegistry =
 
             new MemoryTelegramMenuRegistry();
+
 
 
 
@@ -183,6 +192,7 @@ export class TelegramCommandRegistry {
                 menuRegistry
 
             );
+
 
 
 
@@ -273,7 +283,9 @@ export class TelegramCommandRegistry {
 
                 new GetMarketAnalyticsCommandHandler(
 
-                    getMarketAnalyticsUseCase
+                    getMarketAnalyticsUseCase,
+
+                    marketAnalyticsMessageFormatter
 
                 ),
 

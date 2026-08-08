@@ -1,148 +1,116 @@
 import { TelegramUpdateMapper }
 from "../../infrastructure/telegram/TelegramUpdateMapper";
 
-
 import { TelegramHttpBotClient }
 from "../../infrastructure/telegram/clients/TelegramHttpBotClient";
-
 
 import { FakeTelegramBotClient }
 from "../../infrastructure/telegram/FakeTelegramBotClient";
 
-
 import { TelegramCommandRegistry }
 from "../../application/telegram/commands/TelegramCommandRegistry";
-
 
 import { TelegramCommandService }
 from "../../application/telegram/services/TelegramCommandService";
 
-
 import { TelegramCommandMenuService }
 from "../../application/telegram/services/TelegramCommandMenuService";
-
 
 import { TelegramMessageHandler }
 from "../../application/telegram/TelegramMessageHandler";
 
-
 import { TelegramResponseFormatter }
 from "../../application/telegram/TelegramResponseFormatter";
-
 
 import { TelegramUpdateProcessor }
 from "../../application/telegram/services/TelegramUpdateProcessor";
 
-
 import { TelegramConversationManager }
 from "../../application/telegram/flows/TelegramConversationManager";
-
 
 import { GoldCalculationConversationFlow }
 from "../../application/telegram/flows/GoldCalculationConversationFlow";
 
-
 import { ReverseGoldConversationFlow }
 from "../../application/telegram/flows/ReverseGoldConversationFlow";
-
 
 import { TelegramWebhookController }
 from "../../interfaces/telegram/TelegramWebhookController";
 
-
 import { TelegramWebhookSecurityGuard }
 from "../../interfaces/telegram/TelegramWebhookSecurityGuard";
-
 
 import { TelegramKeyboardMapper }
 from "../../infrastructure/telegram/TelegramKeyboardMapper";
 
-
 import { TelegramCallbackRegistry }
 from "../../application/telegram/callbacks/TelegramCallbackRegistry";
-
 
 import { TelegramCallbackProcessor }
 from "../../application/telegram/services/TelegramCallbackProcessor";
 
-
 import { TelegramCallbackMapper }
 from "../../application/telegram/mappers/TelegramCallbackMapper";
-
 
 import { TelegramMessageBuilder }
 from "../../application/telegram/presentation/TelegramMessageBuilder";
 
-
 import { MarketBubbleMessageFormatter }
 from "../../application/telegram/presentation/MarketBubbleMessageFormatter";
 
+import { MarketAnalyticsMessageFormatter }
+from "../../application/telegram/presentation/MarketAnalyticsMessageFormatter";
 
 import {
-    TelegramNavigationService,
-    DefaultTelegramNavigationService
+TelegramNavigationService,
+DefaultTelegramNavigationService
 }
 from "../../application/telegram/navigation/TelegramNavigationService";
-
 
 import { DefaultTelegramNavigationStateService }
 from "../../application/telegram/navigation/TelegramNavigationStateService";
 
-
 import { TelegramActionExecutor }
 from "../../application/telegram/actions/TelegramActionExecutor";
-
 
 import { CompositeTelegramActionResolver }
 from "../../application/telegram/actions/CompositeTelegramActionResolver";
 
-
 import { TelegramCommandActionResolver }
 from "../../application/telegram/actions/TelegramCommandActionResolver";
-
 
 import { TelegramTextActionResolver }
 from "../../application/telegram/actions/TelegramTextActionResolver";
 
-
 import { MarketChartRenderer }
 from "../../application/market/chart/MarketChartRenderer";
-
 
 import { MarketChartImageGenerator }
 from "../../infrastructure/chart/MarketChartImageGenerator";
 
-
 import { TelegramNumberFormatter }
 from "../../application/telegram/presentation/TelegramNumberFormatter";
-
 
 import { GoldCalculationResultFormatter }
 from "../../application/telegram/presentation/GoldCalculationResultFormatter";
 
-
 import { GoldCalculationPromptFormatter }
 from "../../application/telegram/presentation/GoldCalculationPromptFormatter";
-
 
 import { GoldCalculationWorkflow }
 from "../../application/gold/workflows/GoldCalculationWorkflow";
 
-
 import {
-    GoldPriceResolver
+GoldPriceResolver
 }
 from "../../application/gold/pricing/GoldPriceResolver";
-
 
 import { AppEnv }
 from "../../shared/config/env";
 
 
 
-
 interface Dependencies {
-
 
     getGoldPriceUseCase:
         any;
@@ -199,8 +167,6 @@ interface Dependencies {
 
 
 
-
-
 export function createTelegramModule(
 
     env: AppEnv,
@@ -208,6 +174,7 @@ export function createTelegramModule(
     dependencies: Dependencies
 
 ) {
+
 
 
     const telegramNumberFormatter =
@@ -277,9 +244,28 @@ export function createTelegramModule(
             ]
 
         );
-            const marketBubbleMessageFormatter =
+
+
+
+
+
+    const marketBubbleMessageFormatter =
 
         new MarketBubbleMessageFormatter(
+
+            new TelegramMessageBuilder(),
+
+            telegramNumberFormatter
+
+        );
+
+
+
+
+
+    const marketAnalyticsMessageFormatter =
+
+        new MarketAnalyticsMessageFormatter(
 
             new TelegramMessageBuilder(),
 
@@ -351,7 +337,9 @@ export function createTelegramModule(
 
             dependencies.profileStore,
 
-            marketBubbleMessageFormatter
+            marketBubbleMessageFormatter,
+
+            marketAnalyticsMessageFormatter
 
         );
 
@@ -582,6 +570,5 @@ export function createTelegramModule(
 
 
     };
-
 
 }

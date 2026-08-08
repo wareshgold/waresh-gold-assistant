@@ -1,12 +1,36 @@
 import { describe, expect, it } from "vitest";
 
-
 import { GetMarketAnalyticsCommandHandler }
 from "../../../../../src/application/telegram/commands/handlers/GetMarketAnalyticsCommandHandler";
 
-
 import { GetMarketAnalyticsUseCase }
 from "../../../../../src/application/market/GetMarketAnalyticsUseCase";
+
+import { MarketAnalytics }
+from "../../../../../src/domain/market/analytics/entities/MarketAnalytics";
+
+import { PercentageChange }
+from "../../../../../src/domain/market/analytics/value-objects/PercentageChange";
+
+import {
+TrendDirection
+}
+from "../../../../../src/domain/market/analytics/value-objects/TrendDirection";
+
+import { PriceRange }
+from "../../../../../src/domain/market/analytics/value-objects/PriceRange";
+
+import { MarketScore }
+from "../../../../../src/domain/market/analytics/value-objects/MarketScore";
+
+import { TelegramMessageBuilder }
+from "../../../../../src/application/telegram/presentation/TelegramMessageBuilder";
+
+import { TelegramNumberFormatter }
+from "../../../../../src/application/telegram/presentation/TelegramNumberFormatter";
+
+import { MarketAnalyticsMessageFormatter }
+from "../../../../../src/application/telegram/presentation/MarketAnalyticsMessageFormatter";
 
 
 
@@ -23,95 +47,68 @@ describe(
 
             async execute() {
 
+
+                const analytics =
+
+                    new MarketAnalytics(
+
+                        18_780_155,
+
+                        18_000_000,
+
+                        PercentageChange.create(
+
+                            18_000_000,
+
+                            18_780_155
+
+                        ),
+
+                        TrendDirection.up(),
+
+                        1.25,
+
+                        PriceRange.create(
+
+                            [
+
+                                18_000_000,
+
+                                18_800_000
+
+                            ]
+
+                        ),
+
+                        new Date(
+
+                            "2026-07-21T09:00:00Z"
+
+                        )
+
+                    );
+
+
+
+
+
                 return {
 
+                    analytics,
 
-                    analytics: {
+                    score:
 
+                        MarketScore.create(
 
-                        getCurrentPrice() {
+                            75
 
-                            return 18780155;
-
-                        },
-
-
-
-                        getChange() {
-
-                            return {
-
-                                formatted:
-                                    "+2.50%"
-
-                            };
-
-                        },
-
-
-
-                        getTrend() {
-
-                            return {
-
-                                isUp:
-                                    true,
-
-
-                                isDown:
-                                    false
-
-                            };
-
-                        },
-
-
-
-                        getVolatility() {
-
-                            return 1.25;
-
-                        },
-
-
-
-                        getPriceRange() {
-
-                            return {
-
-
-                                toString() {
-
-                                    return "18,000,000 - 18,800,000";
-
-                                }
-
-
-                            };
-
-                        },
-
-
-
-                        getAnalyzedAt() {
-
-                            return new Date(
-                                "2026-07-21T09:00:00Z"
-                            );
-
-                        }
-
-
-                    }
-
+                        )
 
                 };
 
             }
 
-
         }
-
 
 
 
@@ -120,16 +117,37 @@ describe(
         const createHandler = () => {
 
 
+            const telegramNumberFormatter =
+
+                new TelegramNumberFormatter();
+
+
+
+
+
+            const marketAnalyticsMessageFormatter =
+
+                new MarketAnalyticsMessageFormatter(
+
+                    new TelegramMessageBuilder(),
+
+                    telegramNumberFormatter
+
+                );
+
+
+
+
+
             return new GetMarketAnalyticsCommandHandler(
 
-                new FakeGetMarketAnalyticsUseCase()
+                new FakeGetMarketAnalyticsUseCase(),
+
+                marketAnalyticsMessageFormatter
 
             );
 
-
         };
-
-
 
 
 
@@ -154,13 +172,8 @@ describe(
                 )
                 .toBe(true);
 
-
-
             }
         );
-
-
-
 
 
 
@@ -198,13 +211,8 @@ describe(
                 )
                 .toBe(true);
 
-
-
             }
         );
-
-
-
 
 
 
@@ -238,7 +246,7 @@ describe(
 
                 )
                 .toContain(
-                    "گزارش هوشمند بازار طلا"
+                    "📊 تحلیل بازار طلا"
                 );
 
 
@@ -264,15 +272,25 @@ describe(
 
                 )
                 .toContain(
-                    "محدوده"
+                    "حداقل"
                 );
 
 
 
+
+
+                expect(
+
+                    result.content
+
+                )
+                .toContain(
+                    "حداکثر"
+                );
+
             }
         );
 
-
-
     }
+
 );

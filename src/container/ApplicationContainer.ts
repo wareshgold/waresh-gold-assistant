@@ -103,6 +103,9 @@ from "../application/telegram/presentation/TelegramMessageBuilder";
 import { MarketBubbleMessageFormatter }
 from "../application/telegram/presentation/MarketBubbleMessageFormatter";
 
+import { MarketAnalyticsMessageFormatter }
+from "../application/telegram/presentation/MarketAnalyticsMessageFormatter";
+
 import { GoldCalculationResultFormatter }
 from "../application/telegram/presentation/GoldCalculationResultFormatter";
 
@@ -110,23 +113,37 @@ import { TelegramNumberFormatter }
 from "../application/telegram/presentation/TelegramNumberFormatter";
 
 
+
 export class ApplicationContainer {
+
+
 
     public readonly telegramMessageHandler:
         TelegramMessageHandler;
+
 
 
     public readonly calculateReverseGoldUseCase:
         CalculateReverseGoldUseCase;
 
 
+
     constructor() {
 
+
+
         const messageProvider =
+
             createTelegramMessageProvider({
+
                 TELEGRAM_MARKET_SOURCE_URL:
+
                     "https://example.com"
+
             } as any);
+
+
+
 
 
         const historyRepository = {
@@ -134,173 +151,361 @@ export class ApplicationContainer {
             async save() {},
 
             async getByUserId() {
+
                 return [];
+
             }
 
         };
 
 
+
+
+
         const saveGoldCalculationHistoryUseCase =
+
             new SaveGoldCalculationHistoryUseCase(
+
                 historyRepository
+
             );
+
+
+
 
 
         const getGoldCalculationHistoryUseCase =
+
             new GetGoldCalculationHistoryUseCase(
+
                 historyRepository
+
             );
+
+
+
 
 
         const marketProvider =
+
             new TelegramMarketPriceProvider(
+
                 messageProvider
+
             );
+
+
+
 
 
         const getCurrentMarketPriceUseCase =
+
             new GetCurrentMarketPriceUseCase(
+
                 marketProvider
+
             );
+
+
+
 
 
         const snapshotRepository =
+
             new MemoryMarketSnapshotRepository();
 
 
+
+
+
         const snapshotService =
+
             new MarketSnapshotService(
+
                 snapshotRepository
+
             );
+
+
+
 
 
         const analyticsService =
+
             new MarketAnalyticsService(
+
                 snapshotRepository,
+
                 new TrendCalculator(),
+
                 new VolatilityCalculator()
+
             );
+
+
+
 
 
         const analyticsFacade =
+
             new MarketAnalyticsFacade(
+
                 analyticsService,
+
                 new MarketScoreCalculator()
+
             );
+
+
+
 
 
         const getMarketAnalyticsUseCase =
+
             new GetMarketAnalyticsUseCase(
+
                 analyticsFacade
+
             );
+
+
+
 
 
         const getMarketHistoryUseCase =
+
             new GetMarketHistoryUseCase(
+
                 snapshotService
+
             );
+
+
+
 
 
         const getGoldPriceUseCase =
+
             new GetGoldPriceUseCase(
+
                 getCurrentMarketPriceUseCase
+
             );
+
+
+
 
 
         const getGoldBubbleUseCase =
+
             new GetGoldBubbleUseCase(
+
                 marketProvider,
+
                 new GoldBubbleCalculator()
+
             );
+
+
+
 
 
         this.calculateReverseGoldUseCase =
+
             new CalculateReverseGoldUseCase(
+
                 new ReverseGoldCalculator()
+
             );
+
+
+
 
 
         const calculateGoldFormulaUseCase =
+
             new CalculateGoldFormulaUseCase(
+
                 createGoldRuleEngine()
+
             );
+
+
+
 
 
         const goldCalculationWorkflow =
+
             new GoldCalculationWorkflow(
+
                 calculateGoldFormulaUseCase,
+
                 new GoldCalculationValidator(),
+
                 new GoldCalculationHistoryManager()
+
             );
+
+
+
 
 
         const sessionStore =
+
             new MemoryTelegramSessionStore();
 
 
+
+
+
         const profileStore =
+
             new MemoryTelegramUserProfileStore();
 
 
+
+
+
+        const telegramNumberFormatter =
+
+            new TelegramNumberFormatter();
+
+
+
+
+
         const goldCalculationResultFormatter =
+
             new GoldCalculationResultFormatter(
-                new TelegramNumberFormatter()
+
+                telegramNumberFormatter
+
             );
+
+
+
 
 
         const conversationManager =
+
             new TelegramConversationManager(
+
                 sessionStore,
+
                 [
+
                     new GoldCalculationConversationFlow(
+
                         sessionStore,
+
                         goldCalculationWorkflow,
+
                         goldCalculationResultFormatter,
+
                         saveGoldCalculationHistoryUseCase
+
                     ),
 
                     new ReverseGoldConversationFlow(
+
                         sessionStore,
+
                         this.calculateReverseGoldUseCase,
-                        new TelegramNumberFormatter()
+
+                        telegramNumberFormatter
+
                     )
+
                 ]
+
             );
+
+
+
 
 
         const marketBubbleMessageFormatter =
+
             new MarketBubbleMessageFormatter(
+
                 new TelegramMessageBuilder(),
-                new TelegramNumberFormatter()
+
+                telegramNumberFormatter
+
             );
+
+
+
+
+
+        const marketAnalyticsMessageFormatter =
+
+            new MarketAnalyticsMessageFormatter(
+
+                new TelegramMessageBuilder(),
+
+                telegramNumberFormatter
+
+            );
+
+
+
 
 
         const router =
+
             TelegramCommandRegistry.create(
+
                 getGoldPriceUseCase,
+
                 getGoldBubbleUseCase,
+
                 getMarketAnalyticsUseCase,
+
                 getMarketHistoryUseCase,
+
                 getGoldCalculationHistoryUseCase,
+
                 calculateGoldFormulaUseCase,
+
                 this.calculateReverseGoldUseCase,
+
                 sessionStore,
+
                 profileStore,
-                marketBubbleMessageFormatter
+
+                marketBubbleMessageFormatter,
+
+                marketAnalyticsMessageFormatter
+
             );
+
+
+
 
 
         const commandService =
+
             new TelegramCommandService(
+
                 router,
+
                 conversationManager
+
             );
 
 
+
+
+
         this.telegramMessageHandler =
+
             new TelegramMessageHandler(
+
                 commandService,
+
                 new TelegramResponseFormatter()
+
             );
 
     }

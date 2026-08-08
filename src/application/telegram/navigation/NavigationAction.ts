@@ -1,54 +1,78 @@
 export enum NavigationAction {
 
-    HOME = "menu:main",
+    HOME =
+        "menu:main",
 
-    BACK = "menu:back",
-
-
-    MARKET = "menu:market",
-
-    CALCULATE = "menu:calculate",
-
-    ASSISTANT = "menu:assistant",
-
-    SETTINGS = "menu:settings",
+    BACK =
+        "menu:back",
 
 
+    MARKET =
+        "menu:market",
 
-    GOLD_PRICE = "gold:price",
+    CALCULATE =
+        "menu:calculate",
 
-    MARKET_HISTORY = "market:history",
+    ASSISTANT =
+        "menu:assistant",
 
-    MARKET_CHART = "market:chart",
-
-    GOLD_BUBBLE = "gold:bubble",
-
-    MARKET_ANALYTICS = "market:analytics",
+    SETTINGS =
+        "menu:settings",
 
 
 
-    CALCULATE_GOLD_PRICE = "calculator:gold-price",
+    GOLD_PRICE =
+        "gold:price",
 
-    CALCULATE_INVOICE = "calculator:invoice",
+    MARKET_HISTORY =
+        "market:history",
 
-    CALCULATE_FORMULA = "calculator:formula",
+    MARKET_CHART =
+        "market:chart",
 
-    CALCULATE_REVERSE_LABOR = "calculator:reverse-labor",
+    GOLD_BUBBLE =
+        "gold:bubble",
 
-
-
-    ASSISTANT_AI = "assistant:ai",
-
-    ASSISTANT_LEARN = "assistant:learn",
-
-    ASSISTANT_HELP = "assistant:help",
-
+    MARKET_ANALYTICS =
+        "market:analytics",
 
 
-    SETTINGS_ALERTS = "settings:alerts",
 
-    SETTINGS_ACCOUNT = "settings:account",
+    CALCULATE_GOLD_PRICE =
+        "calculator:gold-price",
 
-    SETTINGS_BOT = "settings:bot",
+    CALCULATE_INVOICE =
+        "calculator:invoice",
+
+    CALCULATE_FORMULA =
+        "calculator:formula",
+
+    CALCULATE_REVERSE_LABOR =
+        "calculator:reverse-labor",
+
+    CALCULATE_HISTORY =
+        "calculator:history",
+
+
+
+    ASSISTANT_AI =
+        "assistant:ai",
+
+    ASSISTANT_LEARN =
+        "assistant:learn",
+
+    ASSISTANT_HELP =
+        "assistant:help",
+
+
+
+    SETTINGS_ALERTS =
+        "settings:alerts",
+
+    SETTINGS_ACCOUNT =
+        "settings:account",
+
+    SETTINGS_BOT =
+        "settings:bot",
 
 }
