@@ -79,6 +79,7 @@ function createWorkflow() {
 
 
 
+
 describe(
     "GoldCalculationWorkflow",
     ()=>{
@@ -98,6 +99,7 @@ describe(
                 let session =
 
                     createGoldCalculationSessionData();
+
 
 
 
@@ -161,10 +163,88 @@ describe(
                 );
 
 
+            }
+
+        );
+
+
+
+
+
+
+
+
+
+        it(
+            "should select market price",
+            ()=>{
+
+
+                const workflow =
+
+                    createWorkflow();
+
+
+
+                const result =
+
+                    workflow.selectMarketPrice(
+
+
+                        createGoldCalculationSessionData(),
+
+
+                        18000000
+
+
+                    );
+
+
+
+                expect(
+
+                    result.nextStep
+
+                )
+                .toBe(
+
+                    GoldCalculationStep.WAITING_LABOR
+
+                );
+
+
+
+                expect(
+
+                    result.updatedData?.goldPrice
+
+                )
+                .toBe(
+
+                    18000000
+
+                );
+
+
+
+                expect(
+
+                    result.updatedData?.priceSource
+
+                )
+                .toBe(
+
+                    "MARKET"
+
+                );
+
 
             }
 
         );
+
+
+
 
 
 
@@ -185,6 +265,7 @@ describe(
                 let session =
 
                     createGoldCalculationSessionData();
+
 
 
 
@@ -230,6 +311,7 @@ describe(
 
 
 
+
                 result =
 
                     workflow.execute(
@@ -251,6 +333,8 @@ describe(
                 session =
 
                     result.updatedData!;
+
+
 
 
 
@@ -319,6 +403,7 @@ describe(
 
 
 
+
         it(
             "should allow correcting a previous value and continue calculation",
             ()=>{
@@ -333,6 +418,7 @@ describe(
                 let session =
 
                     createGoldCalculationSessionData();
+
 
 
 
@@ -379,6 +465,7 @@ describe(
 
 
 
+
                 result =
 
                     workflow.execute(
@@ -404,6 +491,7 @@ describe(
 
 
 
+
                 result =
 
                     workflow.execute(
@@ -425,6 +513,7 @@ describe(
                 session =
 
                     result.updatedData!;
+
 
 
 
@@ -455,6 +544,7 @@ describe(
                 session =
 
                     backResult.updatedData!;
+
 
 
 
@@ -502,10 +592,97 @@ describe(
                 );
 
 
+            }
+
+        );
+
+
+
+
+
+
+
+
+
+        it(
+            "should calculate completed result",
+            ()=>{
+
+
+                const workflow =
+
+                    createWorkflow();
+
+
+
+                let session =
+
+                    createGoldCalculationSessionData();
+
+
+
+
+
+                session.weight = 5;
+
+                session.goldPrice = 18000000;
+
+                session.priceSource = "MANUAL";
+
+                session.laborPercent = 15;
+
+                session.profitPercent = 7;
+
+                session.taxPercent = 0;
+
+
+
+
+
+                const result =
+
+                    workflow.execute(
+
+
+                        GoldCalculationStep.WAITING_TAX,
+
+
+                        session,
+
+
+                        0
+
+
+                    );
+
+
+
+                expect(
+
+                    result.completed
+
+                )
+                .toBe(
+
+                    true
+
+                );
+
+
+
+                expect(
+
+                    result.result
+
+                )
+                .toBeDefined();
+
+
 
             }
 
         );
+
 
 
 
@@ -522,6 +699,7 @@ describe(
                 const workflow =
 
                     createWorkflow();
+
 
 
 

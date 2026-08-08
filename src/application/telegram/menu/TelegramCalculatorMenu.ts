@@ -1,21 +1,25 @@
 import {
     TelegramMenuItem,
-} from "./TelegramMenuItem";
+}
+from "./TelegramMenuItem";
 
 
 import {
     TelegramMenuActionType,
-} from "./TelegramMenuAction";
+}
+from "./TelegramMenuAction";
 
 
 import {
     TelegramBackMenuItem,
-} from "./TelegramMenuItems";
+}
+from "./TelegramMenuItems";
 
 
 import {
     NavigationAction,
-} from "../navigation/NavigationAction";
+}
+from "../navigation/NavigationAction";
 
 
 
@@ -107,6 +111,29 @@ export const TelegramCalculatorMenu: TelegramMenuItem[] = [
 
             value:
                 NavigationAction.CALCULATE_FORMULA,
+
+        },
+
+    },
+
+
+
+
+    {
+        id:
+            "calculate.history",
+
+        label:
+            "📜 تاریخچه محاسبات",
+
+        action: {
+
+            type:
+                TelegramMenuActionType.CALLBACK,
+
+
+            value:
+                NavigationAction.CALCULATE_HISTORY,
 
         },
 

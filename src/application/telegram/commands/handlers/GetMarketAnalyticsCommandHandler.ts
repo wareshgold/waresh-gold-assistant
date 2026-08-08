@@ -1,14 +1,21 @@
 import { TelegramCommandContext }
 from "../TelegramCommandContext";
 
+
 import {
     TelegramCommandHandler,
     TelegramCommandResponse
 }
 from "../TelegramCommandHandler";
 
+
 import { GetMarketAnalyticsUseCase }
 from "../../../market/GetMarketAnalyticsUseCase";
+
+
+import { MarketAnalyticsMessageFormatter }
+from "../../presentation/MarketAnalyticsMessageFormatter";
+
 
 
 
@@ -20,9 +27,15 @@ implements TelegramCommandHandler {
     constructor(
 
         private readonly getMarketAnalyticsUseCase:
-            GetMarketAnalyticsUseCase
+            GetMarketAnalyticsUseCase,
+
+
+        private readonly marketAnalyticsMessageFormatter:
+            MarketAnalyticsMessageFormatter
 
     ) {}
+
+
 
 
 
@@ -91,12 +104,14 @@ implements TelegramCommandHandler {
 
 
 
-        if (!result.analytics) {
+
+        if (!result.analytics || !result.score) {
 
 
             return {
 
-                type: "text",
+                type:
+                    "text",
 
                 content:
                     "⚠️ اطلاعات تحلیل بازار در دسترس نیست"
@@ -111,144 +126,22 @@ implements TelegramCommandHandler {
 
 
 
-
-
-        const analytics =
-            result.analytics;
-
-
-
-
-        const score =
-            result.score;
-
-
-
-
-
-
-
-
-        const trendText =
-
-            analytics.getTrend().isUp
-
-                ? "صعودی 📈"
-
-                : analytics.getTrend().isDown
-
-                    ? "نزولی 📉"
-
-                    : "ثابت ➡️";
-
-
-
-
-
-
-
-
-
-        const volatility =
-
-            analytics.getVolatility();
-
-
-
-
-
-
-        const volatilityText =
-
-            volatility >= 3
-
-                ? "زیاد 🔴"
-
-                : volatility >= 1
-
-                    ? "متوسط 🟡"
-
-                    : "کم 🟢";
-
-
-
-
-
-
-
-
-
         return {
 
 
-            type: "text",
+            type:
+                "text",
 
 
             content:
 
+                this.marketAnalyticsMessageFormatter.format(
 
-                [
+                    result.analytics,
 
-                    "📊 گزارش هوشمند بازار طلا",
+                    result.score
 
-                    "",
-
-
-                    `💰 قیمت فعلی:
-${analytics
-    .getCurrentPrice()
-    .toLocaleString("fa-IR")} تومان`,
-
-
-                    "",
-
-
-                    `📈 تغییر:
-${analytics
-    .getChange()
-    .formatted}`,
-
-
-                    "",
-
-
-                    `🔥 وضعیت روند:
-${trendText}`,
-
-
-                    "",
-
-
-                    `🌊 شدت نوسان:
-${volatilityText} (${volatility.toFixed(2)}%)`,
-
-
-                    "",
-
-
-                    `📌 محدوده ۵۰ رکورد اخیر:
-${analytics
-    .getPriceRange()
-    .toString()}`,
-
-
-                    "",
-
-
-                    `🎯 امتیاز بازار:
-${score?.formatted ?? "نامشخص"}`,
-
-
-                    "",
-
-
-                    `🕒 آخرین تحلیل:
-${analytics
-    .getAnalyzedAt()
-    .toLocaleString("fa-IR")}`
-
-
-                ].join("\n")
+                )
 
 
         };

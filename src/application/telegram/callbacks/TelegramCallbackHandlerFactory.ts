@@ -131,17 +131,15 @@ from "../../gold/workflows/GoldCalculationWorkflow";
 
 
 import {
-    TelegramNumberFormatter
+    TelegramNumberFormatter,
 }
 from "../presentation/TelegramNumberFormatter";
 
 
 import {
-    GoldPriceResolver
+    GoldPriceResolver,
 }
 from "../../gold/pricing/GoldPriceResolver";
-
-
 
 
 
@@ -154,61 +152,48 @@ export class TelegramCallbackHandlerFactory {
     static create(
 
 
-
         telegramActionExecutor:
             TelegramActionExecutor,
-
 
 
         telegramNavigationService:
             TelegramNavigationService,
 
 
-
         telegramNavigationStateService:
             TelegramNavigationStateService,
-
 
 
         getMarketChartUseCase:
             GetMarketChartUseCase,
 
 
-
         marketChartRenderer:
             MarketChartRenderer,
-
 
 
         marketChartImageGenerator:
             MarketChartImageGenerator,
 
 
-
         sessionStore:
             TelegramSessionStore,
-
 
 
         goldCalculationWorkflow:
             GoldCalculationWorkflow,
 
 
-
         numberFormatter:
             TelegramNumberFormatter,
-
 
 
         goldPriceResolver:
             GoldPriceResolver
 
 
-
     ):
         TelegramCallbackHandler[] {
-
-
 
 
 
@@ -235,12 +220,7 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
-
         return [
-
-
 
 
 
@@ -254,15 +234,11 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
             new OpenMainMenuCallbackHandler(
 
                 telegramNavigationService
 
             ),
-
-
 
 
 
@@ -274,15 +250,11 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
             new OpenCalculatorMenuCallbackHandler(
 
                 telegramNavigationService
 
             ),
-
-
 
 
 
@@ -294,15 +266,11 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
             new OpenSettingsMenuCallbackHandler(
 
                 telegramNavigationService
 
             ),
-
-
 
 
 
@@ -320,15 +288,11 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
             new CalculateGoldCallbackHandler(
 
                 sessionStore
 
             ),
-
-
 
 
 
@@ -346,8 +310,6 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
             new CalculateGoldLivePriceCallbackHandler(
 
                 sessionStore,
@@ -362,8 +324,6 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
             new BackCalculationCallbackHandler(
 
                 sessionStore,
@@ -374,11 +334,7 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
             ...actionHandlers
-
-
 
 
 
