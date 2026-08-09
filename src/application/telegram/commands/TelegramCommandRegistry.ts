@@ -295,7 +295,9 @@ export class TelegramCommandRegistry {
 
                 new GetMarketHistoryCommandHandler(
 
-                    getMarketHistoryUseCase
+                    getMarketHistoryUseCase,
+
+                    telegramNumberFormatter
 
                 ),
 
@@ -305,7 +307,9 @@ export class TelegramCommandRegistry {
 
                 new GetGoldCalculationHistoryCommandHandler(
 
-                    getGoldCalculationHistoryUseCase
+                    getGoldCalculationHistoryUseCase,
+
+                    telegramNumberFormatter
 
                 ),
 

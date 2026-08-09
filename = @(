@@ -1,0 +1,37 @@
+[35mdashboard/src/app/page.tsx[m[36m:[m              `${market.gold18Price.toLocaleString()} [1;31mتومان[m`
+[35mdashboard/src/app/page.tsx[m[36m:[m              `${market.currencyPrice.toLocaleString()} [1;31mتومان[m`
+[35mdashboard/src/components/GoldBubbleCard.tsx[m[36m:[m            [1;31mتومان[m
+[35mdashboard/src/components/GoldBubbleCard.tsx[m[36m:[m            [1;31mتومان[m
+[35mdashboard/src/components/GoldBubbleCard.tsx[m[36m:[m            [1;31mتومان[m
+[35msrc/application/telegram/commands/handlers/GetGoldCalculationHistoryCommandHandler.ts[m[36m:[m                        `💵 مبلغ نهایی: ${this.numberFormatter.format(result.finalPrice)} [1;31mتومان[m`,
+[35msrc/application/telegram/commands/handlers/GetMarketHistoryCommandHandler.ts[m[36m:[m                        `${index + 1}) 🟡 ${this.numberFormatter.format(item.gold18Price)} [1;31mتومان[m`,
+[35msrc/application/telegram/presentation/GoldPriceMessageFormatter.ts[m[36m:[m            ) + " [1;31mتومان[m",
+[35msrc/application/telegram/presentation/GoldPriceMessageFormatter.ts[m[36m:[m            ) + " [1;31mتومان[m",
+[35msrc/application/telegram/presentation/TelegramNumberFormatter.ts[m[36m:[m        return `${this.formatCode(value)} [1;31mتومان[m`;
+[35msrc/application/usecases/GetGoldPriceUseCase.ts[m[36m:[m                    `${this.formatNumber(price.gold18Price)} [1;31mتومان[m`,
+[35msrc/application/usecases/GetGoldPriceUseCase.ts[m[36m:[m                    `${this.formatNumber(price.currencyPrice)} [1;31mتومان[m`,
+[35msrc/infrastructure/market/sources/FakeTelegramChannelMessageProvider.ts[m[36m:[m🔻طلای ۱۸ عیار: 18,780,155 [1;31mتومان[m
+[35msrc/infrastructure/market/sources/FakeTelegramChannelMessageProvider.ts[m[36m:[m🔺دلار تهران: 193,190 [1;31mتومان[m
+[35msrc/infrastructure/market/sources/FakeTelegramChannelMessageProvider.ts[m[36m:[m🔻تتر: 193,500 [1;31mتومان[m
+[35msrc/infrastructure/market/sources/FakeTelegramChannelMessageProvider.ts[m[36m:[m🔻سکه بهار آزادی: 184,060,000 [1;31mتومان[m
+[35msrc/infrastructure/market/sources/FakeTelegramChannelMessageProvider.ts[m[36m:[m🔻سکه امامی: 188,710,000 [1;31mتومان[m
+[35msrc/infrastructure/market/sources/FakeTelegramChannelMessageProvider.ts[m[36m:[m🔻نیم سکه: 96,380,000 [1;31mتومان[m
+[35msrc/infrastructure/market/sources/FakeTelegramChannelMessageProvider.ts[m[36m:[m🔻ربع سکه: 53,560,000 [1;31mتومان[m
+[35msrc/infrastructure/market/sources/TelegramChannelScraperMessageProvider.spec.ts[m[36m:[m            🔻طلای ۱۸ عیار: 18,306,478 [1;31mتومان[m<br/>
+[35msrc/infrastructure/market/sources/TelegramChannelScraperMessageProvider.spec.ts[m[36m:[m            دلار تهران: 187,790 [1;31mتومان[m<br/>
+[35msrc/infrastructure/market/sources/TelegramChannelScraperMessageProvider.spec.ts[m[36m:[m            🔻طلای ۱۸ عیار: 18,500,000 [1;31mتومان[m<br/>
+[35msrc/infrastructure/market/sources/TelegramChannelScraperMessageProvider.spec.ts[m[36m:[m            دلار تهران: 188,000 [1;31mتومان[m<br/>
+[35msrc/infrastructure/market/sources/TelegramMarketPriceSource.spec.ts[m[36m:[m🔻طلای ۱۸ عیار: 18,306,478 [1;31mتومان[m
+[35msrc/infrastructure/market/sources/TelegramMarketPriceSource.spec.ts[m[36m:[mدلار تهران: 187,790 [1;31mتومان[m
+[35mtest/application/telegram/TelegramResponseFormatter.spec.ts[m[36m:[m                            "📊 گزارش هوشمند بازار طلا\n\n💰 قیمت فعلی: 18500000 [1;31mتومان[m"
+[35mtest/application/telegram/TelegramResponseFormatter.spec.ts[m[36m:[m                                "💰 قیمت فعلی: 18500000 [1;31mتومان[m",
+[35mtest/application/telegram/TelegramResponseFormatter.spec.ts[m[36m:[m                        "قیمت طلا 18500000 [1;31mتومان[m"
+[35mtest/infrastructure/market/clients/telegram/TelegramPriceSourceClient.spec.ts[m[36m:[m                            🔻طلای ۱۸ عیار: 18350000 [1;31mتومان[m
+[35mtest/infrastructure/market/clients/telegram/TelegramPriceSourceClient.spec.ts[m[36m:[m                            دلار تهران: 188000 [1;31mتومان[m
+[35mtest/infrastructure/market/parsers/TelegramPriceParser.spec.ts[m[36m:[m🔻طلای ۱۸ عیار: 18,306,478 [1;31mتومان[m
+[35mtest/infrastructure/market/parsers/TelegramPriceParser.spec.ts[m[36m:[mدلار تهران: 187,790 [1;31mتومان[m
+[35mtest/infrastructure/market/parsers/TelegramPriceParser.spec.ts[m[36m:[m🔻طلای ۱۸ عیار: 18,373,000 [1;31mتومان[m
+[35mtest/infrastructure/market/parsers/TelegramPriceParser.spec.ts[m[36m:[m🔺تتر: 190,804 [1;31mتومان[m
+[35mtest/infrastructure/market/parsers/TelegramPriceParser.spec.ts[m[36m:[m🟡نقره: 399,000 [1;31mتومان[m
+[35mtest/infrastructure/market/providers/TelegramMarketPriceProvider.spec.ts[m[36m:[m🔻طلای ۱۸ عیار: 18,306,478 [1;31mتومان[m
+[35mtest/infrastructure/market/providers/TelegramMarketPriceProvider.spec.ts[m[36m:[mدلار تهران: 187,790 [1;31mتومان[m
