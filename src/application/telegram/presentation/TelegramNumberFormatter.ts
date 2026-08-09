@@ -25,6 +25,16 @@ export class TelegramNumberFormatter {
 
 
 
+    copyableCode(
+        value: number
+    ): string {
+
+        return `<code>${Math.round(value)}</code>`;
+
+    }
+
+
+
     money(
         value: number
     ): string {
