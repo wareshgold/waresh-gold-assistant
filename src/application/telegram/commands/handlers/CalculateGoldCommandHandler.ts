@@ -1,45 +1,37 @@
 import {
-    TelegramCommandHandler
+TelegramCommandHandler
 }
 from "../TelegramCommandHandler";
 
-
 import {
-    TelegramCommandContext
+TelegramCommandContext
 }
 from "../TelegramCommandContext";
 
-
 import {
-    CalculateGoldFormulaUseCase
+CalculateGoldFormulaUseCase
 }
 from "../../../gold/CalculateGoldFormulaUseCase";
 
-
 import {
-    TelegramSessionStore
+TelegramSessionStore
 }
 from "../../state/TelegramSessionStore";
 
-
 import {
-    TelegramNumberFormatter
+TelegramNumberFormatter
 }
 from "../../presentation/TelegramNumberFormatter";
 
-
 import {
-    GoldCalculationStep
+GoldCalculationStep
 }
 from "../../../gold/workflows/GoldCalculationStep";
 
-
 import {
-    createGoldCalculationSessionData
+createGoldCalculationSessionData
 }
 from "../../../gold/workflows/GoldCalculationSessionData";
-
-
 
 
 export class CalculateGoldCommandHandler
@@ -47,15 +39,9 @@ export class CalculateGoldCommandHandler
 implements TelegramCommandHandler {
 
 
-
-
-
     private readonly numberFormatter:
 
         TelegramNumberFormatter;
-
-
-
 
 
 
@@ -67,11 +53,9 @@ implements TelegramCommandHandler {
             CalculateGoldFormulaUseCase,
 
 
-
         private readonly sessionStore?:
 
             TelegramSessionStore,
-
 
 
         numberFormatter?:
@@ -82,7 +66,6 @@ implements TelegramCommandHandler {
     ) {
 
 
-
         this.numberFormatter =
 
             numberFormatter ??
@@ -91,11 +74,6 @@ implements TelegramCommandHandler {
 
 
     }
-
-
-
-
-
 
 
 
@@ -111,7 +89,6 @@ implements TelegramCommandHandler {
                 "/calc",
 
 
-
             description:
 
                 "محاسبه قیمت طلا"
@@ -125,14 +102,10 @@ implements TelegramCommandHandler {
 
 
 
-
-
-
-
-
     canHandle(
 
-        command: string
+        command:
+            string
 
     ): boolean {
 
@@ -141,11 +114,6 @@ implements TelegramCommandHandler {
 
 
     }
-
-
-
-
-
 
 
 
@@ -159,16 +127,11 @@ implements TelegramCommandHandler {
     ): Promise<string> {
 
 
-
         const userId =
 
             context.userId ||
 
             context.chatId;
-
-
-
-
 
 
 
@@ -179,17 +142,13 @@ implements TelegramCommandHandler {
         ) {
 
 
-
             if (this.sessionStore) {
-
 
 
                 await this.sessionStore.save({
 
 
-
                     userId,
-
 
 
                     state:
@@ -197,11 +156,9 @@ implements TelegramCommandHandler {
                         GoldCalculationStep.WAITING_WEIGHT,
 
 
-
                     data:
 
                         createGoldCalculationSessionData(),
-
 
 
                     updatedAt:
@@ -212,11 +169,7 @@ implements TelegramCommandHandler {
                 });
 
 
-
             }
-
-
-
 
 
 
@@ -225,18 +178,12 @@ implements TelegramCommandHandler {
 
 💰 محاسبه طلا
 
-
 لطفاً وزن طلا را وارد کنید:
 
 `.trim();
 
 
         }
-
-
-
-
-
 
 
 
@@ -252,15 +199,10 @@ implements TelegramCommandHandler {
 
 
 
-
-
-
         if (
 
 
-
             values.length < 5 ||
-
 
 
             values.some(
@@ -272,24 +214,18 @@ implements TelegramCommandHandler {
             )
 
 
-
         ) {
-
 
 
             return `
 
 ❌ فرمت اشتباه است
 
-
 فرمت صحیح:
-
 
 /calc وزن قیمت_طلا اجرت سود مالیات
 
-
 مثال:
-
 
 /calc 5 18000000 15 7 9
 
@@ -297,11 +233,6 @@ implements TelegramCommandHandler {
 
 
         }
-
-
-
-
-
 
 
 
@@ -324,16 +255,10 @@ implements TelegramCommandHandler {
 
 
 
-
-
-
-
-
         const result =
 
 
             this.useCase.execute({
-
 
 
                 weight,
@@ -362,14 +287,9 @@ implements TelegramCommandHandler {
 
 
 
-
-
-
-
         return `
 
 💰 محاسبه طلا
-
 
 
 وزن:
@@ -377,11 +297,9 @@ implements TelegramCommandHandler {
 ${weight} گرم
 
 
-
 ارزش طلا:
 
 ${this.numberFormatter.money(result.goldValue)}
-
 
 
 اجرت:
@@ -389,11 +307,9 @@ ${this.numberFormatter.money(result.goldValue)}
 ${this.numberFormatter.money(result.labor)}
 
 
-
 سود:
 
 ${this.numberFormatter.money(result.profit)}
-
 
 
 مالیات:
@@ -401,22 +317,17 @@ ${this.numberFormatter.money(result.profit)}
 ${this.numberFormatter.money(result.tax)}
 
 
-
-----------------
-
+---
 
 
 قیمت نهایی:
-
 
 ${this.numberFormatter.money(result.finalPrice)}
 
 `.trim();
 
 
-
     }
-
 
 
 }
