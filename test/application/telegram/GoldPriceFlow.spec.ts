@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 
 
 import { TelegramCommandService }
@@ -19,6 +19,18 @@ from "../../../src/infrastructure/market/providers/TelegramMarketPriceProvider";
 
 import { FakeTelegramChannelMessageProvider }
 from "../../../src/infrastructure/market/sources/FakeTelegramChannelMessageProvider";
+
+import { GoldPriceMessageFormatter }
+from "../../../src/application/telegram/presentation/GoldPriceMessageFormatter";
+
+import { TelegramMessageBuilder }
+from "../../../src/application/telegram/presentation/TelegramMessageBuilder";
+
+import { TelegramDateFormatter }
+from "../../../src/application/telegram/presentation/TelegramDateFormatter";
+
+import { TelegramNumberFormatter }
+from "../../../src/application/telegram/presentation/TelegramNumberFormatter";
 
 
 
@@ -42,23 +54,43 @@ describe(
 
             const useCase =
 
-                new GetGoldPriceUseCase(
+            new GetGoldPriceUseCase(
 
-                    marketProvider
+                marketProvider
 
-                );
+            );
+
+
+        const goldPriceMessageFormatter =
+
+            new GoldPriceMessageFormatter(
+
+                new TelegramMessageBuilder(),
+
+                new TelegramDateFormatter(),
+
+                new TelegramNumberFormatter()
+
+            );
 
 
 
             const router =
 
                 TelegramCommandRegistry.create(
-
-                    useCase,
-
-                    undefined as any
-
-                );
+                useCase,
+                undefined as any,
+                undefined as any,
+                undefined as any,
+                undefined as any,
+                undefined as any,
+                undefined as any,
+                undefined as any,
+                undefined as any,
+                undefined as any,
+                undefined as any,
+            goldPriceMessageFormatter
+        );
 
 
 
@@ -143,3 +175,11 @@ describe(
 
     }
 );
+
+
+
+
+
+
+
+
