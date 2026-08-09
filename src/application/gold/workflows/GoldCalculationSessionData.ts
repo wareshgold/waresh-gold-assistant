@@ -1,130 +1,83 @@
 import {
-    GoldCalculationStep
+    GoldCalculationHistoryEntry,
+    GoldCalculationPriceSource
 }
-from "./GoldCalculationStep";
-
-
-
-export type GoldCalculationPriceSource =
-    | "MANUAL"
-    | "MARKET";
-
-
-
-
-
-export interface GoldCalculationSnapshot {
-
-
-    weight: number | null;
-
-
-    goldPrice: number | null;
-
-
-    priceSource: GoldCalculationPriceSource | null;
-
-
-    laborPercent: number | null;
-
-
-    profitPercent: number | null;
-
-
-    taxPercent: number | null;
-
-
-    discount: number | null;
-
-
-}
-
-
-
-
-
-export interface GoldCalculationHistoryEntry {
-
-
-    step: GoldCalculationStep;
-
-
-    data: GoldCalculationSnapshot;
-
-
-}
-
-
-
+from "./GoldCalculationHistory";
 
 
 export interface GoldCalculationSessionData {
 
-
-    weight: number | null;
-
-
-    goldPrice: number | null;
+    weight:
+        number | null;
 
 
-    priceSource: GoldCalculationPriceSource | null;
+    goldPrice:
+        number | null;
 
 
-    laborPercent: number | null;
+    priceSource:
+        GoldCalculationPriceSource | null;
 
 
-    profitPercent: number | null;
+    laborPercent:
+        number | null;
 
 
-    taxPercent: number | null;
+    profitPercent:
+        number | null;
 
 
-    discount: number | null;
+    taxPercent:
+        number | null;
 
 
-    history: GoldCalculationHistoryEntry[];
+    discount:
+        number | null;
 
 
+    history:
+        GoldCalculationHistoryEntry[];
 
 }
-
-
-
-
 
 
 export function createGoldCalculationSessionData():
 
 GoldCalculationSessionData {
 
-
     return {
 
-
-        weight: null,
-
-
-        goldPrice: null,
+        weight:
+            null,
 
 
-        priceSource: null,
+        goldPrice:
+            null,
 
 
-        laborPercent: null,
+        priceSource:
+            null,
 
 
-        profitPercent: null,
+        laborPercent:
+            null,
 
 
-        taxPercent: null,
+        profitPercent:
+            null,
 
 
-        discount: null,
+        taxPercent:
+            null,
 
 
-        history: []
+        discount:
+            null,
+
+
+        history:
+            []
 
     };
-
 
 }

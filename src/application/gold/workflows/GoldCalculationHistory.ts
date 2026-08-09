@@ -4,48 +4,50 @@ import {
 from "./GoldCalculationStep";
 
 
-import {
-    GoldCalculationPriceSource
-}
-from "./GoldCalculationSessionData";
-
+export type GoldCalculationPriceSource =
+    | "MANUAL"
+    | "MARKET";
 
 
 export interface GoldCalculationSnapshot {
 
-
-    weight: number | null;
-
-
-    goldPrice: number | null;
+    weight:
+        number | null;
 
 
-    priceSource: GoldCalculationPriceSource | null;
+    goldPrice:
+        number | null;
 
 
-    laborPercent: number | null;
+    priceSource:
+        GoldCalculationPriceSource | null;
 
 
-    profitPercent: number | null;
+    laborPercent:
+        number | null;
 
 
-    taxPercent: number | null;
+    profitPercent:
+        number | null;
 
 
-    discount: number | null;
+    taxPercent:
+        number | null;
 
+
+    discount:
+        number | null;
 
 }
 
 
-
 export interface GoldCalculationHistoryEntry {
 
+    step:
+        GoldCalculationStep;
 
-    step: GoldCalculationStep;
 
-
-    data: GoldCalculationSnapshot;
-
+    data:
+        GoldCalculationSnapshot;
 
 }

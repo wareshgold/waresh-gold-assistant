@@ -1,3 +1,4 @@
+
 import {
     TelegramCallbackHandler
 }
@@ -53,14 +54,9 @@ from "../../../gold/pricing/GoldPriceSource";
 
 
 
-
-
-
 export class CalculateGoldLivePriceCallbackHandler
 
 implements TelegramCallbackHandler {
-
-
 
 
 
@@ -91,8 +87,6 @@ implements TelegramCallbackHandler {
 
 
 
-
-
     canHandle(
 
         context:
@@ -107,15 +101,7 @@ implements TelegramCallbackHandler {
 
             &&
 
-            (
-
-                context.callback.action === "live-price"
-
-                ||
-
-                context.callback.action === "use-current-price"
-
-            )
+            context.callback.action === "use-current-price"
 
         );
 
@@ -128,13 +114,14 @@ implements TelegramCallbackHandler {
 
 
 
-
     async execute(
 
         context:
             TelegramCallbackContext
 
-    ): Promise<TelegramCommandResponse> {
+    ):
+
+    Promise<TelegramCommandResponse> {
 
 
 
@@ -145,6 +132,8 @@ implements TelegramCallbackHandler {
             ??
 
             context.chatId;
+
+
 
 
 
@@ -161,6 +150,9 @@ implements TelegramCallbackHandler {
 
 
 
+
+
+
         if (!session) {
 
 
@@ -168,10 +160,13 @@ implements TelegramCallbackHandler {
 
 
                 type:
+
                     "text",
 
 
+
                 content:
+
                     "❌ جلسه محاسبه پیدا نشد"
 
 
@@ -199,6 +194,7 @@ implements TelegramCallbackHandler {
 
 
 
+
         const result =
 
             this.workflow.selectMarketPrice(
@@ -220,14 +216,23 @@ implements TelegramCallbackHandler {
             result.updatedData!;
 
 
+
+
+
         session.state =
 
             result.nextStep!;
 
 
+
+
+
         session.updatedAt =
 
             Date.now();
+
+
+
 
 
 
@@ -246,10 +251,13 @@ implements TelegramCallbackHandler {
 
 
 
+
+
         return {
 
 
             type:
+
                 "text",
 
 
@@ -265,10 +273,8 @@ ${this.numberFormatter.money(
     resolvedPrice.price
 )}
 
-
 📈 حالا درصد اجرت را وارد کنید:
 `.trim(),
-
 
 
 
@@ -277,7 +283,9 @@ ${this.numberFormatter.money(
             {
 
                 type:
+
                     "INLINE",
+
 
 
                 rows:
@@ -289,10 +297,13 @@ ${this.numberFormatter.money(
                         {
 
                             text:
+
                                 "⬅️ اصلاح مرحله قبل",
 
 
+
                             actionId:
+
                                 "calculator:back"
 
                         }

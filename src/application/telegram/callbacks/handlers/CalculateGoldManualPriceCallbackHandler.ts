@@ -23,20 +23,15 @@ from "../../state/TelegramSessionStore";
 
 
 import {
-    GoldCalculationWorkflow
-}
-from "../../../gold/workflows/GoldCalculationWorkflow";
-
-
-import {
     GoldCalculationSessionData
 }
 from "../../../gold/workflows/GoldCalculationSessionData";
 
 
-
-
-
+import {
+    GoldCalculationWorkflow
+}
+from "../../../gold/workflows/GoldCalculationWorkflow";
 
 
 
@@ -46,20 +41,14 @@ implements TelegramCallbackHandler {
 
 
 
-
-
-
-
     constructor(
 
 
         private readonly sessionStore:
-
             TelegramSessionStore,
 
 
         private readonly workflow:
-
             GoldCalculationWorkflow
 
 
@@ -71,15 +60,10 @@ implements TelegramCallbackHandler {
 
 
 
-
-
     canHandle(
 
-
         context:
-
             TelegramCallbackContext
-
 
     ): boolean {
 
@@ -87,18 +71,11 @@ implements TelegramCallbackHandler {
 
         return (
 
-
             context.callback.namespace === "calculator"
-
-
 
             &&
 
-
-
             context.callback.action === "manual-price"
-
-
 
         );
 
@@ -111,17 +88,14 @@ implements TelegramCallbackHandler {
 
 
 
-
-
     async execute(
 
-
         context:
-
             TelegramCallbackContext
 
+    ):
 
-    ): Promise<TelegramCommandResponse> {
+    Promise<TelegramCommandResponse> {
 
 
 
@@ -132,8 +106,6 @@ implements TelegramCallbackHandler {
             ??
 
             context.chatId;
-
-
 
 
 
@@ -155,8 +127,6 @@ implements TelegramCallbackHandler {
 
 
 
-
-
         if (!session) {
 
 
@@ -166,6 +136,7 @@ implements TelegramCallbackHandler {
                 type:
 
                     "text",
+
 
 
                 content:
@@ -202,17 +173,17 @@ implements TelegramCallbackHandler {
 
 
 
-        session.state =
-
-            result.nextStep!;
-
-
-
-
-
         session.data =
 
             result.updatedData!;
+
+
+
+
+
+        session.state =
+
+            result.nextStep!;
 
 
 
@@ -244,8 +215,6 @@ implements TelegramCallbackHandler {
 
 
 
-
-
         return {
 
 
@@ -257,9 +226,7 @@ implements TelegramCallbackHandler {
 
             content:
 
-`
-✍️ لطفاً قیمت هر گرم طلا را وارد کنید:
-`.trim(),
+                "✍️ لطفاً قیمت هر گرم طلا را وارد کنید:",
 
 
 
@@ -270,6 +237,7 @@ implements TelegramCallbackHandler {
                 type:
 
                     "INLINE",
+
 
 
                 rows:
@@ -283,6 +251,7 @@ implements TelegramCallbackHandler {
                             text:
 
                                 "⬅️ اصلاح مرحله قبل",
+
 
 
                             actionId:
@@ -303,7 +272,6 @@ implements TelegramCallbackHandler {
 
 
     }
-
 
 
 }

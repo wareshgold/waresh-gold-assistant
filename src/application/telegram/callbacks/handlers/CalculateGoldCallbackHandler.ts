@@ -1,41 +1,37 @@
 import {
-    TelegramCallbackHandler
+TelegramCallbackHandler
 }
 from "../TelegramCallbackHandler";
 
-
 import {
-    TelegramCallbackContext
+TelegramCallbackContext
 }
 from "../TelegramCallbackContext";
 
-
 import {
-    TelegramCommandResponse
+TelegramCommandResponse
 }
 from "../../commands/TelegramCommandHandler";
 
-
 import {
-    TelegramSessionStore
+TelegramSessionStore
 }
 from "../../state/TelegramSessionStore";
 
-
 import {
-    GoldCalculationStep
+GoldCalculationStep
 }
 from "../../../gold/workflows/GoldCalculationStep";
 
-
 import {
-    createGoldCalculationSessionData
+createGoldCalculationSessionData
 }
 from "../../../gold/workflows/GoldCalculationSessionData";
 
-
-
-
+import {
+GoldCalculationPromptFormatter
+}
+from "../../presentation/GoldCalculationPromptFormatter";
 
 
 
@@ -45,254 +41,220 @@ implements TelegramCallbackHandler {
 
 
 
+constructor(
 
+    private readonly sessionStore:
+        TelegramSessionStore
 
+) {}
 
 
 
-    constructor(
 
 
-        private readonly sessionStore:
 
-            TelegramSessionStore
 
 
-    ) {}
 
+canHandle(
 
+    context:
+        TelegramCallbackContext
 
+): boolean {
 
 
 
+    return (
 
+        context.callback.namespace === "calculator"
 
+        &&
 
-    canHandle(
+        context.callback.action === "gold-price"
 
-        context:
+    );
 
-            TelegramCallbackContext
 
-    ):
 
-        boolean {
+}
 
 
 
 
-        return (
 
-            context.callback.namespace === "calculator"
 
-            &&
 
-            context.callback.action === "gold-price"
 
-        );
 
+async execute(
 
+    context:
+        TelegramCallbackContext
 
-    }
+):
 
+Promise<TelegramCommandResponse> {
 
 
 
+const userId =
 
+    context.userId
 
+    ??
 
+    context.chatId;
 
 
-    async execute(
 
-        context:
 
-            TelegramCallbackContext
 
-    ):
 
-        Promise<TelegramCommandResponse> {
 
 
+await this.sessionStore.save({
 
 
 
-        const userId =
+    userId,
 
-            context.userId
 
-            ??
 
-            context.chatId;
+    state:
 
+        GoldCalculationStep.WAITING_WEIGHT,
 
 
 
+    data:
 
+        createGoldCalculationSessionData(),
 
 
 
-        await this.sessionStore.save({
+    updatedAt:
 
+        Date.now()
 
 
 
+});
 
-            userId,
 
 
 
 
 
-            state:
 
-                GoldCalculationStep.WAITING_WEIGHT,
 
+const promptFormatter =
 
+    new GoldCalculationPromptFormatter();
 
 
 
-            data:
 
-                createGoldCalculationSessionData(),
 
 
+const prompt =
 
+    promptFormatter.format(
 
+        GoldCalculationStep.WAITING_WEIGHT
 
-            updatedAt:
+    );
 
-                Date.now()
 
 
 
 
 
-        });
 
 
+return {
 
 
 
+    type:
 
+        "text",
 
 
 
-        return {
+    content:
 
+        prompt.text,
 
 
 
+    replyMarkup:
+
+        {
 
             type:
 
-                "text",
+                "INLINE",
 
 
 
+            rows:
+
+            [
 
 
-            content:
-
-`
-💰 محاسبه قیمت طلا
-
-
-⚖️ لطفاً وزن طلا را وارد کنید:
-`.trim(),
-
-
-
-
-
-
-
-            replyMarkup:
-
-            {
-
-                type:
-
-                    "INLINE",
-
-
-
-
-
-                rows:
 
                 [
 
+                    {
+
+                        text:
+
+                            "⬅️ بازگشت",
+
+
+                        actionId:
+
+                            "menu:calculate"
+
+                    }
+
+                ],
 
 
 
-                    [
+                [
 
-                        {
+                    {
 
-                            text:
+                        text:
 
-                                "⬅️ بازگشت",
-
-
-
-                            actionId:
-
-                                "menu:calculate"
+                            "🏠 منوی اصلی",
 
 
+                        actionId:
 
-                        }
+                            "menu:main"
 
-
-
-                    ],
-
-
-
-
-
-                    [
-
-                        {
-
-                            text:
-
-                                "🏠 منوی اصلی",
-
-
-
-                            actionId:
-
-                                "menu:main"
-
-
-
-                        }
-
-
-
-                    ]
-
-
-
-
+                    }
 
                 ]
 
-            }
+
+
+            ]
 
 
 
-
-
-        };
+        }
 
 
 
-    }
+};
 
 
+
+}
 
 
 

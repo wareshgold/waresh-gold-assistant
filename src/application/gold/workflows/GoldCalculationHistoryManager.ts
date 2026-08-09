@@ -1,9 +1,14 @@
 import {
-    GoldCalculationSessionData,
+    GoldCalculationSessionData
+}
+from "./GoldCalculationSessionData";
+
+
+import {
     GoldCalculationHistoryEntry,
     GoldCalculationSnapshot
 }
-from "./GoldCalculationSessionData";
+from "./GoldCalculationHistory";
 
 
 import {
@@ -12,10 +17,7 @@ import {
 from "./GoldCalculationStep";
 
 
-
-
 export class GoldCalculationHistoryManager {
-
 
 
     clone(
@@ -23,27 +25,24 @@ export class GoldCalculationHistoryManager {
         data:
             GoldCalculationSessionData
 
-    ): GoldCalculationSessionData {
+    ):
+        GoldCalculationSessionData {
 
 
         return {
 
-
             ...data,
 
 
-            history: [
+            history:
 
-                ...(data.history ?? [])
-
-            ]
-
+                [
+                    ...(data.history ?? [])
+                ]
 
         };
 
-
     }
-
 
 
 
@@ -59,12 +58,12 @@ export class GoldCalculationHistoryManager {
         step:
             GoldCalculationStep
 
+    ):
+        void {
 
-    ): void {
 
-
-
-        const snapshot: GoldCalculationSnapshot = {
+        const snapshot:
+            GoldCalculationSnapshot = {
 
 
             weight:
@@ -72,11 +71,9 @@ export class GoldCalculationHistoryManager {
                 data.weight,
 
 
-
             goldPrice:
 
                 data.goldPrice,
-
 
 
             priceSource:
@@ -84,11 +81,9 @@ export class GoldCalculationHistoryManager {
                 data.priceSource,
 
 
-
             laborPercent:
 
                 data.laborPercent,
-
 
 
             profitPercent:
@@ -96,39 +91,30 @@ export class GoldCalculationHistoryManager {
                 data.profitPercent,
 
 
-
             taxPercent:
 
                 data.taxPercent,
-
 
 
             discount:
 
                 data.discount
 
-
-
         };
 
 
 
 
 
-
-        const entry: GoldCalculationHistoryEntry = {
-
+        const entry:
+            GoldCalculationHistoryEntry = {
 
 
             step,
 
 
-
             data:
-
                 snapshot
-
-
 
         };
 
@@ -136,12 +122,13 @@ export class GoldCalculationHistoryManager {
 
 
 
-        data.history.push(entry);
+        data.history.push(
 
+            entry
 
+        );
 
     }
-
 
 
 
@@ -156,7 +143,6 @@ export class GoldCalculationHistoryManager {
             GoldCalculationSessionData
 
     ):
-
     {
 
         step:
@@ -166,33 +152,27 @@ export class GoldCalculationHistoryManager {
         data:
             GoldCalculationSessionData;
 
-
     }
     | null {
 
 
+        const history =
 
-        const history = [
-
-
-
-            ...(data.history ?? [])
-
-
-
-        ];
+            [
+                ...(data.history ?? [])
+            ];
 
 
 
 
 
-        if(history.length === 0) {
+        if (
 
+            history.length === 0
 
+        ) {
 
             return null;
-
-
 
         }
 
@@ -208,11 +188,7 @@ export class GoldCalculationHistoryManager {
 
 
 
-
-
-
         return {
-
 
 
             step:
@@ -221,29 +197,20 @@ export class GoldCalculationHistoryManager {
 
 
 
-            data: {
+            data:
 
-
+            {
 
                 ...previous.data,
 
 
-
                 history
-
-
 
             }
 
-
-
         };
 
-
-
     }
-
-
 
 
 }

@@ -29,6 +29,12 @@ from "../../../gold/workflows/GoldCalculationSessionData";
 
 
 import {
+    GoldCalculationStep
+}
+from "../../../gold/workflows/GoldCalculationStep";
+
+
+import {
     GoldCalculationWorkflow
 }
 from "../../../gold/workflows/GoldCalculationWorkflow";
@@ -40,28 +46,10 @@ import {
 from "../../presentation/TelegramNumberFormatter";
 
 
-import {
-    GoldPriceResolver
-}
-from "../../../gold/pricing/GoldPriceResolver";
-
-
-import {
-    GoldPriceSource
-}
-from "../../../gold/pricing/GoldPriceSource";
-
-
-
-
-
-
 
 export class CalculateGoldPriceCallbackHandler
 
 implements TelegramCallbackHandler {
-
-
 
 
 
@@ -70,10 +58,6 @@ implements TelegramCallbackHandler {
 
         private readonly sessionStore:
             TelegramSessionStore,
-
-
-        private readonly goldPriceResolver:
-            GoldPriceResolver,
 
 
         private readonly workflow:
@@ -85,8 +69,6 @@ implements TelegramCallbackHandler {
 
 
     ) {}
-
-
 
 
 
@@ -108,7 +90,7 @@ implements TelegramCallbackHandler {
 
             &&
 
-            context.callback.action === "use-current-price"
+            context.callback.action === "price"
 
         );
 
@@ -121,14 +103,14 @@ implements TelegramCallbackHandler {
 
 
 
-
-
     async execute(
 
         context:
             TelegramCallbackContext
 
-    ): Promise<TelegramCommandResponse> {
+    ):
+
+    Promise<TelegramCommandResponse> {
 
 
 
@@ -144,13 +126,20 @@ implements TelegramCallbackHandler {
 
 
 
+
+
         const session =
 
-            await this.sessionStore.get<GoldCalculationSessionData>(
+            await this.sessionStore.get<
+                GoldCalculationSessionData,
+                GoldCalculationStep
+            >(
 
                 userId
 
             );
+
+
 
 
 
@@ -163,10 +152,13 @@ implements TelegramCallbackHandler {
 
 
                 type:
+
                     "text",
 
 
+
                 content:
+
                     "❌ جلسه محاسبه پیدا نشد"
 
 
@@ -181,13 +173,45 @@ implements TelegramCallbackHandler {
 
 
 
-        const resolvedPrice =
+        const price =
 
-            await this.goldPriceResolver.resolve(
+            Number(
 
-                GoldPriceSource.MARKET
+                context.callback.payload
 
             );
+
+
+
+
+
+
+
+        if (
+
+            Number.isNaN(price)
+
+        ) {
+
+
+            return {
+
+
+                type:
+
+                    "text",
+
+
+
+                content:
+
+                    "❌ قیمت وارد شده معتبر نیست"
+
+
+            };
+
+
+        }
 
 
 
@@ -197,14 +221,26 @@ implements TelegramCallbackHandler {
 
         const result =
 
-            this.workflow.selectMarketPrice(
+            this.workflow.execute(
+
+                session.state,
 
                 session.data,
 
-                resolvedPrice.price
+                price
 
             );
 
+
+
+
+
+
+
+
+        session.data =
+
+            result.updatedData!;
 
 
 
@@ -215,14 +251,15 @@ implements TelegramCallbackHandler {
             result.nextStep!;
 
 
-        session.data =
 
-            result.updatedData!;
 
 
         session.updatedAt =
 
             Date.now();
+
+
+
 
 
 
@@ -242,64 +279,29 @@ implements TelegramCallbackHandler {
 
 
 
+
         return {
 
 
             type:
+
                 "text",
+
 
 
             content:
 
-`
-🟡 قیمت لحظه‌ای استفاده شد:
+                `💰 قیمت ثبت شد:
 
-💰 ${this.numberFormatter.money(
-    resolvedPrice.price
-)}
+${this.numberFormatter.money(price)}
 
-
-📈 درصد اجرت را وارد کنید:
-`.trim(),
-
-
-
-            replyMarkup:
-
-            {
-
-                type:
-                    "INLINE",
-
-
-                rows:
-
-                [
-
-                    [
-
-                        {
-
-                            text:
-                                "⬅️ اصلاح مرحله قبل",
-
-
-                            actionId:
-                                "calculator:back"
-
-                        }
-
-                    ]
-
-                ]
-
-            }
-
+📈 درصد اجرت را وارد کنید:`
 
         };
 
 
     }
+
 
 
 }

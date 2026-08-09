@@ -71,8 +71,6 @@ from "../../gold/pricing/GoldPriceResolver";
 
 
 
-
-
 export class TelegramCallbackRegistry {
 
 
@@ -80,50 +78,69 @@ export class TelegramCallbackRegistry {
     static create(
 
 
-
         telegramActionExecutor:
+
             TelegramActionExecutor,
 
 
+
         telegramNavigationService:
+
             TelegramNavigationService,
 
 
+
         telegramNavigationStateService:
+
             TelegramNavigationStateService,
 
 
+
         getMarketChartUseCase:
+
             GetMarketChartUseCase,
 
 
+
         marketChartRenderer:
+
             MarketChartRenderer,
 
 
+
         marketChartImageGenerator:
+
             MarketChartImageGenerator,
 
 
+
         sessionStore:
+
             TelegramSessionStore,
 
 
+
         goldCalculationWorkflow:
+
             GoldCalculationWorkflow,
 
 
+
         numberFormatter:
+
             TelegramNumberFormatter,
 
 
+
         goldPriceResolver:
+
             GoldPriceResolver
 
 
 
     ):
-        TelegramCallbackRouter {
+
+    TelegramCallbackRouter {
 
 
 
@@ -137,28 +154,37 @@ export class TelegramCallbackRegistry {
                 telegramActionExecutor,
 
 
+
                 telegramNavigationService,
+
 
 
                 telegramNavigationStateService,
 
 
+
                 getMarketChartUseCase,
+
 
 
                 marketChartRenderer,
 
 
+
                 marketChartImageGenerator,
+
 
 
                 sessionStore,
 
 
+
                 goldCalculationWorkflow,
 
 
+
                 numberFormatter,
+
 
 
                 goldPriceResolver
@@ -166,6 +192,8 @@ export class TelegramCallbackRegistry {
 
 
             );
+
+
 
 
 
@@ -180,7 +208,6 @@ export class TelegramCallbackRegistry {
 
 
     }
-
 
 
 }
