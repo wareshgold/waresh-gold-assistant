@@ -1,5 +1,6 @@
 export class TelegramNumberFormatter {
 
+
     format(
         value: number
     ): string {
@@ -15,6 +16,8 @@ export class TelegramNumberFormatter {
 
 
 
+
+
     formatCode(
         value: number
     ): string {
@@ -25,13 +28,22 @@ export class TelegramNumberFormatter {
 
 
 
-    copyableCode(
+
+
+    copyValue(
         value: number
     ): string {
 
-        return `<code>${Math.round(value)}</code>`;
+        return new Intl.NumberFormat(
+            "en-US"
+        )
+        .format(
+            Math.round(value)
+        );
 
     }
+
+
 
 
 
@@ -45,16 +57,6 @@ export class TelegramNumberFormatter {
 
 
 
-    plain(
-        value: number
-    ): string {
-
-        return String(
-            Math.round(value)
-        );
-
-    }
-
 
 
     weight(
@@ -64,5 +66,6 @@ export class TelegramNumberFormatter {
         return `${value.toFixed(3)} گرم`;
 
     }
+
 
 }
