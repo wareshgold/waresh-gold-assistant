@@ -2,15 +2,25 @@ export class TelegramNumberFormatter {
 
 
     format(
-        value: number
+
+        value:
+            number
+
     ): string {
 
+
         return new Intl.NumberFormat(
+
             "fa-IR"
+
         )
+
         .format(
+
             Math.round(value)
+
         );
+
 
     }
 
@@ -19,10 +29,15 @@ export class TelegramNumberFormatter {
 
 
     formatCode(
-        value: number
+
+        value:
+            number
+
     ): string {
 
+
         return `<code>${this.format(value)}</code>`;
+
 
     }
 
@@ -31,15 +46,25 @@ export class TelegramNumberFormatter {
 
 
     copyValue(
-        value: number
+
+        value:
+            number
+
     ): string {
 
+
         return new Intl.NumberFormat(
+
             "en-US"
+
         )
+
         .format(
+
             Math.round(value)
+
         );
+
 
     }
 
@@ -48,10 +73,15 @@ export class TelegramNumberFormatter {
 
 
     money(
-        value: number
+
+        value:
+            number
+
     ): string {
 
+
         return `${this.formatCode(value)} تومان`;
+
 
     }
 
@@ -60,10 +90,15 @@ export class TelegramNumberFormatter {
 
 
     weight(
-        value: number
+
+        value:
+            number
+
     ): string {
 
+
         return `${value.toFixed(3)} گرم`;
+
 
     }
 
