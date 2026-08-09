@@ -34,6 +34,11 @@ import {
 from "../../navigation/TelegramNavigationService";
 
 
+import {
+    TelegramNumberFormatter
+}
+from "../../presentation/TelegramNumberFormatter";
+
 
 
 
@@ -63,7 +68,13 @@ implements TelegramCallbackHandler {
 
         private readonly telegramNavigationService:
 
-            TelegramNavigationService
+            TelegramNavigationService,
+
+
+
+        private readonly numberFormatter:
+
+            TelegramNumberFormatter
 
 
 
@@ -173,13 +184,13 @@ implements TelegramCallbackHandler {
 
                         `${index + 1}️⃣\n` +
 
-                        `💰 طلا: ${item.gold18Price.toLocaleString("fa-IR")} تومان\n` +
+                        `💰 طلا: ${this.numberFormatter.money(item.gold18Price)}\n` +
 
-                        `💵 دلار: ${item.currencyPrice.toLocaleString("fa-IR")} تومان\n` +
+                        `💵 دلار: ${this.numberFormatter.money(item.currencyPrice)}\n` +
 
                         `🌎 اونس: ${
                             item.ouncePrice !== null
-                                ? item.ouncePrice.toLocaleString("fa-IR")
+                                ? this.numberFormatter.format(item.ouncePrice)
                                 : "نامشخص"
                         } دلار\n` +
 

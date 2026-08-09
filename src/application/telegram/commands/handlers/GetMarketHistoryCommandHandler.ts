@@ -7,22 +7,51 @@ import {
 }
 from "../TelegramCommandHandler";
 
-import { GetMarketHistoryUseCase }
+import {
+    GetMarketHistoryUseCase
+}
 from "../../../market/GetMarketHistoryUseCase";
+
+import {
+    TelegramNumberFormatter
+}
+from "../../presentation/TelegramNumberFormatter";
 
 
 
 export class GetMarketHistoryCommandHandler
+
 implements TelegramCommandHandler {
+
+
+
+    private readonly numberFormatter:
+        TelegramNumberFormatter;
+
 
 
 
     constructor(
 
         private readonly getMarketHistoryUseCase:
-            GetMarketHistoryUseCase
+            GetMarketHistoryUseCase,
 
-    ) {}
+        numberFormatter?:
+            TelegramNumberFormatter
+
+    ) {
+
+
+        this.numberFormatter =
+
+            numberFormatter ??
+
+            new TelegramNumberFormatter();
+
+
+    }
+
+
 
 
 
@@ -39,6 +68,8 @@ implements TelegramCommandHandler {
         };
 
     }
+
+
 
 
 
@@ -152,13 +183,15 @@ implements TelegramCommandHandler {
 
                     return [
 
-                        `${index + 1}) 🟡 ${item.gold18Price.toLocaleString("fa-IR")} تومان`,
+                        `${index + 1}) 🟡 ${this.numberFormatter.format(item.gold18Price)} تومان`,
 
-                        `💵 دلار: ${item.currencyPrice.toLocaleString("fa-IR")}`,
+                        `💵 دلار: ${this.numberFormatter.format(item.currencyPrice)}`,
 
                         `🌎 اونس: ${
                             item.ouncePrice !== null
-                                ? item.ouncePrice.toLocaleString("fa-IR")
+
+                                ? this.numberFormatter.format(item.ouncePrice)
+
                                 : "ناموجود"
                         }`,
 
