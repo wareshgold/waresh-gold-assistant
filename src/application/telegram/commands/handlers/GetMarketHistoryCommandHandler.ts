@@ -1,16 +1,19 @@
 import { TelegramCommandContext }
 from "../TelegramCommandContext";
 
+
 import {
     TelegramCommandHandler,
     TelegramCommandResponse
 }
 from "../TelegramCommandHandler";
 
+
 import {
     GetMarketHistoryUseCase
 }
 from "../../../market/GetMarketHistoryUseCase";
+
 
 import {
     TelegramNumberFormatter
@@ -36,17 +39,13 @@ implements TelegramCommandHandler {
         private readonly getMarketHistoryUseCase:
             GetMarketHistoryUseCase,
 
-        numberFormatter?:
+        numberFormatter:
             TelegramNumberFormatter
 
     ) {
 
 
-        this.numberFormatter =
-
-            numberFormatter ??
-
-            new TelegramNumberFormatter();
+        this.numberFormatter = numberFormatter;
 
 
     }

@@ -40,17 +40,13 @@ implements TelegramCommandHandler {
         private readonly getGoldCalculationHistoryUseCase:
             GetGoldCalculationHistoryUseCase,
 
-        numberFormatter?:
+        numberFormatter:
             TelegramNumberFormatter
 
     ) {
 
 
-        this.numberFormatter =
-
-            numberFormatter ??
-
-            new TelegramNumberFormatter();
+        this.numberFormatter = numberFormatter;
 
 
     }
