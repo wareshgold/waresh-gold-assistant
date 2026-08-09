@@ -1,38 +1,48 @@
 export enum GoldCalculationStep {
 
 
+
     WAITING_WEIGHT =
+
         "GOLD_CALCULATION_WAITING_WEIGHT",
 
 
 
     WAITING_PRICE_SELECTION =
+
         "GOLD_CALCULATION_WAITING_PRICE_SELECTION",
 
 
 
     WAITING_PRICE =
+
         "GOLD_CALCULATION_WAITING_PRICE",
 
 
 
     WAITING_LABOR =
+
         "GOLD_CALCULATION_WAITING_LABOR",
 
 
 
     WAITING_PROFIT =
+
         "GOLD_CALCULATION_WAITING_PROFIT",
 
 
 
     WAITING_TAX =
+
         "GOLD_CALCULATION_WAITING_TAX"
 
 
 
-
 }
+
+
+
+
 
 
 
@@ -44,7 +54,9 @@ Record<
 
     GoldCalculationStep | null
 
-> = {
+>
+
+= {
 
 
 
@@ -90,6 +102,8 @@ Record<
 
 
 
+
+
 export function getPreviousGoldCalculationStep(
 
     step:
@@ -99,6 +113,7 @@ export function getPreviousGoldCalculationStep(
 ):
 
 GoldCalculationStep | null {
+
 
 
     return GoldCalculationPreviousStepMap[step];

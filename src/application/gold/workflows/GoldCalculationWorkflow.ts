@@ -30,26 +30,37 @@ from "./GoldCalculationHistoryManager";
 
 
 
-
 export interface GoldCalculationWorkflowResult {
 
 
-    completed: boolean;
+    completed:
+
+        boolean;
 
 
-    nextStep?: GoldCalculationStep;
+    nextStep?:
+
+        GoldCalculationStep;
 
 
-    updatedData?: GoldCalculationSessionData;
+    updatedData?:
+
+        GoldCalculationSessionData;
 
 
-    error?: string[];
+    error?:
+
+        string[];
 
 
-    result?: CalculateGoldFormulaOutput;
+    result?:
+
+        CalculateGoldFormulaOutput;
 
 
 }
+
+
 
 
 
@@ -63,14 +74,17 @@ export class GoldCalculationWorkflow {
 
 
         private readonly useCase:
+
             CalculateGoldFormulaUseCase,
 
 
         private readonly validator:
+
             GoldCalculationValidator,
 
 
         private readonly historyManager:
+
             GoldCalculationHistoryManager
 
 
@@ -82,30 +96,38 @@ export class GoldCalculationWorkflow {
 
 
 
-
-
     execute(
 
 
         step:
+
             GoldCalculationStep,
 
 
         data:
+
             GoldCalculationSessionData,
 
 
         value:
+
             number
 
 
-    ): GoldCalculationWorkflowResult {
+    ):
+
+    GoldCalculationWorkflowResult {
 
 
 
         const updatedData =
 
-            this.historyManager.clone(data);
+            this.historyManager.clone(
+
+                data
+
+            );
+
 
 
 
@@ -117,6 +139,8 @@ export class GoldCalculationWorkflow {
             step
 
         );
+
+
 
 
 
@@ -173,7 +197,6 @@ export class GoldCalculationWorkflow {
 
 
 
-
             case GoldCalculationStep.WAITING_LABOR:
 
 
@@ -189,7 +212,6 @@ export class GoldCalculationWorkflow {
                     updatedData
 
                 );
-
 
 
 
@@ -219,7 +241,6 @@ export class GoldCalculationWorkflow {
 
 
 
-
             case GoldCalculationStep.WAITING_TAX:
 
 
@@ -240,7 +261,6 @@ export class GoldCalculationWorkflow {
 
 
 
-
             default:
 
 
@@ -248,19 +268,22 @@ export class GoldCalculationWorkflow {
                 return {
 
 
-                    completed: false,
+                    completed:
+
+                        false,
 
 
                     updatedData,
 
 
-                    error: [
+                    error:
 
+                    [
 
                         "Unknown calculation step"
 
-
                     ]
+
 
                 };
 
@@ -268,10 +291,7 @@ export class GoldCalculationWorkflow {
         }
 
 
-
     }
-
-
 
 
 
@@ -283,20 +303,28 @@ export class GoldCalculationWorkflow {
 
 
         data:
+
             GoldCalculationSessionData,
 
 
         currentPrice:
+
             number
 
 
-    ): GoldCalculationWorkflowResult {
+    ):
+
+    GoldCalculationWorkflowResult {
 
 
 
         const updatedData =
 
-            this.historyManager.clone(data);
+            this.historyManager.clone(
+
+                data
+
+            );
 
 
 
@@ -330,10 +358,7 @@ export class GoldCalculationWorkflow {
         );
 
 
-
     }
-
-
 
 
 
@@ -345,16 +370,23 @@ export class GoldCalculationWorkflow {
 
 
         data:
+
             GoldCalculationSessionData
 
 
-    ): GoldCalculationWorkflowResult {
+    ):
+
+    GoldCalculationWorkflowResult {
 
 
 
         const updatedData =
 
-            this.historyManager.clone(data);
+            this.historyManager.clone(
+
+                data
+
+            );
 
 
 
@@ -385,10 +417,7 @@ export class GoldCalculationWorkflow {
         );
 
 
-
     }
-
-
 
 
 
@@ -400,10 +429,13 @@ export class GoldCalculationWorkflow {
 
 
         data:
+
             GoldCalculationSessionData
 
 
-    ): GoldCalculationWorkflowResult {
+    ):
+
+    GoldCalculationWorkflowResult {
 
 
 
@@ -420,6 +452,7 @@ export class GoldCalculationWorkflow {
 
 
 
+
         if(!restored) {
 
 
@@ -427,19 +460,24 @@ export class GoldCalculationWorkflow {
             return {
 
 
-                completed: false,
+                completed:
+
+                    false,
 
 
-                updatedData: data,
+                updatedData:
+
+                    data,
 
 
-                error: [
+                error:
 
+                [
 
                     "مرحله قبلی وجود ندارد"
 
-
                 ]
+
 
             };
 
@@ -455,8 +493,9 @@ export class GoldCalculationWorkflow {
         return {
 
 
+            completed:
 
-            completed: false,
+                false,
 
 
 
@@ -475,10 +514,7 @@ export class GoldCalculationWorkflow {
         };
 
 
-
     }
-
-
 
 
 
@@ -490,16 +526,24 @@ export class GoldCalculationWorkflow {
 
 
         data:
+
             GoldCalculationSessionData
 
 
-    ): GoldCalculationWorkflowResult {
+    ):
+
+    GoldCalculationWorkflowResult {
 
 
 
         const validation =
 
-            this.validator.validate(data);
+            this.validator.validate(
+
+                data
+
+            );
+
 
 
 
@@ -513,17 +557,20 @@ export class GoldCalculationWorkflow {
             return {
 
 
-                completed: false,
+                completed:
+
+                    false,
 
 
                 nextStep:
-
 
                     GoldCalculationStep.WAITING_TAX,
 
 
 
-                updatedData: data,
+                updatedData:
+
+                    data,
 
 
 
@@ -535,10 +582,7 @@ export class GoldCalculationWorkflow {
             };
 
 
-
         }
-
-
 
 
 
@@ -596,31 +640,28 @@ export class GoldCalculationWorkflow {
 
 
 
-
-
         return {
 
 
+            completed:
 
-            completed: true,
+                true,
 
 
 
-            updatedData: data,
+            updatedData:
+
+                data,
 
 
 
             result
 
 
-
         };
 
 
-
     }
-
-
 
 
 
@@ -632,39 +673,45 @@ export class GoldCalculationWorkflow {
 
 
         step:
+
             GoldCalculationStep,
 
 
         data:
+
             GoldCalculationSessionData
 
 
-    ): GoldCalculationWorkflowResult {
+    ):
+
+    GoldCalculationWorkflowResult {
 
 
 
         return {
 
 
+            completed:
 
-            completed: false,
-
-
-
-            nextStep: step,
+                false,
 
 
 
-            updatedData: data
+            nextStep:
 
+                step,
+
+
+
+            updatedData:
+
+                data
 
 
         };
 
 
-
     }
-
 
 
 }

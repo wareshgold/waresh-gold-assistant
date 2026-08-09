@@ -1,3 +1,4 @@
+
 import {
     TelegramCallbackHandler,
 }
@@ -65,9 +66,9 @@ from "./handlers/CalculateGoldLivePriceCallbackHandler";
 
 
 import {
-    CalculateGoldPriceCallbackHandler,
+    CalculateGoldManualPriceCallbackHandler,
 }
-from "./handlers/CalculateGoldPriceCallbackHandler";
+from "./handlers/CalculateGoldManualPriceCallbackHandler";
 
 
 import {
@@ -143,8 +144,6 @@ from "../../gold/pricing/GoldPriceResolver";
 
 
 
-
-
 export class TelegramCallbackHandlerFactory {
 
 
@@ -216,6 +215,7 @@ export class TelegramCallbackHandlerFactory {
                         )
 
                 );
+
 
 
 
@@ -296,7 +296,7 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-            new CalculateGoldPriceCallbackHandler(
+            new CalculateGoldLivePriceCallbackHandler(
 
                 sessionStore,
 
@@ -310,15 +310,11 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-            new CalculateGoldLivePriceCallbackHandler(
+            new CalculateGoldManualPriceCallbackHandler(
 
                 sessionStore,
 
-                goldPriceResolver,
-
-                goldCalculationWorkflow,
-
-                numberFormatter
+                goldCalculationWorkflow
 
             ),
 
@@ -343,7 +339,6 @@ export class TelegramCallbackHandlerFactory {
 
 
     }
-
 
 
 }
