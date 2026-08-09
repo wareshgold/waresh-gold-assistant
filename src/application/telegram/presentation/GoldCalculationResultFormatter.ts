@@ -1,10 +1,10 @@
 import {
-    CalculateGoldFormulaOutput
+CalculateGoldFormulaOutput
 }
 from "../../gold/CalculateGoldFormulaUseCase";
 
 import {
-    TelegramNumberFormatter
+TelegramNumberFormatter
 }
 from "./TelegramNumberFormatter";
 
@@ -20,9 +20,11 @@ export class GoldCalculationResultFormatter {
     ) {}
 
 
+
     format(
 
-        result: CalculateGoldFormulaOutput
+        result:
+            CalculateGoldFormulaOutput
 
     ): string {
 
@@ -58,7 +60,6 @@ ${this.formatter.money(result.tax)}
 🟡 Waresh Gold Assistant
 
 `.trim();
-
 
     }
 
