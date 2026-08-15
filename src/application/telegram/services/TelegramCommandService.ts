@@ -83,9 +83,12 @@ implements TelegramCommandExecutor {
                 ? {
 
                     userId:
+
                         "default",
 
+
                     text:
+
                         message
 
                 }
@@ -215,7 +218,7 @@ implements TelegramCommandExecutor {
 
 
         /*
-         * Natural text fallback
+         * Try telegram commands
          */
 
         const context =
@@ -239,12 +242,61 @@ implements TelegramCommandExecutor {
 
 
 
+        const commandExists =
+
+            this.router
+
+                .getHandlers()
+
+                .some(
+
+                    handler =>
+
+                        handler.canHandle(
+
+                            context.command
+
+                                .trim()
+
+                                .toLowerCase()
+
+                        )
+
+                );
+
+
+
+
+
+        if (
+
+            commandExists
+
+        ) {
+
+
+            return this.router.execute(
+
+                context
+
+            );
+
+
+        }
+
+
+
+
+
+
+
 
         return this.router.execute(
 
             context
 
         );
+
 
 
     }
