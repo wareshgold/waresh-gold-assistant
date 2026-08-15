@@ -26,6 +26,10 @@ import { createMonitoringModule }
 from "./factories/createMonitoringModule";
 
 
+import { createAIModule }
+from "./factories/createAIModule";
+
+
 import { GetCurrentMarketPriceUseCase }
 from "../application/market/GetCurrentMarketPriceUseCase";
 
@@ -124,6 +128,14 @@ export function createContainer(
     const monitoring =
 
         createMonitoringModule(env);
+
+
+
+
+
+    const ai =
+
+        createAIModule(env);
 
 
 
@@ -445,6 +457,9 @@ export function createContainer(
 
 
         ...monitoring,
+
+
+        ...ai,
 
 
 
