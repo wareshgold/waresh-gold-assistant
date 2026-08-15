@@ -1,13 +1,30 @@
 import { GoldCalculationSessionData } from "../workflows/GoldCalculationSessionData";
 
-export interface GoldCalculationSessionValidationResult {
-    valid: boolean;
-    errors: string[];
+export interface ValidatedGoldCalculationSessionData {
+    weight: number;
+    goldPrice: number;
+    laborPercent: number;
+    profitPercent: number;
+    taxPercent?: number | null;
+    discount?: number | null;
 }
+
+export type GoldCalculationSessionValidationResult =
+    | {
+          valid: true;
+          data: ValidatedGoldCalculationSessionData;
+          errors: [];
+      }
+    | {
+          valid: false;
+          errors: string[];
+      };
 
 export class GoldCalculationSessionValidator {
 
-    validate(data: GoldCalculationSessionData): GoldCalculationSessionValidationResult {
+    validate(
+        data: GoldCalculationSessionData
+    ): GoldCalculationSessionValidationResult {
         const errors: string[] = [];
 
         if (data.weight === null || data.weight === undefined || data.weight <= 0) {
@@ -34,9 +51,24 @@ export class GoldCalculationSessionValidator {
             errors.push("Invalid discount");
         }
 
+        if (errors.length > 0) {
+            return {
+                valid: false,
+                errors
+            };
+        }
+
         return {
-            valid: errors.length === 0,
-            errors
+            valid: true,
+            errors: [],
+            data: {
+                weight: data.weight,
+                goldPrice: data.goldPrice,
+                laborPercent: data.laborPercent,
+                profitPercent: data.profitPercent,
+                taxPercent: data.taxPercent,
+                discount: data.discount
+            }
         };
     }
 }
