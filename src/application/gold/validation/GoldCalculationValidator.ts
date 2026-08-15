@@ -1,16 +1,19 @@
 import {
-    GoldCalculationSessionData
+    GoldCalculationSessionData,
+    ValidatedGoldCalculationData
 }
 from "../workflows/GoldCalculationSessionData";
 
 
-export interface GoldCalculationValidationResult {
-
-    valid: boolean;
-
-    errors: string[];
-
-}
+export type GoldCalculationValidationResult =
+    | {
+        valid: true;
+        data: ValidatedGoldCalculationData;
+    }
+    | {
+        valid: false;
+        errors: string[];
+    };
 
 
 export class GoldCalculationValidator {
@@ -21,57 +24,45 @@ export class GoldCalculationValidator {
 
         const errors: string[] = [];
 
-        if (
-            data.weight == null
-            ||
-            data.weight <= 0
-        ) {
-            errors.push("Invalid weight");
+        if (data.weight === null) {
+            errors.push("Weight is required");
         }
 
-        if (
-            data.goldPrice == null
-            ||
-            data.goldPrice <= 0
-        ) {
-            errors.push("Invalid gold price");
+        if (data.goldPrice === null) {
+            errors.push("Gold price is required");
         }
 
-        if (
-            data.laborPercent == null
-            ||
-            data.laborPercent < 0
-        ) {
-            errors.push("Invalid labor percent");
+        if (data.priceSource === null) {
+            errors.push("Price source is required");
         }
 
-        if (
-            data.profitPercent == null
-            ||
-            data.profitPercent < 0
-        ) {
-            errors.push("Invalid profit percent");
+        if (data.laborPercent === null) {
+            errors.push("Labor percent is required");
         }
 
-        if (
-            data.taxPercent != null
-            &&
-            data.taxPercent < 0
-        ) {
-            errors.push("Invalid tax percent");
+        if (data.profitPercent === null) {
+            errors.push("Profit percent is required");
         }
 
-        if (
-            data.discount != null
-            &&
-            data.discount < 0
-        ) {
-            errors.push("Invalid discount");
+        if (errors.length > 0) {
+            return {
+                valid: false,
+                errors
+            };
         }
 
         return {
-            valid: errors.length === 0,
-            errors
+            valid: true,
+            data: {
+                weight: data.weight,
+                goldPrice: data.goldPrice,
+                priceSource: data.priceSource,
+                laborPercent: data.laborPercent,
+                profitPercent: data.profitPercent,
+                taxPercent: data.taxPercent ?? 0,
+                discount: data.discount ?? 0,
+                history: data.history
+            }
         };
     }
 }
