@@ -42,6 +42,10 @@ import { ReverseGoldCommandHandler }
 from "./handlers/ReverseGoldCommandHandler";
 
 
+import { AICommandHandler }
+from "./handlers/AICommandHandler";
+
+
 import { GetGoldPriceUseCase }
 from "../../usecases/GetGoldPriceUseCase";
 
@@ -110,13 +114,16 @@ import { TelegramNumberFormatter }
 from "../presentation/TelegramNumberFormatter";
 
 
+import { AIService }
+from "../../ai/services/AIService";
+
+
 
 export class TelegramCommandRegistry {
 
 
 
     static create(
-
 
 
         getGoldPriceUseCase:
@@ -160,7 +167,11 @@ export class TelegramCommandRegistry {
 
 
         marketAnalyticsMessageFormatter:
-            MarketAnalyticsMessageFormatter
+            MarketAnalyticsMessageFormatter,
+
+
+        aiService?:
+            AIService
 
 
 
@@ -341,6 +352,31 @@ export class TelegramCommandRegistry {
 
             ];
 
+
+
+
+
+
+        if (
+
+            aiService
+
+        ) {
+
+
+
+            handlers.push(
+
+                new AICommandHandler(
+
+                    aiService
+
+                )
+
+            );
+
+
+        }
 
 
 

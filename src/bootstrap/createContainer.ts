@@ -375,7 +375,6 @@ export function createContainer(
 
             {
 
-
                 getGoldPriceUseCase,
 
 
@@ -430,7 +429,6 @@ export function createContainer(
 
 
                 saveGoldCalculationHistoryUseCase
-
 
             }
 
