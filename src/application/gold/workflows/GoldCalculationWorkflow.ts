@@ -598,37 +598,37 @@ export class GoldCalculationWorkflow {
 
                 weight:
 
-                    data.weight!,
+                    validation.data.weight,
 
 
 
                 goldPrice:
 
-                    data.goldPrice!,
+                    validation.data.goldPrice,
 
 
 
                 laborPercent:
 
-                    data.laborPercent!,
+                    validation.data.laborPercent,
 
 
 
                 profitPercent:
 
-                    data.profitPercent!,
+                    validation.data.profitPercent,
 
 
 
                 taxPercent:
 
-                    data.taxPercent ?? 0,
+                    validation.data.taxPercent,
 
 
 
                 discount:
 
-                    data.discount ?? 0
+                    validation.data.discount
 
 
 

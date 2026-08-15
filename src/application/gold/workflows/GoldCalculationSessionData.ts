@@ -41,6 +41,42 @@ export interface GoldCalculationSessionData {
 }
 
 
+export interface ValidatedGoldCalculationData {
+
+    weight:
+        number;
+
+
+    goldPrice:
+        number;
+
+
+    priceSource:
+        GoldCalculationPriceSource;
+
+
+    laborPercent:
+        number;
+
+
+    profitPercent:
+        number;
+
+
+    taxPercent:
+        number;
+
+
+    discount:
+        number;
+
+
+    history:
+        GoldCalculationHistoryEntry[];
+
+}
+
+
 export function createGoldCalculationSessionData():
 
 GoldCalculationSessionData {
@@ -76,6 +112,7 @@ GoldCalculationSessionData {
 
 
         history:
+
             []
 
     };
