@@ -106,6 +106,12 @@ from "../application/telegram/presentation/MarketBubbleMessageFormatter";
 import { MarketAnalyticsMessageFormatter }
 from "../application/telegram/presentation/MarketAnalyticsMessageFormatter";
 
+import { GoldPriceMessageFormatter }
+from "../application/telegram/presentation/GoldPriceMessageFormatter";
+
+import { TelegramDateFormatter }
+from "../application/telegram/presentation/TelegramDateFormatter";
+
 import { GoldCalculationResultFormatter }
 from "../application/telegram/presentation/GoldCalculationResultFormatter";
 
@@ -137,7 +143,6 @@ export class ApplicationContainer {
             createTelegramMessageProvider({
 
                 TELEGRAM_MARKET_SOURCE_URL:
-
                     "https://example.com"
 
             } as any);
@@ -452,6 +457,22 @@ export class ApplicationContainer {
 
 
 
+        const goldPriceMessageFormatter =
+
+            new GoldPriceMessageFormatter(
+
+                new TelegramMessageBuilder(),
+
+                new TelegramDateFormatter(),
+
+                telegramNumberFormatter
+
+            );
+
+
+
+
+
         const router =
 
             TelegramCommandRegistry.create(
@@ -476,7 +497,9 @@ export class ApplicationContainer {
 
                 marketBubbleMessageFormatter,
 
-                marketAnalyticsMessageFormatter
+                marketAnalyticsMessageFormatter,
+
+                goldPriceMessageFormatter
 
             );
 

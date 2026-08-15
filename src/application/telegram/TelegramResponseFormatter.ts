@@ -5,10 +5,7 @@ from "./commands/TelegramCommandHandler";
 
 
 
-
 export class TelegramResponseFormatter {
-
-
 
 
     format(
@@ -17,7 +14,6 @@ export class TelegramResponseFormatter {
             TelegramCommandResponse | string
 
     ): string {
-
 
 
         const content =
@@ -30,14 +26,10 @@ export class TelegramResponseFormatter {
 
 
 
-
-
         return this.formatNumbers(content);
 
 
-
     }
-
 
 
 
@@ -53,7 +45,7 @@ export class TelegramResponseFormatter {
 
         return text.replace(
 
-            /\d+/g,
+            /(?<![<\d])\d[\d٬,]*/g,
 
             value =>
 
@@ -63,8 +55,6 @@ export class TelegramResponseFormatter {
 
 
     }
-
-
 
 
 }
