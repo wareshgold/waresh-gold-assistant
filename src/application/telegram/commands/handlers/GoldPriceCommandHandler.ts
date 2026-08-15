@@ -1,18 +1,37 @@
-import { TelegramCommandContext } from "../TelegramCommandContext";
-import { TelegramCommandHandler } from "../TelegramCommandHandler";
-import { GetGoldPriceUseCase } from "../../../usecases/GetGoldPriceUseCase";
+import { TelegramCommandContext }
+from "../TelegramCommandContext";
+
+import { TelegramCommandHandler }
+from "../TelegramCommandHandler";
+
+import { GetGoldPriceUseCase }
+from "../../../usecases/GetGoldPriceUseCase";
+
+import { GoldPriceMessageFormatter }
+from "../../presentation/GoldPriceMessageFormatter";
+
 
 
 export class GoldPriceCommandHandler
+
 implements TelegramCommandHandler {
+
 
 
     constructor(
 
         private readonly getGoldPriceUseCase:
-            GetGoldPriceUseCase
+
+            GetGoldPriceUseCase,
+
+
+        private readonly formatter:
+
+            GoldPriceMessageFormatter
 
     ) {}
+
+
 
 
 
@@ -32,14 +51,18 @@ implements TelegramCommandHandler {
 
 
 
+
+
     canHandle(
 
-        command: string
+        command:
+            string
 
     ): boolean {
 
 
         const normalizedCommand =
+
             command.trim();
 
 
@@ -47,18 +70,24 @@ implements TelegramCommandHandler {
         return (
 
             normalizedCommand === "/price" ||
+
             normalizedCommand === "قیمت" ||
+
             normalizedCommand === "قیمت طلا"
 
         );
+
 
     }
 
 
 
+
+
     async execute(
 
-        context: TelegramCommandContext
+        context:
+            TelegramCommandContext
 
     ): Promise<any> {
 
@@ -67,32 +96,47 @@ implements TelegramCommandHandler {
 
 
             const result =
+
                 await this.getGoldPriceUseCase.execute();
+
 
 
 
             return {
 
+
                 content:
-                    result.content
+
+                    this.formatter.format(
+
+                        result
+
+                    )
+
 
             };
 
 
         }
-        catch(error){
+
+        catch(error) {
 
 
             console.error(
+
                 "Gold price command failed:",
+
                 error
+
             );
 
 
 
             return {
 
+
                 content:
+
                     "⚠️ دریافت قیمت طلا در حال حاضر امکان‌پذیر نیست.\nلطفاً چند لحظه بعد دوباره تلاش کنید."
 
             };

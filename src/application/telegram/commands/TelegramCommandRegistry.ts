@@ -106,6 +106,10 @@ import { MarketAnalyticsMessageFormatter }
 from "../presentation/MarketAnalyticsMessageFormatter";
 
 
+import { GoldPriceMessageFormatter }
+from "../presentation/GoldPriceMessageFormatter";
+
+
 import { TelegramNumberFormatter }
 from "../presentation/TelegramNumberFormatter";
 
@@ -160,7 +164,11 @@ export class TelegramCommandRegistry {
 
 
         marketAnalyticsMessageFormatter:
-            MarketAnalyticsMessageFormatter
+            MarketAnalyticsMessageFormatter,
+
+
+        goldPriceMessageFormatter:
+            GoldPriceMessageFormatter
 
 
 
@@ -261,7 +269,9 @@ export class TelegramCommandRegistry {
 
                 new GoldPriceCommandHandler(
 
-                    getGoldPriceUseCase
+                    getGoldPriceUseCase,
+
+                    goldPriceMessageFormatter
 
                 ),
 

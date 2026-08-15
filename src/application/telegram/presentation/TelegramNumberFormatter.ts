@@ -14,13 +14,11 @@ export class TelegramNumberFormatter {
             "fa-IR"
 
         )
-
         .format(
 
             Math.round(value)
 
         );
-
 
     }
 
@@ -38,7 +36,6 @@ export class TelegramNumberFormatter {
 
         return `<code>${this.format(value)}</code>`;
 
-
     }
 
 
@@ -53,18 +50,9 @@ export class TelegramNumberFormatter {
     ): string {
 
 
-        return new Intl.NumberFormat(
+        return Math.round(value)
 
-            "en-US"
-
-        )
-
-        .format(
-
-            Math.round(value)
-
-        );
-
+            .toString();
 
     }
 
@@ -82,7 +70,6 @@ export class TelegramNumberFormatter {
 
         return `${this.formatCode(value)} تومان`;
 
-
     }
 
 
@@ -98,7 +85,6 @@ export class TelegramNumberFormatter {
 
 
         return `${value.toFixed(3)} گرم`;
-
 
     }
 

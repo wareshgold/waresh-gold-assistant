@@ -12,7 +12,6 @@ from "../market/GetCurrentMarketPriceUseCase";
 export class GetGoldPriceUseCase {
 
 
-
     constructor(
 
         private readonly priceSource:
@@ -27,12 +26,9 @@ export class GetGoldPriceUseCase {
 
 
 
-
-
     async execute():
 
         Promise<ApplicationResponse> {
-
 
 
         const price =
@@ -47,61 +43,16 @@ export class GetGoldPriceUseCase {
 
 
 
-
-
         return {
 
 
             type:
-
                 "text",
 
 
 
-
-
             content:
-
-                [
-
-                    "🟡 قیمت لحظه‌ای طلا",
-
-                    "",
-
-                    "💰 طلای ۱۸ عیار:",
-
-                    `${this.formatNumber(price.gold18Price)} تومان`,
-
-                    "",
-
-                    "💵 دلار:",
-
-                    `${this.formatNumber(price.currencyPrice)} تومان`,
-
-                    "",
-
-                    "🌎 اونس جهانی:",
-
-                    `${
-                        price.ouncePrice !== null
-                            ? this.formatNumber(price.ouncePrice)
-                            : "ناموجود"
-                    } دلار`,
-
-                    "",
-
-                    "🕒 بروزرسانی:",
-
-                    price.updatedAt.toLocaleString(
-                        "fa-IR",
-                        {
-                            timeZone:
-                                "Asia/Tehran"
-                        }
-                    )
-
-                ].join("\n"),
-
+                "",
 
 
 
@@ -133,33 +84,6 @@ export class GetGoldPriceUseCase {
 
 
         };
-
-
-    }
-
-
-
-
-
-
-
-    private formatNumber(
-
-        value: number
-
-    ): string {
-
-
-        return new Intl.NumberFormat(
-
-            "fa-IR"
-
-        )
-        .format(
-
-            Math.round(value)
-
-        );
 
 
     }
