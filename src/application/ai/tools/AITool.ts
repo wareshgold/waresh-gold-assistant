@@ -5,6 +5,10 @@ export interface AIToolContext {
 
     userId?: string;
 
+    sessionId?: string;
+
+    metadata?: Record<string, unknown>;
+
 }
 
 
