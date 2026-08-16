@@ -13,17 +13,46 @@ import {
 } from "./AIToolResult";
 
 
+import {
+    AIToolInputValidator
+} from "./AIToolInputValidator";
+
+
 
 export class AIToolExecutor {
+
+
+    private readonly inputValidator:
+
+        AIToolInputValidator;
+
+
 
 
     constructor(
 
         private readonly registry:
 
-            AIToolRegistry
+            AIToolRegistry,
 
-    ) {}
+
+        inputValidator?:
+
+            AIToolInputValidator
+
+    ) {
+
+
+        this.inputValidator =
+
+            inputValidator ??
+
+            new AIToolInputValidator();
+
+
+    }
+
+
 
 
 
@@ -82,12 +111,56 @@ export class AIToolExecutor {
 
 
 
+
+        const validation =
+
+            this.inputValidator.validate(
+
+                tool.inputSchema,
+
+                input
+
+            );
+
+
+
+
+
+        if (
+
+            !validation.success
+
+        ) {
+
+
+            return {
+
+                success:
+
+                    false,
+
+
+                error:
+
+                    validation.error ??
+
+                    "Invalid tool input"
+
+            };
+
+
+        }
+
+
+
+
+
         try {
 
 
             return await tool.execute(
 
-                input,
+                validation.data,
 
                 context
 

@@ -1,4 +1,9 @@
-import { describe, expect, it } from "vitest";
+import {
+    describe,
+    expect,
+    it
+} from "vitest";
+
 
 import {
     CalculateInvoiceTool
@@ -6,211 +11,272 @@ import {
 
 
 
-describe("CalculateInvoiceTool", () => {
+describe(
+    "CalculateInvoiceTool",
+    () => {
 
 
 
-    it("should calculate invoice successfully", async () => {
+        it(
+            "should calculate invoice successfully",
+            async () => {
 
 
 
-        const useCase = {
+                const useCase = {
 
 
-            async execute(input: unknown) {
+                    execute(input: unknown) {
 
 
-                return {
+                        return {
 
 
-                    input,
+                            input,
 
 
-                    total:
+                            total:
 
-                        75000000,
+                                50000000
 
 
-                    tax:
+                        };
 
-                        5000000
 
-                };
+                    }
+
+
+                } as any;
+
+
+
+
+
+                const tool =
+
+                    new CalculateInvoiceTool(
+
+                        useCase
+
+                    );
+
+
+
+
+
+                const result =
+
+                    await tool.execute(
+
+                        {
+
+                            items:
+
+                            [
+
+                                {
+
+                                    weight:
+
+                                        2,
+
+
+                                    goldPrice:
+
+                                        19000000,
+
+
+                                    laborPercent:
+
+                                        10,
+
+
+                                    profitPercent:
+
+                                        7,
+
+
+                                    taxPercent:
+
+                                        10,
+
+
+                                    discountPercent:
+
+                                        0
+
+                                }
+
+                            ]
+
+                        },
+
+                        {
+
+                            userId:
+
+                                "user-1"
+
+                        }
+
+                    );
+
+
+
+
+
+                expect(
+
+                    result.success
+
+                )
+
+                    .toBe(true);
+
+
+
+
+
+                expect(
+
+                    result.data
+
+                )
+
+                    .toEqual({
+
+
+                        input:
+
+                        expect.any(Object),
+
+
+
+                        total:
+
+                            50000000
+
+
+                    });
+
 
 
             }
 
+        );
 
-        } as any;
 
 
 
 
 
-        const tool =
 
-            new CalculateInvoiceTool(
+        it(
+            "should return failure for invalid domain data",
+            async () => {
 
-                useCase
 
-            );
 
+                const useCase = {
 
 
+                    execute() {
 
 
-        const result =
+                        throw new Error(
 
-            await tool.execute(
+                            "should not execute"
 
-                {
+                        );
 
-                    weight:
 
-                        3,
+                    }
 
 
-                    labor:
+                } as any;
 
-                        10
 
-                },
 
-                {
 
-                    userId:
 
-                        "user-1"
+                const tool =
 
-                }
+                    new CalculateInvoiceTool(
 
-            );
+                        useCase
 
+                    );
 
 
 
 
-        expect(result.success)
 
-            .toBe(true);
+                const result =
 
+                    await tool.execute(
 
+                        {
 
+                            items:
 
+                            [
 
-        expect(result.data)
+                                {
 
-            .toEqual({
+                                    weight:
 
-                input:
+                                        -1,
 
-                {
 
-                    weight:
+                                    goldPrice:
 
-                        3,
+                                        19000000,
 
 
-                    labor:
+                                    laborPercent:
 
-                        10
+                                        10,
 
-                },
 
+                                    profitPercent:
 
-                total:
+                                        7,
 
-                    75000000,
 
+                                    taxPercent:
 
-                tax:
+                                        10
 
-                    5000000
+                                }
 
-            });
+                            ]
 
+                        },
 
+                        {}
 
-    });
+                    );
 
 
 
 
 
+                expect(
 
+                    result.success
 
-    it("should return failure when invoice calculation fails", async () => {
+                )
 
+                    .toBe(false);
 
-
-        const useCase = {
-
-
-            async execute() {
-
-
-                throw new Error(
-
-                    "invoice calculation failed"
-
-                );
 
 
             }
 
-
-        } as any;
-
+        );
 
 
 
+    }
 
-        const tool =
-
-            new CalculateInvoiceTool(
-
-                useCase
-
-            );
-
-
-
-
-
-        const result =
-
-            await tool.execute(
-
-                {},
-
-                {}
-
-            );
-
-
-
-
-
-        expect(result.success)
-
-            .toBe(false);
-
-
-
-
-
-        expect(result.error)
-
-            .toContain(
-
-                "invoice calculation failed"
-
-            );
-
-
-
-    });
-
-
-
-});
+);

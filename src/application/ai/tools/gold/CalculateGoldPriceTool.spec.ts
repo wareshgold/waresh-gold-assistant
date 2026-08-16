@@ -1,12 +1,24 @@
 import { describe, expect, it } from "vitest";
 
+
 import {
     CalculateGoldPriceTool
 } from "./CalculateGoldPriceTool";
 
 
+import {
+    DefaultAIToolRegistry
+} from "../DefaultAIToolRegistry";
+
+
+import {
+    AIToolExecutor
+} from "../AIToolExecutor";
+
+
 
 describe("CalculateGoldPriceTool", () => {
+
 
 
     it("should calculate gold price successfully", async () => {
@@ -37,6 +49,7 @@ describe("CalculateGoldPriceTool", () => {
 
 
 
+
         const tool =
 
             new CalculateGoldPriceTool(
@@ -47,15 +60,63 @@ describe("CalculateGoldPriceTool", () => {
 
 
 
+        const registry =
+
+            new DefaultAIToolRegistry();
+
+
+
+        registry.register(
+
+            tool
+
+        );
+
+
+
+        const executor =
+
+            new AIToolExecutor(
+
+                registry
+
+            );
+
+
+
+
         const result =
 
-            await tool.execute(
+            await executor.execute(
+
+                "calculate_gold_price",
 
                 {
 
                     weight:
 
-                        2
+                        2,
+
+
+                    goldPrice:
+
+                        19000000,
+
+
+                    laborPercent:
+
+                        10,
+
+
+                    profitPercent:
+
+                        7,
+
+
+                    taxPercent:
+
+                        10
+
 
                 },
 
@@ -87,7 +148,27 @@ describe("CalculateGoldPriceTool", () => {
 
                     weight:
 
-                        2
+                        2,
+
+
+                    goldPrice:
+
+                        19000000,
+
+
+                    laborPercent:
+
+                        10,
+
+
+                    profitPercent:
+
+                        7,
+
+
+                    taxPercent:
+
+                        10
 
                 },
 
@@ -101,6 +182,129 @@ describe("CalculateGoldPriceTool", () => {
 
 
     });
+
+
+
+
+
+
+    it("should reject invalid negative values before execution", async () => {
+
+
+
+        const useCase = {
+
+
+            async execute() {
+
+
+                throw new Error(
+
+                    "use case should not execute"
+
+                );
+
+
+            }
+
+
+        } as any;
+
+
+
+
+        const tool =
+
+            new CalculateGoldPriceTool(
+
+                useCase
+
+            );
+
+
+
+        const registry =
+
+            new DefaultAIToolRegistry();
+
+
+
+        registry.register(
+
+            tool
+
+        );
+
+
+
+        const executor =
+
+            new AIToolExecutor(
+
+                registry
+
+            );
+
+
+
+        const result =
+
+            await executor.execute(
+
+                "calculate_gold_price",
+
+                {
+
+                    weight:
+
+                        -1,
+
+
+                    goldPrice:
+
+                        19000000,
+
+
+                    laborPercent:
+
+                        10,
+
+
+                    profitPercent:
+
+                        7,
+
+
+                    taxPercent:
+
+                        10
+
+                },
+
+                {}
+
+            );
+
+
+
+        expect(result.success)
+
+            .toBe(false);
+
+
+
+        expect(result.error)
+
+            .toContain(
+
+                "Weight must be greater than zero"
+
+            );
+
+
+
+    });
+
 
 
 
@@ -145,7 +349,13 @@ describe("CalculateGoldPriceTool", () => {
 
             await tool.execute(
 
-                {},
+                {
+
+                    weight:
+
+                        2
+
+                },
 
                 {}
 
