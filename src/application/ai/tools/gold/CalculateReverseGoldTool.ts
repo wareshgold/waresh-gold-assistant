@@ -70,7 +70,9 @@ implements AITool {
 
                 await this.useCase.execute(
 
-                    input as any
+                    input as Parameters<
+                        CalculateReverseGoldUseCase["execute"]
+                    >[0]
 
                 );
 

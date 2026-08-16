@@ -71,7 +71,9 @@ implements AITool {
 
                 await this.useCase.execute(
 
-                    input as any
+                    input as Parameters<
+                        CalculateGoldFormulaUseCase["execute"]
+                    >[0]
 
                 );
 
