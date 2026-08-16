@@ -10,6 +10,11 @@ import {
 } from "./AIToolInputValidator";
 
 
+import {
+    AIToolSchema
+} from "./AIToolSchema";
+
+
 
 describe(
     "AIToolInputValidator",
@@ -62,8 +67,9 @@ describe(
 
 
 
+
         it(
-            "should validate zod compatible schema",
+            "should validate typed schema",
             () => {
 
 
@@ -73,7 +79,16 @@ describe(
 
 
 
-                const schema = {
+
+
+                const schema:
+
+                    AIToolSchema<{
+
+                        weight:number;
+
+                    }> = {
+
 
 
                     safeParse(
@@ -83,6 +98,7 @@ describe(
                     ) {
 
 
+
                         if (
 
                             typeof value === "object"
@@ -90,7 +106,9 @@ describe(
                         ) {
 
 
+
                             return {
+
 
                                 success:
 
@@ -99,14 +117,24 @@ describe(
 
                                 data:
 
-                                    value
+                                    value as {
+
+                                        weight:number;
+
+                                    }
+
 
                             };
+
 
                         }
 
 
+
+
+
                         return {
+
 
                             success:
 
@@ -117,6 +145,7 @@ describe(
 
                                 "invalid"
 
+
                         };
 
 
@@ -124,6 +153,7 @@ describe(
 
 
                 };
+
 
 
 
@@ -146,6 +176,8 @@ describe(
 
 
 
+
+
                 expect(
 
                     result.success
@@ -156,8 +188,22 @@ describe(
 
 
 
+
+
+                expect(
+
+                    result.data?.weight
+
+                )
+
+                    .toBe(2);
+
+
+
             }
         );
+
+
 
 
 
@@ -168,19 +214,27 @@ describe(
             () => {
 
 
+
                 const validator =
 
                     new AIToolInputValidator();
 
 
 
-                const schema = {
+
+
+                const schema:
+
+                    AIToolSchema<unknown> = {
+
 
 
                     safeParse() {
 
 
+
                         return {
+
 
                             success:
 
@@ -195,6 +249,7 @@ describe(
 
                                 )
 
+
                         };
 
 
@@ -202,6 +257,8 @@ describe(
 
 
                 };
+
+
 
 
 
@@ -217,6 +274,8 @@ describe(
 
 
 
+
+
                 expect(
 
                     result.success
@@ -224,6 +283,8 @@ describe(
                 )
 
                     .toBe(false);
+
+
 
 
 
@@ -240,9 +301,12 @@ describe(
                     );
 
 
+
             }
         );
 
 
+
     }
+
 );

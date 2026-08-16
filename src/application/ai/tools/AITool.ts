@@ -3,6 +3,11 @@ import {
 } from "./AIToolResult";
 
 
+import {
+    AIToolSchema
+} from "./AIToolSchema";
+
+
 
 export interface AIToolContext {
 
@@ -22,7 +27,7 @@ export interface AIToolContext {
 
 
 
-export interface AITool {
+export interface AITool<TInput = unknown> {
 
 
     name: string;
@@ -34,21 +39,21 @@ export interface AITool {
 
 
     /**
-     * Optional input schema.
+     * Optional typed input schema.
      *
-     * This is intentionally typed as unknown
-     * to keep AITool independent from validation libraries.
+     * The schema is intentionally abstract
+     * and independent from validation libraries.
      *
-     * Compatible schemas can be provided by infrastructure
-     * such as Zod schemas.
+     * Zod or other validators can implement
+     * this contract through adapters.
      */
-    inputSchema?: unknown;
+    inputSchema?: AIToolSchema<TInput>;
 
 
 
     execute(
 
-        input: unknown,
+        input: TInput,
 
         context: AIToolContext
 

@@ -1,10 +1,16 @@
-export interface AIToolValidationResult {
+import {
+    AIToolSchema
+} from "./AIToolSchema";
+
+
+
+export interface AIToolValidationResult<TInput> {
 
 
     success: boolean;
 
 
-    data?: unknown;
+    data?: TInput;
 
 
     error?: string;
@@ -20,13 +26,15 @@ export class AIToolInputValidator {
 
 
 
-    validate(
+    validate<TInput>(
 
-        schema: unknown,
+        schema: AIToolSchema<TInput> | undefined,
 
         input: unknown
 
-    ): AIToolValidationResult {
+    ):
+
+        AIToolValidationResult<TInput> {
 
 
 
@@ -35,55 +43,6 @@ export class AIToolInputValidator {
 
             return {
 
-                success:
-
-                    true,
-
-
-                data:
-
-                    input
-
-            };
-
-
-        }
-
-
-
-
-        const validator =
-
-            schema as {
-
-                safeParse?: (
-
-                    value: unknown
-
-                ) => {
-
-                    success: boolean;
-
-                    data?: unknown;
-
-                    error?: unknown;
-
-                };
-
-            };
-
-
-
-
-
-        if (
-
-            typeof validator.safeParse !== "function"
-
-        ) {
-
-
-            return {
 
                 success:
 
@@ -92,7 +51,8 @@ export class AIToolInputValidator {
 
                 data:
 
-                    input
+                    input as TInput
+
 
             };
 
@@ -105,7 +65,7 @@ export class AIToolInputValidator {
 
         const result =
 
-            validator.safeParse(
+            schema.safeParse(
 
                 input
 
