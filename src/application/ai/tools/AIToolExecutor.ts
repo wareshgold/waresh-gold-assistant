@@ -1,26 +1,20 @@
 import {
     AIToolContext
-}
-from "./AITool";
+} from "./AITool";
 
 
 import {
     AIToolRegistry
-}
-from "./AIToolRegistry";
+} from "./AIToolRegistry";
 
 
 import {
     AIToolResult
-}
-from "./AIToolResult";
-
-
+} from "./AIToolResult";
 
 
 
 export class AIToolExecutor {
-
 
 
     constructor(
@@ -30,10 +24,6 @@ export class AIToolExecutor {
             AIToolRegistry
 
     ) {}
-
-
-
-
 
 
 
@@ -70,13 +60,10 @@ export class AIToolExecutor {
 
 
 
-
         if (!tool) {
 
 
-
             return {
-
 
                 success:
 
@@ -87,7 +74,6 @@ export class AIToolExecutor {
 
                     `AI tool not found: ${toolName}`
 
-
             };
 
 
@@ -96,21 +82,45 @@ export class AIToolExecutor {
 
 
 
+        try {
 
 
+            return await tool.execute(
 
-        return tool.execute(
+                input,
 
-            input,
+                context
 
-            context
+            );
 
-        );
 
+        }
+
+        catch (error) {
+
+
+            return {
+
+                success:
+
+                    false,
+
+
+                error:
+
+                    error instanceof Error
+
+                        ? error.message
+
+                        : "AI tool execution failed"
+
+            };
+
+
+        }
 
 
     }
-
 
 
 }

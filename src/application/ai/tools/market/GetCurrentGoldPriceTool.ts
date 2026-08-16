@@ -1,20 +1,17 @@
 import {
     AITool,
     AIToolContext
-}
-from "../AITool";
+} from "../AITool";
 
 
 import {
     AIToolResult
-}
-from "../AIToolResult";
+} from "../AIToolResult";
 
 
 import {
     GetCurrentGoldPriceUseCase
-}
-from "../../../gold/GetCurrentGoldPriceUseCase";
+} from "../../../gold/GetCurrentGoldPriceUseCase";
 
 
 
@@ -33,6 +30,7 @@ implements AITool {
     readonly description =
 
         "Returns the current 18k gold market price.";
+
 
 
 
@@ -61,20 +59,47 @@ implements AITool {
 
 
 
-        const result =
-
-            await this.useCase.execute();
+        try {
 
 
+            const result =
+
+                await this.useCase.execute();
 
 
-        return {
 
-            success: true,
 
-            data: result
+            return {
 
-        };
+                success: true,
+
+                data: result
+
+            };
+
+
+        }
+
+        catch (error) {
+
+
+            return {
+
+                success: false,
+
+                error:
+
+                    error instanceof Error
+
+                        ? error.message
+
+                        : "Failed to get current gold price"
+
+            };
+
+
+        }
+
 
     }
 

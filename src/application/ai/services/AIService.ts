@@ -1,39 +1,31 @@
 import {
     AIClient
-}
-from "../client/AIClient";
+} from "../client/AIClient";
 
 
 import {
     AIMessage
-}
-from "../client/AIMessage";
+} from "../client/AIMessage";
 
 
 import {
     AIRequest
-}
-from "../models/AIRequest";
+} from "../models/AIRequest";
 
 
 import {
     AIResponse
-}
-from "../models/AIResponse";
+} from "../models/AIResponse";
 
 
 import {
     AIToolRegistry
-}
-from "../tools/AIToolRegistry";
+} from "../tools/AIToolRegistry";
 
 
 import {
     AIToolExecutionService
-}
-from "./AIToolExecutionService";
-
-
+} from "./AIToolExecutionService";
 
 
 
@@ -63,8 +55,6 @@ export class AIService {
 
 
 
-
-
     async process(
 
         request:
@@ -82,7 +72,6 @@ export class AIService {
             AIMessage[] = [
 
 
-
                 {
 
                     role:
@@ -95,7 +84,6 @@ export class AIService {
                         this.buildSystemPrompt()
 
                 },
-
 
 
                 {
@@ -118,8 +106,6 @@ export class AIService {
 
 
 
-
-
         let result =
 
             await this.client.complete(
@@ -127,8 +113,6 @@ export class AIService {
                 messages
 
             );
-
-
 
 
 
@@ -156,15 +140,11 @@ export class AIService {
 
 
 
-
-
-
         if (toolResult) {
 
 
 
             messages.push({
-
 
                 role:
 
@@ -182,9 +162,7 @@ export class AIService {
 
 
 
-
             messages.push({
-
 
                 role:
 
@@ -193,14 +171,10 @@ export class AIService {
 
                 content:
 
-                    `Tool result:
-
-${JSON.stringify(toolResult.data)}`
+                    `Tool result:\n${JSON.stringify(toolResult.data)}`
 
 
             });
-
-
 
 
 
@@ -215,10 +189,7 @@ ${JSON.stringify(toolResult.data)}`
                 );
 
 
-
         }
-
-
 
 
 
@@ -226,12 +197,9 @@ ${JSON.stringify(toolResult.data)}`
 
         return {
 
-
-
             content:
 
                 result.content,
-
 
 
             metadata:
@@ -253,11 +221,9 @@ ${JSON.stringify(toolResult.data)}`
                     request.userId,
 
 
-
                 toolExecuted:
 
                     Boolean(toolResult),
-
 
 
                 toolSuccess:
@@ -283,10 +249,7 @@ ${JSON.stringify(toolResult.data)}`
         };
 
 
-
     }
-
-
 
 
 
@@ -321,7 +284,6 @@ ${JSON.stringify(toolResult.data)}`
         if (!tools) {
 
 
-
             return (
 
                 "You are Waresh Gold AI assistant."
@@ -330,7 +292,6 @@ ${JSON.stringify(toolResult.data)}`
 
 
         }
-
 
 
 
@@ -355,10 +316,7 @@ If you need a tool, return:
 
 `;
 
-
-
     }
-
 
 
 }
