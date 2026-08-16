@@ -33,6 +33,19 @@ export interface AITool {
 
 
 
+    /**
+     * Optional input schema.
+     *
+     * This is intentionally typed as unknown
+     * to keep AITool independent from validation libraries.
+     *
+     * Compatible schemas can be provided by infrastructure
+     * such as Zod schemas.
+     */
+    inputSchema?: unknown;
+
+
+
     execute(
 
         input: unknown,

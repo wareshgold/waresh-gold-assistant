@@ -14,6 +14,16 @@ import {
 } from "../../../gold/CalculateInvoiceUseCase";
 
 
+import {
+    CalculateInvoiceToolSchema
+} from "./CalculateInvoiceToolSchema";
+
+
+import {
+    CalculateInvoiceToolMapper
+} from "./CalculateInvoiceToolMapper";
+
+
 
 export class CalculateInvoiceTool
 
@@ -34,14 +44,43 @@ implements AITool {
 
 
 
+    readonly inputSchema =
+
+        CalculateInvoiceToolSchema;
+
+
+
+    private readonly mapper:
+
+        CalculateInvoiceToolMapper;
+
+
+
+
 
     constructor(
 
         private readonly useCase:
 
-            CalculateInvoiceUseCase
+            CalculateInvoiceUseCase,
 
-    ) {}
+
+        mapper?:
+
+            CalculateInvoiceToolMapper
+
+    ) {
+
+
+        this.mapper =
+
+            mapper ??
+
+            new CalculateInvoiceToolMapper();
+
+
+    }
+
 
 
 
@@ -66,11 +105,36 @@ implements AITool {
         try {
 
 
+
+            const validatedInput =
+
+                CalculateInvoiceToolSchema.parse(
+
+                    input
+
+                );
+
+
+
+
+
+            const invoiceInput =
+
+                this.mapper.map(
+
+                    validatedInput
+
+                );
+
+
+
+
+
             const result =
 
-                await this.useCase.execute(
+                this.useCase.execute(
 
-                    input as any
+                    invoiceInput
 
                 );
 

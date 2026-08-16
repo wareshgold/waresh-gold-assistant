@@ -14,6 +14,11 @@ import {
 } from "../../../gold/CalculateGoldPriceUseCase";
 
 
+import {
+    CalculateGoldPriceToolSchema
+} from "./CalculateGoldPriceToolSchema";
+
+
 
 export class CalculateGoldPriceTool
 
@@ -30,6 +35,13 @@ implements AITool {
     readonly description =
 
         "Calculates gold price using weight, gold price, labor, profit and tax parameters.";
+
+
+
+
+    readonly inputSchema =
+
+        CalculateGoldPriceToolSchema;
 
 
 
@@ -71,7 +83,9 @@ implements AITool {
 
                 await this.useCase.execute(
 
-                    input as any
+                    input as Parameters<
+                        CalculateGoldPriceUseCase["execute"]
+                    >[0]
 
                 );
 
