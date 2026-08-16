@@ -1,24 +1,25 @@
 import {
     AIToolDecisionService
-}
-from "./AIToolDecisionService";
+} from "./AIToolDecisionService";
 
 
 import {
     AIToolExecutor
-}
-from "../tools/AIToolExecutor";
+} from "../tools/AIToolExecutor";
 
 
 import {
     AIToolContext
-}
-from "../tools/AITool";
+} from "../tools/AITool";
+
+
+import {
+    AIToolResult
+} from "../tools/AIToolResult";
 
 
 
 export class AIToolExecutionService {
-
 
 
     constructor(
@@ -36,8 +37,6 @@ export class AIToolExecutionService {
 
 
 
-
-
     async executeIfRequired(
 
         content:
@@ -49,7 +48,9 @@ export class AIToolExecutionService {
 
             AIToolContext = {}
 
-    ) {
+    ):
+
+        Promise<AIToolResult | undefined> {
 
 
 
@@ -60,7 +61,6 @@ export class AIToolExecutionService {
                 content
 
             );
-
 
 
 
@@ -77,7 +77,6 @@ export class AIToolExecutionService {
 
 
 
-
         return this.executor.execute(
 
             decision.toolName,
@@ -89,9 +88,7 @@ export class AIToolExecutionService {
         );
 
 
-
     }
-
 
 
 }
