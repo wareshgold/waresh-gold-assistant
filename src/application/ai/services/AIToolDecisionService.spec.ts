@@ -1,4 +1,9 @@
-import { describe, expect, it } from "vitest";
+import {
+    describe,
+    expect,
+    it
+} from "vitest";
+
 
 import {
     AIToolDecisionService
@@ -6,132 +11,251 @@ import {
 
 
 
-describe("AIToolDecisionService", () => {
 
+describe(
+    "AIToolDecisionService",
+    () => {
 
-    const service =
 
-        new AIToolDecisionService();
+        const service =
 
+            new AIToolDecisionService();
 
 
 
-    it("should detect tool call from AI response", () => {
 
 
-        const result =
 
-            service.decide(`
+        it(
+            "should detect native tool call from AI response",
+            () => {
 
-                I need current price.
 
-                <tool>
-                {
-                    "toolName":"get_current_gold_price",
-                    "input":{}
-                }
-                </tool>
+                const result =
 
-            `);
+                    service.decide({
 
+                        content:
 
+                            "",
 
-        expect(result).toEqual({
 
-            toolName:
+                        toolCalls:
 
-                "get_current_gold_price",
+                        [
 
+                            {
 
-            input:
+                                name:
 
-                {}
+                                    "get_current_gold_price",
 
-        });
 
+                                arguments:
 
-    });
+                                {
 
+                                }
 
+                            }
 
+                        ]
 
+                    });
 
-    it("should return undefined when no tool exists", () => {
 
 
-        const result =
 
-            service.decide(
 
-                "What is gold price today?"
+                expect(result)
 
-            );
+                    .toEqual({
 
+                        toolName:
 
+                            "get_current_gold_price",
 
-        expect(result)
 
-            .toBeUndefined();
+                        input:
 
+                            {}
 
-    });
+                    });
 
 
 
+            }
+        );
 
 
-    it("should return undefined for invalid tool payload", () => {
 
 
-        const result =
 
-            service.decide(`
 
-                <tool>
-                {
-                    "invalid":"payload"
-                }
-                </tool>
 
-            `);
+        it(
+            "should detect legacy tool call from AI response",
+            () => {
 
 
+                const result =
 
-        expect(result)
+                    service.decide({
 
-            .toBeUndefined();
+                        content:
 
+`
+<tool>
+{
+    "toolName":"get_current_gold_price",
+    "input":{}
+}
+</tool>
+`
 
-    });
+                    });
 
 
 
 
 
-    it("should handle invalid json safely", () => {
+                expect(result)
 
+                    .toEqual({
 
-        const result =
+                        toolName:
 
-            service.decide(`
+                            "get_current_gold_price",
 
-                <tool>
 
-                invalid json
+                        input:
 
-                </tool>
+                            {}
 
-            `);
+                    });
 
 
 
-        expect(result)
+            }
+        );
 
-            .toBeUndefined();
 
 
-    });
 
 
 
-});
+
+        it(
+            "should return undefined when no tool exists",
+            () => {
+
+
+
+                const result =
+
+                    service.decide({
+
+                        content:
+
+                            "What is gold price today?"
+
+                    });
+
+
+
+
+
+                expect(result)
+
+                    .toBeUndefined();
+
+
+
+            }
+        );
+
+
+
+
+
+
+
+
+        it(
+            "should return undefined for invalid tool payload",
+            () => {
+
+
+                const result =
+
+                    service.decide({
+
+                        content:
+
+`
+<tool>
+{
+    "invalid":"payload"
+}
+</tool>
+`
+
+                    });
+
+
+
+
+
+                expect(result)
+
+                    .toBeUndefined();
+
+
+
+            }
+        );
+
+
+
+
+
+
+
+        it(
+            "should handle invalid json safely",
+            () => {
+
+
+
+                const result =
+
+                    service.decide({
+
+                        content:
+
+`
+<tool>
+invalid json
+</tool>
+`
+
+                    });
+
+
+
+
+
+                expect(result)
+
+                    .toBeUndefined();
+
+
+
+            }
+        );
+
+
+
+    }
+
+);
