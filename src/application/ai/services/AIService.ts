@@ -28,21 +28,8 @@ import {
 } from "./AIToolExecutionService";
 
 
-import {
-    AIToolDecisionService
-} from "./AIToolDecisionService";
-
-
 
 export class AIService {
-
-
-
-    private readonly toolDecisionService:
-
-        AIToolDecisionService;
-
-
 
 
 
@@ -62,15 +49,7 @@ export class AIService {
 
             AIToolExecutionService
 
-    ) {
-
-
-        this.toolDecisionService =
-
-            new AIToolDecisionService();
-
-
-    }
+    ) {}
 
 
 
@@ -147,21 +126,6 @@ export class AIService {
 
 
 
-        const toolCall =
-
-            this.toolDecisionService.decide(
-
-                result.content
-
-            );
-
-
-
-
-
-
-
-
         let toolResult;
 
 
@@ -170,10 +134,6 @@ export class AIService {
 
 
         if (
-
-            toolCall
-
-            &&
 
             this.toolExecutionService
 
@@ -375,11 +335,15 @@ Explain this result to the user in Persian.
 
                     tool =>
 
-                        `${tool.name}: ${tool.description}`
+                        `[${tool.name}]
+
+Purpose:
+
+${tool.description}`
 
                 )
 
-                .join("\n");
+                .join("\n\n");
 
 
 
@@ -396,13 +360,23 @@ You are an assistant for Iranian gold market users.
 Rules:
 
 - Never invent gold prices.
+- Never estimate or guess market values.
 - Never calculate market prices yourself.
-- For current gold price, gram price, mithqal price, ounce price, always use tools.
+- For current gold price, gram price, mithqal price, ounce price, always use market tools.
 - For gold calculations, always use calculation tools.
-- After receiving tool results, answer in Persian.
+- Use tool results as the only source of truth.
+- After receiving tool results, explain the result in Persian.
 - Use تومان for Iranian prices.
 - Format numbers clearly.
 - Keep answers short and useful.
+
+Tool selection rules:
+
+- User asks current price -> use market price tools.
+- User asks mithqal price -> use mithqal market tool.
+- User asks gold calculation -> use calculation tools.
+- User asks invoice/reverse calculation -> use the related calculation tool.
+- Do not answer before using a required tool.
 
 `;
 
@@ -439,7 +413,7 @@ Available tools:
 ${tools}
 
 
-When you need a tool, return ONLY this format:
+When a tool is required, return ONLY this format:
 
 
 <tool>
@@ -450,7 +424,7 @@ When you need a tool, return ONLY this format:
 </tool>
 
 
-Do not answer before using the tool.
+Do not include any explanation before tool execution.
 
 `;
 
