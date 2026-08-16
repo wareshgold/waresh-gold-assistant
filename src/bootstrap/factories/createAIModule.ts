@@ -29,9 +29,57 @@ from "../../application/ai/tools/market/GetCurrentGoldPriceTool";
 
 
 import {
+    CalculateGoldPriceTool
+}
+from "../../application/ai/tools/gold/CalculateGoldPriceTool";
+
+
+import {
+    CalculateGoldFormulaTool
+}
+from "../../application/ai/tools/gold/CalculateGoldFormulaTool";
+
+
+import {
+    CalculateReverseGoldTool
+}
+from "../../application/ai/tools/gold/CalculateReverseGoldTool";
+
+
+import {
+    CalculateInvoiceTool
+}
+from "../../application/ai/tools/gold/CalculateInvoiceTool";
+
+
+import {
     GetCurrentGoldPriceUseCase
 }
 from "../../application/gold/GetCurrentGoldPriceUseCase";
+
+
+import {
+    CalculateGoldPriceUseCase
+}
+from "../../application/gold/CalculateGoldPriceUseCase";
+
+
+import {
+    CalculateGoldFormulaUseCase
+}
+from "../../application/gold/CalculateGoldFormulaUseCase";
+
+
+import {
+    CalculateReverseGoldUseCase
+}
+from "../../application/gold/CalculateReverseGoldUseCase";
+
+
+import {
+    CalculateInvoiceUseCase
+}
+from "../../application/gold/CalculateInvoiceUseCase";
 
 
 import {
@@ -72,19 +120,49 @@ export interface AIModule {
 
 
 
+
+
 export function createAIModule(
 
     env: AppEnv,
 
     dependencies:
     {
+
         getCurrentGoldPriceUseCase:
+
             GetCurrentGoldPriceUseCase;
+
+
+
+        calculateGoldPriceUseCase:
+
+            CalculateGoldPriceUseCase;
+
+
+
+        calculateGoldFormulaUseCase:
+
+            CalculateGoldFormulaUseCase;
+
+
+
+        calculateReverseGoldUseCase:
+
+            CalculateReverseGoldUseCase;
+
+
+
+        calculateInvoiceUseCase:
+
+            CalculateInvoiceUseCase;
+
     }
 
 ):
 
 AIModule {
+
 
 
 
@@ -108,10 +186,10 @@ AIModule {
 
 
 
-
     const toolRegistry =
 
         new DefaultAIToolRegistry();
+
 
 
 
@@ -128,6 +206,71 @@ AIModule {
         )
 
     );
+
+
+
+
+
+
+
+    toolRegistry.register(
+
+        new CalculateGoldPriceTool(
+
+            dependencies.calculateGoldPriceUseCase
+
+        )
+
+    );
+
+
+
+
+
+
+
+    toolRegistry.register(
+
+        new CalculateGoldFormulaTool(
+
+            dependencies.calculateGoldFormulaUseCase
+
+        )
+
+    );
+
+
+
+
+
+
+
+    toolRegistry.register(
+
+        new CalculateReverseGoldTool(
+
+            dependencies.calculateReverseGoldUseCase
+
+        )
+
+    );
+
+
+
+
+
+
+
+    toolRegistry.register(
+
+        new CalculateInvoiceTool(
+
+            dependencies.calculateInvoiceUseCase
+
+        )
+
+    );
+
 
 
 
@@ -167,7 +310,6 @@ AIModule {
 
 
 
-
     const aiService =
 
         new AIService(
@@ -193,6 +335,7 @@ AIModule {
 
 
     };
+
 
 
 }

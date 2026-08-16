@@ -1,0 +1,130 @@
+import {
+    AITool,
+    AIToolContext
+} from "../AITool";
+
+
+import {
+    AIToolResult
+} from "../AIToolResult";
+
+
+import {
+    CalculateReverseGoldUseCase
+} from "../../../gold/CalculateReverseGoldUseCase";
+
+
+
+export class CalculateReverseGoldTool
+
+implements AITool {
+
+
+
+    readonly name =
+
+        "calculate_reverse_gold";
+
+
+
+    readonly description =
+
+        "Calculates reverse gold values from final price and parameters.";
+
+
+
+
+
+    constructor(
+
+        private readonly useCase:
+
+            CalculateReverseGoldUseCase
+
+    ) {}
+
+
+
+
+
+    async execute(
+
+        input:
+
+            unknown,
+
+        _context:
+
+            AIToolContext
+
+    ):
+
+        Promise<AIToolResult> {
+
+
+
+        try {
+
+
+            const result =
+
+                await this.useCase.execute(
+
+                    input as any
+
+                );
+
+
+
+
+
+            return {
+
+
+                success:
+
+                    true,
+
+
+                data:
+
+                    result
+
+
+            };
+
+
+
+        }
+
+        catch(error) {
+
+
+
+            return {
+
+
+                success:
+
+                    false,
+
+
+                error:
+
+                    error instanceof Error
+
+                        ? error.message
+
+                        : "Failed to reverse calculate gold"
+
+
+            };
+
+
+        }
+
+
+    }
+
+
+}

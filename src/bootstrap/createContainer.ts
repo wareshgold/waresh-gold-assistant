@@ -256,11 +256,31 @@ export function createContainer(
 
             {
 
-                getCurrentGoldPriceUseCase
+                    getCurrentGoldPriceUseCase,
+
+
+                    calculateGoldPriceUseCase:
+
+                        gold.calculateGoldPriceUseCase,
+
+
+                    calculateGoldFormulaUseCase:
+
+                        gold.calculateGoldFormulaUseCase,
+
+
+                    calculateReverseGoldUseCase:
+
+                        gold.calculateReverseGoldUseCase,
+
+
+                    calculateInvoiceUseCase:
+
+                        gold.calculateInvoiceUseCase
 
             }
 
-        );
+    );
 
 
 
