@@ -28,8 +28,21 @@ import {
 } from "./AIToolExecutionService";
 
 
+import {
+    AIToolDecisionService
+} from "./AIToolDecisionService";
+
+
 
 export class AIService {
+
+
+
+    private readonly toolDecisionService:
+
+        AIToolDecisionService;
+
+
 
 
 
@@ -49,7 +62,17 @@ export class AIService {
 
             AIToolExecutionService
 
-    ) {}
+    ) {
+
+
+        this.toolDecisionService =
+
+            new AIToolDecisionService();
+
+
+    }
+
+
 
 
 
@@ -70,6 +93,7 @@ export class AIService {
         const messages:
 
             AIMessage[] = [
+
 
 
                 {
@@ -106,6 +130,8 @@ export class AIService {
 
 
 
+
+
         let result =
 
             await this.client.complete(
@@ -118,11 +144,46 @@ export class AIService {
 
 
 
-        const toolResult =
 
-            await this.toolExecutionService
 
-                ?.executeIfRequired(
+
+        const toolCall =
+
+            this.toolDecisionService.decide(
+
+                result.content
+
+            );
+
+
+
+
+
+
+
+
+        let toolResult;
+
+
+
+
+
+
+        if (
+
+            toolCall
+
+            &&
+
+            this.toolExecutionService
+
+        ) {
+
+
+
+            toolResult =
+
+                await this.toolExecutionService.executeIfRequired(
 
                     result.content,
 
@@ -140,53 +201,78 @@ export class AIService {
 
 
 
-        if (toolResult) {
+
+
+            if (toolResult) {
 
 
 
-            messages.push({
-
-                role:
-
-                    "assistant",
+                messages.push({
 
 
-                content:
+                    role:
 
-                    result.content
-
-
-            });
+                        "assistant",
 
 
 
+                    content:
+
+                        result.content
 
 
-            messages.push({
 
-                role:
-
-                    "user",
-
-
-                content:
-
-                    `Tool result:\n${JSON.stringify(toolResult.data)}`
-
-
-            });
+                });
 
 
 
 
 
-            result =
 
-                await this.client.complete(
 
-                    messages
 
-                );
+                messages.push({
+
+
+
+                    role:
+
+                        "user",
+
+
+
+                    content:
+
+                        `
+
+Tool execution result:
+
+${JSON.stringify(toolResult.data)}
+
+Explain this result to the user in Persian.
+
+`
+
+                });
+
+
+
+
+
+
+
+
+                result =
+
+                    await this.client.complete(
+
+                        messages
+
+                    );
+
+
+            }
+
 
 
         }
@@ -195,11 +281,17 @@ export class AIService {
 
 
 
+
+
+
         return {
+
+
 
             content:
 
                 result.content,
+
 
 
             metadata:
@@ -211,9 +303,11 @@ export class AIService {
                     result.model,
 
 
+
                 usage:
 
                     result.usage,
+
 
 
                 userId:
@@ -221,14 +315,17 @@ export class AIService {
                     request.userId,
 
 
+
                 toolExecuted:
 
                     Boolean(toolResult),
 
 
+
                 toolSuccess:
 
                     toolResult?.success,
+
 
 
                 availableTools:
@@ -239,17 +336,24 @@ export class AIService {
 
                         .map(
 
-                            tool => tool.name
+                            tool =>
+
+                                tool.name
 
                         )
 
             }
 
 
+
         };
 
 
     }
+
+
+
+
 
 
 
@@ -281,14 +385,38 @@ export class AIService {
 
 
 
+
+
+        const basePrompt = `
+
+You are Waresh Gold AI assistant.
+
+You are an assistant for Iranian gold market users.
+
+Rules:
+
+- Never invent gold prices.
+- Never calculate market prices yourself.
+- For current gold price, gram price, mithqal price, ounce price, always use tools.
+- For gold calculations, always use calculation tools.
+- After receiving tool results, answer in Persian.
+- Use تومان for Iranian prices.
+- Format numbers clearly.
+- Keep answers short and useful.
+
+`;
+
+
+
+
+
+
+
+
         if (!tools) {
 
 
-            return (
-
-                "You are Waresh Gold AI assistant."
-
-            );
+            return basePrompt;
 
 
         }
@@ -297,15 +425,22 @@ export class AIService {
 
 
 
+
+
+
         return `
 
-You are Waresh Gold AI assistant.
+${basePrompt}
+
 
 Available tools:
 
+
 ${tools}
 
-If you need a tool, return:
+
+When you need a tool, return ONLY this format:
+
 
 <tool>
 {
@@ -313,6 +448,9 @@ If you need a tool, return:
  "input":{}
 }
 </tool>
+
+
+Do not answer before using the tool.
 
 `;
 
