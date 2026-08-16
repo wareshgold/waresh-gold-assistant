@@ -1,13 +1,11 @@
 import {
     AITool
-}
-from "./AITool";
+} from "./AITool";
 
 
 import {
     AIToolRegistry
-}
-from "./AIToolRegistry";
+} from "./AIToolRegistry";
 
 
 
@@ -34,7 +32,6 @@ implements AIToolRegistry {
     ): void {
 
 
-
         this.tools.set(
 
             tool.name,
@@ -50,7 +47,6 @@ implements AIToolRegistry {
 
 
 
-
     getTool(
 
         name: string
@@ -58,7 +54,6 @@ implements AIToolRegistry {
     ):
 
         AITool | undefined {
-
 
 
         return this.tools.get(
@@ -74,12 +69,9 @@ implements AIToolRegistry {
 
 
 
-
-
     getTools():
 
         AITool[] {
-
 
 
         return Array.from(
@@ -90,7 +82,6 @@ implements AIToolRegistry {
 
 
     }
-
 
 
 }

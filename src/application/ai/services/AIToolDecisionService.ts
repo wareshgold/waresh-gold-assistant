@@ -1,26 +1,16 @@
 import {
     AIToolCall
-}
-from "../models/AIToolCall";
-
-
-
+} from "../models/AIToolCall";
 
 
 export class AIToolDecisionService {
 
 
-
     decide(
 
-        content:
+        content: string
 
-            string
-
-    ):
-
-        AIToolCall | undefined {
-
+    ): AIToolCall | undefined {
 
 
         const match =
@@ -32,26 +22,14 @@ export class AIToolDecisionService {
             );
 
 
-
-
-
         if (!match) {
 
-
-
             return undefined;
-
 
         }
 
 
-
-
-
-
         try {
-
-
 
             const payload =
 
@@ -62,61 +40,38 @@ export class AIToolDecisionService {
                 );
 
 
-
-
-
             if (
 
                 typeof payload.toolName !== "string"
 
             ) {
 
-
-
                 return undefined;
-
 
             }
 
 
-
-
-
-
             return {
-
 
                 toolName:
 
                     payload.toolName,
 
 
-
                 input:
 
                     payload.input ?? {}
 
-
-
             };
 
 
-
-        }
-
-        catch {
-
-
+        } catch {
 
             return undefined;
 
-
         }
 
-
-
     }
-
 
 
 }

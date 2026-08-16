@@ -1,4 +1,6 @@
-import { AITool } from "./AITool";
+import {
+    AITool
+} from "./AITool";
 
 
 export interface AIToolRegistry {
@@ -23,6 +25,5 @@ export interface AIToolRegistry {
     getTools():
 
         AITool[];
-
 
 }
