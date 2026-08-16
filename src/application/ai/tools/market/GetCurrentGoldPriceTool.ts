@@ -14,6 +14,11 @@ import {
 } from "../../../gold/GetCurrentGoldPriceUseCase";
 
 
+import {
+    GetCurrentGoldPriceToolSchema
+} from "./GetCurrentGoldPriceToolSchema";
+
+
 
 export class GetCurrentGoldPriceTool
 
@@ -30,6 +35,12 @@ implements AITool {
     readonly description =
 
         "Returns the current 18k gold market price.";
+
+
+
+    readonly inputSchema =
+
+        GetCurrentGoldPriceToolSchema;
 
 
 
@@ -71,21 +82,27 @@ implements AITool {
 
             return {
 
-                success: true,
+                success:
 
-                data: result
+                    true,
+
+                data:
+
+                    result
 
             };
 
 
         }
 
-        catch (error) {
+        catch(error) {
 
 
             return {
 
-                success: false,
+                success:
+
+                    false,
 
                 error:
 

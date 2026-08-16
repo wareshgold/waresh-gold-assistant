@@ -14,6 +14,11 @@ import {
 } from "../../../gold/GetCurrentGoldPriceUseCase";
 
 
+import {
+    GetCurrentGoldMithqalPriceToolSchema
+} from "./GetCurrentGoldMithqalPriceToolSchema";
+
+
 
 export class GetCurrentGoldMithqalPriceTool
 
@@ -30,6 +35,13 @@ implements AITool {
     readonly description =
 
         "Returns the current 18k gold price converted to one mithqal price.";
+
+
+
+    readonly inputSchema =
+
+        GetCurrentGoldMithqalPriceToolSchema;
+
 
 
 

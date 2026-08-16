@@ -14,6 +14,11 @@ import {
 } from "../../../gold/CalculateReverseGoldUseCase";
 
 
+import {
+    CalculateReverseGoldToolSchema
+} from "./CalculateReverseGoldToolSchema";
+
+
 
 export class CalculateReverseGoldTool
 
@@ -30,6 +35,12 @@ implements AITool {
     readonly description =
 
         "Calculates reverse gold values from final price and parameters.";
+
+
+
+    readonly inputSchema =
+
+        CalculateReverseGoldToolSchema;
 
 
 

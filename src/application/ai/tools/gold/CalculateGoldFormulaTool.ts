@@ -14,6 +14,11 @@ import {
 } from "../../../gold/CalculateGoldFormulaUseCase";
 
 
+import {
+    CalculateGoldFormulaToolSchema
+} from "./CalculateGoldFormulaToolSchema";
+
+
 
 export class CalculateGoldFormulaTool
 
@@ -30,6 +35,12 @@ implements AITool {
     readonly description =
 
         "Solves gold calculation formulas and returns calculated values.";
+
+
+
+    readonly inputSchema =
+
+        CalculateGoldFormulaToolSchema;
 
 
 
