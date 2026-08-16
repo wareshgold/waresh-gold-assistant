@@ -1,3 +1,23 @@
+export interface AIToolCallResult {
+
+
+    name:
+
+        string;
+
+
+
+    arguments:
+
+        unknown;
+
+
+}
+
+
+
+
+
 export interface AICompletionResult {
 
 
@@ -29,6 +49,12 @@ export interface AICompletionResult {
 
 
     };
+
+
+
+    toolCalls?:
+
+        AIToolCallResult[];
 
 
 }
