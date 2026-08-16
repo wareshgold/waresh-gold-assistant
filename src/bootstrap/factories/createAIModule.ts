@@ -29,6 +29,12 @@ from "../../application/ai/tools/market/GetCurrentGoldPriceTool";
 
 
 import {
+    GetCurrentGoldMithqalPriceTool
+}
+from "../../application/ai/tools/market/GetCurrentGoldMithqalPriceTool";
+
+
+import {
     CalculateGoldPriceTool
 }
 from "../../application/ai/tools/gold/CalculateGoldPriceTool";
@@ -207,6 +213,16 @@ AIModule {
 
     );
 
+
+    toolRegistry.register(
+
+        new GetCurrentGoldMithqalPriceTool(
+
+            dependencies.getCurrentGoldPriceUseCase
+
+        )
+
+    );
 
 
 

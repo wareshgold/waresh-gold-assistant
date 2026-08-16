@@ -459,7 +459,12 @@ export function createContainer(
 
 
 
-                saveGoldCalculationHistoryUseCase
+                saveGoldCalculationHistoryUseCase,
+
+
+                aiService:
+
+                    ai.aiService
 
             }
 

@@ -132,6 +132,10 @@ interface Dependencies {
         any;
 
 
+    aiService:
+        any;
+        
+
     getGoldCalculationHistoryUseCase:
         any;
 
@@ -333,7 +337,9 @@ export function createTelegramModule(
 
             marketBubbleMessageFormatter,
 
-            marketAnalyticsMessageFormatter
+            marketAnalyticsMessageFormatter,
+            
+            dependencies.aiService
 
         );
 
