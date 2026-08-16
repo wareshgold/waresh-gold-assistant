@@ -149,12 +149,94 @@ describe("DefaultAIToolRegistry", () => {
 
 
 
-    it("should return undefined for unknown tool", () => {
+    it("should return tool definitions", () => {
 
 
         const registry =
 
             new DefaultAIToolRegistry();
+
+
+
+        registry.register({
+
+            name:
+
+                "test_tool",
+
+
+            description:
+
+                "test description",
+
+
+
+            async execute() {
+
+                return {
+
+                    success:
+
+                        true
+
+                };
+
+            }
+
+
+        });
+
+
+
+        const definitions =
+
+            registry.getToolDefinitions();
+
+
+
+        expect(
+
+            definitions
+
+        ).toHaveLength(1);
+
+
+
+        expect(
+
+            definitions[0]
+
+        ).toEqual({
+
+            name:
+
+                "test_tool",
+
+
+            description:
+
+                "test description",
+
+
+            parameters:
+
+                undefined
+
+        });
+
+
+
+    });
+
+
+
+
+    it("should return undefined for unknown tool", () => {
+
+
+        const registry =
+
+            new DefaultAIToolRegistry;
 
 
 

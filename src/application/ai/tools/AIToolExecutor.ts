@@ -22,6 +22,7 @@ import {
 export class AIToolExecutor {
 
 
+
     private readonly inputValidator:
 
         AIToolInputValidator;
@@ -56,7 +57,8 @@ export class AIToolExecutor {
 
 
 
-    async execute(
+
+    async execute<TInput = unknown>(
 
         toolName:
 
@@ -80,11 +82,12 @@ export class AIToolExecutor {
 
         const tool =
 
-            this.registry.getTool(
+            this.registry.getTool<TInput>(
 
                 toolName
 
             );
+
 
 
 
@@ -94,6 +97,7 @@ export class AIToolExecutor {
 
             return {
 
+
                 success:
 
                     false,
@@ -102,6 +106,7 @@ export class AIToolExecutor {
                 error:
 
                     `AI tool not found: ${toolName}`
+
 
             };
 
@@ -114,7 +119,7 @@ export class AIToolExecutor {
 
         const validation =
 
-            this.inputValidator.validate(
+            this.inputValidator.validate<TInput>(
 
                 tool.inputSchema,
 
@@ -135,6 +140,7 @@ export class AIToolExecutor {
 
             return {
 
+
                 success:
 
                     false,
@@ -145,6 +151,7 @@ export class AIToolExecutor {
                     validation.error ??
 
                     "Invalid tool input"
+
 
             };
 
@@ -160,7 +167,7 @@ export class AIToolExecutor {
 
             return await tool.execute(
 
-                validation.data,
+                validation.data as TInput,
 
                 context
 
@@ -169,10 +176,11 @@ export class AIToolExecutor {
 
         }
 
-        catch (error) {
+        catch(error) {
 
 
             return {
+
 
                 success:
 
@@ -186,6 +194,7 @@ export class AIToolExecutor {
                         ? error.message
 
                         : "AI tool execution failed"
+
 
             };
 

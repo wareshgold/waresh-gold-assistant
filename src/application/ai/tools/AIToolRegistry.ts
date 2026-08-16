@@ -3,27 +3,40 @@ import {
 } from "./AITool";
 
 
+import {
+    AIToolDefinition
+} from "./AIToolDefinition";
+
+
+
 export interface AIToolRegistry {
 
 
-    register(
+    register<TInput = unknown>(
 
-        tool: AITool
+        tool: AITool<TInput>
 
     ): void;
 
 
 
-    getTool(
+    getTool<TInput = unknown>(
 
         name: string
 
-    ): AITool | undefined;
+    ): AITool<TInput> | undefined;
 
 
 
     getTools():
 
         AITool[];
+
+
+
+    getToolDefinitions():
+
+        AIToolDefinition[];
+
 
 }

@@ -8,6 +8,11 @@ import {
 } from "./AIToolRegistry";
 
 
+import {
+    AIToolDefinition
+} from "./AIToolDefinition";
+
+
 
 export class DefaultAIToolRegistry
 
@@ -17,7 +22,7 @@ implements AIToolRegistry {
 
     private readonly tools:
 
-        Map<string, AITool> =
+        Map<string, AITool<any>> =
 
             new Map();
 
@@ -25,9 +30,11 @@ implements AIToolRegistry {
 
 
 
-    register(
+    register<TInput = unknown>(
 
-        tool: AITool
+        tool:
+
+            AITool<TInput>
 
     ): void {
 
@@ -47,20 +54,22 @@ implements AIToolRegistry {
 
 
 
-    getTool(
+    getTool<TInput = unknown>(
 
-        name: string
+        name:
+
+            string
 
     ):
 
-        AITool | undefined {
+        AITool<TInput> | undefined {
 
 
         return this.tools.get(
 
             name
 
-        );
+        ) as AITool<TInput> | undefined;
 
 
     }
@@ -79,6 +88,42 @@ implements AIToolRegistry {
             this.tools.values()
 
         );
+
+
+    }
+
+
+
+
+
+    getToolDefinitions():
+
+        AIToolDefinition[] {
+
+
+        return this.getTools()
+
+            .map(
+
+                tool => ({
+
+                    name:
+
+                        tool.name,
+
+
+                    description:
+
+                        tool.description,
+
+
+                    parameters:
+
+                        tool.inputSchema
+
+                })
+
+            );
 
 
     }

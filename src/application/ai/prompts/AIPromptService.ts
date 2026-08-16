@@ -26,7 +26,7 @@ export class AIPromptService {
 
             this.toolRegistry
 
-                ?.getTools()
+                ?.getToolDefinitions()
 
                 .map(
 

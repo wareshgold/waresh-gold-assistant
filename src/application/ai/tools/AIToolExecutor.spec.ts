@@ -38,7 +38,13 @@ describe("AIToolExecutor", () => {
 
             async execute(
 
-                input
+                input:
+
+                    {
+
+                        value:number;
+
+                    }
 
             ) {
 
@@ -76,7 +82,11 @@ describe("AIToolExecutor", () => {
 
         const result =
 
-            await executor.execute(
+            await executor.execute<{
+
+                value:number;
+
+            }>(
 
                 "test_tool",
 
