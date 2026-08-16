@@ -106,23 +106,13 @@ implements AITool {
 
 
 
-            const validatedInput =
-
-                CalculateInvoiceToolSchema.parse(
-
-                    input
-
-                );
-
-
-
-
-
             const invoiceInput =
 
                 this.mapper.map(
 
-                    validatedInput
+                    input as Parameters<
+                        CalculateInvoiceToolMapper["map"]
+                    >[0]
 
                 );
 
@@ -132,7 +122,7 @@ implements AITool {
 
             const result =
 
-                this.useCase.execute(
+                await this.useCase.execute(
 
                     invoiceInput
 
