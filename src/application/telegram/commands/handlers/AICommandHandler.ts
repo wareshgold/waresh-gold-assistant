@@ -17,6 +17,7 @@ from "../../../ai/services/AIService";
 
 
 
+
 export class AICommandHandler
 
 implements TelegramCommandHandler {
@@ -30,6 +31,7 @@ implements TelegramCommandHandler {
             AIService
 
     ) {}
+
 
 
 
@@ -85,6 +87,7 @@ implements TelegramCommandHandler {
 
 
 
+
         return (
 
             normalized === "/ai"
@@ -124,6 +127,7 @@ implements TelegramCommandHandler {
 
 
 
+
         if (!question) {
 
 
@@ -158,30 +162,44 @@ implements TelegramCommandHandler {
 
 
 
+
         const result =
 
             await this.aiService.process({
+
+
+
+                message:
+
+                    question,
+
+
 
                 userId:
 
                     context.userId ?? "unknown",
 
 
-                text:
 
-                    question,
+                context:
+
+                {
+
+                    telegramUsername:
+
+                        context.username,
 
 
-                username:
+                    firstName:
 
-                    context.username,
+                        context.firstName
 
+                }
 
-                firstName:
-
-                    context.firstName
 
             });
+
+
 
 
 
@@ -199,7 +217,7 @@ implements TelegramCommandHandler {
 
             content:
 
-                result
+                result.content
 
 
         };

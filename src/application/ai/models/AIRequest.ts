@@ -1,9 +1,22 @@
 export interface AIRequest {
 
-    message: string;
 
-    userId?: string;
+    message:
 
-    context?: Record<string, unknown>;
+        string;
+
+
+
+    userId?:
+
+        string;
+
+
+
+    context?:
+
+        Record<string, unknown>;
+
+
 
 }
