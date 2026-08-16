@@ -33,16 +33,29 @@ import {
 } from "../prompts/AIPromptService";
 
 
+import {
+    AIConversationMemory
+}
+from "../memory/AIConversationMemory";
+
+
 
 export class AIService {
 
 
 
-    private readonly promptService: AIPromptService;
+    private readonly promptService:
+
+        AIPromptService;
+
+
+
+
 
 
 
     constructor(
+
 
         private readonly client:
 
@@ -61,9 +74,16 @@ export class AIService {
 
         promptService?:
 
-            AIPromptService
+            AIPromptService,
+
+
+        private readonly memory?:
+
+            AIConversationMemory
 
     ) {
+
+
 
         this.promptService =
 
@@ -74,6 +94,7 @@ export class AIService {
                 toolRegistry
 
             );
+
 
     }
 
@@ -103,6 +124,7 @@ export class AIService {
 
                 {
 
+
                     role:
 
                         "system",
@@ -112,24 +134,76 @@ export class AIService {
 
                         this.promptService.buildSystemPrompt()
 
-                },
-
-
-                {
-
-                    role:
-
-                        "user",
-
-
-                    content:
-
-                        request.message
 
                 }
 
-
             ];
+
+
+
+
+
+        if (
+
+            this.memory &&
+
+            request.userId
+
+        ) {
+
+
+            const history =
+
+                await this.memory.getHistory(
+
+                    request.userId
+
+                );
+
+
+
+            messages.push(
+
+                ...history.map(
+
+                    item => ({
+
+                        role:
+
+                            item.role,
+
+                        content:
+
+                            item.content
+
+                    })
+
+                )
+
+            );
+
+
+        }
+
+
+
+
+
+        messages.push({
+
+
+            role:
+
+                "user",
+
+
+            content:
+
+                request.message
+
+
+        });
+
 
 
 
@@ -181,7 +255,11 @@ export class AIService {
 
 
 
-            if (toolResult) {
+            if (
+
+                toolResult
+
+            ) {
 
 
 
@@ -214,14 +292,12 @@ export class AIService {
 
                     content:
 
-                        `
-
+`
 Tool execution result:
 
 ${JSON.stringify(toolResult.data)}
 
 Explain this result to the user in Persian.
-
 `
 
                 });
@@ -248,8 +324,71 @@ Explain this result to the user in Persian.
 
 
 
-        return {
+        if (
 
+            this.memory &&
+
+            request.userId
+
+        ) {
+
+
+            await this.memory.addMessage(
+
+                request.userId,
+
+                {
+
+                    role:
+
+                        "user",
+
+                    content:
+
+                        request.message,
+
+                    createdAt:
+
+                        new Date()
+
+                }
+
+            );
+
+
+
+            await this.memory.addMessage(
+
+                request.userId,
+
+                {
+
+                    role:
+
+                        "assistant",
+
+                    content:
+
+                        result.content,
+
+                    createdAt:
+
+                        new Date()
+
+                }
+
+            );
+
+
+        }
+
+
+
+
+
+
+
+        return {
 
 
             content:
@@ -305,6 +444,7 @@ Explain this result to the user in Persian.
                                 tool.name
 
                         )
+
 
             }
 
