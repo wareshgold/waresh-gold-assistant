@@ -11,9 +11,27 @@ from "../client/AIMessage";
 
 
 import {
-    IncomingMessage
+    AIRequest
 }
-from "../../common/models/IncomingMessage";
+from "../models/AIRequest";
+
+
+import {
+    AIResponse
+}
+from "../models/AIResponse";
+
+
+import {
+    AIToolRegistry
+}
+from "../tools/AIToolRegistry";
+
+
+import {
+    AIToolExecutionService
+}
+from "./AIToolExecutionService";
 
 
 
@@ -27,7 +45,17 @@ export class AIService {
 
         private readonly client:
 
-            AIClient
+            AIClient,
+
+
+        private readonly toolRegistry?:
+
+            AIToolRegistry,
+
+
+        private readonly toolExecutionService?:
+
+            AIToolExecutionService
 
     ) {}
 
@@ -36,21 +64,23 @@ export class AIService {
 
 
 
+
     async process(
 
-        message:
+        request:
 
-            IncomingMessage
+            AIRequest
 
     ):
 
-        Promise<string> {
+        Promise<AIResponse> {
 
 
 
         const messages:
 
             AIMessage[] = [
+
 
 
                 {
@@ -62,9 +92,10 @@ export class AIService {
 
                     content:
 
-                        "You are Waresh Gold AI assistant."
+                        this.buildSystemPrompt()
 
                 },
+
 
 
                 {
@@ -76,7 +107,7 @@ export class AIService {
 
                     content:
 
-                        message.text
+                        request.message
 
                 }
 
@@ -89,7 +120,7 @@ export class AIService {
 
 
 
-        const result =
+        let result =
 
             await this.client.complete(
 
@@ -101,7 +132,228 @@ export class AIService {
 
 
 
-        return result.content;
+
+
+        const toolResult =
+
+            await this.toolExecutionService
+
+                ?.executeIfRequired(
+
+                    result.content,
+
+                    {
+
+                        userId:
+
+                            request.userId
+
+                    }
+
+                );
+
+
+
+
+
+
+
+
+        if (toolResult) {
+
+
+
+            messages.push({
+
+
+                role:
+
+                    "assistant",
+
+
+                content:
+
+                    result.content
+
+
+            });
+
+
+
+
+
+
+            messages.push({
+
+
+                role:
+
+                    "user",
+
+
+                content:
+
+                    `Tool result:
+
+${JSON.stringify(toolResult.data)}`
+
+
+            });
+
+
+
+
+
+
+
+            result =
+
+                await this.client.complete(
+
+                    messages
+
+                );
+
+
+
+        }
+
+
+
+
+
+
+
+        return {
+
+
+
+            content:
+
+                result.content,
+
+
+
+            metadata:
+
+            {
+
+                model:
+
+                    result.model,
+
+
+                usage:
+
+                    result.usage,
+
+
+                userId:
+
+                    request.userId,
+
+
+
+                toolExecuted:
+
+                    Boolean(toolResult),
+
+
+
+                toolSuccess:
+
+                    toolResult?.success,
+
+
+                availableTools:
+
+                    this.toolRegistry
+
+                        ?.getTools()
+
+                        .map(
+
+                            tool => tool.name
+
+                        )
+
+            }
+
+
+        };
+
+
+
+    }
+
+
+
+
+
+
+
+    private buildSystemPrompt():
+
+        string {
+
+
+
+        const tools =
+
+            this.toolRegistry
+
+                ?.getTools()
+
+                .map(
+
+                    tool =>
+
+                        `${tool.name}: ${tool.description}`
+
+                )
+
+                .join("\n");
+
+
+
+
+
+        if (!tools) {
+
+
+
+            return (
+
+                "You are Waresh Gold AI assistant."
+
+            );
+
+
+        }
+
+
+
+
+
+
+        return `
+
+You are Waresh Gold AI assistant.
+
+Available tools:
+
+${tools}
+
+If you need a tool, return:
+
+<tool>
+{
+ "toolName":"tool_name",
+ "input":{}
+}
+</tool>
+
+`;
 
 
 

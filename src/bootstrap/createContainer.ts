@@ -133,13 +133,6 @@ export function createContainer(
 
 
 
-    const ai =
-
-        createAIModule(env);
-
-
-
-
 
     const healthCheckService =
 
@@ -248,6 +241,24 @@ export function createContainer(
         new GetCurrentGoldPriceUseCase(
 
             market.cachedMarketProvider
+
+        );
+
+
+
+
+
+    const ai =
+
+        createAIModule(
+
+            env,
+
+            {
+
+                getCurrentGoldPriceUseCase
+
+            }
 
         );
 
