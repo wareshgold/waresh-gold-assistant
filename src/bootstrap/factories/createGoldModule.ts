@@ -2,12 +2,20 @@ import { GoldBubbleCalculator }
 from "../../domain/market/services/GoldBubbleCalculator";
 
 
+import { CalculateGoldPriceUseCase }
+from "../../application/gold/CalculateGoldPriceUseCase";
+
+
 import { CalculateGoldFormulaUseCase }
 from "../../application/gold/CalculateGoldFormulaUseCase";
 
 
 import { CalculateReverseGoldUseCase }
 from "../../application/gold/CalculateReverseGoldUseCase";
+
+
+import { CalculateInvoiceUseCase }
+from "../../application/gold/CalculateInvoiceUseCase";
 
 
 import { ReverseGoldCalculator }
@@ -37,6 +45,11 @@ export interface GoldModule {
 
 
 
+    calculateGoldPriceUseCase:
+        CalculateGoldPriceUseCase;
+
+
+
     calculateGoldFormulaUseCase:
         CalculateGoldFormulaUseCase;
 
@@ -44,6 +57,11 @@ export interface GoldModule {
 
     calculateReverseGoldUseCase:
         CalculateReverseGoldUseCase;
+
+
+
+    calculateInvoiceUseCase:
+        CalculateInvoiceUseCase;
 
 
 
@@ -66,6 +84,7 @@ export interface GoldModule {
 
 
 
+
 export function createGoldModule()
 : GoldModule {
 
@@ -74,6 +93,20 @@ export function createGoldModule()
     const goldRuleEngine =
 
         createGoldRuleEngine();
+
+
+
+
+
+
+    const calculateGoldPriceUseCase =
+
+        new CalculateGoldPriceUseCase(
+
+            goldRuleEngine
+
+        );
+
 
 
 
@@ -111,10 +144,21 @@ export function createGoldModule()
 
 
 
+    const calculateInvoiceUseCase =
+
+        new CalculateInvoiceUseCase();
+
+
+
+
+
+
+
 
     const goldBubbleCalculator =
 
         new GoldBubbleCalculator();
+
 
 
 
@@ -153,14 +197,21 @@ export function createGoldModule()
 
 
 
+
     return {
 
+
+
+        calculateGoldPriceUseCase,
 
 
         calculateGoldFormulaUseCase,
 
 
         calculateReverseGoldUseCase,
+
+
+        calculateInvoiceUseCase,
 
 
         goldBubbleCalculator,
