@@ -88,7 +88,33 @@ implements AITool {
 
                 data:
 
-                    result
+                {
+
+                    type:
+
+                        "CURRENT_GOLD_PRICE",
+
+
+                    purity:
+
+                        18,
+
+
+                    price:
+
+                        result.price,
+
+
+                    currency:
+
+                        "TOMAN",
+
+
+                    source:
+
+                        "MARKET"
+
+                }
 
             };
 

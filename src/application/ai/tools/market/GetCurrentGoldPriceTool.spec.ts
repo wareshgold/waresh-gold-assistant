@@ -23,12 +23,7 @@ describe("GetCurrentGoldPriceTool", () => {
 
                     price:
 
-                        19215328,
-
-
-                    currency:
-
-                        "IRR"
+                        19215328
 
                 };
 
@@ -78,6 +73,16 @@ describe("GetCurrentGoldPriceTool", () => {
 
             .toEqual({
 
+                type:
+
+                    "CURRENT_GOLD_PRICE",
+
+
+                purity:
+
+                    18,
+
+
                 price:
 
                     19215328,
@@ -85,7 +90,12 @@ describe("GetCurrentGoldPriceTool", () => {
 
                 currency:
 
-                    "IRR"
+                    "TOMAN",
+
+
+                source:
+
+                    "MARKET"
 
             });
 
