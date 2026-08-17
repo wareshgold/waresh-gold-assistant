@@ -2,33 +2,39 @@ import {
     describe,
     expect,
     it
-} from "vitest";
+}
+from "vitest";
 
 
 import {
     AIToolDecisionService
-} from "./AIToolDecisionService";
-
+}
+from "./AIToolDecisionService";
 
 
 
 describe(
+
     "AIToolDecisionService",
+
     () => {
-
-
-        const service =
-
-            new AIToolDecisionService();
-
-
-
 
 
 
         it(
-            "should detect native tool call from AI response",
+
+            "should parse native tool calls",
+
             () => {
+
+
+
+                const service =
+
+                    new AIToolDecisionService();
+
+
+
 
 
                 const result =
@@ -39,21 +45,27 @@ describe(
 
                             "",
 
-
                         toolCalls:
 
                         [
 
                             {
 
+                                id:
+
+                                    "call-1",
+
                                 name:
 
                                     "get_current_gold_price",
 
-
                                 arguments:
 
                                 {
+
+                                    purity:
+
+                                        18
 
                                 }
 
@@ -67,7 +79,11 @@ describe(
 
 
 
-                expect(result)
+                expect(
+
+                    result
+
+                )
 
                     .toEqual({
 
@@ -75,34 +91,46 @@ describe(
 
                             "get_current_gold_price",
 
-
                         input:
 
-                            {}
+                        {
+
+                            purity:
+
+                                18
+
+                        }
 
                     });
 
 
-
             }
+
         );
 
 
 
 
 
-
-
         it(
-            "should detect legacy tool call from AI response",
+
+            "should parse legacy tool wrapper",
+
             () => {
+
+
+
+                const service =
+
+                    new AIToolDecisionService();
+
+
+
 
 
                 const result =
 
-                    service.decide({
-
-                        content:
+                    service.decide(
 
 `
 <tool>
@@ -113,13 +141,17 @@ describe(
 </tool>
 `
 
-                    });
+                    );
 
 
 
 
 
-                expect(result)
+                expect(
+
+                    result
+
+                )
 
                     .toEqual({
 
@@ -127,6 +159,67 @@ describe(
 
                             "get_current_gold_price",
 
+                        input:
+
+                        {}
+
+                    });
+
+
+            }
+
+        );
+
+
+
+
+
+        it(
+
+            "should parse NVIDIA pseudo tool call format",
+
+            () => {
+
+
+
+                const service =
+
+                    new AIToolDecisionService();
+
+
+
+
+
+                const result =
+
+                    service.decide(
+
+`
+<get_current_gold_price>
+{
+    "toolName":"get_current_gold_price",
+    "input":{}
+}
+</get_current_gold_price>
+`
+
+                    );
+
+
+
+
+
+                expect(
+
+                    result
+
+                )
+
+                    .toEqual({
+
+                        toolName:
+
+                            "get_current_gold_price",
 
                         input:
 
@@ -135,125 +228,240 @@ describe(
                     });
 
 
-
             }
+
         );
 
 
 
 
 
-
-
         it(
-            "should return undefined when no tool exists",
+
+            "should parse NVIDIA pseudo tool call when input contains values",
+
             () => {
+
+
+
+                const service =
+
+                    new AIToolDecisionService();
+
+
 
 
 
                 const result =
 
-                    service.decide({
-
-                        content:
-
-                            "What is gold price today?"
-
-                    });
-
-
-
-
-
-                expect(result)
-
-                    .toBeUndefined();
-
-
-
-            }
-        );
-
-
-
-
-
-
-
-
-        it(
-            "should return undefined for invalid tool payload",
-            () => {
-
-
-                const result =
-
-                    service.decide({
-
-                        content:
+                    service.decide(
 
 `
-<tool>
+<get_current_gold_price>
 {
-    "invalid":"payload"
+    "toolName":"get_current_gold_price",
+    "input":{
+        "purity":18
+    }
 }
-</tool>
+</get_current_gold_price>
 `
+
+                    );
+
+
+
+
+
+                expect(
+
+                    result
+
+                )
+
+                    .toEqual({
+
+                        toolName:
+
+                            "get_current_gold_price",
+
+                        input:
+
+                        {
+
+                            purity:
+
+                                18
+
+                        }
 
                     });
 
 
-
-
-
-                expect(result)
-
-                    .toBeUndefined();
-
-
-
             }
+
         );
-
-
 
 
 
 
 
         it(
-            "should handle invalid json safely",
+
+            "should parse named tool call with direct JSON input",
+
             () => {
+
+
+
+                const service =
+
+                    new AIToolDecisionService();
+
+
 
 
 
                 const result =
 
-                    service.decide({
-
-                        content:
+                    service.decide(
 
 `
-<tool>
-invalid json
-</tool>
+<get_current_gold_price>
+{
+    "purity":18
+}
+</get_current_gold_price>
 `
+
+                    );
+
+
+
+
+
+                expect(
+
+                    result
+
+                )
+
+                    .toEqual({
+
+                        toolName:
+
+                            "get_current_gold_price",
+
+                        input:
+
+                        {
+
+                            purity:
+
+                                18
+
+                        }
 
                     });
 
 
+            }
+
+        );
 
 
 
-                expect(result)
+
+
+        it(
+
+            "should return undefined for invalid tool call",
+
+            () => {
+
+
+
+                const service =
+
+                    new AIToolDecisionService();
+
+
+
+
+
+                const result =
+
+                    service.decide(
+
+`
+<get_current_gold_price>
+invalid json
+</get_current_gold_price>
+`
+
+                    );
+
+
+
+
+
+                expect(
+
+                    result
+
+                )
 
                     .toBeUndefined();
 
 
-
             }
+
         );
 
+
+
+
+
+        it(
+
+            "should return undefined when no tool call exists",
+
+            () => {
+
+
+
+                const service =
+
+                    new AIToolDecisionService();
+
+
+
+
+
+                const result =
+
+                    service.decide(
+
+                        "سلام، قیمت طلا را می‌خواهم."
+
+                    );
+
+
+
+
+
+                expect(
+
+                    result
+
+                )
+
+                    .toBeUndefined();
+
+
+            }
+
+        );
 
 
     }

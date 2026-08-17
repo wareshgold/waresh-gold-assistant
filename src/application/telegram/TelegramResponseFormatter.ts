@@ -11,6 +11,15 @@ export class TelegramResponseFormatter {
 
 
 
+    constructor(
+
+        _legacyFormatter?: unknown
+
+    ) {}
+
+
+
+
     format(
 
         response:
@@ -32,7 +41,11 @@ export class TelegramResponseFormatter {
 
 
 
-        return this.formatNumbers(content);
+        return this.formatForTelegramHtml(
+
+            content
+
+        );
 
 
 
@@ -43,7 +56,7 @@ export class TelegramResponseFormatter {
 
 
 
-    private formatNumbers(
+    private formatForTelegramHtml(
 
         text:
             string
@@ -51,15 +64,121 @@ export class TelegramResponseFormatter {
     ): string {
 
 
-        return text.replace(
 
-            /\d+/g,
+        const codeBlocks: string[] = [];
 
-            value =>
 
-                `<code>${value}</code>`
+
+
+
+        const protectedText =
+
+            text.replace(
+
+                /<code>[\s\S]*?<\/code>/gi,
+
+                match => {
+
+
+
+                    const index =
+
+                        codeBlocks.length;
+
+
+
+                    codeBlocks.push(
+
+                        match
+
+                    );
+
+
+
+                    return `___TELEGRAM_CODE_BLOCK_${index}___`;
+
+                }
+
+            );
+
+
+
+
+
+        const escapedText =
+
+            protectedText
+
+                .replace(
+
+                    /&/g,
+
+                    "&amp;"
+
+                )
+
+                .replace(
+
+                    /</g,
+
+                    "&lt;"
+
+                )
+
+                .replace(
+
+                    />/g,
+
+                    "&gt;"
+
+                );
+
+
+
+
+
+        const formattedText =
+
+            escapedText.replace(
+
+                /\d[\d,]*/g,
+
+                value => {
+
+
+
+                    const normalizedValue =
+
+                        value.replace(
+
+                            /,/g,
+
+                            ""
+
+                        );
+
+
+
+                    return `<code>${normalizedValue}</code>`;
+
+                }
+
+            );
+
+
+
+
+
+        return formattedText.replace(
+
+            /___TELEGRAM_CODE_BLOCK_(\d+)___/g,
+
+            (_, index) =>
+
+                codeBlocks[Number(index)]
 
         );
+
 
 
     }
