@@ -46,6 +46,12 @@ import {
 from "../memory/AIConversationMemory";
 
 
+import {
+    AIResponseFormatter
+}
+from "./AIResponseFormatter";
+
+
 
 export class AIService {
 
@@ -54,6 +60,14 @@ export class AIService {
     private readonly promptService:
 
         AIPromptService;
+
+
+
+    private readonly responseFormatter:
+
+        AIResponseFormatter;
+
+
 
 
 
@@ -84,9 +98,15 @@ export class AIService {
 
         private readonly memory?:
 
-            AIConversationMemory
+            AIConversationMemory,
+
+
+        responseFormatter?:
+
+            AIResponseFormatter
 
     ) {
+
 
 
         this.promptService =
@@ -98,6 +118,16 @@ export class AIService {
                 toolRegistry
 
             );
+
+
+
+
+
+        this.responseFormatter =
+
+            responseFormatter ??
+
+            new AIResponseFormatter();
 
 
     }
@@ -135,9 +165,7 @@ export class AIService {
 
                     content:
 
-                        this.promptService.buildSystemPrompt(
-
-                           )
+                        this.promptService.buildSystemPrompt()
 
                 }
 
@@ -515,10 +543,9 @@ Explain this result in Persian.
         return {
 
 
-
             content:
 
-                this.cleanToolLeak(
+                this.responseFormatter.format(
 
                     result.content
 
@@ -581,66 +608,6 @@ Explain this result in Persian.
 
 
         };
-
-
-    }
-
-
-
-
-
-
-
-    private cleanToolLeak(
-
-        content:
-
-            string
-
-    ):
-
-        string {
-
-
-
-        if (!content) {
-
-            return "";
-
-        }
-
-
-
-
-
-        const toolPattern =
-
-            /^<([a-zA-Z0-9_-]+)>\s*[\s\S]*<\/\1>$/;
-
-
-
-
-
-        if (
-
-            toolPattern.test(
-
-                content.trim()
-
-            )
-
-        ) {
-
-
-            return "";
-
-        }
-
-
-
-
-
-        return content;
 
 
     }
