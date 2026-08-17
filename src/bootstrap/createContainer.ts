@@ -256,31 +256,36 @@ export function createContainer(
 
             {
 
-                    getCurrentGoldPriceUseCase,
+                getCurrentGoldPriceUseCase,
 
 
-                    calculateGoldPriceUseCase:
+                calculateGoldPriceUseCase:
 
-                        gold.calculateGoldPriceUseCase,
-
-
-                    calculateGoldFormulaUseCase:
-
-                        gold.calculateGoldFormulaUseCase,
+                    gold.calculateGoldPriceUseCase,
 
 
-                    calculateReverseGoldUseCase:
+                calculateGoldFormulaUseCase:
 
-                        gold.calculateReverseGoldUseCase,
+                    gold.calculateGoldFormulaUseCase,
 
 
-                    calculateInvoiceUseCase:
+                calculateReverseGoldUseCase:
 
-                        gold.calculateInvoiceUseCase
+                    gold.calculateReverseGoldUseCase,
+
+
+                calculateInvoiceUseCase:
+
+                    gold.calculateInvoiceUseCase,
+
+
+                aiConversationMemory:
+
+                    storage.aiConversationMemory
 
             }
 
-    );
+        );
 
 
 

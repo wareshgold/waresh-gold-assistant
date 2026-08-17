@@ -106,6 +106,12 @@ import {
 from "../../application/ai/services/AIToolExecutionService";
 
 
+import {
+    AIConversationMemory
+}
+from "../../application/ai/memory/AIConversationMemory";
+
+
 
 
 
@@ -162,6 +168,12 @@ export function createAIModule(
         calculateInvoiceUseCase:
 
             CalculateInvoiceUseCase;
+
+
+
+        aiConversationMemory:
+
+            AIConversationMemory;
 
     }
 
@@ -334,7 +346,11 @@ AIModule {
 
             toolRegistry,
 
-            toolExecutionService
+            toolExecutionService,
+
+            undefined,
+
+            dependencies.aiConversationMemory
 
         );
 

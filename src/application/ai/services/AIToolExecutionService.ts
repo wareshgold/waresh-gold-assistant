@@ -18,6 +18,11 @@ import {
 } from "../tools/AIToolResult";
 
 
+import {
+    AICompletionResult
+} from "../client/AICompletionResult";
+
+
 
 export class AIToolExecutionService {
 
@@ -42,9 +47,9 @@ export class AIToolExecutionService {
 
     async executeIfRequired(
 
-        content:
+        result:
 
-            string,
+            string | AICompletionResult,
 
 
         context:
@@ -61,7 +66,7 @@ export class AIToolExecutionService {
 
             this.decisionService.decide(
 
-                content
+                result
 
             );
 
