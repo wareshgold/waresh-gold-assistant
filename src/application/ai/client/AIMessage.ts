@@ -12,6 +12,30 @@ export type AIMessageRole =
 
 
 
+export interface AIMessageToolCall {
+
+
+    id:
+
+        string;
+
+
+    name:
+
+        string;
+
+
+    arguments:
+
+        unknown;
+
+
+}
+
+
+
+
+
 export interface AIMessage {
 
 
@@ -30,6 +54,12 @@ export interface AIMessage {
     toolCallId?:
 
         string;
+
+
+
+    toolCalls?:
+
+        AIMessageToolCall[];
 
 
 }

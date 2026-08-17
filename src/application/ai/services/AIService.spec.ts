@@ -13,7 +13,8 @@ from "./AIService";
 
 
 import {
-    AIClient
+    AIClient,
+    AICompletionOptions
 }
 from "../client/AIClient";
 
@@ -66,7 +67,7 @@ class MockAIClient
 implements AIClient {
 
 
-    responses: string[];
+    responses: AICompletionResult[];
 
 
     receivedMessages:
@@ -74,12 +75,17 @@ implements AIClient {
         AIMessage[][] = [];
 
 
+    receivedOptions:
+
+        AICompletionOptions[] = [];
+
+
 
     constructor(
 
         responses:
 
-            string[]
+            AICompletionResult[]
 
     ) {
 
@@ -93,7 +99,11 @@ implements AIClient {
 
         messages:
 
-            AIMessage[]
+            AIMessage[],
+
+        options?:
+
+            AICompletionOptions
 
     ):
 
@@ -107,16 +117,18 @@ implements AIClient {
         );
 
 
-        return {
+        this.receivedOptions.push(
+
+            options ?? {}
+
+        );
+
+
+        return this.responses.shift() ?? {
 
             content:
 
-                this.responses.shift() ?? "",
-
-
-            model:
-
-                "mock-model"
+                ""
 
         };
 
@@ -152,7 +164,13 @@ describe(
 
                         new MockAIClient([
 
-                            "Hello from AI"
+                            {
+
+                                content:
+
+                                    "Hello from AI"
+
+                            }
 
                         ])
 
@@ -201,7 +219,305 @@ describe(
 
         it(
 
-            "should execute tool and continue conversation",
+            "should execute native tool call and continue conversation",
+
+            async () => {
+
+
+
+                const registry =
+
+                    new DefaultAIToolRegistry();
+
+
+
+                registry.register({
+
+                    name:
+
+                        "test_tool",
+
+
+
+                    description:
+
+                        "test tool",
+
+
+
+                    async execute() {
+
+
+                        return {
+
+
+                            success:
+
+                                true,
+
+
+                            data:
+
+                            {
+
+                                value:
+
+                                    100
+
+                            }
+
+
+                        };
+
+
+                    }
+
+
+                });
+
+
+
+
+
+                const toolService =
+
+                    new AIToolExecutionService(
+
+                        new AIToolDecisionService(),
+
+                        new AIToolExecutor(
+
+                            registry
+
+                        )
+
+                    );
+
+
+
+
+
+                const client =
+
+                    new MockAIClient([
+
+                        {
+
+                            content:
+
+                                "",
+
+
+                            toolCalls:
+
+                            [
+
+                                {
+
+                                    id:
+
+                                        "call-1",
+
+
+                                    name:
+
+                                        "test_tool",
+
+
+                                    arguments:
+
+                                    {}
+
+                                }
+
+                            ]
+
+                        },
+
+
+                        {
+
+                            content:
+
+                                "Tool result processed"
+
+                        }
+
+                    ]);
+
+
+
+
+
+                const service =
+
+                    new AIService(
+
+                        client,
+
+                        registry,
+
+                        toolService
+
+                    );
+
+
+
+
+
+                const result =
+
+                    await service.process({
+
+                        message:
+
+                            "Run tool"
+
+                    });
+
+
+
+                expect(
+
+                    result.content
+
+                )
+
+                    .toBe(
+
+                        "Tool result processed"
+
+                    );
+
+
+
+
+
+                expect(
+
+                    result.metadata?.toolExecuted
+
+                )
+
+                    .toBe(
+
+                        true
+
+                    );
+
+
+
+
+
+                expect(
+
+                    result.metadata?.toolSuccess
+
+                )
+
+                    .toBe(
+
+                        true
+
+                    );
+
+
+
+
+
+                expect(
+
+                    client.receivedMessages[1]
+
+                )
+
+                    .toEqual(
+
+                        expect.arrayContaining([
+
+                            {
+
+                                role:
+
+                                    "assistant",
+
+                                content:
+
+                                    "",
+
+                                toolCalls:
+
+                                [
+
+                                    {
+
+                                        id:
+
+                                            "call-1",
+
+                                        name:
+
+                                            "test_tool",
+
+                                        arguments:
+
+                                        {}
+
+                                    }
+
+                                ]
+
+                            },
+
+                            {
+
+                                role:
+
+                                    "tool",
+
+                                content:
+
+                                    JSON.stringify({
+
+                                        success:
+
+                                            true,
+
+                                        data:
+
+                                        {
+
+                                            value:
+
+                                                100
+
+                                        }
+
+                                    }),
+
+                                toolCallId:
+
+                                    "call-1"
+
+                            }
+
+                        ])
+
+                    );
+
+
+            }
+
+        );
+
+
+
+
+
+
+        it(
+
+            "should execute legacy tool call and continue conversation",
 
             async () => {
 
@@ -285,24 +601,29 @@ describe(
 
                         new MockAIClient([
 
-                            `
+                            {
 
-                            <tool>
+                                content:
+
+`
+<tool>
+{
+    "toolName":"test_tool",
+    "input":{}
+}
+</tool>
+`
+
+                            },
+
 
                             {
 
-                                "toolName":"test_tool",
+                                content:
 
-                                "input":{}
+                                    "Tool result processed"
 
                             }
-
-                            </tool>
-
-                            `,
-
-
-                            "Tool result processed"
 
                         ]),
 
@@ -375,7 +696,6 @@ describe(
                     );
 
 
-
             }
 
         );
@@ -440,7 +760,13 @@ describe(
 
                         new MockAIClient([
 
-                            "response"
+                            {
+
+                                content:
+
+                                    "response"
+
+                            }
 
                         ]),
 
@@ -476,6 +802,141 @@ describe(
                         "sample_tool"
 
                     );
+
+
+            }
+
+        );
+
+
+
+
+
+
+        it(
+
+            "should pass available tools to AI client",
+
+            async () => {
+
+
+
+                const registry =
+
+                    new DefaultAIToolRegistry();
+
+
+
+                registry.register({
+
+                    name:
+
+                        "sample_tool",
+
+
+
+                    description:
+
+                        "sample tool",
+
+
+
+                    async execute() {
+
+
+                        return {
+
+                            success:
+
+                                true
+
+                        };
+
+
+                    }
+
+
+                });
+
+
+
+
+
+                const client =
+
+                    new MockAIClient([
+
+                        {
+
+                            content:
+
+                                "response"
+
+                        }
+
+                    ]);
+
+
+
+
+
+                const service =
+
+                    new AIService(
+
+                        client,
+
+                        registry
+
+                    );
+
+
+
+
+
+                await service.process({
+
+                    message:
+
+                        "test"
+
+                });
+
+
+
+
+
+                expect(
+
+                    client.receivedOptions[0]
+
+                )
+
+                    .toEqual({
+
+                        tools:
+
+                            [
+
+                                {
+
+                                    name:
+
+                                        "sample_tool",
+
+                                    description:
+
+                                        "sample tool",
+
+                                    parameters:
+
+                                        undefined
+
+                                }
+
+                            ]
+
+                    });
 
 
             }
@@ -567,7 +1028,13 @@ describe(
 
                     new MockAIClient([
 
-                        "سلام دوباره علی!"
+                        {
+
+                            content:
+
+                                "سلام دوباره علی!"
+
+                        }
 
                     ]);
 
@@ -701,7 +1168,13 @@ describe(
 
                         new MockAIClient([
 
-                            "پاسخ اول"
+                            {
+
+                                content:
+
+                                    "پاسخ اول"
+
+                            }
 
                         ]),
 

@@ -1,36 +1,43 @@
 import {
     AIClient
-} from "../client/AIClient";
+}
+from "../client/AIClient";
 
 
 import {
     AIMessage
-} from "../client/AIMessage";
+}
+from "../client/AIMessage";
 
 
 import {
     AIRequest
-} from "../models/AIRequest";
+}
+from "../models/AIRequest";
 
 
 import {
     AIResponse
-} from "../models/AIResponse";
+}
+from "../models/AIResponse";
 
 
 import {
     AIToolRegistry
-} from "../tools/AIToolRegistry";
+}
+from "../tools/AIToolRegistry";
 
 
 import {
     AIToolExecutionService
-} from "./AIToolExecutionService";
+}
+from "./AIToolExecutionService";
 
 
 import {
     AIPromptService
-} from "../prompts/AIPromptService";
+}
+from "../prompts/AIPromptService";
 
 
 import {
@@ -208,12 +215,29 @@ export class AIService {
 
 
 
+        const toolDefinitions =
+
+            this.toolRegistry
+
+                ?.getToolDefinitions();
+
+
+
+
 
         let result =
 
             await this.client.complete(
 
-                messages
+                messages,
+
+                {
+
+                    tools:
+
+                        toolDefinitions
+
+                }
 
             );
 
@@ -269,34 +293,140 @@ export class AIService {
 
 
 
-                messages.push({
+                const nativeToolCall =
 
-
-                    role:
-
-                        "assistant",
-
-
-                    content:
-
-                        result.content
-
-
-                });
+                    result.toolCalls?.[0];
 
 
 
 
 
-                messages.push({
+                if (
+
+                    nativeToolCall &&
+
+                    nativeToolCall.id
+
+                ) {
 
 
-                    role:
 
-                        "user",
+                    messages.push({
 
 
-                    content:
+                        role:
+
+                            "assistant",
+
+
+                        content:
+
+                            result.content,
+
+
+                        toolCalls:
+
+                        [
+
+                            {
+
+                                id:
+
+                                    nativeToolCall.id,
+
+
+                                name:
+
+                                    nativeToolCall.name,
+
+
+                                arguments:
+
+                                    nativeToolCall.arguments
+
+                            }
+
+                        ]
+
+                    });
+
+
+
+
+
+                    messages.push({
+
+
+                        role:
+
+                            "tool",
+
+
+                        content:
+
+                            JSON.stringify({
+
+                                success:
+
+                                    toolResult.success,
+
+
+                                data:
+
+                                    toolResult.data,
+
+
+                                error:
+
+                                    toolResult.error
+
+                            }),
+
+
+                        toolCallId:
+
+                            nativeToolCall.id
+
+                    });
+
+
+
+
+
+                }
+
+                else {
+
+
+
+                    messages.push({
+
+
+                        role:
+
+                            "assistant",
+
+
+                        content:
+
+                            result.content
+
+
+                    });
+
+
+
+
+
+                    messages.push({
+
+
+                        role:
+
+                            "user",
+
+
+                        content:
 
 `
 Tool execution result:
@@ -306,7 +436,10 @@ ${JSON.stringify(toolResult.data)}
 Explain this result to the user in Persian.
 `
 
-                });
+                    });
+
+
+                }
 
 
 
@@ -316,7 +449,15 @@ Explain this result to the user in Persian.
 
                     await this.client.complete(
 
-                        messages
+                        messages,
+
+                        {
+
+                            tools:
+
+                                toolDefinitions
+
+                        }
 
                     );
 

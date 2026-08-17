@@ -1,11 +1,13 @@
 import {
-    AIClient
+    AIClient,
+    AICompletionOptions
 }
 from "../../../application/ai/client/AIClient";
 
 
 import {
-    AIMessage
+    AIMessage,
+    AIMessageToolCall
 }
 from "../../../application/ai/client/AIMessage";
 
@@ -14,6 +16,56 @@ import {
     AICompletionResult
 }
 from "../../../application/ai/client/AICompletionResult";
+
+
+import {
+    AIToolDefinition
+}
+from "../../../application/ai/tools/AIToolDefinition";
+
+
+import {
+    z
+}
+from "zod";
+
+
+
+
+
+interface NvidiaToolCall {
+
+
+    id?:
+
+        string;
+
+
+
+    type?:
+
+        string;
+
+
+
+    function?: {
+
+
+        name?:
+
+            string;
+
+
+
+        arguments?:
+
+            string;
+
+
+    };
+
+
+}
 
 
 
@@ -25,7 +77,16 @@ interface NvidiaResponse {
 
         message?: {
 
-            content?: string;
+            content?:
+
+                string | null;
+
+
+
+            tool_calls?:
+
+                NvidiaToolCall[];
+
 
         };
 
@@ -81,11 +142,89 @@ implements AIClient {
 
         messages:
 
-            AIMessage[]
+            AIMessage[],
+
+        options?:
+
+            AICompletionOptions
 
     ):
 
         Promise<AICompletionResult> {
+
+
+
+        const requestBody:
+
+            Record<string, unknown> = {
+
+
+            model:
+
+                "meta/llama-3.1-8b-instruct",
+
+
+
+            messages:
+
+                messages.map(
+
+                    message =>
+
+                        this.mapMessage(
+
+                            message
+
+                        )
+
+                )
+
+        };
+
+
+
+
+
+        if (
+
+            options?.tools &&
+
+            options.tools.length > 0
+
+        ) {
+
+
+
+            requestBody.tools =
+
+                options.tools.map(
+
+                    tool =>
+
+                        this.mapToolDefinition(
+
+                            tool
+
+                        )
+
+                );
+
+
+
+            requestBody.tool_choice =
+
+                "auto";
+
+
+
+            requestBody.parallel_tool_calls =
+
+                false;
+
+
+        }
+
+
 
 
 
@@ -113,6 +252,11 @@ implements AIClient {
                             "application/json",
 
 
+                        Accept:
+
+                            "application/json",
+
+
                         Authorization:
 
                             `Bearer ${this.apiKey}`
@@ -123,17 +267,11 @@ implements AIClient {
 
                     body:
 
-                        JSON.stringify({
+                        JSON.stringify(
 
-                            model:
+                            requestBody
 
-                                "meta/llama-3.1-8b-instruct",
-
-
-
-                            messages
-
-                        })
+                        )
 
 
                 }
@@ -170,13 +308,20 @@ implements AIClient {
 
 
 
+        const message =
+
+            data.choices?.[0]?.message;
+
+
+
+
 
         return {
 
 
             content:
 
-                data.choices?.[0]?.message?.content ??
+                message?.content ??
 
                 "",
 
@@ -202,10 +347,531 @@ implements AIClient {
 
                     data.usage?.completion_tokens
 
+            },
+
+
+
+            toolCalls:
+
+                message?.tool_calls
+
+                    ?.filter(
+
+                        toolCall =>
+
+                            Boolean(
+
+                                toolCall.function?.name
+
+                            )
+
+                    )
+
+                    .map(
+
+                        toolCall =>
+
+                            ({
+
+                                id:
+
+                                    toolCall.id,
+
+
+                                name:
+
+                                    toolCall.function?.name ?? "",
+
+
+                                arguments:
+
+                                    this.parseArguments(
+
+                                        toolCall.function?.arguments
+
+                                    )
+
+                            })
+
+                    )
+
+        };
+
+
+    }
+
+
+
+
+
+
+
+    private mapMessage(
+
+        message:
+
+            AIMessage
+
+    ):
+
+        Record<string, unknown> {
+
+
+
+        if (
+
+            message.role === "assistant" &&
+
+            message.toolCalls &&
+
+            message.toolCalls.length > 0
+
+        ) {
+
+
+
+            return {
+
+
+                role:
+
+                    "assistant",
+
+
+                content:
+
+                    message.content || null,
+
+
+                tool_calls:
+
+                    message.toolCalls.map(
+
+                        toolCall => ({
+
+                            id:
+
+                                toolCall.id,
+
+
+                            type:
+
+                                "function",
+
+
+                            function:
+
+                            {
+
+                                name:
+
+                                    toolCall.name,
+
+
+                                arguments:
+
+                                    this.serializeArguments(
+
+                                        toolCall.arguments
+
+                                    )
+
+                            }
+
+                        })
+
+                    )
+
+
+            };
+
+
+        }
+
+
+
+
+
+        if (
+
+            message.role === "tool"
+
+        ) {
+
+
+
+            return {
+
+
+                role:
+
+                    "tool",
+
+
+                content:
+
+                    message.content,
+
+
+                tool_call_id:
+
+                    message.toolCallId
+
+            };
+
+
+        }
+
+
+
+
+
+        return {
+
+
+            role:
+
+                message.role,
+
+
+            content:
+
+                message.content
+
+        };
+
+
+    }
+
+
+
+
+
+
+
+    private mapToolDefinition(
+
+        tool:
+
+            AIToolDefinition
+
+    ):
+
+        Record<string, unknown> {
+
+
+
+        return {
+
+
+            type:
+
+                "function",
+
+
+            function:
+
+            {
+
+                name:
+
+                    tool.name,
+
+
+                description:
+
+                    tool.description,
+
+
+                parameters:
+
+                    this.toJsonSchema(
+
+                        tool.parameters
+
+                    )
+
             }
 
 
         };
+
+
+    }
+
+
+
+
+
+
+
+    private toJsonSchema(
+
+        parameters:
+
+            unknown
+
+    ):
+
+        unknown {
+
+
+
+        if (!parameters) {
+
+
+            return {
+
+
+                type:
+
+                    "object",
+
+
+                properties:
+
+                {}
+
+
+            };
+
+
+        }
+
+
+
+
+
+        try {
+
+
+            return z.toJSONSchema(
+
+                parameters as Parameters<
+                    typeof z.toJSONSchema
+                >[0],
+
+                {
+
+                    target:
+
+                        "draft-07"
+
+                }
+
+            );
+
+
+        }
+
+        catch {
+
+
+            if (
+
+                this.isJsonSchema(
+
+                    parameters
+
+                )
+
+            ) {
+
+
+                return parameters;
+
+
+            }
+
+
+
+
+
+            return {
+
+
+                type:
+
+                    "object",
+
+
+                properties:
+
+                {}
+
+            };
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+    private isJsonSchema(
+
+        value:
+
+            unknown
+
+    ):
+
+        boolean {
+
+
+
+        if (
+
+            typeof value !== "object" ||
+
+            value === null
+
+        ) {
+
+
+            return false;
+
+
+        }
+
+
+
+
+
+        const schema =
+
+            value as Record<string, unknown>;
+
+
+
+
+
+        return (
+
+            typeof schema.type === "string" ||
+
+            typeof schema.$schema === "string" ||
+
+            typeof schema.properties === "object"
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+    private parseArguments(
+
+        value:
+
+            string |
+
+            undefined
+
+    ):
+
+        unknown {
+
+
+
+        if (!value) {
+
+
+            return {};
+
+
+        }
+
+
+
+
+
+        try {
+
+
+            return JSON.parse(
+
+                value
+
+            );
+
+
+        }
+
+        catch {
+
+
+            return value;
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+    private serializeArguments(
+
+        value:
+
+            unknown
+
+    ):
+
+        string {
+
+
+
+        if (
+
+            typeof value === "string"
+
+        ) {
+
+
+            return value;
+
+
+        }
+
+
+
+
+
+        try {
+
+
+            return JSON.stringify(
+
+                value ?? {}
+
+            );
+
+
+        }
+
+        catch {
+
+
+            return "{}";
+
+
+        }
 
 
     }
