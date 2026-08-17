@@ -283,6 +283,16 @@ export class TelegramUpdateProcessor {
 
 
 
+            const formattedResponse =
+
+                this.formatter.format(
+
+                    response
+
+                );
+
+
+
             await this.botClient.sendMessage({
 
 
@@ -291,7 +301,7 @@ export class TelegramUpdateProcessor {
 
                 text:
 
-                    response,
+                    formattedResponse,
 
 
                 parseMode:

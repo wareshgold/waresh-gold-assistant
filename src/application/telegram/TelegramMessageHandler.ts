@@ -44,7 +44,7 @@ export class TelegramMessageHandler {
             TelegramCommandExecutor,
 
 
-        private readonly formatter?:
+        _formatter?:
             TelegramResponseFormatter
 
 
@@ -189,34 +189,9 @@ export class TelegramMessageHandler {
             ...response,
 
 
-
             content:
 
-
-
-                this.formatter
-
-
-
-                    ? this.formatter.format(
-
-
-                        {
-
-
-                            type: "text",
-
-
-                            content: response.content ?? ""
-
-
-                        }
-
-
-                    )
-
-
-                    : response.content
+                response.content ?? ""
 
 
 
