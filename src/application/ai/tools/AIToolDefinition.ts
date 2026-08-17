@@ -1,15 +1,39 @@
 export interface AIToolDefinition {
 
 
-    name: string;
+    name:
+
+        string;
 
 
 
-    description: string;
+    description:
+
+        string;
 
 
 
-    parameters?: unknown;
+    parameters?:
+
+        {
+
+            type:
+
+                string;
+
+
+
+            properties?:
+
+                Record<string, unknown>;
+
+
+
+            required?:
+
+                string[];
+
+        };
 
 
 }

@@ -5,6 +5,12 @@ from "../../application/ai/services/AIService";
 
 
 import {
+    createAIServiceFactory
+}
+from "../../application/ai/factories/AIServiceFactory";
+
+
+import {
     NvidiaAIClient
 }
 from "../../infrastructure/ai/providers/NvidiaAIClient";
@@ -14,48 +20,6 @@ import {
     AppEnv
 }
 from "../../shared/config/env";
-
-
-import {
-    DefaultAIToolRegistry
-}
-from "../../application/ai/tools/DefaultAIToolRegistry";
-
-
-import {
-    GetCurrentGoldPriceTool
-}
-from "../../application/ai/tools/market/GetCurrentGoldPriceTool";
-
-
-import {
-    GetCurrentGoldMithqalPriceTool
-}
-from "../../application/ai/tools/market/GetCurrentGoldMithqalPriceTool";
-
-
-import {
-    CalculateGoldPriceTool
-}
-from "../../application/ai/tools/gold/CalculateGoldPriceTool";
-
-
-import {
-    CalculateGoldFormulaTool
-}
-from "../../application/ai/tools/gold/CalculateGoldFormulaTool";
-
-
-import {
-    CalculateReverseGoldTool
-}
-from "../../application/ai/tools/gold/CalculateReverseGoldTool";
-
-
-import {
-    CalculateInvoiceTool
-}
-from "../../application/ai/tools/gold/CalculateInvoiceTool";
 
 
 import {
@@ -89,24 +53,6 @@ from "../../application/gold/CalculateInvoiceUseCase";
 
 
 import {
-    AIToolExecutor
-}
-from "../../application/ai/tools/AIToolExecutor";
-
-
-import {
-    AIToolDecisionService
-}
-from "../../application/ai/services/AIToolDecisionService";
-
-
-import {
-    AIToolExecutionService
-}
-from "../../application/ai/services/AIToolExecutionService";
-
-
-import {
     AIConversationMemory
 }
 from "../../application/ai/memory/AIConversationMemory";
@@ -123,9 +69,7 @@ export interface AIModule {
         AIService;
 
 
-
 }
-
 
 
 
@@ -136,9 +80,13 @@ export interface AIModule {
 
 export function createAIModule(
 
-    env: AppEnv,
+    env:
+
+        AppEnv,
+
 
     dependencies:
+
     {
 
         getCurrentGoldPriceUseCase:
@@ -184,11 +132,13 @@ AIModule {
 
 
 
+
     const aiClient =
 
         new NvidiaAIClient(
 
             env.NVIDIA_API_KEY ?? "",
+
 
             env.NVIDIA_API_URL
 
@@ -204,155 +154,51 @@ AIModule {
 
 
 
-    const toolRegistry =
-
-        new DefaultAIToolRegistry();
-
-
-
-
-
-
-
-
-    toolRegistry.register(
-
-        new GetCurrentGoldPriceTool(
-
-            dependencies.getCurrentGoldPriceUseCase
-
-        )
-
-    );
-
-
-    toolRegistry.register(
-
-        new GetCurrentGoldMithqalPriceTool(
-
-            dependencies.getCurrentGoldPriceUseCase
-
-        )
-
-    );
-
-
-
-
-
-
-    toolRegistry.register(
-
-        new CalculateGoldPriceTool(
-
-            dependencies.calculateGoldPriceUseCase
-
-        )
-
-    );
-
-
-
-
-
-
-
-    toolRegistry.register(
-
-        new CalculateGoldFormulaTool(
-
-            dependencies.calculateGoldFormulaUseCase
-
-        )
-
-    );
-
-
-
-
-
-
-
-    toolRegistry.register(
-
-        new CalculateReverseGoldTool(
-
-            dependencies.calculateReverseGoldUseCase
-
-        )
-
-    );
-
-
-
-
-
-
-
-    toolRegistry.register(
-
-        new CalculateInvoiceTool(
-
-            dependencies.calculateInvoiceUseCase
-
-        )
-
-    );
-
-
-
-
-
-
-
-
-    const toolExecutor =
-
-        new AIToolExecutor(
-
-            toolRegistry
-
-        );
-
-
-
-
-
-
-
-
-    const toolExecutionService =
-
-        new AIToolExecutionService(
-
-            new AIToolDecisionService(),
-
-            toolExecutor
-
-        );
-
-
-
-
-
-
-
-
     const aiService =
 
-        new AIService(
+        createAIServiceFactory({
 
-            aiClient,
+            client:
 
-            toolRegistry,
+                aiClient,
 
-            toolExecutionService,
 
-            undefined,
 
-            dependencies.aiConversationMemory
+            getCurrentGoldPriceUseCase:
 
-        );
+                dependencies.getCurrentGoldPriceUseCase,
+
+
+
+            calculateGoldPriceUseCase:
+
+                dependencies.calculateGoldPriceUseCase,
+
+
+
+            calculateGoldFormulaUseCase:
+
+                dependencies.calculateGoldFormulaUseCase,
+
+
+
+            calculateReverseGoldUseCase:
+
+                dependencies.calculateReverseGoldUseCase,
+
+
+
+            calculateInvoiceUseCase:
+
+                dependencies.calculateInvoiceUseCase,
+
+
+
+            aiConversationMemory:
+
+                dependencies.aiConversationMemory
+
+        });
 
 
 
@@ -362,12 +208,9 @@ AIModule {
 
     return {
 
-
         aiService
 
-
     };
-
 
 
 }
