@@ -59,8 +59,6 @@ export class AIService {
 
 
 
-
-
     constructor(
 
 
@@ -89,7 +87,6 @@ export class AIService {
             AIConversationMemory
 
     ) {
-
 
 
         this.promptService =
@@ -131,7 +128,6 @@ export class AIService {
 
                 {
 
-
                     role:
 
                         "system",
@@ -139,8 +135,9 @@ export class AIService {
 
                     content:
 
-                        this.promptService.buildSystemPrompt()
+                        this.promptService.buildSystemPrompt(
 
+                           )
 
                 }
 
@@ -157,6 +154,7 @@ export class AIService {
             request.userId
 
         ) {
+
 
 
             const history =
@@ -198,18 +196,17 @@ export class AIService {
 
         messages.push({
 
-
             role:
 
                 "user",
-
 
             content:
 
                 request.message
 
-
         });
+
+
 
 
 
@@ -220,6 +217,8 @@ export class AIService {
             this.toolRegistry
 
                 ?.getToolDefinitions();
+
+
 
 
 
@@ -245,7 +244,11 @@ export class AIService {
 
 
 
+
+
         let toolResult;
+
+
 
 
 
@@ -270,7 +273,6 @@ export class AIService {
                         userId:
 
                             request.userId,
-
 
 
                         metadata:
@@ -303,9 +305,7 @@ export class AIService {
 
                 if (
 
-                    nativeToolCall &&
-
-                    nativeToolCall.id
+                    nativeToolCall?.id
 
                 ) {
 
@@ -313,15 +313,13 @@ export class AIService {
 
                     messages.push({
 
-
                         role:
 
                             "assistant",
 
-
                         content:
 
-                            result.content,
+                            "",
 
 
                         toolCalls:
@@ -334,11 +332,9 @@ export class AIService {
 
                                     nativeToolCall.id,
 
-
                                 name:
 
                                     nativeToolCall.name,
-
 
                                 arguments:
 
@@ -356,41 +352,19 @@ export class AIService {
 
                     messages.push({
 
-
                         role:
 
                             "tool",
 
-
                         content:
 
-                            JSON.stringify({
-
-                                success:
-
-                                    toolResult.success,
-
-
-                                data:
-
-                                    toolResult.data,
-
-
-                                error:
-
-                                    toolResult.error
-
-                            }),
-
+                            JSON.stringify(toolResult),
 
                         toolCallId:
 
                             nativeToolCall.id
 
                     });
-
-
-
 
 
                 }
@@ -401,16 +375,13 @@ export class AIService {
 
                     messages.push({
 
-
                         role:
 
                             "assistant",
 
-
                         content:
 
-                            result.content
-
+                            ""
 
                     });
 
@@ -420,26 +391,26 @@ export class AIService {
 
                     messages.push({
 
-
                         role:
 
                             "user",
-
 
                         content:
 
 `
 Tool execution result:
 
-${JSON.stringify(toolResult.data)}
+${JSON.stringify(toolResult)}
 
-Explain this result to the user in Persian.
+Explain this result in Persian.
 `
 
                     });
 
 
                 }
+
+
 
 
 
@@ -462,10 +433,13 @@ Explain this result to the user in Persian.
                     );
 
 
+
             }
 
 
         }
+
+
 
 
 
@@ -478,13 +452,6 @@ Explain this result to the user in Persian.
             request.userId
 
         ) {
-
-
-            const now =
-
-                new Date();
-
-
 
 
 
@@ -504,11 +471,13 @@ Explain this result to the user in Persian.
 
                     createdAt:
 
-                        now
+                        new Date()
 
                 }
 
             );
+
+
 
 
 
@@ -546,9 +515,16 @@ Explain this result to the user in Persian.
         return {
 
 
+
             content:
 
-                result.content,
+                this.cleanToolLeak(
+
+                    result.content
+
+                ),
+
+
 
 
 
@@ -605,6 +581,66 @@ Explain this result to the user in Persian.
 
 
         };
+
+
+    }
+
+
+
+
+
+
+
+    private cleanToolLeak(
+
+        content:
+
+            string
+
+    ):
+
+        string {
+
+
+
+        if (!content) {
+
+            return "";
+
+        }
+
+
+
+
+
+        const toolPattern =
+
+            /^<([a-zA-Z0-9_-]+)>\s*[\s\S]*<\/\1>$/;
+
+
+
+
+
+        if (
+
+            toolPattern.test(
+
+                content.trim()
+
+            )
+
+        ) {
+
+
+            return "";
+
+        }
+
+
+
+
+
+        return content;
 
 
     }
