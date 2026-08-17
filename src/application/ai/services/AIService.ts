@@ -461,7 +461,6 @@ Explain this result in Persian.
                     );
 
 
-
             }
 
 
@@ -473,66 +472,13 @@ Explain this result in Persian.
 
 
 
-        if (
+        await this.saveConversation(
 
-            this.memory &&
+            request,
 
-            request.userId
+            result.content
 
-        ) {
-
-
-
-            await this.memory.addMessage(
-
-                request.userId,
-
-                {
-
-                    role:
-
-                        "user",
-
-                    content:
-
-                        request.message,
-
-                    createdAt:
-
-                        new Date()
-
-                }
-
-            );
-
-
-
-
-
-            await this.memory.addMessage(
-
-                request.userId,
-
-                {
-
-                    role:
-
-                        "assistant",
-
-                    content:
-
-                        result.content,
-
-                    createdAt:
-
-                        new Date()
-
-                }
-
-            );
-
-
-        }
+        );
 
 
 
@@ -608,6 +554,96 @@ Explain this result in Persian.
 
 
         };
+
+
+    }
+
+
+
+
+
+
+
+    private async saveConversation(
+
+        request:
+
+            AIRequest,
+
+
+        content:
+
+            string
+
+    ):
+
+        Promise<void> {
+
+
+
+        if (
+
+            !this.memory ||
+
+            !request.userId
+
+        ) {
+
+
+            return;
+
+
+        }
+
+
+
+
+
+        await this.memory.addMessage(
+
+            request.userId,
+
+            {
+
+                role:
+
+                    "user",
+
+                content:
+
+                    request.message,
+
+                createdAt:
+
+                    new Date()
+
+            }
+
+        );
+
+
+
+
+
+        await this.memory.addMessage(
+
+            request.userId,
+
+            {
+
+                role:
+
+                    "assistant",
+
+                content,
+
+                createdAt:
+
+                    new Date()
+
+            }
+
+        );
 
 
     }

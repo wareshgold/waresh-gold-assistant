@@ -13,6 +13,12 @@ import {
 } from "./AIToolDefinition";
 
 
+import {
+    AIToolSchemaAdapter,
+    DefaultAIToolSchemaAdapter
+} from "./AIToolSchemaAdapter";
+
+
 
 export class DefaultAIToolRegistry
 
@@ -25,6 +31,35 @@ implements AIToolRegistry {
         Map<string, AITool<any>> =
 
             new Map();
+
+
+
+
+    private readonly schemaAdapter:
+
+        AIToolSchemaAdapter;
+
+
+
+
+    constructor(
+
+        schemaAdapter?:
+
+            AIToolSchemaAdapter
+
+    ) {
+
+
+        this.schemaAdapter =
+
+            schemaAdapter ??
+
+            new DefaultAIToolSchemaAdapter();
+
+
+    }
+
 
 
 
@@ -54,6 +89,7 @@ implements AIToolRegistry {
 
 
 
+
     getTool<TInput = unknown>(
 
         name:
@@ -78,6 +114,7 @@ implements AIToolRegistry {
 
 
 
+
     getTools():
 
         AITool[] {
@@ -96,6 +133,7 @@ implements AIToolRegistry {
 
 
 
+
     getToolDefinitions():
 
         AIToolDefinition[] {
@@ -107,9 +145,11 @@ implements AIToolRegistry {
 
                 tool => ({
 
+
                     name:
 
                         tool.name,
+
 
 
                     description:
@@ -117,9 +157,15 @@ implements AIToolRegistry {
                         tool.description,
 
 
+
                     parameters:
 
-                        tool.inputSchema
+                        this.schemaAdapter.convert(
+
+                            tool.inputSchema
+
+                        )
+
 
                 })
 
