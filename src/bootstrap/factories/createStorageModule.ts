@@ -30,6 +30,18 @@ import { GoldCalculationHistoryRepository }
 from "../../domain/gold/repositories/GoldCalculationHistoryRepository";
 
 
+import { MemoryAIConversationStore }
+from "../../application/ai/memory/MemoryAIConversationStore";
+
+
+import { D1AIConversationMemory }
+from "../../infrastructure/ai/memory/D1AIConversationMemory";
+
+
+import { AIConversationMemory }
+from "../../application/ai/memory/AIConversationMemory";
+
+
 import { AppEnv }
 from "../../shared/config/env";
 
@@ -83,16 +95,13 @@ export function createStorageModule(
 
     const userProfileStore =
 
-
         env.ENVIRONMENT === "production"
-
 
             ? new D1TelegramUserProfileStore(
 
                 env.waresh_gold_db
 
             )
-
 
             : new MemoryTelegramUserProfileStore();
 
@@ -106,7 +115,6 @@ export function createStorageModule(
     const goldCalculationHistoryRepository:
 
         GoldCalculationHistoryRepository =
-
 
             env.waresh_gold_db
 
@@ -136,6 +144,33 @@ export function createStorageModule(
 
 
 
+    const aiConversationMemory:
+
+        AIConversationMemory =
+
+            env.ENVIRONMENT === "production"
+
+                ? new D1AIConversationMemory(
+
+                    env.waresh_gold_db,
+
+                    20
+
+                )
+
+                : new MemoryAIConversationStore(
+
+                    20
+
+                );
+
+
+
+
+
+
+
+
     return {
 
 
@@ -148,7 +183,10 @@ export function createStorageModule(
         userProfileStore,
 
 
-        goldCalculationHistoryRepository
+        goldCalculationHistoryRepository,
+
+
+        aiConversationMemory
 
 
     };

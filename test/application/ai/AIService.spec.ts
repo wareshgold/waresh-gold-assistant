@@ -24,17 +24,27 @@ import {
 from "../../../src/application/ai/services/AIToolExecutionService";
 
 
+import {
+    MemoryAIConversationStore
+}
+from "../../../src/application/ai/memory/MemoryAIConversationStore";
+
+
 
 
 
 describe(
+
     "AIService",
+
     () => {
 
 
 
         it(
+
             "should process AI request and return response",
+
             async () => {
 
 
@@ -155,7 +165,9 @@ describe(
 
 
         it(
+
             "should execute tool and ask AI for final response",
+
             async () => {
 
 
@@ -182,7 +194,11 @@ describe(
 
 
 
-                            if (calls === 1) {
+                            if (
+
+                                calls === 1
+
+                            ) {
 
 
 
@@ -353,6 +369,170 @@ describe(
                 );
 
 
+
+            }
+
+        );
+
+
+
+
+
+
+        it(
+
+            "should preserve conversation memory",
+
+            async () => {
+
+
+
+                const memory =
+
+                    new MemoryAIConversationStore();
+
+
+
+
+
+                const fakeClient:
+
+                    AIClient = {
+
+
+
+                        async complete() {
+
+
+
+                            return {
+
+
+                                content:
+
+                                    "سلام علی، خوش برگشتی.",
+
+
+                                model:
+
+                                    "test-model"
+
+
+                            };
+
+
+                        }
+
+
+                    };
+
+
+
+
+
+                const service =
+
+                    new AIService(
+
+                        fakeClient,
+
+                        undefined,
+
+                        undefined,
+
+                        undefined,
+
+                        memory
+
+                    );
+
+
+
+
+
+                await service.process({
+
+                    message:
+
+                        "من علی هستم.",
+
+                    userId:
+
+                        "123"
+
+                });
+
+
+
+
+
+                await service.process({
+
+                    message:
+
+                        "اسم من چی بود؟",
+
+                    userId:
+
+                        "123"
+
+                });
+
+
+
+
+
+                const history =
+
+                    await memory.getHistory(
+
+                        "123"
+
+                    );
+
+
+
+
+
+                expect(
+
+                    history
+
+                )
+
+                    .toHaveLength(
+
+                        4
+
+                    );
+
+
+
+
+
+                expect(
+
+                    history.map(
+
+                        message =>
+
+                            message.content
+
+                    )
+
+                )
+
+                    .toEqual([
+
+                        "من علی هستم.",
+
+                        "سلام علی، خوش برگشتی.",
+
+                        "اسم من چی بود؟",
+
+                        "سلام علی، خوش برگشتی."
+
+                    ]);
 
             }
 

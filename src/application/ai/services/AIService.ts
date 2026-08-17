@@ -239,13 +239,19 @@ export class AIService {
 
                 await this.toolExecutionService.executeIfRequired(
 
-                    result.content,
+                    result,
 
                     {
 
                         userId:
 
-                            request.userId
+                            request.userId,
+
+
+
+                        metadata:
+
+                            request.context
 
                     }
 
@@ -333,6 +339,14 @@ Explain this result to the user in Persian.
         ) {
 
 
+            const now =
+
+                new Date();
+
+
+
+
+
             await this.memory.addMessage(
 
                 request.userId,
@@ -349,7 +363,7 @@ Explain this result to the user in Persian.
 
                     createdAt:
 
-                        new Date()
+                        now
 
                 }
 
