@@ -10,6 +10,26 @@ import {
 from "./AICompletionResult";
 
 
+import {
+    AIToolDefinition
+}
+from "../tools/AIToolDefinition";
+
+
+
+
+
+export interface AICompletionOptions {
+
+
+    tools?:
+
+        AIToolDefinition[];
+
+
+}
+
+
 
 
 
@@ -20,7 +40,11 @@ export interface AIClient {
 
         messages:
 
-            AIMessage[]
+            AIMessage[],
+
+        options?:
+
+            AICompletionOptions
 
     ):
 

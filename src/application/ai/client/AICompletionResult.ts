@@ -1,6 +1,12 @@
 export interface AIToolCallResult {
 
 
+    id?:
+
+        string;
+
+
+
     name:
 
         string;

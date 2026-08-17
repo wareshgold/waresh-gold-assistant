@@ -100,18 +100,13 @@ Available tools:
 ${tools}
 
 
-When a tool is required, return ONLY this format:
+When a tool is required, use the provided native tool calling mechanism.
 
+Do not write XML tool calls.
 
-<tool>
-{
- "toolName":"tool_name",
- "input":{}
-}
-</tool>
+Do not invent tool names.
 
-
-Do not include any explanation before tool execution.
+Do not answer with a guessed market value.
 
 `;
 
