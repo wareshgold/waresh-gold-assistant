@@ -127,7 +127,14 @@ implements AIClient {
 
             string =
 
-                "https://integrate.api.nvidia.com/v1/chat/completions"
+                "https://integrate.api.nvidia.com/v1/chat/completions",
+
+
+        private readonly model:
+
+            string =
+
+                "meta/llama-3.3-70b-instruct"
 
     ) {}
 
@@ -160,7 +167,7 @@ implements AIClient {
 
             model:
 
-                "meta/llama-3.1-8b-instruct",
+                this.model,
 
 
 
@@ -185,37 +192,25 @@ implements AIClient {
 
 
         if (
-
             options?.tools &&
-
             options.tools.length > 0
-
         ) {
 
-
-
             requestBody.tools =
-
                 options.tools.map(
-
                     tool =>
-
                         this.mapToolDefinition(
-
                             tool
-
                         )
-
                 );
 
 
-
-
-
             requestBody.parallel_tool_calls =
-
                 false;
 
+
+            requestBody.tool_choice =
+                "auto";
 
         }
 

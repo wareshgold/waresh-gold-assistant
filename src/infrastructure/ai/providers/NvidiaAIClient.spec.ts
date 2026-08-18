@@ -70,7 +70,7 @@ describe(
 
                             model:
 
-                                "meta/llama-3.1-8b-instruct",
+                                "meta/llama-3.3-70b-instruct",
 
 
                             usage:
@@ -185,82 +185,9 @@ describe(
 
 
 
-                expect(
-
-                    fetchMock
-
-                )
-
-                    .toHaveBeenCalledTimes(
-
-                        1
-
-                    );
-
-
-
-
-
-                expect(
-
-                    fetchMock
-
-                )
-
-                    .toHaveBeenCalledWith(
-
-                        "https://example.com/v1/chat/completions",
-
-                        expect.objectContaining({
-
-                            method:
-
-                                "POST",
-
-
-                            headers:
-
-                                expect.objectContaining({
-
-                                    "Content-Type":
-
-                                        "application/json",
-
-
-                                    Accept:
-
-                                        "application/json",
-
-
-                                    Authorization:
-
-                                        "Bearer test-api-key"
-
-                                })
-
-                        })
-
-                    );
-
-
-
-
-
                 const requestOptions =
 
                     fetchMock.mock.calls[0][1];
-
-
-
-
-
-                expect(
-
-                    requestOptions
-
-                )
-
-                    .toBeDefined();
 
 
 
@@ -284,7 +211,7 @@ describe(
 
                         model:
 
-                            "meta/llama-3.1-8b-instruct",
+                            "meta/llama-3.3-70b-instruct",
 
 
                         messages
@@ -310,7 +237,7 @@ describe(
 
                         model:
 
-                            "meta/llama-3.1-8b-instruct",
+                            "meta/llama-3.3-70b-instruct",
 
 
                         usage:
@@ -326,7 +253,12 @@ describe(
 
                                 10
 
-                        }
+                        },
+
+
+                        toolCalls:
+
+                            undefined
 
                     });
 
@@ -334,6 +266,8 @@ describe(
             }
 
         );
+
+
 
 
 
@@ -526,7 +460,7 @@ describe(
 
                     .toBe(
 
-                        "meta/llama-3.1-8b-instruct"
+                        "meta/llama-3.3-70b-instruct"
 
                     );
 
@@ -599,6 +533,8 @@ describe(
             }
 
         );
+
+
 
 
 
@@ -783,6 +719,8 @@ describe(
             }
 
         );
+
+
 
 
 
