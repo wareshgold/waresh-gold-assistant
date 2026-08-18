@@ -95,21 +95,6 @@ export class TelegramResponseFormatter {
 
 
 
-                    /*
-                     * IMPORTANT:
-                     *
-                     * Placeholder must not contain digits.
-                     * Number formatter below processes all numbers
-                     * and was corrupting placeholders like:
-                     *
-                     * ___TELEGRAM_CODE_BLOCK_0___
-                     *
-                     * into:
-                     *
-                     * ___TELEGRAM_CODE_BLOCK_<code>0</code>___
-                     *
-                     */
-
                     return `___TELEGRAM_CODE_BLOCK_${String.fromCharCode(65 + index)}___`;
 
                 }
@@ -156,7 +141,7 @@ export class TelegramResponseFormatter {
 
             escapedText.replace(
 
-                /\d[\d,]*/g,
+                /[0-9۰-۹][0-9۰-۹,٬]*/g,
 
                 value => {
 
@@ -164,11 +149,9 @@ export class TelegramResponseFormatter {
 
                     const normalizedValue =
 
-                        value.replace(
+                        this.normalizeDigits(
 
-                            /,/g,
-
-                            ""
+                            value
 
                         );
 
@@ -195,6 +178,89 @@ export class TelegramResponseFormatter {
                     letter.charCodeAt(0) - 65
 
                 ]
+
+        );
+
+
+
+    }
+
+
+
+
+
+
+    private normalizeDigits(
+
+        value:
+
+            string
+
+    ): string {
+
+
+
+        const persianDigits =
+
+            "۰۱۲۳۴۵۶۷۸۹";
+
+
+
+        const englishDigits =
+
+            "0123456789";
+
+
+
+
+
+        let result =
+
+            value;
+
+
+
+
+
+        for (
+
+            let i = 0;
+
+            i < persianDigits.length;
+
+            i++
+
+        ) {
+
+
+
+            result =
+
+                result.replace(
+
+                    new RegExp(
+
+                        persianDigits[i],
+
+                        "g"
+
+                    ),
+
+                    englishDigits[i]
+
+                );
+
+        }
+
+
+
+
+
+        return result.replace(
+
+            /[٬,]/g,
+
+            ""
 
         );
 
