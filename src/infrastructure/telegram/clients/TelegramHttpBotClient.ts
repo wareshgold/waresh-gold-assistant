@@ -40,6 +40,37 @@ implements TelegramBotClient {
 
 
 
+        const payload = {
+
+            chat_id:
+                message.chatId,
+
+
+            text:
+                message.text,
+
+
+            ...(message.parseMode
+                ? {
+                    parse_mode:
+                        message.parseMode
+                }
+                : {}),
+
+
+            ...(message.replyMarkup
+                ? {
+                    reply_markup:
+                        message.replyMarkup
+                }
+                : {})
+
+        };
+
+
+
+
+
         const response =
 
             await fetch(
@@ -60,32 +91,11 @@ implements TelegramBotClient {
 
                     body:
 
-                        JSON.stringify({
+                        JSON.stringify(
 
-                            chat_id:
-                                message.chatId,
+                            payload
 
-
-                            text:
-                                message.text,
-
-
-                            ...(message.parseMode
-                                ? {
-                                    parse_mode:
-                                        message.parseMode
-                                }
-                                : {}),
-
-
-                            ...(message.replyMarkup
-                                ? {
-                                    reply_markup:
-                                        message.replyMarkup
-                                }
-                                : {})
-
-                        })
+                        )
 
                 }
 
@@ -97,9 +107,45 @@ implements TelegramBotClient {
 
         if (!response.ok) {
 
+
+            const errorText =
+
+                await response.text();
+
+
+
+
+
+            console.error(
+
+                "TELEGRAM SEND MESSAGE FAILED",
+
+                {
+
+                    status:
+
+                        response.status,
+
+
+                    body:
+
+                        errorText,
+
+
+
+                    payload
+
+                }
+
+            );
+
+
+
+
+
             throw new Error(
 
-                await response.text()
+                errorText
 
             );
 
@@ -145,6 +191,7 @@ implements TelegramBotClient {
 
 
 
+
         formData.append(
 
             "chat_id",
@@ -152,6 +199,7 @@ implements TelegramBotClient {
             message.chatId
 
         );
+
 
 
 
@@ -166,9 +214,13 @@ implements TelegramBotClient {
 
                     typeof message.photo === "string"
 
-                        ? message.photo
+                        ?
 
-                        : message.photo
+                        message.photo
+
+                        :
+
+                        message.photo
 
                 ]
 
@@ -182,6 +234,7 @@ implements TelegramBotClient {
 
         if (message.caption) {
 
+
             formData.append(
 
                 "caption",
@@ -190,12 +243,15 @@ implements TelegramBotClient {
 
             );
 
+
         }
 
 
 
 
+
         if (message.replyMarkup) {
+
 
             formData.append(
 
@@ -209,7 +265,9 @@ implements TelegramBotClient {
 
             );
 
+
         }
+
 
 
 
@@ -227,6 +285,7 @@ implements TelegramBotClient {
 
                         "POST",
 
+
                     body:
 
                         formData
@@ -241,9 +300,41 @@ implements TelegramBotClient {
 
         if (!response.ok) {
 
+
+            const errorText =
+
+                await response.text();
+
+
+
+
+
+            console.error(
+
+                "TELEGRAM SEND PHOTO FAILED",
+
+                {
+
+                    status:
+
+                        response.status,
+
+
+                    body:
+
+                        errorText
+
+                }
+
+            );
+
+
+
+
+
             throw new Error(
 
-                await response.text()
+                errorText
 
             );
 
@@ -295,6 +386,7 @@ implements TelegramBotClient {
 
 
 
+
         formData.append(
 
             "chat_id",
@@ -302,6 +394,7 @@ implements TelegramBotClient {
             message.chatId
 
         );
+
 
 
 
@@ -330,6 +423,7 @@ implements TelegramBotClient {
 
         if (message.caption) {
 
+
             formData.append(
 
                 "caption",
@@ -338,12 +432,15 @@ implements TelegramBotClient {
 
             );
 
+
         }
 
 
 
 
+
         if (message.replyMarkup) {
+
 
             formData.append(
 
@@ -356,6 +453,7 @@ implements TelegramBotClient {
                 )
 
             );
+
 
         }
 
@@ -389,9 +487,41 @@ implements TelegramBotClient {
 
         if (!response.ok) {
 
+
+            const errorText =
+
+                await response.text();
+
+
+
+
+
+            console.error(
+
+                "TELEGRAM SEND DOCUMENT FAILED",
+
+                {
+
+                    status:
+
+                        response.status,
+
+
+                    body:
+
+                        errorText
+
+                }
+
+            );
+
+
+
+
+
             throw new Error(
 
-                await response.text()
+                errorText
 
             );
 
@@ -464,9 +594,41 @@ implements TelegramBotClient {
 
         if (!response.ok) {
 
+
+            const errorText =
+
+                await response.text();
+
+
+
+
+
+            console.error(
+
+                "TELEGRAM SET COMMANDS FAILED",
+
+                {
+
+                    status:
+
+                        response.status,
+
+
+                    body:
+
+                        errorText
+
+                }
+
+            );
+
+
+
+
+
             throw new Error(
 
-                await response.text()
+                errorText
 
             );
 

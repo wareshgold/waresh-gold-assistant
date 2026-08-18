@@ -162,6 +162,28 @@ implements TelegramCommandHandler {
 
 
 
+        console.log(
+
+            "AI_PROCESS_START",
+
+            {
+
+                question,
+
+                userId:
+
+                    context.userId
+
+            }
+
+        );
+
+
+
+
+
+
+
 
         const result =
 
@@ -198,6 +220,19 @@ implements TelegramCommandHandler {
 
 
             });
+
+
+
+
+
+
+        console.log(
+
+            "AI_PROCESS_RESULT",
+
+            result
+
+        );
 
 
 
