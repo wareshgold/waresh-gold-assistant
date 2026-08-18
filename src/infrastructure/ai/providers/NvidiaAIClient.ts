@@ -109,10 +109,14 @@ interface NvidiaResponse {
 
     usage?: {
 
-        prompt_tokens?: number;
+        prompt_tokens?:
+
+            number;
 
 
-        completion_tokens?: number;
+        completion_tokens?:
+
+            number;
 
     };
 
@@ -209,24 +213,38 @@ implements AIClient {
 
 
         if (
+
             options?.tools &&
+
             options.tools.length > 0
+
         ) {
 
+
             requestBody.tools =
+
                 options.tools.map(
+
                     tool =>
+
                         this.mapToolDefinition(
+
                             tool
+
                         )
+
                 );
 
 
+
             requestBody.parallel_tool_calls =
+
                 false;
 
 
+
             requestBody.tool_choice =
+
                 "auto";
 
         }
@@ -240,6 +258,36 @@ implements AIClient {
         const startedAt =
 
             Date.now();
+
+
+
+
+
+        console.log(
+
+            "NVIDIA_REQUEST_START",
+
+            {
+
+                model:
+
+                    this.model,
+
+
+                messages:
+
+                    messages.length,
+
+
+                tools:
+
+                    options?.tools?.length ?? 0
+
+            }
+
+        );
+
+
 
 
 
@@ -299,6 +347,33 @@ implements AIClient {
 
 
 
+
+
+        console.log(
+
+            "NVIDIA_RESPONSE_RECEIVED",
+
+            {
+
+                duration:
+
+                    Date.now() - startedAt,
+
+
+                status:
+
+                    response.status
+
+            }
+
+        );
+
+
+
+
+
+
+
         await this.recordDuration(
 
             MetricType.AI_NVIDIA_REQUEST_DURATION,
@@ -322,7 +397,6 @@ implements AIClient {
             try {
 
 
-
                 errorBody =
 
                     await response.text();
@@ -334,7 +408,6 @@ implements AIClient {
 
 
                 errorBody = "";
-
 
             }
 
@@ -418,42 +491,6 @@ implements AIClient {
             message?.tool_calls
 
         );
-
-
-
-
-
-        if (
-
-            !message?.content &&
-
-            !message?.tool_calls?.length
-
-        ) {
-
-
-
-            console.warn(
-
-                "NVIDIA returned empty response",
-
-                {
-
-                    model:
-
-                        data.model,
-
-
-                    usage:
-
-                        data.usage
-
-                }
-
-            );
-
-
-        }
 
 
 
@@ -565,6 +602,7 @@ implements AIClient {
         Promise<void> {
 
 
+
         if (
 
             !this.metricRecorder
@@ -573,7 +611,6 @@ implements AIClient {
 
 
             return;
-
 
         }
 
