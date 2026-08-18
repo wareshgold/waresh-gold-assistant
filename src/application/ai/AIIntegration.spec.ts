@@ -1,4 +1,9 @@
-import { describe, expect, it } from "vitest";
+import {
+    describe,
+    expect,
+    it
+} from "vitest";
+
 
 import {
     AIService
@@ -56,6 +61,10 @@ implements AIClient {
 
 
 
+    calls = 0;
+
+
+
     constructor(
 
         responses: string[]
@@ -78,6 +87,8 @@ implements AIClient {
 
         Promise<AICompletionResult> {
 
+
+        this.calls++;
 
 
         return {
@@ -106,182 +117,269 @@ implements AIClient {
 
 
 
-describe("AI Tool Execution Integration", () => {
+describe(
+
+    "AI Tool Execution Integration",
+
+    () => {
 
 
 
-    it("should execute gold price tool through complete AI flow", async () => {
+        it(
+
+            "should execute gold price tool through complete AI flow",
+
+            async () => {
 
 
 
-        const registry =
+                const registry =
 
-            new DefaultAIToolRegistry();
-
-
+                    new DefaultAIToolRegistry();
 
 
 
-        const goldPriceUseCase = {
+
+
+                const goldPriceUseCase = {
 
 
 
-            async execute() {
+                    async execute() {
 
 
 
-                return {
+                        return {
 
 
-                    gold18k:
+                            price:
 
-                        19215328
+                                19215328
 
 
-                };
+                        };
+
+
+                    }
+
+
+                } as any;
+
+
+
+
+
+                registry.register(
+
+                    new GetCurrentGoldPriceTool(
+
+                        goldPriceUseCase
+
+                    )
+
+                );
+
+
+
+
+
+                const executionService =
+
+                    new AIToolExecutionService(
+
+                        new AIToolDecisionService(),
+
+
+                        new AIToolExecutor(
+
+                            registry
+
+                        )
+
+                    );
+
+
+
+
+
+                const client =
+
+                    new MockAIClient([
+
+                        "This response should not be used."
+
+                    ]);
+
+
+
+
+
+                const aiService =
+
+                    new AIService(
+
+                        client,
+
+                        registry,
+
+                        executionService
+
+                    );
+
+
+
+
+
+                const response =
+
+                    await aiService.process({
+
+                        message:
+
+                            "قیمت طلا چنده؟",
+
+
+                        userId:
+
+                            "user-1"
+
+                    });
+
+
+
+
+
+                expect(
+
+                    response.content
+
+                )
+
+                    .toBe(
+
+                        "قیمت فعلی طلای ۱۸ عیار: 19,215,328 تومان"
+
+                    );
+
+
+
+
+
+                expect(
+
+                    response.metadata?.toolExecuted
+
+                )
+
+                    .toBe(
+
+                        true
+
+                    );
+
+
+
+
+
+                expect(
+
+                    response.metadata?.toolSuccess
+
+                )
+
+                    .toBe(
+
+                        true
+
+                    );
+
+
+
+
+
+                expect(
+
+                    response.metadata?.toolName
+
+                )
+
+                    .toBe(
+
+                        "get_current_gold_price"
+
+                    );
+
+
+
+
+
+                expect(
+
+                    response.metadata?.aiProviderCalled
+
+                )
+
+                    .toBe(
+
+                        false
+
+                    );
+
+
+
+
+
+                expect(
+
+                    response.metadata?.model
+
+                )
+
+                    .toBe(
+
+                        "local-tool-router"
+
+                    );
+
+
+
+
+
+                expect(
+
+                    response.metadata?.availableTools
+
+                )
+
+                    .toContain(
+
+                        "get_current_gold_price"
+
+                    );
+
+
+
+
+
+                expect(
+
+                    client.calls
+
+                )
+
+                    .toBe(
+
+                        0
+
+                    );
 
 
             }
-
-
-        } as any;
-
-
-
-
-
-        registry.register(
-
-            new GetCurrentGoldPriceTool(
-
-                goldPriceUseCase
-
-            )
 
         );
 
 
 
+    }
 
-
-        const executionService =
-
-            new AIToolExecutionService(
-
-                new AIToolDecisionService(),
-
-
-                new AIToolExecutor(
-
-                    registry
-
-                )
-
-            );
-
-
-
-
-
-        const aiService =
-
-            new AIService(
-
-                new MockAIClient([
-
-
-                    `
-
-                    <tool>
-
-                    {
-
-                        "toolName":"get_current_gold_price",
-
-                        "input":{}
-
-                    }
-
-                    </tool>
-
-                    `,
-
-
-                    "Current gold price fetched successfully"
-
-                ]),
-
-
-                registry,
-
-
-                executionService
-
-            );
-
-
-
-
-
-        const response =
-
-            await aiService.process({
-
-                message:
-
-                    "قیمت طلا چنده؟",
-
-
-                userId:
-
-                    "user-1"
-
-            });
-
-
-
-
-
-        expect(response.content)
-
-            .toBe(
-
-                "Current gold price fetched successfully"
-
-            );
-
-
-
-
-
-        expect(response.metadata?.toolExecuted)
-
-            .toBe(true);
-
-
-
-
-
-        expect(response.metadata?.toolSuccess)
-
-            .toBe(true);
-
-
-
-
-
-        expect(response.metadata?.availableTools)
-
-            .toContain(
-
-                "get_current_gold_price"
-
-            );
-
-
-
-    });
-
-
-
-});
+);
