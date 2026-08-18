@@ -32,8 +32,27 @@ export enum MetricType {
 
 
     CACHE_ERROR =
-        "cache_error"
+        "cache_error",
 
+
+
+    AI_NVIDIA_REQUEST_DURATION =
+        "ai_nvidia_request_duration",
+
+
+
+    AI_TOOL_EXECUTION_DURATION =
+        "ai_tool_execution_duration",
+
+
+
+    AI_SERVICE_DURATION =
+        "ai_service_duration",
+
+
+
+    TELEGRAM_WEBHOOK_DURATION =
+        "telegram_webhook_duration"
 
 
 }

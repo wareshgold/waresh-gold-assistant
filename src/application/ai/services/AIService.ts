@@ -52,6 +52,18 @@ import {
 from "./AIResponseFormatter";
 
 
+import {
+    MetricRecorder
+}
+from "../../system/observability/MetricRecorder";
+
+
+import {
+    MetricType
+}
+from "../../../domain/system/observability/MetricType";
+
+
 
 export class AIService {
 
@@ -103,7 +115,12 @@ export class AIService {
 
         responseFormatter?:
 
-            AIResponseFormatter
+            AIResponseFormatter,
+
+
+        private readonly metricRecorder?:
+
+            MetricRecorder
 
     ) {
 
@@ -150,197 +167,36 @@ export class AIService {
 
 
 
-        const messages:
+        const startedAt =
 
-            AIMessage[] = [
-
-
-
-                {
-
-                    role:
-
-                        "system",
-
-
-                    content:
-
-                        this.promptService.buildSystemPrompt()
-
-                }
-
-            ];
+            Date.now();
 
 
 
-
-
-        if (
-
-            this.memory &&
-
-            request.userId
-
-        ) {
+        try {
 
 
 
-            const history =
+            const messages:
 
-                await this.memory.getHistory(
-
-                    request.userId
-
-                );
+                AIMessage[] = [
 
 
 
-            messages.push(
-
-                ...history.map(
-
-                    item => ({
+                    {
 
                         role:
 
-                            item.role,
+                            "system",
+
 
                         content:
 
-                            item.content
-
-                    })
-
-                )
-
-            );
-
-
-        }
-
-
-
-
-
-        messages.push({
-
-            role:
-
-                "user",
-
-            content:
-
-                request.message
-
-        });
-
-
-
-
-
-
-
-        const toolDefinitions =
-
-            this.toolRegistry
-
-                ?.getToolDefinitions();
-
-
-
-
-
-
-
-        let result =
-
-            await this.client.complete(
-
-                messages,
-
-                toolDefinitions
-
-                    ?
-
-                    {
-
-                        tools:
-
-                            toolDefinitions
+                            this.promptService.buildSystemPrompt()
 
                     }
 
-                    :
-
-                    undefined
-
-            );
-
-
-
-
-
-        console.log(
-
-            "AI_FIRST_RESULT",
-
-            {
-
-                content:
-
-                    result.content,
-
-
-                toolCalls:
-
-                    result.toolCalls
-
-            }
-
-        );
-
-
-
-
-
-
-
-        let toolResult;
-
-
-
-
-
-
-
-        if (
-
-            this.toolExecutionService
-
-        ) {
-
-
-
-            toolResult =
-
-                await this.toolExecutionService.executeIfRequired(
-
-                    result,
-
-                    {
-
-                        userId:
-
-                            request.userId,
-
-
-                        metadata:
-
-                            request.context
-
-                    }
-
-                );
+                ];
 
 
 
@@ -348,136 +204,127 @@ export class AIService {
 
             if (
 
-                toolResult
+                this.memory &&
+
+                request.userId
 
             ) {
 
 
 
-                const nativeToolCall =
+                const history =
 
-                    result.toolCalls?.[0];
+                    await this.memory.getHistory(
 
+                        request.userId
 
-
-
-
-                if (
-
-                    nativeToolCall
-
-                ) {
+                    );
 
 
 
-                    const toolCallId =
+                messages.push(
 
-                        nativeToolCall.id ??
+                    ...history.map(
 
-                        `tool-call-${Date.now()}`;
+                        item => ({
+
+                            role:
+
+                                item.role,
+
+                            content:
+
+                                item.content
+
+                        })
+
+                    )
+
+                );
 
 
-
-
-
-                    messages.push({
-
-                        role:
-
-                            "assistant",
-
-                        content:
-
-                            "",
-
-
-                        toolCalls:
-
-                        [
-
-                            {
-
-                                id:
-
-                                    toolCallId,
-
-                                name:
-
-                                    nativeToolCall.name,
-
-                                arguments:
-
-                                    nativeToolCall.arguments
-
-                            }
-
-                        ]
-
-                    });
+            }
 
 
 
 
 
-                    messages.push({
+            messages.push({
 
-                        role:
+                role:
 
-                            "tool",
+                    "user",
 
-                        content:
+                content:
 
-                            JSON.stringify(toolResult),
+                    request.message
 
-                        toolCallId:
+            });
 
-                            toolCallId
 
-                    });
 
+
+
+
+
+            const toolDefinitions =
+
+                this.toolRegistry
+
+                    ?.getToolDefinitions();
+
+
+
+
+
+
+
+            let result =
+
+                await this.client.complete(
+
+                    messages,
+
+                    toolDefinitions
+
+                        ?
+
+                        {
+
+                            tools:
+
+                                toolDefinitions
+
+                        }
+
+                        :
+
+                        undefined
+
+                );
+
+
+
+
+
+            console.log(
+
+                "AI_FIRST_RESULT",
+
+                {
+
+                    content:
+
+                        result.content,
+
+
+                    toolCalls:
+
+                        result.toolCalls
 
                 }
 
-                else {
-
-
-
-                    messages.push({
-
-                        role:
-
-                            "assistant",
-
-                        content:
-
-                            ""
-
-                    });
-
-
-
-
-
-                    messages.push({
-
-                        role:
-
-                            "user",
-
-                        content:
-
-`
-Tool execution result:
-
-${JSON.stringify(toolResult)}
-
-Explain this result in Persian.
-`
-
-                    });
-
-
-                }
+            );
 
 
 
@@ -485,27 +332,40 @@ Explain this result in Persian.
 
 
 
-                result =
+            let toolResult;
 
-                    await this.client.complete(
 
-                        messages,
 
-                        toolDefinitions
 
-                            ?
 
-                            {
 
-                                tools:
 
-                                    toolDefinitions
+            if (
 
-                            }
+                this.toolExecutionService
 
-                            :
+            ) {
 
-                            undefined
+
+
+                toolResult =
+
+                    await this.toolExecutionService.executeIfRequired(
+
+                        result,
+
+                        {
+
+                            userId:
+
+                                request.userId,
+
+
+                            metadata:
+
+                                request.context
+
+                        }
 
                     );
 
@@ -515,36 +375,206 @@ Explain this result in Persian.
 
                 if (
 
-                    !result.content
+                    toolResult
 
                 ) {
 
 
 
-                    result = {
+                    const nativeToolCall =
 
-
-                        content:
-
-                            JSON.stringify(
-
-                                toolResult
-
-                            ),
+                        result.toolCalls?.[0];
 
 
 
-                        model:
-
-                            result.model,
 
 
+                    if (
 
-                        usage:
+                        nativeToolCall
 
-                            result.usage
+                    ) {
 
-                    };
+
+
+                        const toolCallId =
+
+                            nativeToolCall.id ??
+
+                            `tool-call-${Date.now()}`;
+
+
+
+
+
+                        messages.push({
+
+                            role:
+
+                                "assistant",
+
+                            content:
+
+                                "",
+
+
+                            toolCalls:
+
+                            [
+
+                                {
+
+                                    id:
+
+                                        toolCallId,
+
+                                    name:
+
+                                        nativeToolCall.name,
+
+                                    arguments:
+
+                                        nativeToolCall.arguments
+
+                                }
+
+                            ]
+
+                        });
+
+
+
+
+
+                        messages.push({
+
+                            role:
+
+                                "tool",
+
+                            content:
+
+                                JSON.stringify(toolResult),
+
+                            toolCallId:
+
+                                toolCallId
+
+                        });
+
+
+                    }
+
+                    else {
+
+
+
+                        messages.push({
+
+                            role:
+
+                                "assistant",
+
+                            content:
+
+                                ""
+
+                        });
+
+
+
+
+
+                        messages.push({
+
+                            role:
+
+                                "user",
+
+                            content:
+
+`
+Tool execution result:
+
+${JSON.stringify(toolResult)}
+
+Explain this result in Persian.
+`
+
+                        });
+
+
+                    }
+
+
+
+
+
+
+
+                    result =
+
+                        await this.client.complete(
+
+                            messages,
+
+                            toolDefinitions
+
+                                ?
+
+                                {
+
+                                    tools:
+
+                                        toolDefinitions
+
+                                }
+
+                                :
+
+                                undefined
+
+                        );
+
+
+
+
+
+                    if (
+
+                        !result.content
+
+                    ) {
+
+
+
+                        result = {
+
+
+                            content:
+
+                                JSON.stringify(
+
+                                    toolResult
+
+                                ),
+
+
+
+                            model:
+
+                                result.model,
+
+
+
+                            usage:
+
+                                result.usage
+
+                        };
+
+
+                    }
 
 
                 }
@@ -553,96 +583,180 @@ Explain this result in Persian.
             }
 
 
+
+
+
+
+
+            await this.saveConversation(
+
+                request,
+
+                result.content
+
+            );
+
+
+
+
+
+
+
+            return {
+
+
+                content:
+
+                    this.responseFormatter.format(
+
+                        result.content
+
+                    ),
+
+
+
+
+
+                metadata:
+
+                {
+
+                    model:
+
+                        result.model,
+
+
+
+                    usage:
+
+                        result.usage,
+
+
+
+                    userId:
+
+                        request.userId,
+
+
+
+                    toolExecuted:
+
+                        Boolean(toolResult),
+
+
+
+                    toolSuccess:
+
+                        toolResult?.success,
+
+
+
+                    availableTools:
+
+                        this.toolRegistry
+
+                            ?.getTools()
+
+                            .map(
+
+                                tool =>
+
+                                    tool.name
+
+                            )
+
+
+                }
+
+
+            };
+
+
+        }
+
+        finally {
+
+
+            await this.recordDuration(
+
+                MetricType.AI_SERVICE_DURATION,
+
+                Date.now() - startedAt
+
+            );
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+    private async recordDuration(
+
+        type:
+
+            MetricType,
+
+
+        duration:
+
+            number
+
+    ):
+
+        Promise<void> {
+
+
+
+        if (
+
+            !this.metricRecorder
+
+        ) {
+
+
+            return;
+
+
         }
 
 
 
 
 
+        try {
 
 
-        await this.saveConversation(
+            await this.metricRecorder.record(
 
-            request,
+                type,
 
-            result.content
+                duration
 
-        );
-
-
+            );
 
 
+        }
+
+        catch(error) {
 
 
+            console.error(
 
-        return {
+                "AI metric recording failed:",
 
+                error
 
-            content:
-
-                this.responseFormatter.format(
-
-                    result.content
-
-                ),
+            );
 
 
-
-
-
-            metadata:
-
-            {
-
-                model:
-
-                    result.model,
-
-
-
-                usage:
-
-                    result.usage,
-
-
-
-                userId:
-
-                    request.userId,
-
-
-
-                toolExecuted:
-
-                    Boolean(toolResult),
-
-
-
-                toolSuccess:
-
-                    toolResult?.success,
-
-
-
-                availableTools:
-
-                    this.toolRegistry
-
-                        ?.getTools()
-
-                        .map(
-
-                            tool =>
-
-                                tool.name
-
-                        )
-
-
-            }
-
-
-        };
+        }
 
 
     }
