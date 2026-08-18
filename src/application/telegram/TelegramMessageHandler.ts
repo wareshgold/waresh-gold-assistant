@@ -1,12 +1,18 @@
-import { TelegramCommandExecutor }
+import {
+    TelegramCommandExecutor
+}
 from "./interfaces/TelegramCommandExecutor";
 
 
-import { IncomingMessage }
+import {
+    IncomingMessage
+}
 from "../common/models/IncomingMessage";
 
 
-import { TelegramResponseFormatter }
+import {
+    TelegramResponseFormatter
+}
 from "./TelegramResponseFormatter";
 
 
@@ -16,10 +22,14 @@ from "./TelegramResponseFormatter";
 export interface TelegramHandledResponse {
 
 
-    content: string;
+    content:
+
+        string;
 
 
-    replyMarkup?: any;
+    replyMarkup?:
+
+        any;
 
 
 }
@@ -34,17 +44,16 @@ export class TelegramMessageHandler {
 
 
 
-
-
-
     constructor(
 
 
         private readonly commandService:
+
             TelegramCommandExecutor,
 
 
         _formatter?:
+
             TelegramResponseFormatter
 
 
@@ -63,12 +72,13 @@ export class TelegramMessageHandler {
 
     async handle(
 
-
         message:
+
             IncomingMessage
 
+    ):
 
-    ): Promise<string> {
+        Promise<string> {
 
 
 
@@ -115,11 +125,7 @@ export class TelegramMessageHandler {
         return response.content ?? "";
 
 
-
     }
-
-
-
 
 
 
@@ -131,12 +137,13 @@ export class TelegramMessageHandler {
 
     async handleResponse(
 
-
         message:
+
             IncomingMessage
 
+    ):
 
-    ): Promise<TelegramHandledResponse | string> {
+        Promise<TelegramHandledResponse | string> {
 
 
 
@@ -200,7 +207,6 @@ export class TelegramMessageHandler {
 
 
     }
-
 
 
 

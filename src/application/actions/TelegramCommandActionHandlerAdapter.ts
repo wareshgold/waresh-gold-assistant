@@ -167,11 +167,7 @@ implements ActionHandler {
 
             type:
 
-                response.type === "data"
-
-                    ? "data"
-
-                    : "text",
+                "text",
 
 
 
@@ -181,15 +177,25 @@ implements ActionHandler {
 
 
 
-            data:
-
-                response.data,
+            metadata: {
 
 
+                telegramType:
 
-            metadata:
+                    response.type ?? "text",
 
-                response.metadata
+
+
+                replyMarkup:
+
+                    "replyMarkup" in response
+
+                        ? response.replyMarkup
+
+                        : undefined
+
+
+            }
 
 
         };

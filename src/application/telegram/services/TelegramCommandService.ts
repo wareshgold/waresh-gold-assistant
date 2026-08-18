@@ -1,4 +1,7 @@
-import { TelegramCommandExecutor }
+import {
+    TelegramCommandExecutor,
+    TelegramExecutorResponse
+}
 from "../interfaces/TelegramCommandExecutor";
 
 
@@ -20,11 +23,13 @@ from "../flows/TelegramConversationManager";
 
 
 export class TelegramCommandService
+
 implements TelegramCommandExecutor {
 
 
 
     private readonly contextBuilder:
+
         TelegramCommandContextBuilder;
 
 
@@ -33,14 +38,17 @@ implements TelegramCommandExecutor {
 
 
         private readonly router:
+
             TelegramCommandRouter,
 
 
         private readonly conversationManager?:
+
             TelegramConversationManager,
 
 
         contextBuilder?:
+
             TelegramCommandContextBuilder
 
 
@@ -68,7 +76,8 @@ implements TelegramCommandExecutor {
         message:
             IncomingMessage | string
 
-    ): Promise<any> {
+    ):
+        Promise<TelegramExecutorResponse> {
 
 
 
@@ -93,7 +102,10 @@ implements TelegramCommandExecutor {
 
                 }
 
-                : message;
+                :
+
+                message;
+
 
 
 
@@ -113,6 +125,7 @@ implements TelegramCommandExecutor {
 
 
 
+
         const text =
 
             normalizedMessage.text
@@ -125,15 +138,12 @@ implements TelegramCommandExecutor {
 
 
 
-        /*
-         * Slash commands have highest priority
-         */
-
         if (
 
             text.startsWith("/")
 
         ) {
+
 
 
             const context =
@@ -154,6 +164,8 @@ implements TelegramCommandExecutor {
 
 
 
+
+
             return this.router.execute(
 
                 context
@@ -170,10 +182,6 @@ implements TelegramCommandExecutor {
 
 
 
-        /*
-         * Active conversations
-         */
-
         if (
 
             this.conversationManager
@@ -184,7 +192,6 @@ implements TelegramCommandExecutor {
 
             const activeConversation =
 
-
                 await this.conversationManager.execute(
 
                     normalizedMessage.userId,
@@ -192,6 +199,8 @@ implements TelegramCommandExecutor {
                     text
 
                 );
+
+
 
 
 
@@ -217,12 +226,7 @@ implements TelegramCommandExecutor {
 
 
 
-        /*
-         * Try telegram commands
-         */
-
         const context =
-
 
             this.contextBuilder.build(
 
@@ -237,6 +241,8 @@ implements TelegramCommandExecutor {
                 normalizedMessage.firstName
 
             );
+
+
 
 
 
@@ -263,6 +269,8 @@ implements TelegramCommandExecutor {
                         )
 
                 );
+
+
 
 
 
@@ -296,7 +304,6 @@ implements TelegramCommandExecutor {
             context
 
         );
-
 
 
     }

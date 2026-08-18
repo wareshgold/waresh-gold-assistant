@@ -24,6 +24,18 @@ from "../../../application/ai/tools/AIToolDefinition";
 
 
 import {
+    MetricRecorder
+}
+from "../../../application/system/observability/MetricRecorder";
+
+
+import {
+    MetricType
+}
+from "../../../domain/system/observability/MetricType";
+
+
+import {
     z
 }
 from "zod";
@@ -134,7 +146,12 @@ implements AIClient {
 
             string =
 
-                "meta/llama-3.3-70b-instruct"
+                "meta/llama-3.3-70b-instruct",
+
+
+        private readonly metricRecorder?:
+
+            MetricRecorder
 
     ) {}
 
@@ -220,6 +237,14 @@ implements AIClient {
 
 
 
+        const startedAt =
+
+            Date.now();
+
+
+
+
+
         const response =
 
             await fetch(
@@ -269,6 +294,18 @@ implements AIClient {
                 }
 
             );
+
+
+
+
+
+        await this.recordDuration(
+
+            MetricType.AI_NVIDIA_REQUEST_DURATION,
+
+            Date.now() - startedAt
+
+        );
 
 
 
@@ -502,6 +539,75 @@ implements AIClient {
                     )
 
         };
+
+
+    }
+
+
+
+
+
+
+
+    private async recordDuration(
+
+        type:
+
+            MetricType,
+
+
+        duration:
+
+            number
+
+    ):
+
+        Promise<void> {
+
+
+        if (
+
+            !this.metricRecorder
+
+        ) {
+
+
+            return;
+
+
+        }
+
+
+
+
+
+        try {
+
+
+            await this.metricRecorder.record(
+
+                type,
+
+                duration
+
+            );
+
+
+        }
+
+        catch(error) {
+
+
+            console.error(
+
+                "AI metric recording failed:",
+
+                error
+
+            );
+
+
+        }
 
 
     }
