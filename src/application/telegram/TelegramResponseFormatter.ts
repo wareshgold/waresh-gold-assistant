@@ -10,12 +10,13 @@ export class TelegramResponseFormatter {
 
 
 
-
     constructor(
 
         _legacyFormatter?: unknown
 
     ) {}
+
+
 
 
 
@@ -48,8 +49,8 @@ export class TelegramResponseFormatter {
         );
 
 
-
     }
+
 
 
 
@@ -65,7 +66,7 @@ export class TelegramResponseFormatter {
 
 
 
-        const codeBlocks: string[] = [];
+        const protectedBlocks: string[] = [];
 
 
 
@@ -83,11 +84,25 @@ export class TelegramResponseFormatter {
 
                     const index =
 
-                        codeBlocks.length;
+                        protectedBlocks.length;
 
 
 
-                    codeBlocks.push(
+
+
+                    const letter =
+
+                        String.fromCharCode(
+
+                            65 + index
+
+                        );
+
+
+
+
+
+                    protectedBlocks.push(
 
                         match
 
@@ -95,11 +110,17 @@ export class TelegramResponseFormatter {
 
 
 
-                    return `___TELEGRAM_CODE_BLOCK_${String.fromCharCode(65 + index)}___`;
+
+
+                    return `__CODE_BLOCK_${letter}__`;
+
 
                 }
 
             );
+
+
+
 
 
 
@@ -137,6 +158,9 @@ export class TelegramResponseFormatter {
 
 
 
+
+
+
         const formattedText =
 
             escapedText.replace(
@@ -157,7 +181,10 @@ export class TelegramResponseFormatter {
 
 
 
+
+
                     return `<code>${normalizedValue}</code>`;
+
 
                 }
 
@@ -167,20 +194,27 @@ export class TelegramResponseFormatter {
 
 
 
+
+
+
         return formattedText.replace(
 
-            /___TELEGRAM_CODE_BLOCK_([A-Z]+)___/g,
+            /__CODE_BLOCK_([A-Z]+)__/g,
 
-            (_, letter) =>
+            (_, letter) => {
 
-                codeBlocks[
+
+
+                return protectedBlocks[
 
                     letter.charCodeAt(0) - 65
 
-                ]
+                ];
+
+
+            }
 
         );
-
 
 
     }
@@ -190,10 +224,11 @@ export class TelegramResponseFormatter {
 
 
 
+
+
     private normalizeDigits(
 
         value:
-
             string
 
     ): string {
@@ -250,7 +285,9 @@ export class TelegramResponseFormatter {
 
                 );
 
+
         }
+
 
 
 
@@ -265,9 +302,7 @@ export class TelegramResponseFormatter {
         );
 
 
-
     }
-
 
 
 
