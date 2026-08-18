@@ -258,15 +258,46 @@ export class AIService {
 
                 messages,
 
-                {
+                toolDefinitions
 
-                    tools:
+                    ?
 
-                        toolDefinitions
+                    {
 
-                }
+                        tools:
+
+                            toolDefinitions
+
+                    }
+
+                    :
+
+                    undefined
 
             );
+
+
+
+
+
+        console.log(
+
+            "AI_FIRST_RESULT",
+
+            {
+
+                content:
+
+                    result.content,
+
+
+                toolCalls:
+
+                    result.toolCalls
+
+            }
+
+        );
 
 
 
@@ -333,9 +364,19 @@ export class AIService {
 
                 if (
 
-                    nativeToolCall?.id
+                    nativeToolCall
 
                 ) {
+
+
+
+                    const toolCallId =
+
+                        nativeToolCall.id ??
+
+                        `tool-call-${Date.now()}`;
+
+
 
 
 
@@ -358,7 +399,7 @@ export class AIService {
 
                                 id:
 
-                                    nativeToolCall.id,
+                                    toolCallId,
 
                                 name:
 
@@ -390,7 +431,7 @@ export class AIService {
 
                         toolCallId:
 
-                            nativeToolCall.id
+                            toolCallId
 
                     });
 
@@ -409,7 +450,7 @@ export class AIService {
 
                         content:
 
-                            "",
+                            ""
 
                     });
 
@@ -448,9 +489,65 @@ Explain this result in Persian.
 
                     await this.client.complete(
 
-                        messages
+                        messages,
+
+                        toolDefinitions
+
+                            ?
+
+                            {
+
+                                tools:
+
+                                    toolDefinitions
+
+                            }
+
+                            :
+
+                            undefined
 
                     );
+
+
+
+
+
+                if (
+
+                    !result.content
+
+                ) {
+
+
+
+                    result = {
+
+
+                        content:
+
+                            JSON.stringify(
+
+                                toolResult
+
+                            ),
+
+
+
+                        model:
+
+                            result.model,
+
+
+
+                        usage:
+
+                            result.usage
+
+                    };
+
+
+                }
 
 
             }
