@@ -52,7 +52,7 @@ export class TelegramMessageHandler {
             TelegramCommandExecutor,
 
 
-        _formatter?:
+        private readonly formatter:
 
             TelegramResponseFormatter
 
@@ -111,7 +111,11 @@ export class TelegramMessageHandler {
         if (typeof response === "string") {
 
 
-            return response;
+            return this.formatter.format(
+
+                response
+
+            );
 
 
         }
@@ -122,7 +126,11 @@ export class TelegramMessageHandler {
 
 
 
-        return response.content ?? "";
+        return this.formatter.format(
+
+            response.content ?? ""
+
+        );
 
 
     }
@@ -178,7 +186,11 @@ export class TelegramMessageHandler {
         if (typeof response === "string") {
 
 
-            return response;
+            return this.formatter.format(
+
+                response
+
+            );
 
 
         }
@@ -198,7 +210,11 @@ export class TelegramMessageHandler {
 
             content:
 
-                response.content ?? ""
+                this.formatter.format(
+
+                    response.content ?? ""
+
+                )
 
 
 
