@@ -95,7 +95,22 @@ export class TelegramResponseFormatter {
 
 
 
-                    return `___TELEGRAM_CODE_BLOCK_${index}___`;
+                    /*
+                     * IMPORTANT:
+                     *
+                     * Placeholder must not contain digits.
+                     * Number formatter below processes all numbers
+                     * and was corrupting placeholders like:
+                     *
+                     * ___TELEGRAM_CODE_BLOCK_0___
+                     *
+                     * into:
+                     *
+                     * ___TELEGRAM_CODE_BLOCK_<code>0</code>___
+                     *
+                     */
+
+                    return `___TELEGRAM_CODE_BLOCK_${String.fromCharCode(65 + index)}___`;
 
                 }
 
@@ -171,11 +186,15 @@ export class TelegramResponseFormatter {
 
         return formattedText.replace(
 
-            /___TELEGRAM_CODE_BLOCK_(\d+)___/g,
+            /___TELEGRAM_CODE_BLOCK_([A-Z]+)___/g,
 
-            (_, index) =>
+            (_, letter) =>
 
-                codeBlocks[Number(index)]
+                codeBlocks[
+
+                    letter.charCodeAt(0) - 65
+
+                ]
 
         );
 
