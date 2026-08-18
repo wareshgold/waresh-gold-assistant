@@ -409,7 +409,7 @@ export class AIService {
 
                         content:
 
-                            ""
+                            "",
 
                     });
 
@@ -448,15 +448,7 @@ Explain this result in Persian.
 
                     await this.client.complete(
 
-                        messages,
-
-                        {
-
-                            tools:
-
-                                toolDefinitions
-
-                        }
+                        messages
 
                     );
 

@@ -6,8 +6,7 @@ from "../../../application/ai/client/AIClient";
 
 
 import {
-    AIMessage,
-    AIMessageToolCall
+    AIMessage
 }
 from "../../../application/ai/client/AIMessage";
 
@@ -211,10 +210,6 @@ implements AIClient {
 
 
 
-            requestBody.tool_choice =
-
-                "auto";
-
 
 
             requestBody.parallel_tool_calls =
@@ -223,6 +218,8 @@ implements AIClient {
 
 
         }
+
+
 
 
 
@@ -286,9 +283,75 @@ implements AIClient {
 
 
 
+            let errorBody = "";
+
+
+
+            try {
+
+
+
+                errorBody =
+
+                    await response.text();
+
+
+            }
+
+            catch {
+
+
+                errorBody = "";
+
+
+            }
+
+
+
+
+
+            console.error(
+
+                "NVIDIA API ERROR:",
+
+                {
+
+                    status:
+
+                        response.status,
+
+
+                    body:
+
+                        errorBody
+
+                }
+
+            );
+
+
+
+
+
             throw new Error(
 
                 `NVIDIA AI request failed: ${response.status}`
+
+                +
+
+                (
+
+                    errorBody
+
+                        ?
+
+                        ` ${errorBody}`
+
+                        :
+
+                        ""
+
+                )
 
             );
 
@@ -311,6 +374,54 @@ implements AIClient {
         const message =
 
             data.choices?.[0]?.message;
+
+
+
+
+
+        console.log(
+
+            "NVIDIA TOOL CALL RESPONSE:",
+
+            message?.tool_calls
+
+        );
+
+
+
+
+
+        if (
+
+            !message?.content &&
+
+            !message?.tool_calls?.length
+
+        ) {
+
+
+
+            console.warn(
+
+                "NVIDIA returned empty response",
+
+                {
+
+                    model:
+
+                        data.model,
+
+
+                    usage:
+
+                        data.usage
+
+                }
+
+            );
+
+
+        }
 
 
 
@@ -631,7 +742,6 @@ implements AIClient {
                 properties:
 
                 {}
-
 
             };
 
