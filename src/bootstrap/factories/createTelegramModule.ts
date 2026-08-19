@@ -34,6 +34,9 @@ from "../../application/telegram/flows/GoldCalculationConversationFlow";
 import { ReverseGoldConversationFlow }
 from "../../application/telegram/flows/ReverseGoldConversationFlow";
 
+import { AIConversationFlow }
+from "../../application/telegram/flows/AIConversationFlow";
+
 import { TelegramWebhookController }
 from "../../interfaces/telegram/TelegramWebhookController";
 
@@ -236,6 +239,13 @@ export function createTelegramModule(
                     dependencies.calculateReverseGoldUseCase,
 
                     telegramNumberFormatter
+
+                ),
+
+
+                new AIConversationFlow(
+
+                    dependencies.aiService
 
                 )
 

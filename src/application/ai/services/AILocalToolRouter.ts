@@ -529,7 +529,7 @@ export class AILocalToolRouter {
 
             const price =
 
-                data?.price;
+                data?.mithqalPrice;
 
 
 

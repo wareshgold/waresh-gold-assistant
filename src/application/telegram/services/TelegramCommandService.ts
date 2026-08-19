@@ -5,20 +5,34 @@ import {
 from "../interfaces/TelegramCommandExecutor";
 
 
-import { TelegramCommandRouter }
+import {
+    TelegramCommandRouter
+}
 from "../commands/TelegramCommandRouter";
 
 
-import { TelegramCommandContextBuilder }
+import {
+    TelegramCommandContextBuilder
+}
 from "../commands/TelegramCommandContextBuilder";
 
 
-import { IncomingMessage }
+import {
+    IncomingMessage
+}
 from "../../common/models/IncomingMessage";
 
 
-import { TelegramConversationManager }
+import {
+    TelegramConversationManager
+}
 from "../flows/TelegramConversationManager";
+
+
+import {
+    TelegramAISessionManager
+}
+from "../ai/TelegramAISessionManager";
 
 
 
@@ -49,7 +63,12 @@ implements TelegramCommandExecutor {
 
         contextBuilder?:
 
-            TelegramCommandContextBuilder
+            TelegramCommandContextBuilder,
+
+
+        private readonly aiSessionManager?:
+
+            TelegramAISessionManager
 
 
 
@@ -171,6 +190,49 @@ implements TelegramCommandExecutor {
                 context
 
             );
+
+
+        }
+
+
+
+
+
+
+
+        if (
+
+            this.aiSessionManager
+
+        ) {
+
+
+
+            const aiResponse =
+
+                await this.aiSessionManager.execute(
+
+                    normalizedMessage.userId,
+
+                    text
+
+                );
+
+
+
+
+
+            if (
+
+                aiResponse
+
+            ) {
+
+
+                return aiResponse;
+
+
+            }
 
 
         }
