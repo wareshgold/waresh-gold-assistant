@@ -43,33 +43,25 @@ from "zod";
 
 
 
-
 interface NvidiaToolCall {
 
 
     id?:
-
         string;
-
 
 
     type?:
-
         string;
-
 
 
     function?: {
 
 
         name?:
-
             string;
 
 
-
         arguments?:
-
             string;
 
 
@@ -81,44 +73,44 @@ interface NvidiaToolCall {
 
 
 
-
 interface NvidiaResponse {
+
 
     choices?: {
 
         message?: {
 
             content?:
-
                 string | null;
 
 
-
             tool_calls?:
-
                 NvidiaToolCall[];
-
 
         };
 
     }[];
 
 
-    model?: string;
+
+    model?:
+        string;
+
 
 
     usage?: {
 
-        prompt_tokens?:
 
+        prompt_tokens?:
             number;
 
 
         completion_tokens?:
-
             number;
 
+
     };
+
 
 }
 
@@ -164,12 +156,12 @@ implements AIClient {
 
 
 
-
     async complete(
 
         messages:
 
             AIMessage[],
+
 
         options?:
 
@@ -191,7 +183,6 @@ implements AIClient {
                 this.model,
 
 
-
             messages:
 
                 messages.map(
@@ -206,7 +197,9 @@ implements AIClient {
 
                 )
 
+
         };
+
 
 
 
@@ -247,6 +240,7 @@ implements AIClient {
 
                 "auto";
 
+
         }
 
 
@@ -258,6 +252,7 @@ implements AIClient {
         const startedAt =
 
             Date.now();
+
 
 
 
@@ -283,10 +278,10 @@ implements AIClient {
 
                     options?.tools?.length ?? 0
 
+
             }
 
         );
-
 
 
 
@@ -326,6 +321,7 @@ implements AIClient {
 
                             `Bearer ${this.apiKey}`
 
+
                     },
 
 
@@ -348,7 +344,6 @@ implements AIClient {
 
 
 
-
         console.log(
 
             "NVIDIA_RESPONSE_RECEIVED",
@@ -364,10 +359,10 @@ implements AIClient {
 
                     response.status
 
+
             }
 
         );
-
 
 
 
@@ -386,8 +381,8 @@ implements AIClient {
 
 
 
-        if (!response.ok) {
 
+        if (!response.ok) {
 
 
             let errorBody = "";
@@ -396,11 +391,9 @@ implements AIClient {
 
             try {
 
-
                 errorBody =
 
                     await response.text();
-
 
             }
 
@@ -430,6 +423,7 @@ implements AIClient {
 
                         errorBody
 
+
                 }
 
             );
@@ -440,9 +434,7 @@ implements AIClient {
 
             throw new Error(
 
-                `NVIDIA AI request failed: ${response.status}`
-
-                +
+                `NVIDIA AI request failed: ${response.status}` +
 
                 (
 
@@ -476,9 +468,11 @@ implements AIClient {
 
 
 
+
         const message =
 
             data.choices?.[0]?.message;
+
 
 
 
@@ -491,6 +485,7 @@ implements AIClient {
             message?.tool_calls
 
         );
+
 
 
 
@@ -522,10 +517,10 @@ implements AIClient {
                     data.usage?.prompt_tokens,
 
 
-
                 outputTokens:
 
                     data.usage?.completion_tokens
+
 
             },
 
@@ -549,44 +544,38 @@ implements AIClient {
 
                     .map(
 
-                        toolCall =>
+                        toolCall => ({
 
-                            ({
+                            id:
 
-                                id:
-
-                                    toolCall.id,
+                                toolCall.id,
 
 
-                                name:
+                            name:
 
-                                    toolCall.function?.name ?? "",
+                                toolCall.function?.name ?? "",
 
 
-                                arguments:
+                            arguments:
 
-                                    this.parseArguments(
+                                this.parseArguments(
 
-                                        toolCall.function?.arguments
+                                    toolCall.function?.arguments
 
-                                    )
+                                )
 
-                            })
+
+                        })
 
                     )
+
 
         };
 
 
     }
 
-
-
-
-
-
-
-    private async recordDuration(
+        private async recordDuration(
 
         type:
 
@@ -602,13 +591,7 @@ implements AIClient {
         Promise<void> {
 
 
-
-        if (
-
-            !this.metricRecorder
-
-        ) {
-
+        if (!this.metricRecorder) {
 
             return;
 
@@ -698,6 +681,7 @@ implements AIClient {
 
                         toolCall => ({
 
+
                             id:
 
                                 toolCall.id,
@@ -725,7 +709,9 @@ implements AIClient {
 
                                     )
 
+
                             }
+
 
                         })
 
@@ -736,6 +722,8 @@ implements AIClient {
 
 
         }
+
+
 
 
 
@@ -766,10 +754,13 @@ implements AIClient {
 
                     message.toolCallId
 
+
             };
 
 
         }
+
+
 
 
 
@@ -786,6 +777,7 @@ implements AIClient {
             content:
 
                 message.content
+
 
         };
 
@@ -816,6 +808,7 @@ implements AIClient {
             type:
 
                 "function",
+
 
 
             function:
@@ -890,13 +883,16 @@ implements AIClient {
 
 
 
+
         try {
 
 
             return z.toJSONSchema(
 
                 parameters as Parameters<
+
                     typeof z.toJSONSchema
+
                 >[0],
 
                 {
@@ -930,6 +926,7 @@ implements AIClient {
 
 
             }
+
 
 
 
@@ -1039,6 +1036,7 @@ implements AIClient {
 
 
         }
+
 
 
 

@@ -293,6 +293,30 @@ export class TelegramUpdateProcessor {
 
 
 
+            if (!formattedResponse.trim()) {
+
+                console.warn(
+
+                    "Ignoring empty Telegram string response",
+
+                    {
+
+                        chatId,
+
+                        response
+
+                    }
+
+                );
+
+                return;
+
+            }
+
+
+
+
+
             await this.botClient.sendMessage({
 
 
@@ -481,6 +505,30 @@ export class TelegramUpdateProcessor {
                 response
 
             );
+
+
+
+
+
+        if (!formattedResponse.trim()) {
+
+            console.warn(
+
+                "Ignoring empty Telegram object response",
+
+                {
+
+                    chatId,
+
+                    response
+
+                }
+
+            );
+
+            return;
+
+        }
 
 
 

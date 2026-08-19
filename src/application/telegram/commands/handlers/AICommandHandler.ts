@@ -16,6 +16,18 @@ import {
 from "../../../ai/services/AIService";
 
 
+import {
+    TelegramSessionStore
+}
+from "../../state/TelegramSessionStore";
+
+
+import {
+    AI_CHAT_STATE
+}
+from "../../flows/AIConversationFlow";
+
+
 
 
 export class AICommandHandler
@@ -28,39 +40,33 @@ implements TelegramCommandHandler {
 
         private readonly aiService:
 
-            AIService
+            AIService,
+
+        private readonly sessionStore?:
+
+            TelegramSessionStore
 
     ) {}
 
 
 
 
-
-
     metadata() {
 
-
         return {
-
 
             command:
 
                 "/ai",
 
 
-
             description:
 
                 "دستیار هوشمند وارش گلد"
 
-
         };
 
-
     }
-
-
-
 
 
 
@@ -75,36 +81,22 @@ implements TelegramCommandHandler {
 
         boolean {
 
-
-
         const normalized =
 
             command
-
                 .trim()
-
                 .toLowerCase();
-
-
 
 
         return (
 
             normalized === "/ai"
-
             ||
-
             normalized === "ai"
 
         );
 
-
     }
-
-
-
-
-
 
 
 
@@ -117,6 +109,34 @@ implements TelegramCommandHandler {
 
     ) {
 
+        const userId =
+
+            context.userId ?? "unknown";
+
+
+
+        if (this.sessionStore) {
+
+            await this.sessionStore.save({
+
+                userId,
+
+                state:
+
+                    AI_CHAT_STATE,
+
+                data:
+
+                    {},
+
+                updatedAt:
+
+                    Date.now()
+
+            });
+
+        }
+
 
 
         const question =
@@ -125,19 +145,13 @@ implements TelegramCommandHandler {
 
 
 
-
-
-
         if (!question) {
 
-
             return {
-
 
                 type:
 
                     "text" as const,
-
 
 
                 content:
@@ -145,20 +159,14 @@ implements TelegramCommandHandler {
 `
 🤖 دستیار هوشمند وارش گلد
 
-سوال خود را بعد از دستور /ai وارد کنید.
+گفتگو شروع شد. هر سوالی داری بپرس، دیگه لازم نیست /ai بذاری اول پیامت.
 
-مثال:
-
-/ai قیمت طلا چطور محاسبه می‌شود؟
+برای پایان گفتگو /exit رو بفرست.
 `
 
             };
 
-
         }
-
-
-
 
 
 
@@ -170,9 +178,7 @@ implements TelegramCommandHandler {
 
                 question,
 
-                userId:
-
-                    context.userId
+                userId
 
             }
 
@@ -180,28 +186,15 @@ implements TelegramCommandHandler {
 
 
 
-
-
-
-
-
         const result =
 
             await this.aiService.process({
-
-
 
                 message:
 
                     question,
 
-
-
-                userId:
-
-                    context.userId ?? "unknown",
-
-
+                userId,
 
                 context:
 
@@ -211,18 +204,13 @@ implements TelegramCommandHandler {
 
                         context.username,
 
-
                     firstName:
 
                         context.firstName
 
                 }
 
-
             });
-
-
-
 
 
 
@@ -236,31 +224,19 @@ implements TelegramCommandHandler {
 
 
 
-
-
-
-
-
         return {
-
 
             type:
 
                 "text" as const,
 
 
-
             content:
 
                 result.content
 
-
         };
 
-
-
     }
-
-
 
 }

@@ -20,9 +20,11 @@ export interface AIMessageToolCall {
         string;
 
 
+
     name:
 
         string;
+
 
 
     arguments:
@@ -31,6 +33,7 @@ export interface AIMessageToolCall {
 
 
 }
+
 
 
 

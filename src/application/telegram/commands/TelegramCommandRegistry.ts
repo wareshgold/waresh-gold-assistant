@@ -45,6 +45,9 @@ from "./handlers/ReverseGoldCommandHandler";
 import { AICommandHandler }
 from "./handlers/AICommandHandler";
 
+import { ExitCommandHandler }
+from "./handlers/ExitCommandHandler";
+
 
 import { GetGoldPriceUseCase }
 from "../../usecases/GetGoldPriceUseCase";
@@ -369,14 +372,27 @@ export class TelegramCommandRegistry {
 
                 new AICommandHandler(
 
-                    aiService
+                    aiService,
+
+                    sessionStore
 
                 )
 
             );
 
-
         }
+
+
+
+        handlers.push(
+
+            new ExitCommandHandler(
+
+                sessionStore
+
+            )
+
+        );
 
 
 
