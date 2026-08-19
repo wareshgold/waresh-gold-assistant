@@ -248,6 +248,20 @@ export function createContainer(
 
 
 
+    const getGoldBubbleUseCase =
+
+        new GetGoldBubbleUseCase(
+
+            market.cachedMarketProvider,
+
+            gold.goldBubbleCalculator
+
+        );
+
+
+
+
+
     const ai =
 
         createAIModule(
@@ -257,6 +271,9 @@ export function createContainer(
             {
 
                 getCurrentGoldPriceUseCase,
+
+
+                getGoldBubbleUseCase,
 
 
                 calculateGoldPriceUseCase:
@@ -308,20 +325,6 @@ export function createContainer(
         new GetGoldPriceUseCase(
 
             currentMarketPriceUseCase
-
-        );
-
-
-
-
-
-    const getGoldBubbleUseCase =
-
-        new GetGoldBubbleUseCase(
-
-            market.cachedMarketProvider,
-
-            gold.goldBubbleCalculator
 
         );
 

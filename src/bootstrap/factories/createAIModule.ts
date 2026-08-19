@@ -29,6 +29,12 @@ from "../../application/gold/GetCurrentGoldPriceUseCase";
 
 
 import {
+    GetGoldBubbleUseCase
+}
+from "../../application/market/GetGoldBubbleUseCase";
+
+
+import {
     CalculateGoldPriceUseCase
 }
 from "../../application/gold/CalculateGoldPriceUseCase";
@@ -92,6 +98,12 @@ export function createAIModule(
         getCurrentGoldPriceUseCase:
 
             GetCurrentGoldPriceUseCase;
+
+
+
+        getGoldBubbleUseCase:
+
+            GetGoldBubbleUseCase;
 
 
 
@@ -167,6 +179,12 @@ AIModule {
             getCurrentGoldPriceUseCase:
 
                 dependencies.getCurrentGoldPriceUseCase,
+
+
+
+            getGoldBubbleUseCase:
+
+                dependencies.getGoldBubbleUseCase,
 
 
 
