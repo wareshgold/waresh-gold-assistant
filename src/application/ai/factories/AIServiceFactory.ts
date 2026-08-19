@@ -53,6 +53,12 @@ from "../tools/market/GetCurrentGoldMithqalPriceTool";
 
 
 import {
+    GetGoldBubbleTool
+}
+from "../tools/market/GetGoldBubbleTool";
+
+
+import {
     CalculateGoldPriceTool
 }
 from "../tools/gold/CalculateGoldPriceTool";
@@ -80,6 +86,12 @@ import {
     GetCurrentGoldPriceUseCase
 }
 from "../../gold/GetCurrentGoldPriceUseCase";
+
+
+import {
+    GetGoldBubbleUseCase
+}
+from "../../market/GetGoldBubbleUseCase";
 
 
 import {
@@ -121,6 +133,12 @@ export interface CreateAIServiceFactoryDependencies {
     getCurrentGoldPriceUseCase:
 
         GetCurrentGoldPriceUseCase;
+
+
+
+    getGoldBubbleUseCase:
+
+        GetGoldBubbleUseCase;
 
 
 
@@ -202,6 +220,20 @@ AIService {
         new GetCurrentGoldMithqalPriceTool(
 
             dependencies.getCurrentGoldPriceUseCase
+
+        )
+
+    );
+
+
+
+
+
+    toolRegistry.register(
+
+        new GetGoldBubbleTool(
+
+            dependencies.getGoldBubbleUseCase
 
         )
 
