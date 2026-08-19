@@ -1,79 +1,54 @@
 import {
     AIClient
-}
-from "../client/AIClient";
-
+} from "../client/AIClient";
 
 import {
     AIMessage
-}
-from "../client/AIMessage";
-
+} from "../client/AIMessage";
 
 import {
     AIRequest
-}
-from "../models/AIRequest";
-
+} from "../models/AIRequest";
 
 import {
     AIResponse
-}
-from "../models/AIResponse";
-
+} from "../models/AIResponse";
 
 import {
     AIToolRegistry
-}
-from "../tools/AIToolRegistry";
-
+} from "../tools/AIToolRegistry";
 
 import {
     AIToolExecutionService
-}
-from "./AIToolExecutionService";
-
+} from "./AIToolExecutionService";
 
 import {
     AIPromptService
-}
-from "../prompts/AIPromptService";
-
+} from "../prompts/AIPromptService";
 
 import {
     AIConversationMemory
-}
-from "../memory/AIConversationMemory";
-
+} from "../memory/AIConversationMemory";
 
 import {
     AIResponseFormatter
-}
-from "./AIResponseFormatter";
-
+} from "./AIResponseFormatter";
 
 import {
     AILocalToolRouter
-}
-from "./AILocalToolRouter";
-
+} from "./AILocalToolRouter";
 
 import {
     AICasualMessageGuard
-}
-from "../guards/AICasualMessageGuard";
-
+} from "../guards/AICasualMessageGuard";
 
 import {
     MetricRecorder
-}
-from "../../system/observability/MetricRecorder";
-
+} from "../../system/observability/MetricRecorder";
 
 import {
     MetricType
-}
-from "../../../domain/system/observability/MetricType";
+} from "../../../domain/system/observability/MetricType";
 
 
 
@@ -162,6 +137,7 @@ export class AIService {
 
 
 
+
     async process(
 
         request:
@@ -171,27 +147,40 @@ export class AIService {
         Promise<AIResponse> {
 
 
+
         const startedAt =
             Date.now();
+
 
 
 
         try {
 
 
-            const casualResponse =
+
+            const casual =
                 this.casualMessageGuard.handle(
                     request.message
                 );
 
 
 
-            if (casualResponse) {
+
+            if (casual) {
+
+
+
+                await this.saveConversation(
+                    request,
+                    casual
+                );
+
+
 
                 return {
 
                     content:
-                        casualResponse,
+                        casual,
 
 
                     metadata: {
@@ -215,7 +204,10 @@ export class AIService {
 
                 };
 
+
             }
+
+
 
 
 
@@ -224,20 +216,24 @@ export class AIService {
             if (this.localToolRouter) {
 
 
-                const localResult =
+
+                const local =
                     await this.localToolRouter.route(
                         request
                     );
 
 
 
-                if (localResult.handled) {
+
+                if (local.handled) {
+
 
 
                     const content =
                         this.responseFormatter.format(
-                            localResult.response ?? ""
+                            local.response ?? ""
                         );
+
 
 
 
@@ -248,6 +244,7 @@ export class AIService {
 
 
 
+
                     return {
 
                         content,
@@ -255,30 +252,37 @@ export class AIService {
 
                         metadata: {
 
+
                             model:
                                 "local-tool-router",
+
 
 
                             userId:
                                 request.userId,
 
 
+
                             toolExecuted:
                                 Boolean(
-                                    localResult.toolResult
+                                    local.toolResult
                                 ),
 
 
+
                             toolSuccess:
-                                localResult.toolResult?.success,
+                                local.toolResult?.success,
+
 
 
                             toolName:
-                                localResult.toolName,
+                                local.toolName,
+
 
 
                             aiProviderCalled:
                                 false,
+
 
 
                             availableTools:
@@ -294,13 +298,18 @@ export class AIService {
 
                                     )
 
+
                         }
 
                     };
 
+
                 }
 
+
             }
+
+
 
 
 
@@ -310,17 +319,24 @@ export class AIService {
             const messages:
                 AIMessage[] = [
 
+
                     {
 
                         role:
                             "system",
+
 
                         content:
                             this.promptService.buildSystemPrompt()
 
                     }
 
+
                 ];
+
+
+
+
 
 
 
@@ -333,47 +349,53 @@ export class AIService {
             ) {
 
 
+
                 const history =
                     await this.memory.getHistory(
                         request.userId
                     );
 
 
+
                 messages.push(
 
                     ...history
 
-                        .slice(-6)
+                        .slice(-10)
 
-                        .map(item => ({
+                        .map(message => ({
 
                             role:
-                                item.role,
+                                message.role,
+
 
                             content:
-                                item.content.slice(
-                                    0,
-                                    500
-                                )
+                                message.content
 
                         }))
 
                 );
 
+
             }
+
+
+
+
 
 
 
             messages.push({
 
+
                 role:
                     "user",
 
+
+
                 content:
-                    request.message.slice(
-                        0,
-                        1000
-                    )
+                    request.message
+
 
             });
 
@@ -381,23 +403,28 @@ export class AIService {
 
 
 
-            const toolDefinitions =
+
+
+            const tools =
                 this.toolRegistry?.getToolDefinitions();
 
 
 
 
-            let result =
+
+
+
+            let completion =
                 await this.client.complete(
 
                     messages,
 
-                    toolDefinitions
+
+                    tools
 
                         ? {
 
-                            tools:
-                                toolDefinitions
+                            tools
 
                         }
 
@@ -409,21 +436,12 @@ export class AIService {
 
 
 
-            let executions:
-                Array<{
-
-                    toolCallId:
-                        string;
 
 
-                    toolName:
-                        string;
+
+            let executions = [];
 
 
-                    result:
-                        any;
-
-                }> = [];
 
 
 
@@ -432,10 +450,12 @@ export class AIService {
             if (this.toolExecutionService) {
 
 
+
                 executions =
                     await this.toolExecutionService.executeAll(
 
-                        result,
+                        completion,
+
 
                         {
 
@@ -450,7 +470,11 @@ export class AIService {
 
                     );
 
+
             }
+
+
+
 
 
 
@@ -459,34 +483,47 @@ export class AIService {
             if (executions.length > 0) {
 
 
+
                 messages.push({
+
 
                     role:
                         "assistant",
 
+
+
                     content:
-                        result.content ?? "",
+                        completion.content,
+
+
 
                     toolCalls:
 
-                        result.toolCalls?.map(
+                        completion.toolCalls?.map(
 
-                            toolCall => ({
+                            call => ({
 
                                 id:
-                                    toolCall.id ?? "",
+                                    call.id ?? "",
+
 
                                 name:
-                                    toolCall.name,
+                                    call.name,
+
 
                                 arguments:
-                                    toolCall.arguments
+                                    call.arguments
+
 
                             })
 
                         )
 
+
                 });
+
+
+
 
 
 
@@ -495,20 +532,28 @@ export class AIService {
                 for (const execution of executions) {
 
 
+
                     messages.push({
+
 
                         role:
                             "tool",
+
+
 
                         content:
                             JSON.stringify(
                                 execution.result
                             ),
 
+
+
                         toolCallId:
                             execution.toolCallId
 
+
                     });
+
 
                 }
 
@@ -516,17 +561,19 @@ export class AIService {
 
 
 
-                result =
+
+
+                completion =
                     await this.client.complete(
 
                         messages,
 
-                        toolDefinitions
+
+                        tools
 
                             ? {
 
-                                tools:
-                                    toolDefinitions
+                                tools
 
                             }
 
@@ -534,7 +581,11 @@ export class AIService {
 
                     );
 
+
             }
+
+
+
 
 
 
@@ -542,7 +593,7 @@ export class AIService {
 
             const content =
                 this.responseFormatter.format(
-                    result.content
+                    completion.content
                 );
 
 
@@ -558,31 +609,42 @@ export class AIService {
 
 
 
+
+
+
             return {
+
 
                 content,
 
 
+
                 metadata: {
 
+
                     model:
-                        result.model,
+                        completion.model,
+
 
 
                     usage:
-                        result.usage,
+                        completion.usage,
+
 
 
                     userId:
                         request.userId,
 
 
+
                     toolExecuted:
                         executions.length > 0,
 
 
+
                     toolCount:
                         executions.length,
+
 
 
                     toolSuccess:
@@ -592,7 +654,6 @@ export class AIService {
                             ? executions.every(
 
                                 execution =>
-
                                     execution.result.success
 
                             )
@@ -629,9 +690,13 @@ export class AIService {
 
                             )
 
+
                 }
 
+
             };
+
+
 
 
         }
@@ -639,71 +704,22 @@ export class AIService {
         finally {
 
 
+
             await this.recordDuration(
 
                 MetricType.AI_SERVICE_DURATION,
+
 
                 Date.now() - startedAt
 
             );
 
+
         }
 
 
     }
 
-
-
-
-
-
-
-    private async recordDuration(
-
-        type:
-            MetricType,
-
-
-        duration:
-            number
-
-    ):
-        Promise<void> {
-
-
-        if (!this.metricRecorder) {
-
-            return;
-
-        }
-
-
-
-        try {
-
-            await this.metricRecorder.record(
-
-                type,
-
-                duration
-
-            );
-
-        }
-
-        catch(error) {
-
-            console.error(
-
-                "AI metric recording failed:",
-
-                error
-
-            );
-
-        }
-
-    }
 
 
 
@@ -724,6 +740,7 @@ export class AIService {
         Promise<void> {
 
 
+
         if (
 
             !this.memory ||
@@ -732,7 +749,9 @@ export class AIService {
 
         ) {
 
+
             return;
+
 
         }
 
@@ -740,24 +759,33 @@ export class AIService {
 
 
 
+
         await this.memory.addMessage(
 
+
             request.userId,
+
 
             {
 
                 role:
                     "user",
 
+
                 content:
                     request.message,
+
 
                 createdAt:
                     new Date()
 
             }
 
+
         );
+
+
+
 
 
 
@@ -765,21 +793,83 @@ export class AIService {
 
         await this.memory.addMessage(
 
+
             request.userId,
+
 
             {
 
                 role:
                     "assistant",
 
+
                 content,
+
 
                 createdAt:
                     new Date()
 
             }
 
+
         );
+
+
+    }
+
+
+
+
+
+
+
+
+    private async recordDuration(
+
+        type:
+            MetricType,
+
+
+        duration:
+            number
+
+    ):
+        Promise<void> {
+
+
+
+        if (!this.metricRecorder) {
+
+
+            return;
+
+
+        }
+
+
+
+
+
+
+        try {
+
+
+            await this.metricRecorder.record(
+
+                type,
+
+
+                duration
+
+            );
+
+
+        }
+
+        catch {
+
+
+        }
 
 
     }
