@@ -217,7 +217,11 @@ export class AIService {
 
             }
 
-                        if (this.localToolRouter) {
+
+
+
+
+            if (this.localToolRouter) {
 
 
                 const localResult =
@@ -274,7 +278,21 @@ export class AIService {
 
 
                             aiProviderCalled:
-                                false
+                                false,
+
+
+                            availableTools:
+
+                                this.toolRegistry
+
+                                    ?.getTools()
+
+                                    .map(
+
+                                        tool =>
+                                            tool.name
+
+                                    )
 
                         }
 
@@ -307,8 +325,11 @@ export class AIService {
 
 
             if (
+
                 this.memory &&
+
                 request.userId
+
             ) {
 
 
@@ -321,7 +342,9 @@ export class AIService {
                 messages.push(
 
                     ...history
+
                         .slice(-6)
+
                         .map(item => ({
 
                             role:
@@ -356,8 +379,11 @@ export class AIService {
 
 
 
+
+
             const toolDefinitions =
                 this.toolRegistry?.getToolDefinitions();
+
 
 
 
@@ -367,15 +393,19 @@ export class AIService {
                     messages,
 
                     toolDefinitions
+
                         ? {
 
                             tools:
                                 toolDefinitions
 
                         }
+
                         : undefined
 
                 );
+
+
 
 
 
@@ -394,6 +424,7 @@ export class AIService {
                         any;
 
                 }> = [];
+
 
 
 
@@ -425,34 +456,7 @@ export class AIService {
 
 
 
-
             if (executions.length > 0) {
-
-
-
-                const assistantToolCalls =
-
-                    result.toolCalls?.map(
-
-                        toolCall => ({
-
-                            id:
-                                toolCall.id ?? "",
-
-
-                            name:
-                                toolCall.name,
-
-
-                            arguments:
-                                toolCall.arguments
-
-                        })
-
-                    );
-
-
-
 
 
                 messages.push({
@@ -460,16 +464,29 @@ export class AIService {
                     role:
                         "assistant",
 
-
                     content:
                         result.content ?? "",
 
-
                     toolCalls:
-                        assistantToolCalls
+
+                        result.toolCalls?.map(
+
+                            toolCall => ({
+
+                                id:
+                                    toolCall.id ?? "",
+
+                                name:
+                                    toolCall.name,
+
+                                arguments:
+                                    toolCall.arguments
+
+                            })
+
+                        )
 
                 });
-
 
 
 
@@ -483,21 +500,17 @@ export class AIService {
                         role:
                             "tool",
 
-
                         content:
                             JSON.stringify(
                                 execution.result
                             ),
-
 
                         toolCallId:
                             execution.toolCallId
 
                     });
 
-
                 }
-
 
 
 
@@ -509,20 +522,19 @@ export class AIService {
                         messages,
 
                         toolDefinitions
+
                             ? {
 
                                 tools:
                                     toolDefinitions
 
                             }
+
                             : undefined
 
                     );
 
-
             }
-
-
 
 
 
@@ -537,13 +549,10 @@ export class AIService {
 
 
 
-
             await this.saveConversation(
                 request,
                 content
             );
-
-
 
 
 
@@ -576,14 +585,16 @@ export class AIService {
                         executions.length,
 
 
-
                     toolSuccess:
 
                         executions.length > 0
 
                             ? executions.every(
+
                                 execution =>
+
                                     execution.result.success
+
                             )
 
                             : undefined,
@@ -623,7 +634,6 @@ export class AIService {
             };
 
 
-
         }
 
         finally {
@@ -636,7 +646,6 @@ export class AIService {
                 Date.now() - startedAt
 
             );
-
 
         }
 
@@ -672,7 +681,6 @@ export class AIService {
 
         try {
 
-
             await this.metricRecorder.record(
 
                 type,
@@ -681,11 +689,9 @@ export class AIService {
 
             );
 
-
         }
 
         catch(error) {
-
 
             console.error(
 
@@ -696,7 +702,6 @@ export class AIService {
             );
 
         }
-
 
     }
 
@@ -744,10 +749,8 @@ export class AIService {
                 role:
                     "user",
 
-
                 content:
                     request.message,
-
 
                 createdAt:
                     new Date()
@@ -755,7 +758,6 @@ export class AIService {
             }
 
         );
-
 
 
 
@@ -770,9 +772,7 @@ export class AIService {
                 role:
                     "assistant",
 
-
                 content,
-
 
                 createdAt:
                     new Date()
