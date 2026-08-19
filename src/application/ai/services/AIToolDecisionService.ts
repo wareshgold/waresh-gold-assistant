@@ -14,34 +14,49 @@ from "../client/AICompletionResult";
 export class AIToolDecisionService {
 
 
-
     decide(
-
         result:
-
             string | AICompletionResult
 
     ):
-
         AIToolCall | undefined {
 
+        return this.decideAll(result)[0];
+
+    }
 
 
-        if (
-
-            typeof result === "string"
-
-        ) {
 
 
-            return this.parseToolCall(
 
-                result
 
-            );
+    decideAll(
 
+        result:
+            string | AICompletionResult
+
+    ):
+        AIToolCall[] {
+
+
+
+        if (typeof result === "string") {
+
+
+            const decision =
+
+                this.parseToolCall(result);
+
+
+
+            return decision
+
+                ? [decision]
+
+                : [];
 
         }
+
 
 
 
@@ -56,13 +71,14 @@ export class AIToolDecisionService {
         ) {
 
 
-            const toolCall =
 
-                result.toolCalls[0];
-
+            return result.toolCalls.map(toolCall => ({
 
 
-            return {
+                id:
+
+                    toolCall.id,
+
 
 
                 toolName:
@@ -76,9 +92,7 @@ export class AIToolDecisionService {
                     toolCall.arguments ?? {}
 
 
-
-            };
-
+            }));
 
         }
 
@@ -87,15 +101,26 @@ export class AIToolDecisionService {
 
 
 
-        return this.parseToolCall(
 
-            result.content
+        const decision =
 
-        );
+            this.parseToolCall(
 
+                result.content
+
+            );
+
+
+
+
+
+        return decision
+
+            ? [decision]
+
+            : [];
 
     }
-
 
 
 
@@ -112,12 +137,12 @@ export class AIToolDecisionService {
             string
 
     ):
-
         AIToolCall | undefined {
 
 
 
         if (!content) {
+
 
             return undefined;
 
@@ -127,43 +152,18 @@ export class AIToolDecisionService {
 
 
 
-        const legacyToolCall =
 
-            this.parseLegacyToolCall(
+        return (
 
-                content
+            this.parseLegacyToolCall(content)
 
-            );
+            ??
 
-
-
-
-
-        if (
-
-            legacyToolCall
-
-        ) {
-
-
-            return legacyToolCall;
-
-
-        }
-
-
-
-
-
-        return this.parseNamedToolCall(
-
-            content
+            this.parseNamedToolCall(content)
 
         );
 
-
     }
-
 
 
 
@@ -180,7 +180,6 @@ export class AIToolDecisionService {
             string
 
     ):
-
         AIToolCall | undefined {
 
 
@@ -198,6 +197,7 @@ export class AIToolDecisionService {
 
 
         if (!match) {
+
 
             return undefined;
 
@@ -223,15 +223,31 @@ export class AIToolDecisionService {
 
 
 
+            const toolName =
+
+                payload.toolName
+
+                ??
+
+                payload.name;
+
+
+
+
+
+
             if (
 
-                typeof payload.toolName !== "string"
+                typeof toolName !== "string"
+
+                ||
+
+                toolName.trim().length === 0
 
             ) {
 
 
                 return undefined;
-
 
             }
 
@@ -243,16 +259,13 @@ export class AIToolDecisionService {
             return {
 
 
-                toolName:
-
-                    payload.toolName,
+                toolName,
 
 
 
                 input:
 
                     payload.input ?? {}
-
 
 
             };
@@ -266,12 +279,9 @@ export class AIToolDecisionService {
 
             return undefined;
 
-
         }
 
-
     }
-
 
 
 
@@ -288,7 +298,6 @@ export class AIToolDecisionService {
             string
 
     ):
-
         AIToolCall | undefined {
 
 
@@ -307,9 +316,11 @@ export class AIToolDecisionService {
 
         if (!match) {
 
+
             return undefined;
 
         }
+
 
 
 
@@ -323,9 +334,44 @@ export class AIToolDecisionService {
 
 
 
+
+        if (
+
+            [
+
+                "tool",
+
+                "input",
+
+                "response",
+
+                "message"
+
+            ]
+
+            .includes(
+
+                toolName.toLowerCase()
+
+            )
+
+        ) {
+
+
+            return undefined;
+
+        }
+
+
+
+
+
+
+
         const payloadText =
 
             match[2].trim();
+
 
 
 
@@ -336,15 +382,14 @@ export class AIToolDecisionService {
 
             return {
 
-
                 toolName,
 
                 input: {}
 
             };
 
-
         }
+
 
 
 
@@ -353,7 +398,8 @@ export class AIToolDecisionService {
         try {
 
 
-            const payload =
+
+            const parsed =
 
                 JSON.parse(
 
@@ -365,55 +411,57 @@ export class AIToolDecisionService {
 
 
 
+
             if (
 
-                payload &&
+                parsed &&
 
-                typeof payload === "object" &&
+                typeof parsed === "object" &&
 
-                !Array.isArray(payload)
+                "input" in parsed
 
             ) {
 
 
 
-                const record =
-
-                    payload as Record<string, unknown>;
-
-
-
-
-
                 if (
 
-                    typeof record.toolName === "string"
+                    !parsed.input
+
+                    ||
+
+                    typeof parsed.input !== "object"
 
                 ) {
 
 
-                    return {
-
-
-                        toolName:
-
-                            record.toolName,
-
-
-
-                        input:
-
-                            record.input ?? {}
-
-
-
-                    };
-
+                    return undefined;
 
                 }
 
 
+
+
+
+
+                return {
+
+
+                    toolName,
+
+
+
+                    input:
+
+                        parsed.input
+
+
+
+                };
+
             }
+
+
 
 
 
@@ -428,10 +476,12 @@ export class AIToolDecisionService {
 
                 input:
 
-                    payload ?? {}
+                    parsed ?? {}
+
 
 
             };
+
 
 
         }
@@ -439,11 +489,21 @@ export class AIToolDecisionService {
         catch {
 
 
-            return undefined;
 
+            return {
+
+
+                toolName,
+
+
+
+                input: {}
+
+
+
+            };
 
         }
-
 
     }
 
