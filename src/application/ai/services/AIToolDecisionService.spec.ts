@@ -85,11 +85,17 @@ describe(
 
                 )
 
-                    .toEqual({
+                    .toMatchObject({
+
+                        id:
+
+                            "call-1",
+
 
                         toolName:
 
                             "get_current_gold_price",
+
 
                         input:
 

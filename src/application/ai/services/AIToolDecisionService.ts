@@ -1,27 +1,20 @@
 import {
-    AIToolCall
+    AIToolCallDecision
 }
-from "../models/AIToolCall";
-
-
-import {
-    AICompletionResult
-}
-from "../client/AICompletionResult";
+from "../types/AIToolCallDecision";
 
 
 
 export class AIToolDecisionService {
 
 
-    decide(
-        result:
-            string | AICompletionResult
+    public decide(
+        response: any
+    ): AIToolCallDecision | undefined {
 
-    ):
-        AIToolCall | undefined {
 
-        return this.decideAll(result)[0];
+        return this.decideAll(response)[0];
+
 
     }
 
@@ -29,31 +22,80 @@ export class AIToolDecisionService {
 
 
 
-
-    decideAll(
-
-        result:
-            string | AICompletionResult
-
-    ):
-        AIToolCall[] {
+    public decideAll(
+        response: any
+    ): AIToolCallDecision[] {
 
 
-
-        if (typeof result === "string") {
-
-
-            const decision =
-
-                this.parseToolCall(result);
+        if (!response) {
+            return [];
+        }
 
 
 
-            return decision
+        const results: AIToolCallDecision[] = [];
 
-                ? [decision]
 
-                : [];
+
+        const candidates = [
+
+            response.toolCalls,
+            response.tool_calls,
+
+            response.message?.toolCalls,
+            response.message?.tool_calls,
+
+            response.choices?.[0]?.message?.tool_calls,
+            response.choices?.[0]?.message?.toolCalls,
+
+            response.tool_call,
+            response.toolCall
+
+        ];
+
+
+
+        for (const calls of candidates) {
+
+
+            if (Array.isArray(calls)) {
+
+
+                for (const call of calls) {
+
+
+                    const result =
+                        this.parseToolCall(call);
+
+
+
+                    if (result) {
+
+                        results.push(result);
+
+                    }
+
+                }
+
+
+            }
+            else if (calls) {
+
+
+                const result =
+                    this.parseToolCall(calls);
+
+
+
+                if (result) {
+
+                    results.push(result);
+
+                }
+
+
+            }
+
 
         }
 
@@ -61,38 +103,9 @@ export class AIToolDecisionService {
 
 
 
+        if (results.length) {
 
-        if (
-
-            result.toolCalls &&
-
-            result.toolCalls.length > 0
-
-        ) {
-
-
-
-            return result.toolCalls.map(toolCall => ({
-
-
-                id:
-
-                    toolCall.id,
-
-
-
-                toolName:
-
-                    toolCall.name,
-
-
-
-                input:
-
-                    toolCall.arguments ?? {}
-
-
-            }));
+            return results;
 
         }
 
@@ -100,29 +113,46 @@ export class AIToolDecisionService {
 
 
 
+        const contents = [
+
+            response,
+
+            response.content,
+
+            response.message?.content,
+
+            response.choices?.[0]?.message?.content
+
+        ];
 
 
-        const decision =
-
-            this.parseToolCall(
-
-                result.content
-
-            );
 
 
 
+        for (const content of contents) {
 
 
-        return decision
+            const result =
+                this.parseContent(content);
 
-            ? [decision]
 
-            : [];
+
+            if (result) {
+
+                results.push(result);
+
+            }
+
+
+        }
+
+
+
+
+        return results;
+
 
     }
-
-
 
 
 
@@ -131,18 +161,12 @@ export class AIToolDecisionService {
 
 
     private parseToolCall(
-
-        content:
-
-            string
-
-    ):
-        AIToolCall | undefined {
+        call: any
+    ): AIToolCallDecision | undefined {
 
 
 
-        if (!content) {
-
+        if (!call) {
 
             return undefined;
 
@@ -152,16 +176,60 @@ export class AIToolDecisionService {
 
 
 
+        const toolName =
 
-        return (
+            call.function?.name ??
 
-            this.parseLegacyToolCall(content)
+            call.name ??
 
-            ??
+            call.toolName ??
 
-            this.parseNamedToolCall(content)
+            call.tool_name;
 
-        );
+
+
+
+
+        if (!toolName) {
+
+            return undefined;
+
+        }
+
+
+
+
+
+        const rawInput =
+
+            call.function?.arguments ??
+
+            call.arguments ??
+
+            call.input ??
+
+            call.parameters ??
+
+            call.args;
+
+
+
+
+
+        return {
+
+            id:
+                call.id,
+
+
+            toolName,
+
+
+            input:
+                this.parseInput(rawInput)
+
+        };
+
 
     }
 
@@ -172,32 +240,16 @@ export class AIToolDecisionService {
 
 
 
-
-    private parseLegacyToolCall(
-
-        content:
-
-            string
-
-    ):
-        AIToolCall | undefined {
+    private parseContent(
+        content: unknown
+    ): AIToolCallDecision | undefined {
 
 
 
-        const match =
-
-            content.match(
-
-                /<tool>\s*([\s\S]*?)\s*<\/tool>/i
-
-            );
-
-
-
-
-
-        if (!match) {
-
+        if (
+            typeof content !== "string" ||
+            !content.trim()
+        ) {
 
             return undefined;
 
@@ -207,44 +259,152 @@ export class AIToolDecisionService {
 
 
 
+        /*
+            Support:
+
+            <tool>
+            {
+              "toolName":"x",
+              "input":{}
+            }
+            </tool>
+
+
+            and:
+
+
+            <x>
+            {
+              "purity":18
+            }
+            </x>
+
+        */
+
+
+
+        const tagMatch =
+            content.match(
+                /<([a-zA-Z0-9_-]+)>\s*([\s\S]*?)\s*<\/\1>/
+            );
+
+
+
+        if (tagMatch) {
+
+
+            const tagName =
+                tagMatch[1];
+
+
+            const body =
+                tagMatch[2];
+
+
+
+            const parsed =
+                this.parseJsonTool(body);
+
+
+
+            if (parsed) {
+
+                return parsed;
+
+            }
+
+
+
+
+            const directInput =
+                this.parseInput(body);
+
+
+
+            if (
+                tagName &&
+                Object.keys(directInput).length
+            ) {
+
+
+                return {
+
+                    toolName:
+                        tagName,
+
+
+                    input:
+                        directInput
+
+                };
+
+
+            }
+
+
+        }
+
+
+
+
+
+
+        const jsonMatch =
+            content.match(
+                /\{[\s\S]*\}/
+            );
+
+
+
+        if (!jsonMatch) {
+
+            return undefined;
+
+        }
+
+
+
+
+
+        return this.parseJsonTool(
+            jsonMatch[0]
+        );
+
+
+    }
+
+
+
+
+
+
+
+    private parseJsonTool(
+        json: string
+    ): AIToolCallDecision | undefined {
+
+
 
         try {
 
 
-            const payload =
-
-                JSON.parse(
-
-                    match[1]
-
-                );
-
-
+            const parsed =
+                JSON.parse(json);
 
 
 
             const toolName =
 
-                payload.toolName
+                parsed.name ??
 
-                ??
+                parsed.toolName ??
 
-                payload.name;
-
-
+                parsed.tool_name;
 
 
 
 
-            if (
-
-                typeof toolName !== "string"
-
-                ||
-
-                toolName.trim().length === 0
-
-            ) {
+            if (!toolName) {
 
 
                 return undefined;
@@ -255,31 +415,41 @@ export class AIToolDecisionService {
 
 
 
-
             return {
 
 
                 toolName,
 
 
-
                 input:
 
-                    payload.input ?? {}
+                    this.parseInput(
+
+                        parsed.arguments ??
+
+                        parsed.input ??
+
+                        parsed.parameters ??
+
+                        this.extractDirectInput(
+                            parsed
+                        )
+
+                    )
 
 
             };
 
 
-
         }
-
         catch {
 
 
             return undefined;
 
+
         }
+
 
     }
 
@@ -290,34 +460,15 @@ export class AIToolDecisionService {
 
 
 
-
-    private parseNamedToolCall(
-
-        content:
-
-            string
-
-    ):
-        AIToolCall | undefined {
+    private parseInput(
+        value: unknown
+    ): Record<string, unknown> {
 
 
 
-        const match =
+        if (!value) {
 
-            content.match(
-
-                /<([a-zA-Z0-9_-]+)>\s*([\s\S]*?)\s*<\/\1>/i
-
-            );
-
-
-
-
-
-        if (!match) {
-
-
-            return undefined;
+            return {};
 
         }
 
@@ -325,10 +476,14 @@ export class AIToolDecisionService {
 
 
 
+        if (
+            typeof value === "object"
+        ) {
 
-        const toolName =
 
-            match[1];
+            return value as Record<string, unknown>;
+
+        }
 
 
 
@@ -336,174 +491,83 @@ export class AIToolDecisionService {
 
 
         if (
-
-            [
-
-                "tool",
-
-                "input",
-
-                "response",
-
-                "message"
-
-            ]
-
-            .includes(
-
-                toolName.toLowerCase()
-
-            )
-
+            typeof value === "string"
         ) {
 
 
-            return undefined;
-
-        }
+            try {
 
 
-
-
-
-
-
-        const payloadText =
-
-            match[2].trim();
-
-
-
-
-
-
-        if (!payloadText) {
-
-
-            return {
-
-                toolName,
-
-                input: {}
-
-            };
-
-        }
-
-
-
-
-
-
-        try {
-
-
-
-            const parsed =
-
-                JSON.parse(
-
-                    payloadText
-
-                );
-
-
-
-
-
-
-            if (
-
-                parsed &&
-
-                typeof parsed === "object" &&
-
-                "input" in parsed
-
-            ) {
+                const parsed =
+                    JSON.parse(value);
 
 
 
                 if (
-
-                    !parsed.input
-
-                    ||
-
-                    typeof parsed.input !== "object"
-
+                    parsed &&
+                    typeof parsed === "object"
                 ) {
 
 
-                    return undefined;
+                    return parsed as Record<string, unknown>;
 
                 }
 
 
+            }
+            catch {
 
 
-
-
-                return {
-
-
-                    toolName,
-
-
-
-                    input:
-
-                        parsed.input
-
-
-
-                };
+                return {};
 
             }
 
 
-
-
-
-
-
-            return {
-
-
-                toolName,
-
-
-
-                input:
-
-                    parsed ?? {}
-
-
-
-            };
-
-
-
         }
 
-        catch {
 
 
 
-            return {
 
+        return {};
 
-                toolName,
-
-
-
-                input: {}
+    }
 
 
 
-            };
 
-        }
+
+
+
+    private extractDirectInput(
+        value: Record<string, unknown>
+    ): Record<string, unknown> {
+
+
+        const copy = {
+
+            ...value
+
+        };
+
+
+
+        delete copy.name;
+
+        delete copy.toolName;
+
+        delete copy.tool_name;
+
+        delete copy.arguments;
+
+        delete copy.input;
+
+        delete copy.parameters;
+
+
+
+        return copy;
+
 
     }
 
