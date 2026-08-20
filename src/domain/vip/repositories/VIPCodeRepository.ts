@@ -7,7 +7,9 @@ export interface VIPCodeRepository {
         code: string
     ): Promise<VIPCode | null>;
 
-    incrementUsedCount(
-        codeId: string
-    ): Promise<void>;
+    redeem(
+        codeId: string,
+        telegramUserId: string,
+        redeemedAt: Date
+    ): Promise<boolean>;
 }
