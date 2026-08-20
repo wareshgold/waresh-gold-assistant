@@ -97,7 +97,7 @@ export function createSp2lModule(
 
         new TelegramOunceMessageProvider(
 
-            "https://t.me/s/gheymatOunce"
+            "https://t.me/s/OunceMarkets"
 
         );
 
