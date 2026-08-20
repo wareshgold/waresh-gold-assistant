@@ -29,9 +29,11 @@ export class TelegramOunceMessageProvider {
                         redirect: "follow",
                         headers: {
                             "User-Agent":
-                                "Mozilla/5.0",
+                                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/151.0.0.0 Safari/537.36",
                             Accept:
-                                "text/html"
+                                "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                            "Accept-Language":
+                                "fa-IR,fa;q=0.9,en;q=0.8"
                         }
                     }
                 );
@@ -47,37 +49,42 @@ export class TelegramOunceMessageProvider {
 
             const messages = [
                 ...html.matchAll(
-                    /<div class="tgme_widget_message_text[^>]*>([\s\S]*?)<\/div>/g
+                    /<div[^>]*class=["'][^"']*tgme_widget_message_text[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi
                 )
             ];
 
-            if (messages.length === 0) {
-                throw new Error(
-                    "Ounce telegram message not found"
-                );
-            }
-
-            for (
-                let i = messages.length - 1;
-                i >= 0;
-                i--
-            ) {
-                const message =
-                    this.cleanHtmlMessage(
-                        messages[i][1]
-                    );
-
-                if (
-                    OuncePriceParser.tryParse(
-                        message
-                    )
+            if (messages.length > 0) {
+                for (
+                    let i = messages.length - 1;
+                    i >= 0;
+                    i--
                 ) {
-                    return message;
+                    const message =
+                        this.cleanHtmlMessage(
+                            messages[i][1]
+                        );
+
+                    if (
+                        OuncePriceParser.tryParse(
+                            message
+                        )
+                    ) {
+                        return message;
+                    }
                 }
             }
 
+            const fallback =
+                this.extractOunceMessageFromHtml(
+                    html
+                );
+
+            if (fallback) {
+                return fallback;
+            }
+
             throw new Error(
-                "No valid ounce price message found"
+                "Ounce telegram message not found"
             );
         } catch (error) {
             if (
@@ -107,14 +114,44 @@ export class TelegramOunceMessageProvider {
         );
     }
 
+    private extractOunceMessageFromHtml(
+        html: string
+    ): string | null {
+        const text =
+            this.cleanHtmlMessage(html);
+
+        const lines =
+            text
+                .split("\n")
+                .map(line => line.trim())
+                .filter(Boolean);
+
+        for (let i = lines.length - 1; i >= 0; i--) {
+            if (
+                /انس\s*طلا\s*[0-9۰-۹]/.test(
+                    lines[i]
+                ) &&
+                OuncePriceParser.tryParse(lines[i])
+            ) {
+                return lines[i];
+            }
+        }
+
+        return null;
+    }
+
     private cleanHtmlMessage(
         html: string
     ): string {
         return html
             .replace(/<br\s*\/?>/gi, "\n")
+            .replace(/<\/p\s*>/gi, "\n")
             .replace(/<[^>]+>/g, "")
-            .replace(/&nbsp;/g, " ")
-            .replace(/&amp;/g, "&")
+            .replace(/&nbsp;/gi, " ")
+            .replace(/&amp;/gi, "&")
+            .replace(/&quot;/gi, '"')
+            .replace(/&#39;/gi, "'")
+            .replace(/\r/g, "")
             .trim();
     }
 }
