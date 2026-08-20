@@ -14,10 +14,10 @@ interface VIPCodeRow {
     id: string;
     code: string;
     feature: string;
-    max_users: number;
-    used_count: number;
     expires_at: number | null;
     created_at: number;
+    redeemed_by: string | null;
+    redeemed_at: number | null;
 }
 
 export class D1VIPCodeRepository
@@ -37,10 +37,10 @@ export class D1VIPCodeRepository
                         id,
                         code,
                         feature,
-                        max_users,
-                        used_count,
                         expires_at,
-                        created_at
+                        created_at,
+                        redeemed_by,
+                        redeemed_at
                      FROM vip_codes
                      WHERE code = ?
                      LIMIT 1`
@@ -56,27 +56,40 @@ export class D1VIPCodeRepository
             id: row.id,
             code: row.code,
             feature: row.feature as VIPFeature,
-            maxUsers: row.max_users,
-            usedCount: row.used_count,
             expiresAt:
                 row.expires_at === null
                     ? null
                     : new Date(row.expires_at),
-            createdAt: new Date(row.created_at)
+            createdAt: new Date(row.created_at),
+            redeemedBy: row.redeemed_by,
+            redeemedAt:
+                row.redeemed_at === null
+                    ? null
+                    : new Date(row.redeemed_at)
         });
     }
 
-    async incrementUsedCount(
-        codeId: string
-    ): Promise<void> {
-        await this.db
-            .prepare(
-                `UPDATE vip_codes
-                 SET used_count = used_count + 1
-                 WHERE id = ?
-                   AND used_count < max_users`
-            )
-            .bind(codeId)
-            .run();
+    async redeem(
+        codeId: string,
+        telegramUserId: string,
+        redeemedAt: Date
+    ): Promise<boolean> {
+        const result =
+            await this.db
+                .prepare(
+                    `UPDATE vip_codes
+                     SET redeemed_by = ?,
+                         redeemed_at = ?
+                     WHERE id = ?
+                       AND redeemed_by IS NULL`
+                )
+                .bind(
+                    telegramUserId,
+                    redeemedAt.getTime(),
+                    codeId
+                )
+                .run();
+
+        return result.meta.changes === 1;
     }
 }
