@@ -1,6 +1,14 @@
 import { createContainer } from "./bootstrap/createContainer";
 
-const container = createContainer();
+let container: ReturnType<typeof createContainer> | undefined;
+
+function getContainer(env: Env) {
+    if (!container) {
+        container = createContainer(env);
+    }
+
+    return container;
+}
 
 export default {
     async fetch(
@@ -8,7 +16,7 @@ export default {
         env: Env,
         ctx: ExecutionContext
     ): Promise<Response> {
-        return container.telegramWebhookController.handle(
+        return getContainer(env).telegramWebhookController.handle(
             request,
             env,
             ctx
@@ -20,10 +28,12 @@ export default {
         env: Env,
         ctx: ExecutionContext
     ): Promise<void> {
+        const currentContainer = getContainer(env);
+
         ctx.waitUntil(
             (async () => {
                 try {
-                    await container.collectOunceTickJob.execute();
+                    await currentContainer.collectOunceTickJob.execute();
                 } catch (error) {
                     console.error(
                         "Failed to collect ounce tick:",
@@ -32,7 +42,7 @@ export default {
                 }
 
                 try {
-                    await container.refreshMarketPriceJob.execute();
+                    await currentContainer.refreshMarketPriceJob.execute();
                 } catch (error) {
                     console.error(
                         "Failed to refresh market price:",
