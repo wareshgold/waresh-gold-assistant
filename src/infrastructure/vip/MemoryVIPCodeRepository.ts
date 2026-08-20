@@ -27,20 +27,28 @@ export class MemoryVIPCodeRepository
         return this.codes.get(code.toUpperCase()) ?? null;
     }
 
-    async incrementUsedCount(
-        codeId: string
-    ): Promise<void> {
+    async redeem(
+        codeId: string,
+        telegramUserId: string,
+        redeemedAt: Date
+    ): Promise<boolean> {
         for (const [key, value] of this.codes.entries()) {
-            if (value.id === codeId) {
-                this.codes.set(
-                    key,
-                    VIPCode.create({
-                        ...value,
-                        usedCount:
-                            value.usedCount + 1
-                    })
-                );
+            if (value.id !== codeId || value.isUsed()) {
+                continue;
             }
+
+            this.codes.set(
+                key,
+                VIPCode.create({
+                    ...value,
+                    redeemedBy: telegramUserId,
+                    redeemedAt
+                })
+            );
+
+            return true;
         }
+
+        return false;
     }
 }
