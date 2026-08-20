@@ -25,7 +25,7 @@ interface FakeStatement {
     bind: (...values: unknown[]) => FakeStatement;
     first: <T>() => Promise<T | null>;
     all: <T>() => Promise<{ results: T[] }>;
-    run: () => Promise<{ success: true }>;
+    run: () => Promise<{ success: true; meta: { changes: number } }>;
 }
 
 class FakeD1Database {
@@ -36,7 +36,8 @@ class FakeD1Database {
 
     constructor(
         private readonly firstResult: unknown = null,
-        private readonly allResult: unknown[] = []
+        private readonly allResult: unknown[] = [],
+        private readonly changes = 1
     ) {}
 
     prepare(sql: string): FakeStatement {
@@ -62,7 +63,10 @@ class FakeD1Database {
             }),
 
             run: async () => ({
-                success: true as const
+                success: true as const,
+                meta: {
+                    changes: this.changes
+                }
             })
         };
 
@@ -79,10 +83,10 @@ describe("D1 VIP repositories", () => {
             id: "vip-1",
             code: "SP2L-2026",
             feature: VIP_FEATURE_SP2L_SIGNALS,
-            max_users: 100,
-            used_count: 4,
             expires_at: expiresAt.getTime(),
-            created_at: createdAt.getTime()
+            created_at: createdAt.getTime(),
+            redeemed_by: "123456",
+            redeemed_at: createdAt.getTime()
         });
 
         const repository =
@@ -101,8 +105,10 @@ describe("D1 VIP repositories", () => {
         expect(result?.feature).toBe(
             VIP_FEATURE_SP2L_SIGNALS
         );
-        expect(result?.maxUsers).toBe(100);
-        expect(result?.usedCount).toBe(4);
+        expect(result?.redeemedBy).toBe("123456");
+        expect(result?.redeemedAt?.getTime()).toBe(
+            createdAt.getTime()
+        );
         expect(result?.createdAt.getTime()).toBe(
             createdAt.getTime()
         );
@@ -114,7 +120,7 @@ describe("D1 VIP repositories", () => {
         ]);
     });
 
-    it("increments a VIP code usage count", async () => {
+    it("redeems a VIP code atomically", async () => {
         const db = new FakeD1Database();
 
         const repository =
@@ -122,19 +128,45 @@ describe("D1 VIP repositories", () => {
                 db as unknown as D1Database
             );
 
-        await repository.incrementUsedCount(
-            "vip-1"
-        );
+        const redeemedAt = new Date("2026-08-20T10:00:00.000Z");
 
+        const result =
+            await repository.redeem(
+                "vip-1",
+                "123456",
+                redeemedAt
+            );
+
+        expect(result).toBe(true);
         expect(db.calls[0]?.sql).toContain(
-            "used_count = used_count + 1"
+            "redeemed_by = ?"
         );
         expect(db.calls[0]?.sql).toContain(
-            "used_count < max_users"
+            "redeemed_by IS NULL"
         );
         expect(db.calls[0]?.values).toEqual([
+            "123456",
+            redeemedAt.getTime(),
             "vip-1"
         ]);
+    });
+
+    it("reports an already-redeemed code when no row was updated", async () => {
+        const db = new FakeD1Database(null, [], 0);
+
+        const repository =
+            new D1VIPCodeRepository(
+                db as unknown as D1Database
+            );
+
+        const result =
+            await repository.redeem(
+                "vip-1",
+                "123456",
+                new Date()
+            );
+
+        expect(result).toBe(false);
     });
 
     it("saves user VIP access with epoch timestamps", async () => {
