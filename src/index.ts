@@ -70,7 +70,6 @@ export default {
 
         env: AppEnv,
 
-
         ctx: ExecutionContext
 
 
@@ -81,7 +80,6 @@ export default {
         const container =
 
             getContainer(env);
-
 
 
 
@@ -133,9 +131,7 @@ export default {
 
             request,
 
-
             env,
-
 
             ctx
 
@@ -156,17 +152,13 @@ export default {
     async scheduled(
 
 
-
         event: ScheduledEvent,
-
 
 
         env: AppEnv,
 
 
-
         ctx: ExecutionContext
-
 
 
     ) {
@@ -181,10 +173,26 @@ export default {
 
 
 
-
         try {
 
 
+
+            const ounceTick =
+
+                await container
+
+                    .collectOunceTickJob
+
+                    .execute();
+
+
+            console.log(
+
+                "Ounce tick collected:",
+
+                ounceTick
+
+            );
 
 
 
@@ -198,24 +206,13 @@ export default {
 
 
 
-
-
-
             console.log(
-
-
 
                 "Price refreshed:",
 
-
-
                 price
 
-
-
             );
-
-
 
 
 
@@ -228,15 +225,9 @@ export default {
 
             console.error(
 
-
-
-                "Price refresh failed:",
-
-
+                "Scheduled job failed:",
 
                 error
-
-
 
             );
 
