@@ -59,6 +59,12 @@ from "../tools/market/GetGoldBubbleTool";
 
 
 import {
+    GetSP2LSignalTool
+}
+from "../tools/market/GetSP2LSignalTool";
+
+
+import {
     CalculateGoldPriceTool
 }
 from "../tools/gold/CalculateGoldPriceTool";
@@ -118,6 +124,12 @@ import {
 from "../../gold/CalculateInvoiceUseCase";
 
 
+import {
+    SP2LStrategyService
+}
+from "../../strategy/sp2l/SP2LStrategyService";
+
+
 
 
 
@@ -163,6 +175,12 @@ export interface CreateAIServiceFactoryDependencies {
     calculateInvoiceUseCase:
 
         CalculateInvoiceUseCase;
+
+
+
+    sp2lStrategyService:
+
+        SP2LStrategyService;
 
 
 
@@ -245,6 +263,20 @@ AIService {
 
     toolRegistry.register(
 
+        new GetSP2LSignalTool(
+
+            dependencies.sp2lStrategyService
+
+        )
+
+    );
+
+
+
+
+
+    toolRegistry.register(
+
         new CalculateGoldPriceTool(
 
             dependencies.calculateGoldPriceUseCase
@@ -275,7 +307,9 @@ AIService {
 
         new CalculateReverseGoldTool(
 
-            dependencies.calculateReverseGoldUseCase
+            dependencies.calculateReverseGoldUseCase,
+
+            dependencies.getCurrentGoldPriceUseCase
 
         )
 

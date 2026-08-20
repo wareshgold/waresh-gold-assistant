@@ -15,8 +15,18 @@ import {
 
 
 import {
+    GetCurrentGoldPriceUseCase
+} from "../../../gold/GetCurrentGoldPriceUseCase";
+
+
+import {
     CalculateReverseGoldToolSchema
 } from "./CalculateReverseGoldToolSchema";
+
+
+import {
+    ReverseCalculationInput
+} from "../../../../domain/gold/calculator/models/ReverseCalculationInput";
 
 
 
@@ -34,7 +44,7 @@ implements AITool {
 
     readonly description =
 
-        "Calculates reverse gold values from final price and parameters.";
+        "Calculates reverse gold values from final price. Use target LABOR_PERCENT to find labor when weight, final price and market gold price are known. If goldPrice is omitted, current market price is used automatically.";
 
 
 
@@ -50,7 +60,12 @@ implements AITool {
 
         private readonly useCase:
 
-            CalculateReverseGoldUseCase
+            CalculateReverseGoldUseCase,
+
+
+        private readonly getCurrentGoldPriceUseCase:
+
+            GetCurrentGoldPriceUseCase
 
     ) {}
 
@@ -77,14 +92,27 @@ implements AITool {
         try {
 
 
+
+            const parsed =
+
+                CalculateReverseGoldToolSchema.parse(
+                    input
+                );
+
+
+
+            const resolved =
+
+                await this.resolveInput(
+                    parsed
+                );
+
+
+
             const result =
 
-                await this.useCase.execute(
-
-                    input as Parameters<
-                        CalculateReverseGoldUseCase["execute"]
-                    >[0]
-
+                this.useCase.execute(
+                    resolved
                 );
 
 
@@ -101,7 +129,41 @@ implements AITool {
 
                 data:
 
-                    result
+                    {
+
+                        ...result,
+
+
+                        target:
+
+                            resolved.target,
+
+
+                        finalPrice:
+
+                            resolved.finalPrice,
+
+
+                        weight:
+
+                            resolved.weight,
+
+
+                        goldPrice:
+
+                            resolved.goldPrice,
+
+
+                        profitPercent:
+
+                            resolved.profitPercent,
+
+
+                        taxPercent:
+
+                            resolved.taxPercent ?? 0
+
+                    }
 
 
             };
@@ -110,7 +172,7 @@ implements AITool {
 
         }
 
-        catch(error) {
+        catch (error) {
 
 
 
@@ -136,6 +198,122 @@ implements AITool {
 
         }
 
+
+    }
+
+
+
+
+
+    private async resolveInput(
+
+        parsed: {
+
+            target:
+                "GOLD_PRICE" | "WEIGHT" | "LABOR_PERCENT";
+
+            finalPrice:
+                number;
+
+            goldPrice?:
+                number;
+
+            weight?:
+                number;
+
+            laborPercent?:
+                number;
+
+            profitPercent?:
+                number;
+
+            taxPercent?:
+                number;
+
+            discount?:
+                number;
+
+        }
+
+    ):
+
+        Promise<ReverseCalculationInput> {
+
+
+
+        let goldPrice =
+
+            parsed.goldPrice;
+
+
+
+        const needsGoldPrice =
+
+            parsed.target === "LABOR_PERCENT" ||
+
+            parsed.target === "WEIGHT";
+
+
+
+        if (
+
+            needsGoldPrice &&
+
+            (
+                goldPrice === undefined ||
+                goldPrice <= 0
+            )
+
+        ) {
+
+
+
+            const market =
+
+                await this.getCurrentGoldPriceUseCase.execute();
+
+
+
+            goldPrice =
+                market.price;
+
+        }
+
+
+
+        return {
+
+            target:
+                parsed.target,
+
+
+            finalPrice:
+                parsed.finalPrice,
+
+
+            goldPrice,
+
+
+            weight:
+                parsed.weight,
+
+
+            laborPercent:
+                parsed.laborPercent,
+
+
+            profitPercent:
+                parsed.profitPercent ?? 0,
+
+
+            taxPercent:
+                parsed.taxPercent ?? 0,
+
+
+            discount:
+                parsed.discount ?? 0
+
+        };
 
     }
 
