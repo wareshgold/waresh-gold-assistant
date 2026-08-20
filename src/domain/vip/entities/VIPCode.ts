@@ -6,10 +6,10 @@ export interface VIPCodeProps {
     id: string;
     code: string;
     feature: VIPFeature;
-    maxUsers: number;
-    usedCount: number;
     expiresAt: Date | null;
     createdAt: Date;
+    redeemedBy?: string | null;
+    redeemedAt?: Date | null;
 }
 
 export class VIPCode {
@@ -17,10 +17,10 @@ export class VIPCode {
     readonly id: string;
     readonly code: string;
     readonly feature: VIPFeature;
-    readonly maxUsers: number;
-    readonly usedCount: number;
     readonly expiresAt: Date | null;
     readonly createdAt: Date;
+    readonly redeemedBy: string | null;
+    readonly redeemedAt: Date | null;
 
     private constructor(
         props: VIPCodeProps
@@ -28,10 +28,10 @@ export class VIPCode {
         this.id = props.id;
         this.code = props.code.trim().toUpperCase();
         this.feature = props.feature;
-        this.maxUsers = props.maxUsers;
-        this.usedCount = props.usedCount;
         this.expiresAt = props.expiresAt;
         this.createdAt = props.createdAt;
+        this.redeemedBy = props.redeemedBy ?? null;
+        this.redeemedAt = props.redeemedAt ?? null;
     }
 
     static create(
@@ -45,16 +45,12 @@ export class VIPCode {
             throw new Error("VIP code id is required");
         }
 
-        if (!Number.isInteger(props.maxUsers) || props.maxUsers <= 0) {
-            throw new Error("VIP code maxUsers must be a positive integer");
-        }
-
         if (
-            !Number.isInteger(props.usedCount) ||
-            props.usedCount < 0 ||
-            props.usedCount > props.maxUsers
+            props.redeemedBy !== null &&
+            props.redeemedBy !== undefined &&
+            !props.redeemedBy.trim()
         ) {
-            throw new Error("VIP code usedCount is invalid");
+            throw new Error("VIP code redeemedBy is invalid");
         }
 
         return new VIPCode(props);
@@ -70,16 +66,13 @@ export class VIPCode {
         return this.expiresAt.getTime() <= now.getTime();
     }
 
-    hasCapacity(): boolean {
-        return this.usedCount < this.maxUsers;
+    isUsed(): boolean {
+        return this.redeemedBy !== null;
     }
 
     canActivate(
         now: Date = new Date()
     ): boolean {
-        return (
-            !this.isExpired(now) &&
-            this.hasCapacity()
-        );
+        return !this.isExpired(now) && !this.isUsed();
     }
 }
