@@ -101,272 +101,179 @@ implements TelegramCommandExecutor {
 
 
         const normalizedMessage:
-
             IncomingMessage =
-
-
 
             typeof message === "string"
 
                 ? {
 
                     userId:
-
                         "default",
 
-
                     text:
-
                         message
 
                 }
 
                 :
-
                 message;
 
 
 
-
-
-
-
         console.log(
-
             "INCOMING MESSAGE:",
-
             normalizedMessage
-
         );
-
-
-
-
 
 
 
         const text =
-
-            normalizedMessage.text
-
-                .trim();
+            normalizedMessage.text.trim();
 
 
 
-
+        const normalizedText =
+            text.toLowerCase();
 
 
 
         if (
-
-            text.startsWith("/")
-
+            normalizedText === "/cancel" ||
+            normalizedText === "/reset" ||
+            normalizedText === "cancel" ||
+            normalizedText === "reset" ||
+            normalizedText === "لغو" ||
+            normalizedText === "انصراف"
         ) {
 
+            if (this.conversationManager) {
 
-
-            const context =
-
-                this.contextBuilder.build(
-
-                    text,
-
-                    normalizedMessage.userId,
-
-                    [],
-
-                    normalizedMessage.username,
-
-                    normalizedMessage.firstName
-
+                await this.conversationManager.cancel(
+                    normalizedMessage.userId
                 );
 
+            }
+
+            return {
+                type:
+                    "text",
+
+                content:
+                    "جلسه فعلی لغو شد. از اینجا به بعد می‌تونی دستور یا سؤال جدیدت رو بفرستی."
+            };
+
+        }
 
 
+
+        if (
+            text.startsWith("/")
+        ) {
+
+            const context =
+                this.contextBuilder.build(
+                    text,
+                    normalizedMessage.userId,
+                    [],
+                    normalizedMessage.username,
+                    normalizedMessage.firstName
+                );
 
 
             return this.router.execute(
-
                 context
-
             );
-
 
         }
 
 
 
-
-
-
-
         if (
-
             this.aiSessionManager
-
         ) {
 
-
-
             const aiResponse =
-
                 await this.aiSessionManager.execute(
-
                     normalizedMessage.userId,
-
                     text
-
                 );
 
 
-
-
-
             if (
-
                 aiResponse
-
             ) {
-
 
                 return aiResponse;
 
-
             }
 
-
         }
-
-
-
-
-
 
 
 
         if (
-
             this.conversationManager
-
         ) {
 
-
-
             const activeConversation =
-
                 await this.conversationManager.execute(
-
                     normalizedMessage.userId,
-
                     text
-
                 );
 
 
-
-
-
             if (
-
                 activeConversation
-
             ) {
-
 
                 return activeConversation;
 
-
             }
 
-
         }
-
-
-
-
-
 
 
 
         const context =
-
             this.contextBuilder.build(
-
                 text,
-
                 normalizedMessage.userId,
-
                 [],
-
                 normalizedMessage.username,
-
                 normalizedMessage.firstName
-
             );
-
-
-
-
 
 
 
         const commandExists =
-
             this.router
-
                 .getHandlers()
-
                 .some(
-
                     handler =>
-
                         handler.canHandle(
-
                             context.command
-
                                 .trim()
-
                                 .toLowerCase()
-
                         )
-
                 );
 
 
 
-
-
-
-
         if (
-
             commandExists
-
         ) {
 
-
             return this.router.execute(
-
                 context
-
             );
-
 
         }
 
 
 
-
-
-
-
-
         return this.router.execute(
-
             context
-
         );
-
 
     }
 
