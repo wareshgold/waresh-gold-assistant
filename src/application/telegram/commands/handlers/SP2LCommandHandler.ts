@@ -66,20 +66,12 @@ export class SP2LCommandHandler
             return {
                 type: "text" as const,
                 content:
-                    "این قابلیت مخصوص کاربران VIP است.\nبرای فعالسازی کد VIP خود را وارد کنید:\n/vip YOUR-CODE"
+                    "این قابلیت مخصوص کاربران VIP است.\nبرای فعالسازی کد VIP خود را وارد کنید:\n/vip SP2L-8F92KD"
             };
         }
 
         const signal =
-            await this.strategyService.getLatestSignal();
-
-        if (!signal) {
-            return {
-                type: "text" as const,
-                content:
-                    "هنوز سیگنال SP2L ثبت نشده است. کمی بعد دوباره امتحان کنید."
-            };
-        }
+            await this.strategyService.evaluateAndStore();
 
         return {
             type: "text" as const,

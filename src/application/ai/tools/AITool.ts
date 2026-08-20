@@ -12,13 +12,16 @@ import {
 export interface AIToolContext {
 
 
-    userId?: string;
+    userId?:
+        string;
 
 
-    sessionId?: string;
+    sessionId?:
+        string;
 
 
-    metadata?: Record<string, unknown>;
+    metadata?:
+        Record<string, unknown>;
 
 
 }
@@ -30,11 +33,13 @@ export interface AIToolContext {
 export interface AITool<TInput = unknown> {
 
 
-    name: string;
+    name:
+        string;
 
 
 
-    description: string;
+    description:
+        string;
 
 
 
@@ -47,17 +52,41 @@ export interface AITool<TInput = unknown> {
      * Zod or other validators can implement
      * this contract through adapters.
      */
-    inputSchema?: AIToolSchema<TInput>;
+    inputSchema?:
+        AIToolSchema<TInput>;
+
+
+
+    /**
+     * Normalizes raw AI generated input
+     * before schema validation.
+     *
+     * AI providers may return:
+     * - JSON strings instead of objects
+     * - wrong field names
+     * - missing optional defaults
+     *
+     * Each tool owns its own input contract.
+     */
+    normalizeInput?(
+        input:
+            unknown
+    ):
+        unknown;
 
 
 
     execute(
 
-        input: TInput,
+        input:
+            TInput,
 
-        context: AIToolContext
 
-    ): Promise<AIToolResult>;
+        context:
+            AIToolContext
+
+    ):
+        Promise<AIToolResult>;
 
 
 }

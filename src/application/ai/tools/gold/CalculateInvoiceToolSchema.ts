@@ -42,6 +42,9 @@ export const CalculateInvoiceToolSchema =
                             .max(
                                 100,
                                 "Labor percent cannot exceed 100"
+                            )
+                            .default(
+                                0
                             ),
 
 
@@ -56,6 +59,9 @@ export const CalculateInvoiceToolSchema =
                             .max(
                                 100,
                                 "Profit percent cannot exceed 100"
+                            )
+                            .default(
+                                0
                             ),
 
 
@@ -70,6 +76,9 @@ export const CalculateInvoiceToolSchema =
                             .max(
                                 100,
                                 "Tax percent cannot exceed 100"
+                            )
+                            .default(
+                                0
                             ),
 
 
@@ -85,8 +94,9 @@ export const CalculateInvoiceToolSchema =
                                 100,
                                 "Discount percent cannot exceed 100"
                             )
-                            .optional()
-
+                            .default(
+                                0
+                            )
 
                 })
 
@@ -95,6 +105,5 @@ export const CalculateInvoiceToolSchema =
                 1,
                 "Invoice must contain at least one item"
             )
-
 
     });

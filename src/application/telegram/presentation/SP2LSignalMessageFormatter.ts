@@ -26,6 +26,7 @@ TP: ${this.formatNumber(signal.takeProfit)}
 Risk: 1:${this.formatNumber(signal.riskReward)}
 Confidence: ${Math.round(signal.confidence * 100)}%
 Strategy: ${signal.strategyVersion}
+Reason: ${signal.reason}
 `.trim();
     }
 

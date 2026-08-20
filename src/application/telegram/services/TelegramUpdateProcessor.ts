@@ -32,6 +32,12 @@ import {
 from "../commands/TelegramCommandHandler";
 
 
+import {
+    IngestOunceTickFromTextUseCase
+}
+from "../../sp2l/IngestOunceTickFromTextUseCase";
+
+
 
 
 export class TelegramUpdateProcessor {
@@ -62,7 +68,11 @@ export class TelegramUpdateProcessor {
 
 
         private readonly callbackProcessor?:
-            TelegramCallbackProcessor
+            TelegramCallbackProcessor,
+
+
+        private readonly ingestOunceTickFromTextUseCase?:
+            IngestOunceTickFromTextUseCase
 
 
     ) {}
@@ -116,7 +126,6 @@ export class TelegramUpdateProcessor {
 
 
 
-
             const response =
 
                 await this.callbackProcessor.process(
@@ -124,7 +133,6 @@ export class TelegramUpdateProcessor {
                     update
 
                 );
-
 
 
 
@@ -147,11 +155,9 @@ export class TelegramUpdateProcessor {
 
 
 
-
         const message =
 
             this.mapper.map(update);
-
 
 
 
@@ -172,6 +178,62 @@ export class TelegramUpdateProcessor {
 
 
 
+
+        if (
+            this.ingestOunceTickFromTextUseCase &&
+            message.text.trim()
+        ) {
+
+            const tick =
+                await this.ingestOunceTickFromTextUseCase.execute(
+                    message.text,
+                    message.timestamp
+                );
+
+            if (tick) {
+
+                console.log(
+                    "OUNCE_TICK_INGESTED",
+                    {
+                        price: tick.price,
+                        source: message.source
+                    }
+                );
+
+                if (
+                    message.source === "channel_post"
+                ) {
+                    return;
+                }
+
+                if (
+                    !message.text.trim().startsWith("/")
+                ) {
+
+                    await this.sendResponse(
+                        {
+                            type: "text",
+                            content:
+                                `Tick انس ثبت شد: ${tick.price}`
+                        },
+                        String(message.chatId)
+                    );
+
+                    return;
+                }
+
+            }
+
+        }
+
+
+
+
+        if (
+            message.source === "channel_post"
+        ) {
+            return;
+        }
 
 
 
@@ -214,7 +276,6 @@ export class TelegramUpdateProcessor {
 
 
 
-
         await this.sendResponse(
 
             response,
@@ -230,7 +291,6 @@ export class TelegramUpdateProcessor {
 
 
     }
-
 
 
 
@@ -260,7 +320,6 @@ export class TelegramUpdateProcessor {
 
 
 
-
         console.log(
 
             "TELEGRAM OUTGOING RESPONSE:",
@@ -274,7 +333,6 @@ export class TelegramUpdateProcessor {
             }
 
         );
-
 
 
 
@@ -316,7 +374,6 @@ export class TelegramUpdateProcessor {
 
 
 
-
             await this.botClient.sendMessage({
 
 
@@ -339,7 +396,6 @@ export class TelegramUpdateProcessor {
             return;
 
         }
-
 
 
 
@@ -452,7 +508,6 @@ export class TelegramUpdateProcessor {
 
 
 
-
             await this.botClient.sendDocument({
 
 
@@ -494,9 +549,6 @@ export class TelegramUpdateProcessor {
 
 
 
-
-
-
         const formattedResponse =
 
 
@@ -505,7 +557,6 @@ export class TelegramUpdateProcessor {
                 response
 
             );
-
 
 
 
@@ -535,7 +586,6 @@ export class TelegramUpdateProcessor {
 
 
 
-
         console.log(
 
             "TELEGRAM OUTGOING MESSAGE:",
@@ -553,7 +603,6 @@ export class TelegramUpdateProcessor {
             }
 
         );
-
 
 
 

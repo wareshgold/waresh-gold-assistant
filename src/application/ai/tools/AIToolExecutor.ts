@@ -97,7 +97,6 @@ export class AIToolExecutor {
 
             return {
 
-
                 success:
 
                     false,
@@ -107,11 +106,22 @@ export class AIToolExecutor {
 
                     `AI tool not found: ${toolName}`
 
-
             };
 
 
         }
+
+
+
+
+
+        const normalizedInput =
+
+            this.normalizeInput(
+
+                input
+
+            );
 
 
 
@@ -123,7 +133,7 @@ export class AIToolExecutor {
 
                 tool.inputSchema,
 
-                input
+                normalizedInput
 
             );
 
@@ -200,6 +210,336 @@ export class AIToolExecutor {
 
 
         }
+
+
+    }
+
+
+
+
+
+
+
+
+    private normalizeInput(
+
+        input:
+
+            unknown
+
+    ):
+
+        unknown {
+
+
+
+        if (
+
+            typeof input === "string"
+
+        ) {
+
+
+            return this.normalizeValue(
+
+                input
+
+            );
+
+
+        }
+
+
+
+
+
+        if (
+
+            Array.isArray(input)
+
+        ) {
+
+
+            return input.map(
+
+                item =>
+
+                    this.normalizeInput(
+
+                        item
+
+                    )
+
+            );
+
+
+        }
+
+
+
+
+
+        if (
+
+            typeof input !== "object" ||
+
+            input === null
+
+        ) {
+
+
+            return input;
+
+
+        }
+
+
+
+
+
+        const object =
+
+            input as Record<string, unknown>;
+
+
+
+
+
+        return Object.fromEntries(
+
+            Object.entries(object)
+
+                .map(
+
+                    ([key, value]) => [
+
+
+                        key,
+
+
+                        this.normalizeValue(
+
+                            value
+
+                        )
+
+
+                    ]
+
+                )
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+    private normalizeValue(
+
+        value:
+
+            unknown
+
+    ):
+
+        unknown {
+
+
+
+        if (
+
+            typeof value !== "string"
+
+        ) {
+
+
+            if (
+
+                Array.isArray(value)
+
+            ) {
+
+
+                return value.map(
+
+                    item =>
+
+                        this.normalizeInput(
+
+                            item
+
+                        )
+
+                );
+
+
+            }
+
+
+
+
+
+            if (
+
+                typeof value === "object" &&
+
+                value !== null
+
+            ) {
+
+
+                return this.normalizeInput(
+
+                    value
+
+                );
+
+
+            }
+
+
+
+
+
+            return value;
+
+
+        }
+
+
+
+
+
+
+        const trimmed =
+
+            value.trim();
+
+
+
+
+
+        if (
+
+            trimmed === ""
+
+        ) {
+
+
+            return value;
+
+
+        }
+
+
+
+
+
+
+        if (
+
+            /^-?\d+(\.\d+)?$/
+
+                .test(trimmed)
+
+        ) {
+
+
+            return Number(
+
+                trimmed
+
+            );
+
+
+        }
+
+
+
+
+
+
+        try {
+
+
+            const parsed =
+
+                JSON.parse(
+
+                    trimmed
+
+                );
+
+
+
+
+
+            if (
+
+                Array.isArray(parsed)
+
+            ) {
+
+
+                return parsed.map(
+
+                    item =>
+
+                        this.normalizeInput(
+
+                            item
+
+                        )
+
+                );
+
+
+            }
+
+
+
+
+
+            if (
+
+                typeof parsed === "object" &&
+
+                parsed !== null
+
+            ) {
+
+
+                return this.normalizeInput(
+
+                    parsed
+
+                );
+
+
+            }
+
+
+        }
+
+        catch {
+
+
+            // ignore invalid JSON
+
+
+        }
+
+
+
+
+
+        return value;
 
 
     }

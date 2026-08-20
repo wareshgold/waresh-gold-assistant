@@ -1,4 +1,4 @@
-import {
+﻿import {
     VIPFeature
 } from "../../domain/vip/VIPFeature";
 
@@ -32,13 +32,18 @@ export class VIPAccessService {
 
     constructor(
         private readonly codeRepository: VIPCodeRepository,
-        private readonly accessRepository: UserVIPAccessRepository
+        private readonly accessRepository: UserVIPAccessRepository,
+        private readonly ownerUserIds: string[] = []
     ) {}
 
     async hasFeature(
         telegramUserId: string,
         feature: VIPFeature
     ): Promise<boolean> {
+        if (this.isOwner(telegramUserId)) {
+            return true;
+        }
+
         const access =
             await this.accessRepository.findActiveAccess(
                 telegramUserId,
@@ -140,8 +145,42 @@ export class VIPAccessService {
     async listActiveUsers(
         feature: VIPFeature
     ): Promise<UserVIPAccess[]> {
-        return this.accessRepository.listActiveUsers(
-            feature
+        const fromRepo =
+            await this.accessRepository.listActiveUsers(
+                feature
+            );
+
+        const existingIds =
+            new Set(
+                fromRepo.map(
+                    item => item.telegramUserId
+                )
+            );
+
+        const owners =
+            this.ownerUserIds
+                .filter(id => id && !existingIds.has(id))
+                .map(id =>
+                    UserVIPAccess.create({
+                        id: `owner-${id}`,
+                        telegramUserId: id,
+                        feature,
+                        activatedAt: new Date(),
+                        expiresAt: null
+                    })
+                );
+
+        return [
+            ...fromRepo,
+            ...owners
+        ];
+    }
+
+    private isOwner(
+        telegramUserId: string
+    ): boolean {
+        return this.ownerUserIds.includes(
+            telegramUserId
         );
     }
 }

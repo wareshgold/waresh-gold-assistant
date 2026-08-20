@@ -22,6 +22,10 @@ import { createSp2lModule }
 from "./factories/createSp2lModule";
 
 
+import { createVipModule }
+from "./factories/createVipModule";
+
+
 import { createTelegramModule }
 from "./factories/createTelegramModule";
 
@@ -102,6 +106,26 @@ import { GetGoldCalculationHistoryUseCase }
 from "../application/gold/GetGoldCalculationHistoryUseCase";
 
 
+import { EvaluateAndPublishSP2LSignalUseCase }
+from "../application/strategy/sp2l/EvaluateAndPublishSP2LSignalUseCase";
+
+
+import { SP2LSignalSchedulerJob }
+from "../application/jobs/SP2LSignalSchedulerJob";
+
+
+import { TelegramSP2LSignalNotifier }
+from "../infrastructure/sp2l/TelegramSP2LSignalNotifier";
+
+
+import { SP2LSignalMessageFormatter }
+from "../application/telegram/presentation/SP2LSignalMessageFormatter";
+
+
+import { IngestOunceTickFromTextUseCase }
+from "../application/sp2l/IngestOunceTickFromTextUseCase";
+
+
 
 
 
@@ -120,7 +144,6 @@ export function createContainer(
 
 
 
-
     const cache =
 
         createCacheModule(env);
@@ -128,11 +151,9 @@ export function createContainer(
 
 
 
-
     const monitoring =
 
         createMonitoringModule(env);
-
 
 
 
@@ -149,7 +170,6 @@ export function createContainer(
             monitoring.metricsStore
 
         );
-
 
 
 
@@ -171,11 +191,9 @@ export function createContainer(
 
 
 
-
     const gold =
 
         createGoldModule();
-
 
 
 
@@ -191,6 +209,27 @@ export function createContainer(
 
 
 
+    const vip =
+
+        createVipModule(
+
+            env
+
+        );
+
+
+
+
+    const ingestOunceTickFromTextUseCase =
+
+        new IngestOunceTickFromTextUseCase(
+
+            sp2l.tickRepository
+
+        );
+
+
+
 
     const saveGoldCalculationHistoryUseCase =
 
@@ -199,7 +238,6 @@ export function createContainer(
             storage.goldCalculationHistoryRepository
 
         );
-
 
 
 
@@ -215,7 +253,6 @@ export function createContainer(
 
 
 
-
     const getSystemMetricsUseCase =
 
         new GetSystemMetricsUseCase(
@@ -223,7 +260,6 @@ export function createContainer(
             monitoring.monitoringService
 
         );
-
 
 
 
@@ -239,7 +275,6 @@ export function createContainer(
 
 
 
-
     const currentMarketPriceUseCase =
 
         new GetCurrentMarketPriceUseCase(
@@ -247,7 +282,6 @@ export function createContainer(
             market.cachedMarketProvider
 
         );
-
 
 
 
@@ -263,7 +297,6 @@ export function createContainer(
 
 
 
-
     const getGoldBubbleUseCase =
 
         new GetGoldBubbleUseCase(
@@ -273,7 +306,6 @@ export function createContainer(
             gold.goldBubbleCalculator
 
         );
-
 
 
 
@@ -328,7 +360,6 @@ export function createContainer(
 
 
 
-
     const goldPriceResolver =
 
         new DefaultGoldPriceResolver(
@@ -340,7 +371,6 @@ export function createContainer(
 
 
 
-
     const getGoldPriceUseCase =
 
         new GetGoldPriceUseCase(
@@ -348,7 +378,6 @@ export function createContainer(
             currentMarketPriceUseCase
 
         );
-
 
 
 
@@ -366,7 +395,6 @@ export function createContainer(
 
 
 
-
     const getMarketAnalyticsUseCase =
 
         new GetMarketAnalyticsUseCase(
@@ -374,7 +402,6 @@ export function createContainer(
             market.analyticsFacade
 
         );
-
 
 
 
@@ -390,7 +417,6 @@ export function createContainer(
 
 
 
-
     const getMarketChartUseCase =
 
         new GetMarketChartUseCase(
@@ -398,7 +424,6 @@ export function createContainer(
             market.marketChartService
 
         );
-
 
 
 
@@ -414,7 +439,6 @@ export function createContainer(
 
 
 
-
     const refreshMarketPriceJob =
 
         new RefreshMarketPriceJob(
@@ -422,7 +446,6 @@ export function createContainer(
             refreshMarketPriceUseCase
 
         );
-
 
 
 
@@ -493,12 +516,56 @@ export function createContainer(
 
                 aiService:
 
-                    ai.aiService
+                    ai.aiService,
+
+
+                vipAccessService:
+
+                    vip.vipAccessService,
+
+
+                strategyService:
+
+                    sp2l.strategyService,
+
+
+                ingestOunceTickFromTextUseCase
 
             }
 
         );
 
+
+
+
+    const evaluateAndPublishSP2LSignalUseCase =
+
+        new EvaluateAndPublishSP2LSignalUseCase(
+
+            sp2l.strategyService,
+
+            vip.vipAccessService,
+
+            new TelegramSP2LSignalNotifier(
+
+                telegram.telegramBotClient,
+
+                new SP2LSignalMessageFormatter()
+
+            )
+
+        );
+
+
+
+
+    const sp2lSignalSchedulerJob =
+
+        new SP2LSignalSchedulerJob(
+
+            evaluateAndPublishSP2LSignalUseCase
+
+        );
 
 
 
@@ -517,6 +584,9 @@ export function createContainer(
 
 
         ...sp2l,
+
+
+        ...vip,
 
 
         ...telegram,
@@ -573,7 +643,16 @@ export function createContainer(
         saveGoldCalculationHistoryUseCase,
 
 
-        getGoldCalculationHistoryUseCase
+        getGoldCalculationHistoryUseCase,
+
+
+        ingestOunceTickFromTextUseCase,
+
+
+        evaluateAndPublishSP2LSignalUseCase,
+
+
+        sp2lSignalSchedulerJob
 
 
 

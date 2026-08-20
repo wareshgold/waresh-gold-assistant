@@ -20,7 +20,17 @@ export interface MappedTelegramMessage {
     firstName?: string;
 
 
+    source:
+        "message"
+        |
+        "channel_post";
+
+
+    timestamp: number;
+
+
 }
+
 
 
 
@@ -32,6 +42,56 @@ export class TelegramUpdateMapper {
         update: TelegramUpdate
 
     ): MappedTelegramMessage | null {
+
+
+
+        const channelPost =
+            update.channel_post;
+
+        if (
+            channelPost?.text
+        ) {
+
+            const id =
+                channelPost.chat?.id;
+
+            if (!id) {
+                return null;
+            }
+
+            return {
+
+                chatId: id,
+
+
+                userId:
+                    String(id),
+
+
+                username:
+                    channelPost.chat?.username,
+
+
+                firstName:
+                    channelPost.chat?.title,
+
+
+                text:
+                    channelPost.text,
+
+
+                source:
+                    "channel_post",
+
+
+                timestamp:
+                    channelPost.date
+                        ? channelPost.date * 1000
+                        : Date.now()
+
+            };
+
+        }
 
 
 
@@ -93,12 +153,21 @@ export class TelegramUpdateMapper {
 
             text:
 
-                message.text ?? ""
+                message.text ?? "",
+
+
+            source:
+                "message",
+
+
+            timestamp:
+                message.date
+                    ? message.date * 1000
+                    : Date.now()
 
 
 
         };
-
 
     }
 

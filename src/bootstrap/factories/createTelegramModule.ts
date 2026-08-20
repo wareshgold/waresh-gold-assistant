@@ -111,6 +111,15 @@ from "../../application/gold/pricing/GoldPriceResolver";
 import { AppEnv }
 from "../../shared/config/env";
 
+import { VIPAccessService }
+from "../../application/vip/VIPAccessService";
+
+import { SP2LStrategyService }
+from "../../application/strategy/sp2l/SP2LStrategyService";
+
+import { IngestOunceTickFromTextUseCase }
+from "../../application/sp2l/IngestOunceTickFromTextUseCase";
+
 
 
 interface Dependencies {
@@ -137,7 +146,7 @@ interface Dependencies {
 
     aiService:
         any;
-        
+
 
     getGoldCalculationHistoryUseCase:
         any;
@@ -170,7 +179,20 @@ interface Dependencies {
     saveGoldCalculationHistoryUseCase:
         any;
 
+
+    vipAccessService?:
+        VIPAccessService;
+
+
+    strategyService?:
+        SP2LStrategyService;
+
+
+    ingestOunceTickFromTextUseCase?:
+        IngestOunceTickFromTextUseCase;
+
 }
+
 export function createTelegramModule(
 
     env: AppEnv,
@@ -187,7 +209,6 @@ export function createTelegramModule(
 
 
 
-
     const goldCalculationResultFormatter =
 
         new GoldCalculationResultFormatter(
@@ -199,11 +220,9 @@ export function createTelegramModule(
 
 
 
-
     const goldCalculationPromptFormatter =
 
         new GoldCalculationPromptFormatter();
-
 
 
 
@@ -256,7 +275,6 @@ export function createTelegramModule(
 
 
 
-
     const marketBubbleMessageFormatter =
 
         new MarketBubbleMessageFormatter(
@@ -266,7 +284,6 @@ export function createTelegramModule(
             telegramNumberFormatter
 
         );
-
 
 
 
@@ -284,7 +301,6 @@ export function createTelegramModule(
 
 
 
-
     const marketChartRenderer =
 
         new MarketChartRenderer();
@@ -292,11 +308,9 @@ export function createTelegramModule(
 
 
 
-
     const marketChartImageGenerator =
 
         new MarketChartImageGenerator();
-
 
 
 
@@ -310,7 +324,6 @@ export function createTelegramModule(
 
 
 
-
     const telegramNavigationStateService =
 
         new DefaultTelegramNavigationStateService(
@@ -318,7 +331,6 @@ export function createTelegramModule(
             dependencies.sessionStore
 
         );
-
 
 
 
@@ -348,11 +360,14 @@ export function createTelegramModule(
             marketBubbleMessageFormatter,
 
             marketAnalyticsMessageFormatter,
-            
-            dependencies.aiService
+
+            dependencies.aiService,
+
+            dependencies.vipAccessService,
+
+            dependencies.strategyService
 
         );
-
 
 
 
@@ -374,7 +389,6 @@ export function createTelegramModule(
 
 
 
-
     const telegramActionExecutor =
 
         new TelegramActionExecutor(
@@ -384,7 +398,6 @@ export function createTelegramModule(
             commandRouter
 
         );
-
 
 
 
@@ -402,7 +415,6 @@ export function createTelegramModule(
 
 
 
-
     const messageHandler =
 
         new TelegramMessageHandler(
@@ -413,7 +425,7 @@ export function createTelegramModule(
 
         );
 
-            const botClient =
+    const botClient =
 
         env.TELEGRAM_BOT_TOKEN
 
@@ -432,7 +444,6 @@ export function createTelegramModule(
 
 
 
-
     const commandMenuService =
 
         new TelegramCommandMenuService(
@@ -440,7 +451,6 @@ export function createTelegramModule(
             botClient
 
         );
-
 
 
 
@@ -474,7 +484,6 @@ export function createTelegramModule(
 
 
 
-
     const callbackProcessor =
 
         new TelegramCallbackProcessor(
@@ -484,7 +493,6 @@ export function createTelegramModule(
             callbackRouter
 
         );
-
 
 
 
@@ -503,10 +511,11 @@ export function createTelegramModule(
 
             new TelegramKeyboardMapper(),
 
-            callbackProcessor
+            callbackProcessor,
+
+            dependencies.ingestOunceTickFromTextUseCase
 
         );
-
 
 
 
@@ -524,7 +533,6 @@ export function createTelegramModule(
             )
 
         );
-
 
 
 
