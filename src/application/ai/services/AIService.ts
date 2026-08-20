@@ -677,24 +677,25 @@ export class AIService {
 
 
 
+                /*
+                 * Latency optimization:
+                 *
+                 * The first provider request needs the complete tool
+                 * definitions so the model can decide which tool to call.
+                 * Once the tool has executed, however, the model only needs
+                 * to turn the trusted tool result into the final answer.
+                 *
+                 * Sending all tool definitions again makes the second
+                 * provider request unnecessarily large and also gives the
+                 * model another opportunity to emit a tool call. The final
+                 * response phase therefore intentionally runs without tools.
+                 */
                 completion =
                     await this.client.complete(
 
-                        messages,
-
-
-                        tools
-
-                            ? {
-
-                                tools
-
-                            }
-
-                            : undefined
+                        messages
 
                     );
-
 
 
                 console.log(
@@ -710,7 +711,6 @@ export class AIService {
                             completion.model
                     }
                 );
-
 
             }
 
@@ -864,7 +864,6 @@ export class AIService {
                 Date.now() - startedAt
 
             );
-
 
         }
 
@@ -1043,7 +1042,6 @@ export class AIService {
 
 
         );
-
 
     }
 
