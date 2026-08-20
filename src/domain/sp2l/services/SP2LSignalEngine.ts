@@ -11,188 +11,366 @@ import {
 } from "../value-objects/SP2LConfiguration";
 
 import {
-    SP2LSignalType
-} from "../value-objects/SP2LSignalType";
+    SpikeDetector
+} from "../../../application/strategy/sp2l/SpikeDetector";
 
-/**
- * SP2L v1 foundation engine.
- * Deterministic momentum rule on last two closes.
- * Replace evaluateSignalType with full SP2L rules when specified.
- */
+import {
+    TwoLegDetector
+} from "../../../application/strategy/sp2l/TwoLegDetector";
+
+import {
+    LevelDetector
+} from "../../../application/strategy/sp2l/LevelDetector";
+
+import {
+    SP2LRiskManager
+} from "../../../application/strategy/sp2l/SP2LRiskManager";
+
+import {
+    SP2LValidator
+} from "../../../application/strategy/sp2l/SP2LValidator";
+
+
 export class SP2LSignalEngine {
 
+
+    constructor(
+
+        private readonly spikeDetector =
+            new SpikeDetector(),
+
+
+        private readonly twoLegDetector =
+            new TwoLegDetector(),
+
+
+        private readonly levelDetector =
+            new LevelDetector(),
+
+
+        private readonly riskManager =
+            new SP2LRiskManager(),
+
+
+        private readonly validator =
+            new SP2LValidator()
+
+    ) {}
+
+
+
     evaluate(
+
         marketData: SP2LMarketData,
+
         config: SP2LConfiguration
+
     ): SP2LSignal {
-        if (
-            marketData.candles.length <
-            config.minCandles
-        ) {
-            throw new Error(
-                `Need at least ${config.minCandles} candles for SP2L`
-            );
+
+
+        const candles =
+            marketData.candles;
+
+
+
+        const timeframe =
+            marketData.timeframe;
+
+
+
+        if (candles.length === 0) {
+
+            return SP2LSignal.hold({
+
+                symbol:
+                    config.symbol,
+
+                timeframe,
+
+                strategyVersion:
+                    config.strategyVersion,
+
+                reason:
+                    "داده کندل وجود ندارد",
+
+                entryPrice:
+                    undefined
+
+            });
+
         }
 
-        const last =
-            marketData.candles[
-                marketData.candles.length - 1
-            ];
 
-        const prev =
-            marketData.candles[
-                marketData.candles.length - 2
-            ];
 
-        const entryPrice =
-            last.close;
+        const lastClose =
+            candles[candles.length - 1].close;
 
-        const changePercent =
-            ((last.close - prev.close) /
-                prev.close) *
-            100;
 
-        const signalType =
-            this.resolveSignalType(
-                changePercent,
-                config.momentumThresholdPercent
-            );
 
-        const {
-            stopLoss,
-            takeProfit,
-            riskReward
-        } =
-            this.buildLevels(
-                signalType,
-                entryPrice,
+        const spike =
+            this.spikeDetector.detect(
+                candles,
                 config
             );
 
-        const confidence =
-            this.computeConfidence(
-                changePercent,
-                config.momentumThresholdPercent,
-                signalType
+
+
+        if (!spike) {
+
+            return SP2LSignal.create({
+
+                symbol:
+                    config.symbol,
+
+                timeframe,
+
+                signalType:
+                    "HOLD",
+
+                entryPrice:
+                    lastClose,
+
+                stopLoss:
+                    0,
+
+                takeProfit:
+                    0,
+
+                riskReward:
+                    0,
+
+                confidence:
+                    0,
+
+                reason:
+                    "Spike معتبر یافت نشد",
+
+                generatedAt:
+                    new Date(),
+
+                strategyVersion:
+                    config.strategyVersion
+
+            });
+
+        }
+
+
+
+        const twoLeg =
+            this.twoLegDetector.detect(
+                candles,
+                spike,
+                config
             );
 
+
+
+        if (!twoLeg) {
+
+            return SP2LSignal.create({
+
+                symbol:
+                    config.symbol,
+
+                timeframe,
+
+                signalType:
+                    "HOLD",
+
+                entryPrice:
+                    lastClose,
+
+                stopLoss:
+                    0,
+
+                takeProfit:
+                    0,
+
+                riskReward:
+                    0,
+
+                confidence:
+                    0,
+
+                reason:
+                    "Two Leg کامل نشده",
+
+                generatedAt:
+                    new Date(),
+
+                strategyVersion:
+                    config.strategyVersion,
+
+                spikeData:
+                    spike
+
+            });
+
+        }
+
+
+
+        const level =
+            this.levelDetector.detect(
+                candles,
+                spike,
+                twoLeg
+            );
+
+
+
+        if (!level) {
+
+            return SP2LSignal.create({
+
+                symbol:
+                    config.symbol,
+
+                timeframe,
+
+                signalType:
+                    "HOLD",
+
+                entryPrice:
+                    twoLeg.completionPrice,
+
+                stopLoss:
+                    0,
+
+                takeProfit:
+                    0,
+
+                riskReward:
+                    0,
+
+                confidence:
+                    0,
+
+                reason:
+                    "Level ورود تایید نشد",
+
+                generatedAt:
+                    new Date(),
+
+                strategyVersion:
+                    config.strategyVersion,
+
+                spikeData:
+                    spike,
+
+                twoLegData:
+                    twoLeg
+
+            });
+
+        }
+
+
+
+        const risk =
+            this.riskManager.buildPlan(
+                spike,
+                level,
+                config
+            );
+
+
+
+        const validation =
+            this.validator.validate({
+
+                spike,
+
+                twoLeg,
+
+                level,
+
+                risk
+
+            });
+
+
+
+        if (!validation.valid) {
+
+            return SP2LSignal.create({
+
+                symbol:
+                    config.symbol,
+
+                timeframe,
+
+                signalType:
+                    "HOLD",
+
+                entryPrice:
+                    level.price,
+
+                stopLoss:
+                    risk.stopLoss.price,
+
+                takeProfit:
+                    risk.takeProfit.price,
+
+                riskReward:
+                    risk.takeProfit.riskReward,
+
+                confidence:
+                    0,
+
+                reason:
+                    validation.reason,
+
+                generatedAt:
+                    new Date(),
+
+                strategyVersion:
+                    config.strategyVersion
+
+            });
+
+        }
+
+
+
         return SP2LSignal.create({
+
             symbol:
                 config.symbol,
 
-            timeframe:
-                config.timeframe,
+            timeframe,
 
-            signalType,
+            signalType:
+                spike.direction,
 
-            entryPrice,
+            entryPrice:
+                level.price,
 
-            stopLoss,
+            stopLoss:
+                risk.stopLoss.price,
 
-            takeProfit,
+            takeProfit:
+                risk.takeProfit.price,
 
-            riskReward,
+            riskReward:
+                risk.takeProfit.riskReward,
 
-            confidence,
+            confidence:
+                validation.confidence,
+
+            reason:
+                validation.reason,
 
             generatedAt:
                 new Date(),
 
             strategyVersion:
                 config.strategyVersion
+
         });
+
+
     }
 
-    private resolveSignalType(
-        changePercent: number,
-        threshold: number
-    ): SP2LSignalType {
-        if (changePercent >= threshold) {
-            return "BUY";
-        }
-
-        if (changePercent <= -threshold) {
-            return "SELL";
-        }
-
-        return "HOLD";
-    }
-
-    private buildLevels(
-        signalType: SP2LSignalType,
-        entryPrice: number,
-        config: SP2LConfiguration
-    ): {
-        stopLoss: number;
-        takeProfit: number;
-        riskReward: number;
-    } {
-        const slDistance =
-            entryPrice *
-            (config.stopLossPercent / 100);
-
-        const tpDistance =
-            entryPrice *
-            (config.takeProfitPercent / 100);
-
-        const riskReward =
-            config.stopLossPercent > 0
-                ? config.takeProfitPercent /
-                  config.stopLossPercent
-                : 0;
-
-        if (signalType === "BUY") {
-            return {
-                stopLoss:
-                    entryPrice - slDistance,
-
-                takeProfit:
-                    entryPrice + tpDistance,
-
-                riskReward
-            };
-        }
-
-        if (signalType === "SELL") {
-            return {
-                stopLoss:
-                    entryPrice + slDistance,
-
-                takeProfit:
-                    entryPrice - tpDistance,
-
-                riskReward
-            };
-        }
-
-        return {
-            stopLoss:
-                entryPrice,
-
-            takeProfit:
-                entryPrice,
-
-            riskReward:
-                0
-        };
-    }
-
-    private computeConfidence(
-        changePercent: number,
-        threshold: number,
-        signalType: SP2LSignalType
-    ): number {
-        if (signalType === "HOLD") {
-            return 0.4;
-        }
-
-        const strength =
-            Math.abs(changePercent) /
-            Math.max(threshold, 0.0001);
-
-        return Math.min(
-            0.95,
-            0.55 + strength * 0.15
-        );
-    }
 }

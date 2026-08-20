@@ -18,6 +18,10 @@ import { createGoldModule }
 from "./factories/createGoldModule";
 
 
+import { createSp2lModule }
+from "./factories/createSp2lModule";
+
+
 import { createTelegramModule }
 from "./factories/createTelegramModule";
 
@@ -176,6 +180,18 @@ export function createContainer(
 
 
 
+    const sp2l =
+
+        createSp2lModule(
+
+            env
+
+        );
+
+
+
+
+
     const saveGoldCalculationHistoryUseCase =
 
         new SaveGoldCalculationHistoryUseCase(
@@ -294,6 +310,11 @@ export function createContainer(
                 calculateInvoiceUseCase:
 
                     gold.calculateInvoiceUseCase,
+
+
+                sp2lStrategyService:
+
+                    sp2l.strategyService,
 
 
                 aiConversationMemory:
@@ -493,6 +514,9 @@ export function createContainer(
 
 
         ...gold,
+
+
+        ...sp2l,
 
 
         ...telegram,
