@@ -24,7 +24,7 @@ export type ActivateVIPResult =
         reason:
             | "INVALID_CODE"
             | "EXPIRED_CODE"
-            | "CAPACITY_FULL"
+            | "CODE_ALREADY_USED"
             | "ALREADY_ACTIVE";
     };
 
@@ -74,10 +74,10 @@ export class VIPAccessService {
             };
         }
 
-        if (!vipCode.hasCapacity()) {
+        if (vipCode.isUsed()) {
             return {
                 success: false,
-                reason: "CAPACITY_FULL"
+                reason: "CODE_ALREADY_USED"
             };
         }
 
@@ -94,6 +94,22 @@ export class VIPAccessService {
             };
         }
 
+        const redeemedAt = new Date();
+
+        const redeemed =
+            await this.codeRepository.redeem(
+                vipCode.id,
+                telegramUserId,
+                redeemedAt
+            );
+
+        if (!redeemed) {
+            return {
+                success: false,
+                reason: "CODE_ALREADY_USED"
+            };
+        }
+
         const access =
             UserVIPAccess.create({
                 id:
@@ -105,7 +121,7 @@ export class VIPAccessService {
                     vipCode.feature,
 
                 activatedAt:
-                    new Date(),
+                    redeemedAt,
 
                 expiresAt:
                     vipCode.expiresAt
@@ -113,10 +129,6 @@ export class VIPAccessService {
 
         await this.accessRepository.save(
             access
-        );
-
-        await this.codeRepository.incrementUsedCount(
-            vipCode.id
         );
 
         return {
