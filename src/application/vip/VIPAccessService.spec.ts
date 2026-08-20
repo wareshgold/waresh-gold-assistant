@@ -25,7 +25,7 @@ import {
 } from "../../domain/vip/VIPFeature";
 
 describe("VIPAccessService", () => {
-    it("should activate valid VIP code", async () => {
+    it("should activate a valid VIP code", async () => {
         const codes = new MemoryVIPCodeRepository();
         const access = new MemoryUserVIPAccessRepository();
 
@@ -34,8 +34,6 @@ describe("VIPAccessService", () => {
                 id: "1",
                 code: "SP2L-8F92KD",
                 feature: VIP_FEATURE_SP2L_SIGNALS,
-                maxUsers: 10,
-                usedCount: 0,
                 expiresAt: null,
                 createdAt: new Date()
             })
@@ -89,8 +87,6 @@ describe("VIPAccessService", () => {
                 id: "1",
                 code: "SP2L-OLD",
                 feature: VIP_FEATURE_SP2L_SIGNALS,
-                maxUsers: 10,
-                usedCount: 0,
                 expiresAt: new Date(Date.now() - 1000),
                 createdAt: new Date()
             })
@@ -115,41 +111,7 @@ describe("VIPAccessService", () => {
         }
     });
 
-    it("should reject when code capacity is full", async () => {
-        const codes = new MemoryVIPCodeRepository();
-
-        codes.seed(
-            VIPCode.create({
-                id: "1",
-                code: "SP2L-FULL",
-                feature: VIP_FEATURE_SP2L_SIGNALS,
-                maxUsers: 1,
-                usedCount: 1,
-                expiresAt: null,
-                createdAt: new Date()
-            })
-        );
-
-        const service =
-            new VIPAccessService(
-                codes,
-                new MemoryUserVIPAccessRepository()
-            );
-
-        const result =
-            await service.activateCode(
-                "user-1",
-                "SP2L-FULL"
-            );
-
-        expect(result.success).toBe(false);
-
-        if (!result.success) {
-            expect(result.reason).toBe("CAPACITY_FULL");
-        }
-    });
-
-    it("should reject duplicate active access", async () => {
+    it("should consume a code after the first successful activation", async () => {
         const codes = new MemoryVIPCodeRepository();
         const access = new MemoryUserVIPAccessRepository();
 
@@ -158,8 +120,6 @@ describe("VIPAccessService", () => {
                 id: "1",
                 code: "SP2L-ONE",
                 feature: VIP_FEATURE_SP2L_SIGNALS,
-                maxUsers: 10,
-                usedCount: 0,
                 expiresAt: null,
                 createdAt: new Date()
             })
@@ -174,10 +134,95 @@ describe("VIPAccessService", () => {
                 "SP2L-ONE"
             );
 
+        expect(first.success).toBe(true);
+
+        const second =
+            await service.activateCode(
+                "user-2",
+                "SP2L-ONE"
+            );
+
+        expect(second.success).toBe(false);
+
+        if (!second.success) {
+            expect(second.reason).toBe("CODE_ALREADY_USED");
+        }
+    });
+
+    it("should reject the same code again for the original user", async () => {
+        const codes = new MemoryVIPCodeRepository();
+        const access = new MemoryUserVIPAccessRepository();
+
+        codes.seed(
+            VIPCode.create({
+                id: "1",
+                code: "SP2L-REUSE",
+                feature: VIP_FEATURE_SP2L_SIGNALS,
+                expiresAt: null,
+                createdAt: new Date()
+            })
+        );
+
+        const service =
+            new VIPAccessService(codes, access);
+
+        const first =
+            await service.activateCode(
+                "user-1",
+                "SP2L-REUSE"
+            );
+
         const second =
             await service.activateCode(
                 "user-1",
-                "SP2L-ONE"
+                "SP2L-REUSE"
+            );
+
+        expect(first.success).toBe(true);
+        expect(second.success).toBe(false);
+
+        if (!second.success) {
+            expect(second.reason).toBe("CODE_ALREADY_USED");
+        }
+    });
+
+    it("should reject duplicate active access even with another code", async () => {
+        const codes = new MemoryVIPCodeRepository();
+        const access = new MemoryUserVIPAccessRepository();
+
+        codes.seed(
+            VIPCode.create({
+                id: "1",
+                code: "SP2L-FIRST",
+                feature: VIP_FEATURE_SP2L_SIGNALS,
+                expiresAt: null,
+                createdAt: new Date()
+            })
+        );
+
+        codes.seed(
+            VIPCode.create({
+                id: "2",
+                code: "SP2L-SECOND",
+                feature: VIP_FEATURE_SP2L_SIGNALS,
+                expiresAt: null,
+                createdAt: new Date()
+            })
+        );
+
+        const service =
+            new VIPAccessService(codes, access);
+
+        const first =
+            await service.activateCode(
+                "user-1",
+                "SP2L-FIRST"
+            );
+
+        const second =
+            await service.activateCode(
+                "user-1",
+                "SP2L-SECOND"
             );
 
         expect(first.success).toBe(true);
