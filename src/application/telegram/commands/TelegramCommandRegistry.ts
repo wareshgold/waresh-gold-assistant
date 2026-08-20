@@ -48,6 +48,9 @@ from "./handlers/AICommandHandler";
 import { ExitCommandHandler }
 from "./handlers/ExitCommandHandler";
 
+import { VIPCommandHandler }
+from "./handlers/VIPCommandHandler";
+
 
 import { GetGoldPriceUseCase }
 from "../../usecases/GetGoldPriceUseCase";
@@ -120,6 +123,9 @@ from "../presentation/TelegramNumberFormatter";
 import { AIService }
 from "../../ai/services/AIService";
 
+import { VIPAccessService }
+from "../../vip/VIPAccessService";
+
 
 
 export class TelegramCommandRegistry {
@@ -174,7 +180,11 @@ export class TelegramCommandRegistry {
 
 
         aiService?:
-            AIService
+            AIService,
+
+
+        vipAccessService?:
+            VIPAccessService
 
 
 
@@ -357,6 +367,23 @@ export class TelegramCommandRegistry {
 
 
 
+        if (
+
+            vipAccessService
+
+        ) {
+
+            handlers.push(
+
+                new VIPCommandHandler(
+
+                    vipAccessService
+
+                )
+
+            );
+
+        }
 
 
 
