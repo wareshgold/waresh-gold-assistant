@@ -108,449 +108,232 @@ import {
 }
 from "../../application/gold/pricing/GoldPriceResolver";
 
+import { VIPAccessService }
+from "../../application/vip/VIPAccessService";
+
 import { AppEnv }
 from "../../shared/config/env";
 
-
-
 interface Dependencies {
-
     getGoldPriceUseCase:
         any;
-
 
     getGoldBubbleUseCase:
         any;
 
-
     getMarketAnalyticsUseCase:
         any;
-
 
     goldPriceResolver:
         GoldPriceResolver;
 
-
     getMarketHistoryUseCase:
         any;
 
-
     aiService:
         any;
-        
 
     getGoldCalculationHistoryUseCase:
         any;
 
-
     getMarketChartUseCase:
         any;
-
 
     calculateGoldFormulaUseCase:
         any;
 
-
     calculateReverseGoldUseCase:
         any;
-
 
     goldCalculationWorkflow:
         GoldCalculationWorkflow;
 
-
     sessionStore:
         any;
-
 
     profileStore:
         any;
 
-
     saveGoldCalculationHistoryUseCase:
         any;
 
+    vipAccessService:
+        VIPAccessService;
 }
+
 export function createTelegramModule(
-
     env: AppEnv,
-
     dependencies: Dependencies
-
 ) {
-
-
     const telegramNumberFormatter =
-
         new TelegramNumberFormatter();
 
-
-
-
-
     const goldCalculationResultFormatter =
-
         new GoldCalculationResultFormatter(
-
             telegramNumberFormatter
-
         );
-
-
-
-
 
     const goldCalculationPromptFormatter =
-
         new GoldCalculationPromptFormatter();
 
-
-
-
-
     const conversationManager =
-
         new TelegramConversationManager(
-
             dependencies.sessionStore,
-
             [
-
                 new GoldCalculationConversationFlow(
-
                     dependencies.sessionStore,
-
                     dependencies.goldCalculationWorkflow,
-
                     goldCalculationResultFormatter,
-
                     dependencies.saveGoldCalculationHistoryUseCase,
-
                     goldCalculationPromptFormatter
-
                 ),
-
-
 
                 new ReverseGoldConversationFlow(
-
                     dependencies.sessionStore,
-
                     dependencies.calculateReverseGoldUseCase,
-
                     telegramNumberFormatter
-
                 ),
 
-
                 new AIConversationFlow(
-
                     dependencies.aiService
-
                 )
-
             ]
-
         );
-
-
-
-
 
     const marketBubbleMessageFormatter =
-
         new MarketBubbleMessageFormatter(
-
             new TelegramMessageBuilder(),
-
             telegramNumberFormatter
-
         );
-
-
-
-
 
     const marketAnalyticsMessageFormatter =
-
         new MarketAnalyticsMessageFormatter(
-
             new TelegramMessageBuilder(),
-
             telegramNumberFormatter
-
         );
-
-
-
-
 
     const marketChartRenderer =
-
         new MarketChartRenderer();
 
-
-
-
-
     const marketChartImageGenerator =
-
         new MarketChartImageGenerator();
 
-
-
-
-
     const telegramNavigationService:
-
         TelegramNavigationService =
-
             new DefaultTelegramNavigationService();
 
-
-
-
-
     const telegramNavigationStateService =
-
         new DefaultTelegramNavigationStateService(
-
             dependencies.sessionStore
-
         );
-
-
-
-
 
     const commandRouter =
-
         TelegramCommandRegistry.create(
-
             dependencies.getGoldPriceUseCase,
-
             dependencies.getGoldBubbleUseCase,
-
             dependencies.getMarketAnalyticsUseCase,
-
             dependencies.getMarketHistoryUseCase,
-
             dependencies.getGoldCalculationHistoryUseCase,
-
             dependencies.calculateGoldFormulaUseCase,
-
             dependencies.calculateReverseGoldUseCase,
-
             dependencies.sessionStore,
-
             dependencies.profileStore,
-
             marketBubbleMessageFormatter,
-
             marketAnalyticsMessageFormatter,
-            
-            dependencies.aiService
-
+            dependencies.aiService,
+            dependencies.vipAccessService
         );
-
-
-
-
 
     const actionResolver =
-
         new CompositeTelegramActionResolver(
-
             [
-
                 new TelegramCommandActionResolver(),
-
                 new TelegramTextActionResolver()
-
             ]
-
         );
-
-
-
-
 
     const telegramActionExecutor =
-
         new TelegramActionExecutor(
-
             actionResolver,
-
             commandRouter
-
         );
-
-
-
-
 
     const commandService =
-
         new TelegramCommandService(
-
             commandRouter,
-
             conversationManager
-
         );
-
-
-
-
 
     const messageHandler =
-
         new TelegramMessageHandler(
-
             commandService,
-
             new TelegramResponseFormatter()
-
         );
 
-            const botClient =
-
+    const botClient =
         env.TELEGRAM_BOT_TOKEN
-
             ?
-
             new TelegramHttpBotClient(
-
                 env.TELEGRAM_BOT_TOKEN
-
             )
-
             :
-
             new FakeTelegramBotClient();
 
-
-
-
-
     const commandMenuService =
-
         new TelegramCommandMenuService(
-
             botClient
-
         );
-
-
-
-
 
     const callbackRouter =
-
         TelegramCallbackRegistry.create(
-
             telegramActionExecutor,
-
             telegramNavigationService,
-
             telegramNavigationStateService,
-
             dependencies.getMarketChartUseCase,
-
             marketChartRenderer,
-
             marketChartImageGenerator,
-
             dependencies.sessionStore,
-
             dependencies.goldCalculationWorkflow,
-
             telegramNumberFormatter,
-
             dependencies.goldPriceResolver
-
         );
-
-
-
-
 
     const callbackProcessor =
-
         new TelegramCallbackProcessor(
-
             new TelegramCallbackMapper(),
-
             callbackRouter
-
         );
-
-
-
-
 
     const processor =
-
         new TelegramUpdateProcessor(
-
             new TelegramUpdateMapper(),
-
             messageHandler,
-
             new TelegramResponseFormatter(),
-
             botClient,
-
             new TelegramKeyboardMapper(),
-
             callbackProcessor
-
         );
-
-
-
-
 
     const webhookController =
-
         new TelegramWebhookController(
-
             processor,
-
             new TelegramWebhookSecurityGuard(
-
                 env.TELEGRAM_WEBHOOK_SECRET
-
             )
-
         );
 
-
-
-
-
     return {
-
         messageHandler,
 
-
         telegramMessageHandler:
-
             messageHandler,
 
-
         telegramWebhookController:
-
             webhookController,
 
-
         telegramBotClient:
-
             botClient,
 
-
         commandMenuService
-
     };
-
 }
