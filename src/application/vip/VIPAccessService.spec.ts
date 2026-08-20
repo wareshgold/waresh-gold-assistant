@@ -114,4 +114,77 @@ describe("VIPAccessService", () => {
             expect(result.reason).toBe("EXPIRED_CODE");
         }
     });
+
+    it("should reject when code capacity is full", async () => {
+        const codes = new MemoryVIPCodeRepository();
+
+        codes.seed(
+            VIPCode.create({
+                id: "1",
+                code: "SP2L-FULL",
+                feature: VIP_FEATURE_SP2L_SIGNALS,
+                maxUsers: 1,
+                usedCount: 1,
+                expiresAt: null,
+                createdAt: new Date()
+            })
+        );
+
+        const service =
+            new VIPAccessService(
+                codes,
+                new MemoryUserVIPAccessRepository()
+            );
+
+        const result =
+            await service.activateCode(
+                "user-1",
+                "SP2L-FULL"
+            );
+
+        expect(result.success).toBe(false);
+
+        if (!result.success) {
+            expect(result.reason).toBe("CAPACITY_FULL");
+        }
+    });
+
+    it("should reject duplicate active access", async () => {
+        const codes = new MemoryVIPCodeRepository();
+        const access = new MemoryUserVIPAccessRepository();
+
+        codes.seed(
+            VIPCode.create({
+                id: "1",
+                code: "SP2L-ONE",
+                feature: VIP_FEATURE_SP2L_SIGNALS,
+                maxUsers: 10,
+                usedCount: 0,
+                expiresAt: null,
+                createdAt: new Date()
+            })
+        );
+
+        const service =
+            new VIPAccessService(codes, access);
+
+        const first =
+            await service.activateCode(
+                "user-1",
+                "SP2L-ONE"
+            );
+
+        const second =
+            await service.activateCode(
+                "user-1",
+                "SP2L-ONE"
+            );
+
+        expect(first.success).toBe(true);
+        expect(second.success).toBe(false);
+
+        if (!second.success) {
+            expect(second.reason).toBe("ALREADY_ACTIVE");
+        }
+    });
 });
