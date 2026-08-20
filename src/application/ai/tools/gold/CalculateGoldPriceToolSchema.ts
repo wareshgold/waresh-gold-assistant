@@ -42,7 +42,8 @@ export const CalculateGoldPriceToolSchema =
                 .min(
                     0,
                     "Profit percent cannot be negative"
-                ),
+                )
+                .default(0),
 
 
 
@@ -52,7 +53,8 @@ export const CalculateGoldPriceToolSchema =
                 .min(
                     0,
                     "Tax percent cannot be negative"
-                ),
+                )
+                .default(0),
 
 
 
