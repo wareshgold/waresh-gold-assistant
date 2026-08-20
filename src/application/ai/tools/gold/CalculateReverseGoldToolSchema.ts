@@ -1,4 +1,7 @@
-import { z } from "zod";
+import {
+    z
+} from "zod";
+
 
 
 export const CalculateReverseGoldToolSchema =
@@ -48,14 +51,17 @@ export const CalculateReverseGoldToolSchema =
         profitPercent:
 
             z.number()
-                .min(0),
+                .min(0)
+                .optional()
+                .default(0),
 
 
         taxPercent:
 
             z.number()
                 .min(0)
-                .optional(),
+                .optional()
+                .default(0),
 
 
         discount:
@@ -63,5 +69,6 @@ export const CalculateReverseGoldToolSchema =
             z.number()
                 .min(0)
                 .optional()
+                .default(0)
 
     });

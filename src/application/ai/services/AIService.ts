@@ -43,12 +43,20 @@ import {
 } from "../guards/AICasualMessageGuard";
 
 import {
+    OutOfDomainGuard
+} from "../guards/OutOfDomainGuard";
+
+import {
     MetricRecorder
 } from "../../system/observability/MetricRecorder";
 
 import {
     MetricType
 } from "../../../domain/system/observability/MetricType";
+
+import {
+    AIToolExecutionResult
+} from "../models/AIToolExecutionResult";
 
 
 
@@ -67,8 +75,16 @@ export class AIService {
         AICasualMessageGuard;
 
 
+    private readonly outOfDomainGuard:
+        OutOfDomainGuard;
+
+
     private readonly localToolRouter?:
         AILocalToolRouter;
+
+
+    private readonly emptyResponseFallback =
+        "متأسفانه الان نتونستم پاسخ مناسبی تولید کنم. لطفاً سوال‌ت رو یک‌بار دیگه، واضح‌تر بپرس.";
 
 
 
@@ -118,6 +134,10 @@ export class AIService {
 
         this.casualMessageGuard =
             new AICasualMessageGuard();
+
+
+        this.outOfDomainGuard =
+            new OutOfDomainGuard();
 
 
 
@@ -232,7 +252,8 @@ export class AIService {
                     const content =
                         this.responseFormatter.format(
                             local.response ?? ""
-                        );
+                        ) ||
+                        this.emptyResponseFallback;
 
 
 
@@ -310,6 +331,58 @@ export class AIService {
             }
 
 
+
+
+
+
+            const outOfDomain =
+                this.outOfDomainGuard.handle(
+                    request.message
+                );
+
+
+
+
+            if (outOfDomain) {
+
+
+
+                await this.saveConversation(
+                    request,
+                    outOfDomain
+                );
+
+
+
+                return {
+
+                    content:
+                        outOfDomain,
+
+
+                    metadata: {
+
+                        model:
+                            "out-of-domain-guard",
+
+
+                        userId:
+                            request.userId,
+
+
+                        toolExecuted:
+                            false,
+
+
+                        aiProviderCalled:
+                            false
+
+                    }
+
+                };
+
+
+            }
 
 
 
@@ -434,12 +507,29 @@ export class AIService {
 
 
 
+            console.log(
+                "AI_COMPLETION_PRIMARY",
+                {
+                    content:
+                        completion.content,
+
+                    toolCalls:
+                        completion.toolCalls,
+
+                    model:
+                        completion.model
+                }
+            );
 
 
 
 
 
-            let executions = [];
+
+
+
+            let executions:
+                AIToolExecutionResult[] = [];
 
 
 
@@ -472,6 +562,30 @@ export class AIService {
 
 
             }
+
+
+
+            console.log(
+                "AI_TOOL_EXECUTIONS",
+                {
+                    count:
+                        executions.length,
+
+                    tools:
+                        executions.map(
+                            execution => ({
+                                toolName:
+                                    execution.toolName,
+
+                                success:
+                                    execution.result.success,
+
+                                error:
+                                    execution.result.error
+                            })
+                        )
+                }
+            );
 
 
 
@@ -582,6 +696,22 @@ export class AIService {
                     );
 
 
+
+                console.log(
+                    "AI_COMPLETION_AFTER_TOOLS",
+                    {
+                        content:
+                            completion.content,
+
+                        toolCalls:
+                            completion.toolCalls,
+
+                        model:
+                            completion.model
+                    }
+                );
+
+
             }
 
 
@@ -591,10 +721,31 @@ export class AIService {
 
 
 
-            const content =
+            let content =
                 this.responseFormatter.format(
                     completion.content
                 );
+
+
+
+            if (!content) {
+
+                content =
+                    this.buildFallbackFromExecutions(
+                        executions
+                    );
+
+            }
+
+
+
+            if (!content) {
+
+                content =
+                    this.emptyResponseFallback;
+
+            }
+
 
 
 
@@ -717,6 +868,85 @@ export class AIService {
 
         }
 
+
+    }
+
+
+
+
+
+
+
+
+    private buildFallbackFromExecutions(
+
+        executions:
+            AIToolExecutionResult[]
+
+    ):
+        string {
+
+
+
+        if (executions.length === 0) {
+
+            return "";
+
+        }
+
+
+
+        const successful =
+            executions.filter(
+                execution =>
+                    execution.result.success
+            );
+
+
+
+        if (successful.length > 0) {
+
+            const parts =
+                successful.map(
+                    execution => {
+
+                        const data =
+                            execution.result.data;
+
+
+                        if (
+                            data &&
+                            typeof data === "object"
+                        ) {
+
+                            return JSON.stringify(
+                                data
+                            );
+
+                        }
+
+
+                        return `ابزار ${execution.toolName} با موفقیت اجرا شد.`;
+
+                    }
+                );
+
+
+            return parts.join("\n");
+
+        }
+
+
+
+        const failed =
+            executions[0];
+
+
+
+        return (
+            failed.result.error ??
+            "اجرای ابزار با خطا مواجه شد. لطفاً دوباره تلاش کن."
+        );
 
     }
 

@@ -84,6 +84,49 @@ export class AILocalToolRouter {
 
 
 
+        const reverseLabor =
+
+            this.parseReverseLaborRequest(
+                message
+            );
+
+
+
+        if (reverseLabor) {
+
+
+
+            return this.executeTool(
+
+                "calculate_reverse_gold",
+
+                {
+                    target:
+                        "LABOR_PERCENT",
+
+                    finalPrice:
+                        reverseLabor.finalPrice,
+
+                    weight:
+                        reverseLabor.weight,
+
+                    profitPercent:
+                        0,
+
+                    taxPercent:
+                        0
+                },
+
+                request
+
+            );
+
+        }
+
+
+
+
+
         const toolName =
 
             this.resolveTool(
@@ -114,6 +157,43 @@ export class AILocalToolRouter {
 
 
 
+        return this.executeTool(
+
+            toolName,
+
+            {},
+
+            request
+
+        );
+
+
+    }
+
+
+
+
+
+    private async executeTool(
+
+        toolName:
+
+            string,
+
+        args:
+
+            Record<string, unknown>,
+
+        request:
+
+            AIRequest
+
+    ):
+
+        Promise<AILocalToolRouteResult> {
+
+
+
         const toolResult =
 
             await this.toolExecutionService.executeIfRequired(
@@ -140,7 +220,7 @@ export class AILocalToolRouter {
 
                             arguments:
 
-                                {}
+                                args
 
                         }
 
@@ -219,8 +299,6 @@ export class AILocalToolRouter {
 
 
 
-
-
     private resolveTool(
 
         message:
@@ -279,6 +357,120 @@ export class AILocalToolRouter {
     }
 
 
+
+
+
+    private parseReverseLaborRequest(
+
+        message:
+
+            string
+
+    ):
+
+        {
+            weight: number;
+            finalPrice: number;
+        } | null {
+
+
+
+        const hasLaborIntent =
+
+            /(اجرت|کارمزد)/i.test(
+                message
+            );
+
+
+
+        if (!hasLaborIntent) {
+
+            return null;
+
+        }
+
+
+
+        const weightMatch =
+
+            message.match(
+
+                /(\d+(?:[.,]\d+)?)\s*گرم/
+
+            );
+
+
+
+        if (!weightMatch) {
+
+            return null;
+
+        }
+
+
+
+        const priceMatch =
+
+            message.match(
+
+                /(\d{5,})/
+
+            );
+
+
+
+        if (!priceMatch) {
+
+            return null;
+
+        }
+
+
+
+        const weight =
+
+            Number(
+                weightMatch[1].replace(",", ".")
+            );
+
+
+
+        const finalPrice =
+
+            Number(
+                priceMatch[1]
+            );
+
+
+
+        if (
+
+            !Number.isFinite(weight) ||
+
+            weight <= 0 ||
+
+            !Number.isFinite(finalPrice) ||
+
+            finalPrice <= 0
+
+        ) {
+
+            return null;
+
+        }
+
+
+
+        return {
+
+            weight,
+
+            finalPrice
+
+        };
+
+
+    }
 
 
 
@@ -367,8 +559,6 @@ export class AILocalToolRouter {
 
 
 
-
-
     private isCurrentMithqalPriceRequest(
 
         message:
@@ -416,8 +606,6 @@ export class AILocalToolRouter {
 
 
 
-
-
     private buildResponse(
 
         toolName:
@@ -445,7 +633,7 @@ export class AILocalToolRouter {
 
                 result.error ??
 
-                "دریافت قیمت با خطا مواجه شد."
+                "دریافت نتیجه با خطا مواجه شد."
 
             );
 
@@ -560,16 +748,138 @@ export class AILocalToolRouter {
 
 
 
+        if (
+
+            toolName ===
+
+            "calculate_reverse_gold"
+
+        ) {
+
+
+            const data =
+
+                result.data as
+
+                    Record<string, unknown> |
+
+                    undefined;
+
+
+
+            const laborPercent =
+
+                data?.laborPercent;
+
+
+
+            const laborAmount =
+
+                data?.laborAmount;
+
+
+
+            const goldPrice =
+
+                data?.goldPrice;
+
+
+
+            const weight =
+
+                data?.weight;
+
+
+
+            const finalPrice =
+
+                data?.finalPrice;
+
+
+
+            const lines: string[] = [];
+
+
+
+            if (
+
+                typeof laborPercent === "number"
+
+            ) {
+
+                lines.push(
+                    `اجرت تقریبی: ${this.formatNumber(laborPercent)}٪`
+                );
+
+            }
+
+
+
+            if (
+
+                typeof laborAmount === "number"
+
+            ) {
+
+                lines.push(
+                    `مبلغ اجرت: ${this.formatNumber(laborAmount)} تومان`
+                );
+
+            }
+
+
+
+            if (
+
+                typeof goldPrice === "number"
+
+            ) {
+
+                lines.push(
+                    `قیمت مبنا (۱۸ عیار): ${this.formatNumber(goldPrice)} تومان`
+                );
+
+            }
+
+
+
+            if (
+
+                typeof weight === "number" &&
+
+                typeof finalPrice === "number"
+
+            ) {
+
+                lines.push(
+                    `برای ${this.formatNumber(weight)} گرم با مبلغ پرداختی ${this.formatNumber(finalPrice)} تومان`
+                );
+
+            }
+
+
+
+            if (lines.length > 0) {
+
+                return lines.join("\n");
+
+            }
+
+
+        }
+
+
+
+
+
         return (
 
-            "اطلاعات قیمت دریافت شد."
+            "اطلاعات دریافت شد."
 
         );
 
 
     }
-
-
 
 
 
@@ -607,8 +917,6 @@ export class AILocalToolRouter {
 
 
     }
-
-
 
 
 

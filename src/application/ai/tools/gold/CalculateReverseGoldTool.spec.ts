@@ -1,4 +1,8 @@
-import { describe, expect, it } from "vitest";
+import {
+    describe,
+    expect,
+    it
+} from "vitest";
 
 import {
     CalculateReverseGoldTool
@@ -10,25 +14,28 @@ describe("CalculateReverseGoldTool", () => {
 
 
 
-    it("should reverse calculate gold successfully", async () => {
+    it("should reverse calculate labor successfully with provided gold price", async () => {
 
 
 
         const useCase = {
 
 
-            async execute(input: unknown) {
+            execute(input: unknown) {
 
 
                 return {
 
 
-                    input,
+                    laborPercent:
+                        12.5,
 
 
-                    weight:
+                    laborAmount:
+                        1500000,
 
-                        2
+
+                    input
 
                 };
 
@@ -40,12 +47,34 @@ describe("CalculateReverseGoldTool", () => {
 
 
 
+        const getCurrentGoldPriceUseCase = {
+
+
+            async execute() {
+
+
+                return {
+
+                    price:
+                        19711000
+
+                };
+
+
+            }
+
+
+        } as any;
+
+
 
         const tool =
 
             new CalculateReverseGoldTool(
 
-                useCase
+                useCase,
+
+                getCurrentGoldPriceUseCase
 
             );
 
@@ -59,16 +88,34 @@ describe("CalculateReverseGoldTool", () => {
 
                 {
 
-                    total:
+                    target:
+                        "LABOR_PERCENT",
 
-                        50000000
+
+                    finalPrice:
+                        110000000,
+
+
+                    weight:
+                        5,
+
+
+                    goldPrice:
+                        19711000,
+
+
+                    profitPercent:
+                        0,
+
+
+                    taxPercent:
+                        0
 
                 },
 
                 {
 
                     userId:
-
                         "user-1"
 
                 }
@@ -89,22 +136,30 @@ describe("CalculateReverseGoldTool", () => {
 
         expect(result.data)
 
-            .toEqual({
+            .toMatchObject({
 
-                input:
+                laborPercent:
+                    12.5,
 
-                {
 
-                    total:
+                laborAmount:
+                    1500000,
 
-                        50000000
 
-                },
+                target:
+                    "LABOR_PERCENT",
+
+
+                finalPrice:
+                    110000000,
 
 
                 weight:
+                    5,
 
-                    2
+
+                goldPrice:
+                    19711000
 
             });
 
@@ -112,6 +167,135 @@ describe("CalculateReverseGoldTool", () => {
 
     });
 
+
+
+
+
+    it("should resolve current gold price when goldPrice is missing", async () => {
+
+
+
+        const useCase = {
+
+
+            execute(input: any) {
+
+
+                return {
+
+
+                    laborPercent:
+                        10,
+
+
+                    laborAmount:
+                        1000000,
+
+
+                    resolvedGoldPrice:
+                        input.goldPrice
+
+                };
+
+
+            }
+
+
+        } as any;
+
+
+
+        const getCurrentGoldPriceUseCase = {
+
+
+            async execute() {
+
+
+                return {
+
+                    price:
+                        19711000
+
+                };
+
+
+            }
+
+
+        } as any;
+
+
+
+        const tool =
+
+            new CalculateReverseGoldTool(
+
+                useCase,
+
+                getCurrentGoldPriceUseCase
+
+            );
+
+
+
+
+
+        const result =
+
+            await tool.execute(
+
+                {
+
+                    target:
+                        "LABOR_PERCENT",
+
+
+                    finalPrice:
+                        110000000,
+
+
+                    weight:
+                        5
+
+                },
+
+                {
+
+                    userId:
+                        "user-1"
+
+                }
+
+            );
+
+
+
+
+
+        expect(result.success)
+
+            .toBe(true);
+
+
+
+
+
+        expect(result.data)
+
+            .toMatchObject({
+
+                laborPercent:
+                    10,
+
+
+                goldPrice:
+                    19711000
+
+            });
+
+
+
+    });
 
 
 
@@ -124,7 +308,7 @@ describe("CalculateReverseGoldTool", () => {
         const useCase = {
 
 
-            async execute() {
+            execute() {
 
 
                 throw new Error(
@@ -141,13 +325,144 @@ describe("CalculateReverseGoldTool", () => {
 
 
 
+        const getCurrentGoldPriceUseCase = {
+
+
+            async execute() {
+
+
+                return {
+
+                    price:
+                        19711000
+
+                };
+
+
+            }
+
+
+        } as any;
+
 
 
         const tool =
 
             new CalculateReverseGoldTool(
 
-                useCase
+                useCase,
+
+                getCurrentGoldPriceUseCase
+
+            );
+
+
+
+
+
+        const result =
+
+            await tool.execute(
+
+                {
+
+                    target:
+                        "LABOR_PERCENT",
+
+
+                    finalPrice:
+                        110000000,
+
+
+                    weight:
+                        5,
+
+
+                    goldPrice:
+                        19711000
+
+                },
+
+                {}
+
+            );
+
+
+
+
+
+        expect(result.success)
+
+            .toBe(false);
+
+
+
+
+
+        expect(result.error)
+
+            .toContain(
+
+                "reverse calculation failed"
+
+            );
+
+
+
+    });
+
+
+
+
+
+    it("should return failure when schema validation fails", async () => {
+
+
+
+        const useCase = {
+
+
+            execute() {
+
+
+                return {};
+
+
+            }
+
+
+        } as any;
+
+
+
+        const getCurrentGoldPriceUseCase = {
+
+
+            async execute() {
+
+
+                return {
+
+                    price:
+                        19711000
+
+                };
+
+
+            }
+
+
+        } as any;
+
+
+
+        const tool =
+
+            new CalculateReverseGoldTool(
+
+                useCase,
+
+                getCurrentGoldPriceUseCase
 
             );
 
@@ -179,11 +494,7 @@ describe("CalculateReverseGoldTool", () => {
 
         expect(result.error)
 
-            .toContain(
-
-                "reverse calculation failed"
-
-            );
+            .toBeTruthy();
 
 
 
