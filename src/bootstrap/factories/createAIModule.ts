@@ -64,6 +64,12 @@ import {
 from "../../application/ai/memory/AIConversationMemory";
 
 
+import {
+    SP2LStrategyService
+}
+from "../../application/strategy/sp2l/SP2LStrategyService";
+
+
 
 
 
@@ -128,6 +134,12 @@ export function createAIModule(
         calculateInvoiceUseCase:
 
             CalculateInvoiceUseCase;
+
+
+
+        sp2lStrategyService:
+
+            SP2LStrategyService;
 
 
 
@@ -209,6 +221,12 @@ AIModule {
             calculateInvoiceUseCase:
 
                 dependencies.calculateInvoiceUseCase,
+
+
+
+            sp2lStrategyService:
+
+                dependencies.sp2lStrategyService,
 
 
 
