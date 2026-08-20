@@ -32,6 +32,33 @@ describe("OuncePriceParser", () => {
         expect(tick.direction).toBe("up");
     });
 
+    it("parses OunceMarkets up tick", () => {
+        const tick =
+            OuncePriceParser.parse(
+                "🔺 4473.49     1405/05/29 16:27:04",
+                1000
+            );
+
+        expect(tick.price).toBe(4473.49);
+        expect(tick.direction).toBe("up");
+        expect(tick.timestamp).toBe(
+            Date.UTC(2026, 7, 20, 16, 27, 4)
+        );
+    });
+
+    it("parses OunceMarkets down tick", () => {
+        const tick =
+            OuncePriceParser.parse(
+                "🔻 4473.69     1405/05/29 16:27:10"
+            );
+
+        expect(tick.price).toBe(4473.69);
+        expect(tick.direction).toBe("down");
+        expect(tick.timestamp).toBe(
+            Date.UTC(2026, 7, 20, 16, 27, 10)
+        );
+    });
+
     it("parses multiple sample messages", () => {
         const samples = [
             "🔴 انس طلا 4,492.42 دلار",
