@@ -26,7 +26,7 @@ export class VIPCode {
         props: VIPCodeProps
     ) {
         this.id = props.id;
-        this.code = props.code;
+        this.code = props.code.trim().toUpperCase();
         this.feature = props.feature;
         this.maxUsers = props.maxUsers;
         this.usedCount = props.usedCount;
@@ -39,6 +39,22 @@ export class VIPCode {
     ): VIPCode {
         if (!props.code.trim()) {
             throw new Error("VIP code is required");
+        }
+
+        if (!props.id.trim()) {
+            throw new Error("VIP code id is required");
+        }
+
+        if (!Number.isInteger(props.maxUsers) || props.maxUsers <= 0) {
+            throw new Error("VIP code maxUsers must be a positive integer");
+        }
+
+        if (
+            !Number.isInteger(props.usedCount) ||
+            props.usedCount < 0 ||
+            props.usedCount > props.maxUsers
+        ) {
+            throw new Error("VIP code usedCount is invalid");
         }
 
         return new VIPCode(props);
