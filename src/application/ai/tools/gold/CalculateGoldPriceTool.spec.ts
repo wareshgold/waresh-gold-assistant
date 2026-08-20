@@ -34,19 +34,15 @@ describe("CalculateGoldPriceTool", () => {
 
                     input,
 
-
                     total:
 
                         25000000
 
                 };
 
-
             }
 
-
         } as any;
-
 
 
 
@@ -84,7 +80,6 @@ describe("CalculateGoldPriceTool", () => {
 
 
 
-
         const result =
 
             await executor.execute(
@@ -97,26 +92,21 @@ describe("CalculateGoldPriceTool", () => {
 
                         2,
 
-
                     goldPrice:
 
                         19000000,
-
 
                     laborPercent:
 
                         10,
 
-
                     profitPercent:
 
                         7,
 
-
                     taxPercent:
 
                         10
-
 
                 },
 
@@ -150,28 +140,23 @@ describe("CalculateGoldPriceTool", () => {
 
                         2,
 
-
                     goldPrice:
 
                         19000000,
-
 
                     laborPercent:
 
                         10,
 
-
                     profitPercent:
 
                         7,
-
 
                     taxPercent:
 
                         10
 
                 },
-
 
                 total:
 
@@ -186,6 +171,144 @@ describe("CalculateGoldPriceTool", () => {
 
 
 
+    it("should default omitted profit and tax percentages to zero", async () => {
+
+
+        const useCase = {
+
+            async execute(input: unknown) {
+
+                return {
+
+                    input,
+
+                    total:
+
+                        20900000
+
+                };
+
+            }
+
+        } as any;
+
+
+
+        const tool =
+
+            new CalculateGoldPriceTool(
+
+                useCase
+
+            );
+
+
+
+        const registry =
+
+            new DefaultAIToolRegistry();
+
+
+        registry.register(
+
+            tool
+
+        );
+
+
+
+        const executor =
+
+            new AIToolExecutor(
+
+                registry
+
+            );
+
+
+
+        const result =
+
+            await executor.execute(
+
+                "calculate_gold_price",
+
+                {
+
+                    weight:
+
+                        1,
+
+                    goldPrice:
+
+                        19000000,
+
+                    laborPercent:
+
+                        10
+
+                },
+
+                {
+
+                    userId:
+
+                        "user-1"
+
+                }
+
+            );
+
+
+
+        expect(result.success)
+
+            .toBe(true);
+
+
+
+        expect(result.data)
+
+            .toEqual({
+
+                input:
+
+                {
+
+                    weight:
+
+                        1,
+
+                    goldPrice:
+
+                        19000000,
+
+                    laborPercent:
+
+                        10,
+
+                    profitPercent:
+
+                        0,
+
+                    taxPercent:
+
+                        0
+
+                },
+
+                total:
+
+                    20900000
+
+            });
+
+
+
+    });
+
+
+
 
 
     it("should reject invalid negative values before execution", async () => {
@@ -197,19 +320,15 @@ describe("CalculateGoldPriceTool", () => {
 
             async execute() {
 
-
                 throw new Error(
 
                     "use case should not execute"
 
                 );
 
-
             }
 
-
         } as any;
-
 
 
 
@@ -259,21 +378,17 @@ describe("CalculateGoldPriceTool", () => {
 
                         -1,
 
-
                     goldPrice:
 
                         19000000,
-
 
                     laborPercent:
 
                         10,
 
-
                     profitPercent:
 
                         7,
-
 
                     taxPercent:
 
@@ -309,16 +424,12 @@ describe("CalculateGoldPriceTool", () => {
 
 
 
-
     it("should return failure when calculation fails", async () => {
-
 
 
         const useCase = {
 
-
             async execute() {
-
 
                 throw new Error(
 
@@ -326,12 +437,9 @@ describe("CalculateGoldPriceTool", () => {
 
                 );
 
-
             }
 
-
         } as any;
-
 
 
 
