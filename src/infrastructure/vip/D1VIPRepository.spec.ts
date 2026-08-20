@@ -5,12 +5,9 @@ import {
 } from "vitest";
 
 import {
-    VIPFeature
+    VIPFeature,
+    VIP_FEATURE_SP2L_SIGNALS
 } from "../../domain/vip/VIPFeature";
-
-import {
-    VIPCode
-} from "../../domain/vip/entities/VIPCode";
 
 import {
     UserVIPAccess
@@ -81,7 +78,7 @@ describe("D1 VIP repositories", () => {
         const db = new FakeD1Database({
             id: "vip-1",
             code: "SP2L-2026",
-            feature: VIPFeature.SP2L,
+            feature: VIP_FEATURE_SP2L_SIGNALS,
             max_users: 100,
             used_count: 4,
             expires_at: expiresAt.getTime(),
@@ -101,7 +98,9 @@ describe("D1 VIP repositories", () => {
         expect(result).not.toBeNull();
         expect(result?.id).toBe("vip-1");
         expect(result?.code).toBe("SP2L-2026");
-        expect(result?.feature).toBe(VIPFeature.SP2L);
+        expect(result?.feature).toBe(
+            VIP_FEATURE_SP2L_SIGNALS
+        );
         expect(result?.maxUsers).toBe(100);
         expect(result?.usedCount).toBe(4);
         expect(result?.createdAt.getTime()).toBe(
@@ -146,7 +145,7 @@ describe("D1 VIP repositories", () => {
             UserVIPAccess.create({
                 id: "access-1",
                 telegramUserId: "123456",
-                feature: VIPFeature.SP2L,
+                feature: VIP_FEATURE_SP2L_SIGNALS,
                 activatedAt,
                 expiresAt
             });
@@ -163,7 +162,7 @@ describe("D1 VIP repositories", () => {
         expect(db.calls[0]?.values).toEqual([
             "access-1",
             "123456",
-            VIPFeature.SP2L,
+            VIP_FEATURE_SP2L_SIGNALS,
             activatedAt.getTime(),
             expiresAt.getTime()
         ]);
@@ -176,7 +175,7 @@ describe("D1 VIP repositories", () => {
         const db = new FakeD1Database({
             id: "access-1",
             telegram_user_id: "123456",
-            feature: VIPFeature.SP2L,
+            feature: VIP_FEATURE_SP2L_SIGNALS,
             activated_at: activatedAt.getTime(),
             expires_at: expiresAt.getTime()
         });
@@ -189,13 +188,15 @@ describe("D1 VIP repositories", () => {
         const result =
             await repository.findActiveAccess(
                 "123456",
-                VIPFeature.SP2L
+                VIP_FEATURE_SP2L_SIGNALS
             );
 
         expect(result).not.toBeNull();
         expect(result?.id).toBe("access-1");
         expect(result?.telegramUserId).toBe("123456");
-        expect(result?.feature).toBe(VIPFeature.SP2L);
+        expect(result?.feature).toBe(
+            VIP_FEATURE_SP2L_SIGNALS
+        );
         expect(result?.activatedAt.getTime()).toBe(
             activatedAt.getTime()
         );
@@ -203,7 +204,9 @@ describe("D1 VIP repositories", () => {
             expiresAt.getTime()
         );
         expect(db.calls[0]?.values[0]).toBe("123456");
-        expect(db.calls[0]?.values[1]).toBe(VIPFeature.SP2L);
+        expect(db.calls[0]?.values[1]).toBe(
+            VIP_FEATURE_SP2L_SIGNALS
+        );
     });
 
     it("lists active users for a feature", async () => {
@@ -211,14 +214,14 @@ describe("D1 VIP repositories", () => {
             new UserVIPAccessRowFactory(
                 "access-1",
                 "111",
-                VIPFeature.SP2L
+                VIP_FEATURE_SP2L_SIGNALS
             );
 
         const second =
             new UserVIPAccessRowFactory(
                 "access-2",
                 "222",
-                VIPFeature.SP2L
+                VIP_FEATURE_SP2L_SIGNALS
             );
 
         const db = new FakeD1Database(
@@ -233,7 +236,7 @@ describe("D1 VIP repositories", () => {
 
         const result =
             await repository.listActiveUsers(
-                VIPFeature.SP2L
+                VIP_FEATURE_SP2L_SIGNALS
             );
 
         expect(result).toHaveLength(2);
@@ -242,7 +245,9 @@ describe("D1 VIP repositories", () => {
             "222"
         ]);
         expect(result.every(row => row.isActive())).toBe(true);
-        expect(db.calls[0]?.values[0]).toBe(VIPFeature.SP2L);
+        expect(db.calls[0]?.values[0]).toBe(
+            VIP_FEATURE_SP2L_SIGNALS
+        );
     });
 });
 
