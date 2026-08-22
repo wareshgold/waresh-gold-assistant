@@ -17,12 +17,30 @@ import {
 } from "../../infrastructure/vip/MemoryUserVIPAccessRepository";
 
 import {
+    MemoryVIPActivationRepository
+} from "../../infrastructure/vip/MemoryVIPActivationRepository";
+
+import {
     VIPCode
 } from "../../domain/vip/entities/VIPCode";
 
 import {
     VIP_FEATURE_SP2L_SIGNALS
 } from "../../domain/vip/VIPFeature";
+
+function createService(
+    codes: MemoryVIPCodeRepository,
+    access: MemoryUserVIPAccessRepository
+): VIPAccessService {
+    return new VIPAccessService(
+        codes,
+        access,
+        new MemoryVIPActivationRepository(
+            codes,
+            access
+        )
+    );
+}
 
 describe("VIPAccessService", () => {
     it("should activate a valid VIP code", async () => {
@@ -40,7 +58,7 @@ describe("VIPAccessService", () => {
         );
 
         const service =
-            new VIPAccessService(codes, access);
+            createService(codes, access);
 
         const result =
             await service.activateCode(
@@ -60,11 +78,11 @@ describe("VIPAccessService", () => {
     });
 
     it("should reject invalid code", async () => {
+        const codes = new MemoryVIPCodeRepository();
+        const access = new MemoryUserVIPAccessRepository();
+
         const service =
-            new VIPAccessService(
-                new MemoryVIPCodeRepository(),
-                new MemoryUserVIPAccessRepository()
-            );
+            createService(codes, access);
 
         const result =
             await service.activateCode(
@@ -81,6 +99,7 @@ describe("VIPAccessService", () => {
 
     it("should reject expired code", async () => {
         const codes = new MemoryVIPCodeRepository();
+        const access = new MemoryUserVIPAccessRepository();
 
         codes.seed(
             VIPCode.create({
@@ -93,10 +112,7 @@ describe("VIPAccessService", () => {
         );
 
         const service =
-            new VIPAccessService(
-                codes,
-                new MemoryUserVIPAccessRepository()
-            );
+            createService(codes, access);
 
         const result =
             await service.activateCode(
@@ -126,7 +142,7 @@ describe("VIPAccessService", () => {
         );
 
         const service =
-            new VIPAccessService(codes, access);
+            createService(codes, access);
 
         const first =
             await service.activateCode(
@@ -164,7 +180,7 @@ describe("VIPAccessService", () => {
         );
 
         const service =
-            new VIPAccessService(codes, access);
+            createService(codes, access);
 
         const first =
             await service.activateCode(
@@ -211,7 +227,7 @@ describe("VIPAccessService", () => {
         );
 
         const service =
-            new VIPAccessService(codes, access);
+            createService(codes, access);
 
         const first =
             await service.activateCode(
@@ -231,5 +247,44 @@ describe("VIPAccessService", () => {
         if (!second.success) {
             expect(second.reason).toBe("ALREADY_ACTIVE");
         }
+    });
+
+    it("should not consume a code when atomic activation is rejected", async () => {
+        const codes = new MemoryVIPCodeRepository();
+        const access = new MemoryUserVIPAccessRepository();
+
+        codes.seed(
+            VIPCode.create({
+                id: "1",
+                code: "SP2L-ATOMIC",
+                feature: VIP_FEATURE_SP2L_SIGNALS,
+                expiresAt: null,
+                createdAt: new Date()
+            })
+        );
+
+        const service =
+            new VIPAccessService(
+                codes,
+                access,
+                {
+                    activate: async () => false
+                }
+            );
+
+        const result =
+            await service.activateCode(
+                "user-1",
+                "SP2L-ATOMIC"
+            );
+
+        expect(result.success).toBe(false);
+
+        const code =
+            await codes.findByCode(
+                "SP2L-ATOMIC"
+            );
+
+        expect(code?.isUsed()).toBe(false);
     });
 });
