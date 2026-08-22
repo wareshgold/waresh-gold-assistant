@@ -1,22 +1,43 @@
+import { createApp } from "./bootstrap/createApp";
 import { createContainer } from "./bootstrap/createContainer";
+import { AppEnv } from "./shared/config/env";
 
-let container: ReturnType<typeof createContainer> | undefined;
+let cachedContainer: ReturnType<typeof createContainer> | null = null;
 
-function getContainer(env: Env) {
-    if (!container) {
-        container = createContainer(env);
+let commandsRegistered = false;
+
+function getContainer(
+    env: AppEnv
+) {
+    if (!cachedContainer) {
+        cachedContainer = createContainer(env);
     }
 
-    return container;
+    return cachedContainer;
 }
 
 export default {
     async fetch(
         request: Request,
-        env: Env,
+        env: AppEnv,
         ctx: ExecutionContext
-    ): Promise<Response> {
-        return getContainer(env).telegramWebhookController.handle(
+    ) {
+        const container = getContainer(env);
+
+        if (
+            !commandsRegistered
+            && container.commandMenuService
+        ) {
+            await container
+                .commandMenuService
+                .registerCommands();
+
+            commandsRegistered = true;
+        }
+
+        const app = createApp(container);
+
+        return app.fetch(
             request,
             env,
             ctx
@@ -25,7 +46,7 @@ export default {
 
     async scheduled(
         controller: ScheduledController,
-        env: Env,
+        env: AppEnv,
         ctx: ExecutionContext
     ): Promise<void> {
         const currentContainer = getContainer(env);
