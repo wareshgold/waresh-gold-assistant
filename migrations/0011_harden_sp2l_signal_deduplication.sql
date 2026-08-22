@@ -12,7 +12,8 @@ SET fingerprint = json_array(
     entry_price,
     stop_loss,
     take_profit,
-    strategy_version
+    strategy_version,
+    generated_at
 );
 
 DELETE FROM sp2l_signals
