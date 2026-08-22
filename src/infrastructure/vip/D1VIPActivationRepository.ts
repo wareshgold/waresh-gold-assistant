@@ -44,16 +44,13 @@ export class D1VIPActivationRepository
                                    OR expires_at > ?
                                )
                          )
-                         AND NOT EXISTS (
-                             SELECT 1
-                             FROM user_vip_access
-                             WHERE telegram_user_id = ?
-                               AND feature = ?
-                               AND (
-                                   expires_at IS NULL
-                                   OR expires_at > ?
-                               )
-                         )`
+                         ON CONFLICT(telegram_user_id, feature)
+                         DO UPDATE SET
+                             id = excluded.id,
+                             activated_at = excluded.activated_at,
+                             expires_at = excluded.expires_at
+                         WHERE user_vip_access.expires_at IS NOT NULL
+                           AND user_vip_access.expires_at <= ?`
                     )
                     .bind(
                         access.id,
@@ -63,8 +60,6 @@ export class D1VIPActivationRepository
                         access.expiresAt?.getTime() ?? null,
                         codeId,
                         redeemedAtMs,
-                        telegramUserId,
-                        access.feature,
                         redeemedAtMs
                     ),
 
@@ -80,6 +75,7 @@ export class D1VIPActivationRepository
                                FROM user_vip_access
                                WHERE id = ?
                                  AND telegram_user_id = ?
+                                 AND feature = ?
                            )`
                     )
                     .bind(
@@ -87,7 +83,8 @@ export class D1VIPActivationRepository
                         redeemedAtMs,
                         codeId,
                         access.id,
-                        telegramUserId
+                        telegramUserId,
+                        access.feature
                     )
             ]);
 
