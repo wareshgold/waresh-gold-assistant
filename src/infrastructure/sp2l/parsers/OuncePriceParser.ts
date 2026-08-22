@@ -20,6 +20,9 @@ export class OuncePriceParser {
     private static readonly MIN_VALID_OUNCE_PRICE =
         1000;
 
+    private static readonly TEHRAN_OFFSET_MINUTES =
+        210;
+
     static parse(
         message: string,
         timestamp: number = Date.now()
@@ -134,8 +137,6 @@ export class OuncePriceParser {
         if (
             month < 1 ||
             month > 12 ||
-            day < 1 ||
-            day > 31 ||
             hour > 23 ||
             minute > 59 ||
             second > 59
@@ -143,8 +144,21 @@ export class OuncePriceParser {
             return null;
         }
 
-        // Telegram's source timestamp is Jalali. Convert it to Gregorian
-        // without introducing a date-library dependency into the parser.
+        const maxDay =
+            month <= 6
+                ? 31
+                : 30;
+
+        if (
+            day < 1 ||
+            day > maxDay
+        ) {
+            return null;
+        }
+
+        // Telegram's OunceMarkets source publishes the timestamp in
+        // Tehran local time (UTC+03:30). Convert that wall-clock time to
+        // the UTC epoch used by the application.
         const gregorian =
             this.jalaliToGregorian(
                 year,
@@ -156,13 +170,16 @@ export class OuncePriceParser {
             return null;
         }
 
-        return Date.UTC(
-            gregorian.year,
-            gregorian.month - 1,
-            gregorian.day,
-            hour,
-            minute,
-            second
+        return (
+            Date.UTC(
+                gregorian.year,
+                gregorian.month - 1,
+                gregorian.day,
+                hour,
+                minute,
+                second
+            ) -
+            this.TEHRAN_OFFSET_MINUTES * 60 * 1000
         );
     }
 
@@ -181,7 +198,7 @@ export class OuncePriceParser {
             jm < 1 ||
             jm > 12 ||
             jd < 1 ||
-            jd > 31
+            jd > (jm <= 6 ? 31 : 30)
         ) {
             return null;
         }
@@ -286,13 +303,19 @@ export class OuncePriceParser {
     ): string {
         return value
             .replace(
-                /[۰-۹]/g,
-                digit =>
-                    String(
-                        "۰۱۲۳۴۵۶۷۸۹".indexOf(
-                            digit
-                        )
-                    )
+                /[۰-۹٠-٩]/g,
+                digit => {
+                    const persian =
+                        "۰۱۲۳۴۵۶۷۸۹".indexOf(digit);
+
+                    if (persian >= 0) {
+                        return String(persian);
+                    }
+
+                    return String(
+                        "٠١٢٣٤٥٦٧٨٩".indexOf(digit)
+                    );
+                }
             )
             .replace(/٬/g, ",")
             .replace(/\s+/g, " ")
