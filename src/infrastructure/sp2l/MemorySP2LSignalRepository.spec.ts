@@ -15,6 +15,7 @@ function createSignal(
         stopLoss: number;
         takeProfit: number;
         strategyVersion: string;
+        generatedAt: Date;
     }> = {}
 ): SP2LSignal {
     return SP2LSignal.create({
@@ -27,7 +28,9 @@ function createSignal(
         riskReward: 2,
         confidence: 0.9,
         reason: "test",
-        generatedAt: new Date(),
+        generatedAt:
+            overrides.generatedAt ??
+            new Date("2026-08-22T06:00:00.000Z"),
         strategyVersion: overrides.strategyVersion ?? "sp2l-v1"
     });
 }
@@ -59,7 +62,7 @@ describe("MemorySP2LSignalRepository", () => {
         expect(second).toBe(false);
     });
 
-    it("accepts a changed actionable signal", async () => {
+    it("accepts the same setup on a new candle", async () => {
         const repository =
             new MemorySP2LSignalRepository();
 
@@ -68,7 +71,8 @@ describe("MemorySP2LSignalRepository", () => {
         const stored =
             await repository.save(
                 createSignal({
-                    entryPrice: 3001
+                    generatedAt:
+                        new Date("2026-08-22T06:05:00.000Z")
                 })
             );
 
