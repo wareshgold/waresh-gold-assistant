@@ -49,7 +49,7 @@ export class VIPCommandHandler
             return {
                 type: "text" as const,
                 content:
-                    "کد VIP خود را وارد کنید.\nمثال:\n/vip SP2L-8F92KD"
+                    "کد VIP خود را وارد کنید.\nمثال:\n/vip StrategyA-8F92KD"
             };
         }
 
@@ -82,7 +82,7 @@ export class VIPCommandHandler
         return {
             type: "text" as const,
             content:
-                `✅ دسترسی VIP فعال شد.\nقابلیت: ${result.access.feature}\nحالا می‌توانید از /sp2l استفاده کنید.`
+                `✅ دسترسی VIP فعال شد.\nقابلیت: ${result.access.feature}\nحالا می‌توانید از /strategy-a استفاده کنید.`
         };
     }
 }

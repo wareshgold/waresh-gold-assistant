@@ -59,9 +59,9 @@ from "../tools/market/GetGoldBubbleTool";
 
 
 import {
-    GetSP2LSignalTool
+    GetStrategyASignalTool
 }
-from "../tools/market/GetSP2LSignalTool";
+from "../tools/market/GetStrategyASignalTool";
 
 
 import {
@@ -125,9 +125,9 @@ from "../../gold/CalculateInvoiceUseCase";
 
 
 import {
-    SP2LStrategyService
+    StrategyAStrategyService
 }
-from "../../strategy/sp2l/SP2LStrategyService";
+from "../../strategy/strategy-a/StrategyAStrategyService";
 
 
 
@@ -178,9 +178,9 @@ export interface CreateAIServiceFactoryDependencies {
 
 
 
-    sp2lStrategyService:
+    strategy-aStrategyService:
 
-        SP2LStrategyService;
+        StrategyAStrategyService;
 
 
 
@@ -263,9 +263,9 @@ AIService {
 
     toolRegistry.register(
 
-        new GetSP2LSignalTool(
+        new GetStrategyASignalTool(
 
-            dependencies.sp2lStrategyService
+            dependencies.strategy-aStrategyService
 
         )
 

@@ -1,13 +1,13 @@
 import {
-    SP2LMarketData
-} from "../../domain/sp2l/value-objects/SP2LMarketData";
+    StrategyAMarketData
+} from "../../domain/strategy-a/value-objects/StrategyAMarketData";
 
 import {
-    SP2LSignal
-} from "../../domain/sp2l/entities/SP2LSignal";
+    StrategyASignal
+} from "../../domain/strategy-a/entities/StrategyASignal";
 
 export interface StrategyEngine {
     evaluate(
-        marketData: SP2LMarketData
-    ): SP2LSignal;
+        marketData: StrategyAMarketData
+    ): StrategyASignal;
 }

@@ -46,9 +46,9 @@ export default {
                 }
 
                 try {
-                    await currentContainer.sp2lSignalSchedulerJob.execute();
+                    await currentContainer.strategy-aSignalSchedulerJob.execute();
                 } catch (error) {
-                    console.error("Failed to evaluate/publish SP2L signal:", error);
+                    console.error("Failed to evaluate/publish StrategyA signal:", error);
                 }
 
                 try {

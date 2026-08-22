@@ -35,7 +35,7 @@ from "../commands/TelegramCommandHandler";
 import {
     IngestOunceTickFromTextUseCase
 }
-from "../../sp2l/IngestOunceTickFromTextUseCase";
+from "../../strategy-a/IngestOunceTickFromTextUseCase";
 
 
 

@@ -1,6 +1,6 @@
 import {
     CollectOunceTickUseCase
-} from "../sp2l/CollectOunceTickUseCase";
+} from "../strategy-a/CollectOunceTickUseCase";
 
 export class CollectOunceTickJob {
 

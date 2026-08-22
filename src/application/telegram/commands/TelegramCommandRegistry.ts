@@ -12,7 +12,7 @@ import { ReverseGoldCommandHandler } from "./handlers/ReverseGoldCommandHandler"
 import { AICommandHandler } from "./handlers/AICommandHandler";
 import { ExitCommandHandler } from "./handlers/ExitCommandHandler";
 import { VIPCommandHandler } from "./handlers/VIPCommandHandler";
-import { SP2LCommandHandler } from "./handlers/SP2LCommandHandler";
+import { StrategyACommandHandler } from "./handlers/StrategyACommandHandler";
 import { GoldPriceAlertCommandHandler } from "./handlers/GoldPriceAlertCommandHandler";
 import { MarketReportCommandHandler } from "./handlers/MarketReportCommandHandler";
 import { GetGoldPriceUseCase } from "../../usecases/GetGoldPriceUseCase";
@@ -32,10 +32,10 @@ import { TelegramInlineKeyboardBuilder } from "../keyboards/TelegramInlineKeyboa
 import { MarketBubbleMessageFormatter } from "../presentation/MarketBubbleMessageFormatter";
 import { MarketAnalyticsMessageFormatter } from "../presentation/MarketAnalyticsMessageFormatter";
 import { TelegramNumberFormatter } from "../presentation/TelegramNumberFormatter";
-import { SP2LSignalMessageFormatter } from "../presentation/SP2LSignalMessageFormatter";
+import { StrategyASignalMessageFormatter } from "../presentation/StrategyASignalMessageFormatter";
 import { AIService } from "../../ai/services/AIService";
 import { VIPAccessService } from "../../vip/VIPAccessService";
-import { SP2LStrategyService } from "../../strategy/sp2l/SP2LStrategyService";
+import { StrategyAStrategyService } from "../../strategy/strategy-a/StrategyAStrategyService";
 import { GoldPriceAlertService } from "../../gold-alert/GoldPriceAlertService";
 import { MarketReportService } from "../../market-report/MarketReportService";
 
@@ -54,7 +54,7 @@ export class TelegramCommandRegistry {
         marketAnalyticsMessageFormatter: MarketAnalyticsMessageFormatter,
         aiService?: AIService,
         vipAccessService?: VIPAccessService,
-        strategyService?: SP2LStrategyService,
+        strategyService?: StrategyAStrategyService,
         goldPriceAlertService?: GoldPriceAlertService,
         marketReportService?: MarketReportService
     ): TelegramCommandRouter {
@@ -101,10 +101,10 @@ export class TelegramCommandRegistry {
 
         if (vipAccessService && strategyService) {
             handlers.push(
-                new SP2LCommandHandler(
+                new StrategyACommandHandler(
                     vipAccessService,
                     strategyService,
-                    new SP2LSignalMessageFormatter()
+                    new StrategyASignalMessageFormatter()
                 )
             );
         }

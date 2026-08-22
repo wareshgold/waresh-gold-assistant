@@ -9,15 +9,15 @@ import {
 } from "./VIPCode";
 
 import {
-    VIP_FEATURE_SP2L_SIGNALS
+    VIP_FEATURE_StrategyA_SIGNALS
 } from "../VIPFeature";
 
 describe("VIPCode", () => {
 
     const validProps = {
         id: "code-1",
-        code: "SP2L-TEST",
-        feature: VIP_FEATURE_SP2L_SIGNALS,
+        code: "StrategyA-TEST",
+        feature: VIP_FEATURE_StrategyA_SIGNALS,
         expiresAt: null,
         createdAt: new Date()
     };
@@ -26,11 +26,11 @@ describe("VIPCode", () => {
         const code =
             VIPCode.create({
                 ...validProps,
-                code: "  sp2l-test  "
+                code: "  strategy-a-test  "
             });
 
         expect(code.code)
-            .toBe("SP2L-TEST");
+            .toBe("StrategyA-TEST");
     });
 
     it("should reject invalid code id and redeemedBy values", () => {

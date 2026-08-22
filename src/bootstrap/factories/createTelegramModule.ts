@@ -35,8 +35,8 @@ import { GoldCalculationWorkflow } from "../../application/gold/workflows/GoldCa
 import { GoldPriceResolver } from "../../application/gold/pricing/GoldPriceResolver";
 import { AppEnv } from "../../shared/config/env";
 import { VIPAccessService } from "../../application/vip/VIPAccessService";
-import { SP2LStrategyService } from "../../application/strategy/sp2l/SP2LStrategyService";
-import { IngestOunceTickFromTextUseCase } from "../../application/sp2l/IngestOunceTickFromTextUseCase";
+import { StrategyAStrategyService } from "../../application/strategy/strategy-a/StrategyAStrategyService";
+import { IngestOunceTickFromTextUseCase } from "../../application/strategy-a/IngestOunceTickFromTextUseCase";
 import { GoldPriceAlertService } from "../../application/gold-alert/GoldPriceAlertService";
 import { MarketReportService } from "../../application/market-report/MarketReportService";
 
@@ -56,7 +56,7 @@ interface Dependencies {
     profileStore: any;
     saveGoldCalculationHistoryUseCase: any;
     vipAccessService?: VIPAccessService;
-    strategyService?: SP2LStrategyService;
+    strategyService?: StrategyAStrategyService;
     ingestOunceTickFromTextUseCase?: IngestOunceTickFromTextUseCase;
     goldPriceAlertService?: GoldPriceAlertService;
     marketReportService?: MarketReportService;

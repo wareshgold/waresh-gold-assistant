@@ -99,12 +99,12 @@ export class TelegramCommandMenuService {
 
                     command:
 
-                        "sp2l",
+                        "strategy-a",
 
 
                     description:
 
-                        "سیگنال SP2L انس طلا"
+                        "سیگنال StrategyA انس طلا"
 
                 }
 

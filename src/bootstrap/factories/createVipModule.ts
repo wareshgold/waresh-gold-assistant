@@ -35,7 +35,7 @@ import {
 } from "../../domain/vip/entities/VIPCode";
 
 import {
-    VIP_FEATURE_SP2L_SIGNALS
+    VIP_FEATURE_StrategyA_SIGNALS
 } from "../../domain/vip/VIPFeature";
 
 export function createVipModule(
@@ -82,9 +82,9 @@ export function createVipModule(
 
     codeRepository.seed(
         VIPCode.create({
-            id: "bootstrap-sp2l",
-            code: "DEV-SP2L-8F92KD",
-            feature: VIP_FEATURE_SP2L_SIGNALS,
+            id: "bootstrap-strategy-a",
+            code: "DEV-StrategyA-8F92KD",
+            feature: VIP_FEATURE_StrategyA_SIGNALS,
             maxUsers: 1,
             usedCount: 0,
             expiresAt: null,

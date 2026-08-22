@@ -25,7 +25,7 @@ import {
 } from "../../domain/vip/entities/VIPCode";
 
 import {
-    VIP_FEATURE_SP2L_SIGNALS
+    VIP_FEATURE_StrategyA_SIGNALS
 } from "../../domain/vip/VIPFeature";
 
 function createService(
@@ -50,8 +50,8 @@ describe("VIPAccessService", () => {
         codes.seed(
             VIPCode.create({
                 id: "1",
-                code: "SP2L-8F92KD",
-                feature: VIP_FEATURE_SP2L_SIGNALS,
+                code: "StrategyA-8F92KD",
+                feature: VIP_FEATURE_StrategyA_SIGNALS,
                 expiresAt: null,
                 createdAt: new Date()
             })
@@ -63,7 +63,7 @@ describe("VIPAccessService", () => {
         const result =
             await service.activateCode(
                 "user-1",
-                "SP2L-8F92KD"
+                "StrategyA-8F92KD"
             );
 
         expect(result.success).toBe(true);
@@ -71,7 +71,7 @@ describe("VIPAccessService", () => {
         const hasFeature =
             await service.hasFeature(
                 "user-1",
-                VIP_FEATURE_SP2L_SIGNALS
+                VIP_FEATURE_StrategyA_SIGNALS
             );
 
         expect(hasFeature).toBe(true);
@@ -104,8 +104,8 @@ describe("VIPAccessService", () => {
         codes.seed(
             VIPCode.create({
                 id: "1",
-                code: "SP2L-OLD",
-                feature: VIP_FEATURE_SP2L_SIGNALS,
+                code: "StrategyA-OLD",
+                feature: VIP_FEATURE_StrategyA_SIGNALS,
                 expiresAt: new Date(Date.now() - 1000),
                 createdAt: new Date()
             })
@@ -117,7 +117,7 @@ describe("VIPAccessService", () => {
         const result =
             await service.activateCode(
                 "user-1",
-                "SP2L-OLD"
+                "StrategyA-OLD"
             );
 
         expect(result.success).toBe(false);
@@ -134,8 +134,8 @@ describe("VIPAccessService", () => {
         codes.seed(
             VIPCode.create({
                 id: "1",
-                code: "SP2L-ONE",
-                feature: VIP_FEATURE_SP2L_SIGNALS,
+                code: "StrategyA-ONE",
+                feature: VIP_FEATURE_StrategyA_SIGNALS,
                 expiresAt: null,
                 createdAt: new Date()
             })
@@ -147,7 +147,7 @@ describe("VIPAccessService", () => {
         const first =
             await service.activateCode(
                 "user-1",
-                "SP2L-ONE"
+                "StrategyA-ONE"
             );
 
         expect(first.success).toBe(true);
@@ -155,7 +155,7 @@ describe("VIPAccessService", () => {
         const second =
             await service.activateCode(
                 "user-2",
-                "SP2L-ONE"
+                "StrategyA-ONE"
             );
 
         expect(second.success).toBe(false);
@@ -172,8 +172,8 @@ describe("VIPAccessService", () => {
         codes.seed(
             VIPCode.create({
                 id: "1",
-                code: "SP2L-REUSE",
-                feature: VIP_FEATURE_SP2L_SIGNALS,
+                code: "StrategyA-REUSE",
+                feature: VIP_FEATURE_StrategyA_SIGNALS,
                 expiresAt: null,
                 createdAt: new Date()
             })
@@ -185,13 +185,13 @@ describe("VIPAccessService", () => {
         const first =
             await service.activateCode(
                 "user-1",
-                "SP2L-REUSE"
+                "StrategyA-REUSE"
             );
 
         const second =
             await service.activateCode(
                 "user-1",
-                "SP2L-REUSE"
+                "StrategyA-REUSE"
             );
 
         expect(first.success).toBe(true);
@@ -209,8 +209,8 @@ describe("VIPAccessService", () => {
         codes.seed(
             VIPCode.create({
                 id: "1",
-                code: "SP2L-FIRST",
-                feature: VIP_FEATURE_SP2L_SIGNALS,
+                code: "StrategyA-FIRST",
+                feature: VIP_FEATURE_StrategyA_SIGNALS,
                 expiresAt: null,
                 createdAt: new Date()
             })
@@ -219,8 +219,8 @@ describe("VIPAccessService", () => {
         codes.seed(
             VIPCode.create({
                 id: "2",
-                code: "SP2L-SECOND",
-                feature: VIP_FEATURE_SP2L_SIGNALS,
+                code: "StrategyA-SECOND",
+                feature: VIP_FEATURE_StrategyA_SIGNALS,
                 expiresAt: null,
                 createdAt: new Date()
             })
@@ -232,13 +232,13 @@ describe("VIPAccessService", () => {
         const first =
             await service.activateCode(
                 "user-1",
-                "SP2L-FIRST"
+                "StrategyA-FIRST"
             );
 
         const second =
             await service.activateCode(
                 "user-1",
-                "SP2L-SECOND"
+                "StrategyA-SECOND"
             );
 
         expect(first.success).toBe(true);
@@ -256,8 +256,8 @@ describe("VIPAccessService", () => {
         codes.seed(
             VIPCode.create({
                 id: "1",
-                code: "SP2L-ATOMIC",
-                feature: VIP_FEATURE_SP2L_SIGNALS,
+                code: "StrategyA-ATOMIC",
+                feature: VIP_FEATURE_StrategyA_SIGNALS,
                 expiresAt: null,
                 createdAt: new Date()
             })
@@ -275,14 +275,14 @@ describe("VIPAccessService", () => {
         const result =
             await service.activateCode(
                 "user-1",
-                "SP2L-ATOMIC"
+                "StrategyA-ATOMIC"
             );
 
         expect(result.success).toBe(false);
 
         const code =
             await codes.findByCode(
-                "SP2L-ATOMIC"
+                "StrategyA-ATOMIC"
             );
 
         expect(code?.isUsed()).toBe(false);

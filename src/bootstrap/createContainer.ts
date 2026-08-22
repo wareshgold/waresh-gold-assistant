@@ -3,7 +3,7 @@ import { createStorageModule } from "./factories/createStorageModule";
 import { createCacheModule } from "./factories/createCacheModule";
 import { createMarketModule } from "./factories/createMarketModule";
 import { createGoldModule } from "./factories/createGoldModule";
-import { createSp2lModule } from "./factories/createSp2lModule";
+import { createStrategyAModule } from "./factories/createStrategyAModule";
 import { createVipModule } from "./factories/createVipModule";
 import { createTelegramModule } from "./factories/createTelegramModule";
 import { createMonitoringModule } from "./factories/createMonitoringModule";
@@ -24,11 +24,11 @@ import { SystemMetricsController } from "../interfaces/http/SystemMetricsControl
 import { HealthCheckService } from "../application/system/HealthCheckService";
 import { SaveGoldCalculationHistoryUseCase } from "../application/gold/SaveGoldCalculationHistoryUseCase";
 import { GetGoldCalculationHistoryUseCase } from "../application/gold/GetGoldCalculationHistoryUseCase";
-import { EvaluateAndPublishSP2LSignalUseCase } from "../application/strategy/sp2l/EvaluateAndPublishSP2LSignalUseCase";
-import { SP2LSignalSchedulerJob } from "../application/jobs/SP2LSignalSchedulerJob";
-import { TelegramSP2LSignalNotifier } from "../infrastructure/sp2l/TelegramSP2LSignalNotifier";
-import { SP2LSignalMessageFormatter } from "../application/telegram/presentation/SP2LSignalMessageFormatter";
-import { IngestOunceTickFromTextUseCase } from "../application/sp2l/IngestOunceTickFromTextUseCase";
+import { EvaluateAndPublishStrategyASignalUseCase } from "../application/strategy/strategy-a/EvaluateAndPublishStrategyASignalUseCase";
+import { StrategyASignalSchedulerJob } from "../application/jobs/StrategyASignalSchedulerJob";
+import { TelegramStrategyASignalNotifier } from "../infrastructure/strategy-a/TelegramStrategyASignalNotifier";
+import { StrategyASignalMessageFormatter } from "../application/telegram/presentation/StrategyASignalMessageFormatter";
+import { IngestOunceTickFromTextUseCase } from "../application/strategy-a/IngestOunceTickFromTextUseCase";
 import { D1GoldPriceAlertRepository } from "../infrastructure/gold-alert/D1GoldPriceAlertRepository";
 import { GoldPriceAlertService } from "../application/gold-alert/GoldPriceAlertService";
 import { GoldPriceAlertSchedulerJob } from "../application/jobs/GoldPriceAlertSchedulerJob";
@@ -46,10 +46,10 @@ export function createContainer(env: AppEnv) {
     const healthCheckService = new HealthCheckService(cache.cache, storage.snapshotRepository, monitoring.metricsStore);
     const market = createMarketModule(env, storage, cache, monitoring);
     const gold = createGoldModule();
-    const sp2l = createSp2lModule(env);
+    const strategy-a = createStrategyAModule(env);
     const vip = createVipModule(env);
 
-    const ingestOunceTickFromTextUseCase = new IngestOunceTickFromTextUseCase(sp2l.tickRepository);
+    const ingestOunceTickFromTextUseCase = new IngestOunceTickFromTextUseCase(strategy-a.tickRepository);
     const saveGoldCalculationHistoryUseCase = new SaveGoldCalculationHistoryUseCase(storage.goldCalculationHistoryRepository);
     const getGoldCalculationHistoryUseCase = new GetGoldCalculationHistoryUseCase(storage.goldCalculationHistoryRepository);
     const getSystemMetricsUseCase = new GetSystemMetricsUseCase(monitoring.monitoringService);
@@ -66,7 +66,7 @@ export function createContainer(env: AppEnv) {
         calculateGoldFormulaUseCase: gold.calculateGoldFormulaUseCase,
         calculateReverseGoldUseCase: gold.calculateReverseGoldUseCase,
         calculateInvoiceUseCase: gold.calculateInvoiceUseCase,
-        sp2lStrategyService: sp2l.strategyService,
+        strategy-aStrategyService: strategy-a.strategyService,
         aiConversationMemory: storage.aiConversationMemory
     });
 
@@ -98,18 +98,18 @@ export function createContainer(env: AppEnv) {
         saveGoldCalculationHistoryUseCase,
         aiService: ai.aiService,
         vipAccessService: vip.vipAccessService,
-        strategyService: sp2l.strategyService,
+        strategyService: strategy-a.strategyService,
         ingestOunceTickFromTextUseCase,
         goldPriceAlertService,
         marketReportService
     });
 
-    const evaluateAndPublishSP2LSignalUseCase = new EvaluateAndPublishSP2LSignalUseCase(
-        sp2l.strategyService,
+    const evaluateAndPublishStrategyASignalUseCase = new EvaluateAndPublishStrategyASignalUseCase(
+        strategy-a.strategyService,
         vip.vipAccessService,
-        new TelegramSP2LSignalNotifier(telegram.telegramBotClient, new SP2LSignalMessageFormatter())
+        new TelegramStrategyASignalNotifier(telegram.telegramBotClient, new StrategyASignalMessageFormatter())
     );
-    const sp2lSignalSchedulerJob = new SP2LSignalSchedulerJob(evaluateAndPublishSP2LSignalUseCase);
+    const strategy-aSignalSchedulerJob = new StrategyASignalSchedulerJob(evaluateAndPublishStrategyASignalUseCase);
     const goldPriceAlertSchedulerJob = new GoldPriceAlertSchedulerJob(
         goldPriceAlertService,
         market.cachedMarketProvider,
@@ -127,7 +127,7 @@ export function createContainer(env: AppEnv) {
         ...cache,
         ...market,
         ...gold,
-        ...sp2l,
+        ...strategy-a,
         ...vip,
         ...telegram,
         ...monitoring,
@@ -148,8 +148,8 @@ export function createContainer(env: AppEnv) {
         saveGoldCalculationHistoryUseCase,
         getGoldCalculationHistoryUseCase,
         ingestOunceTickFromTextUseCase,
-        evaluateAndPublishSP2LSignalUseCase,
-        sp2lSignalSchedulerJob,
+        evaluateAndPublishStrategyASignalUseCase,
+        strategy-aSignalSchedulerJob,
         goldPriceAlertService,
         goldPriceAlertSchedulerJob,
         marketReportService,

@@ -65,9 +65,9 @@ from "../../application/ai/memory/AIConversationMemory";
 
 
 import {
-    SP2LStrategyService
+    StrategyAStrategyService
 }
-from "../../application/strategy/sp2l/SP2LStrategyService";
+from "../../application/strategy/strategy-a/StrategyAStrategyService";
 
 
 
@@ -137,9 +137,9 @@ export function createAIModule(
 
 
 
-        sp2lStrategyService:
+        strategy-aStrategyService:
 
-            SP2LStrategyService;
+            StrategyAStrategyService;
 
 
 
@@ -224,9 +224,9 @@ AIModule {
 
 
 
-            sp2lStrategyService:
+            strategy-aStrategyService:
 
-                dependencies.sp2lStrategyService,
+                dependencies.strategy-aStrategyService,
 
 
 

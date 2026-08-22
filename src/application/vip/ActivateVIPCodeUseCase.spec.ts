@@ -29,7 +29,7 @@ import {
 } from "../../domain/vip/entities/VIPCode";
 
 import {
-    VIP_FEATURE_SP2L_SIGNALS
+    VIP_FEATURE_StrategyA_SIGNALS
 } from "../../domain/vip/VIPFeature";
 
 describe("ActivateVIPCodeUseCase", () => {
@@ -44,8 +44,8 @@ describe("ActivateVIPCodeUseCase", () => {
         codes.seed(
             VIPCode.create({
                 id: "1",
-                code: "SP2L-TEST",
-                feature: VIP_FEATURE_SP2L_SIGNALS,
+                code: "StrategyA-TEST",
+                feature: VIP_FEATURE_StrategyA_SIGNALS,
                 maxUsers: 10,
                 usedCount: 0,
                 expiresAt: null,
@@ -61,7 +61,7 @@ describe("ActivateVIPCodeUseCase", () => {
         const result =
             await useCase.execute({
                 telegramUserId: "user-1",
-                code: " sp2l-test "
+                code: " strategy-a-test "
             });
 
         expect(result.success).toBe(true);
@@ -83,7 +83,7 @@ describe("ActivateVIPCodeUseCase", () => {
         const emptyUser =
             await useCase.execute({
                 telegramUserId: "   ",
-                code: "SP2L-TEST"
+                code: "StrategyA-TEST"
             });
 
         const emptyCode =

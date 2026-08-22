@@ -81,7 +81,7 @@ export class HelpCommandHandler implements TelegramCommandHandler {
                 intro: "قابلیت‌های ویژه برای کاربران دارای دسترسی VIP.",
                 commands: [
                     definition("/vip", "وضعیت و فعال‌سازی دسترسی به امکانات ویژه VIP را مدیریت می‌کند."),
-                    definition("/sp2l", "آخرین سیگنال استراتژی SP2L را برای کاربران دارای دسترسی VIP نمایش می‌دهد."),
+                    definition("/strategy-a", "آخرین سیگنال استراتژی StrategyA را برای کاربران دارای دسترسی VIP نمایش می‌دهد."),
                 ],
             },
             {
