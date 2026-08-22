@@ -6,6 +6,10 @@ import {
     SP2LSignalRepository
 } from "../../domain/sp2l/repositories/SP2LSignalRepository";
 
+import {
+    SP2LSignalIdentity
+} from "../../domain/sp2l/value-objects/SP2LSignalIdentity";
+
 export class D1SP2LSignalRepository
     implements SP2LSignalRepository {
 
@@ -55,6 +59,75 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 .run();
 
         return result.meta.changes === 1;
+    }
+
+    async findByIdentity(
+        identity: SP2LSignalIdentity
+    ): Promise<SP2LSignal | null> {
+        const result =
+            await this.db
+                .prepare(
+`
+SELECT
+    symbol,
+    timeframe,
+    signal_type,
+    entry_price,
+    stop_loss,
+    take_profit,
+    risk_reward,
+    confidence,
+    reason,
+    strategy_version,
+    generated_at
+FROM sp2l_signals
+WHERE symbol = ?
+  AND timeframe = ?
+  AND signal_type = ?
+  AND entry_price = ?
+  AND strategy_version = ?
+  AND generated_at = ?
+LIMIT 1
+`
+                )
+                .bind(
+                    identity.symbol,
+                    identity.timeframe,
+                    identity.signalType,
+                    identity.entryPrice,
+                    identity.strategyVersion,
+                    identity.generatedAt
+                )
+                .all<{
+                    symbol: string;
+                    timeframe: string;
+                    signal_type: string;
+                    entry_price: number;
+                    stop_loss: number;
+                    take_profit: number;
+                    risk_reward: number;
+                    confidence: number;
+                    reason: string;
+                    strategy_version: string;
+                    generated_at: number;
+                }>();
+
+        const row = result.results?.[0];
+        if (!row) return null;
+
+        return SP2LSignal.create({
+            symbol: row.symbol,
+            timeframe: row.timeframe,
+            signalType: row.signal_type as SP2LSignal["signalType"],
+            entryPrice: Number(row.entry_price),
+            stopLoss: Number(row.stop_loss),
+            takeProfit: Number(row.take_profit),
+            riskReward: Number(row.risk_reward),
+            confidence: Number(row.confidence),
+            reason: row.reason,
+            generatedAt: new Date(Number(row.generated_at)),
+            strategyVersion: row.strategy_version
+        });
     }
 
     async getLatest(
