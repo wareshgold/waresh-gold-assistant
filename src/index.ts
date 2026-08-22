@@ -65,6 +65,15 @@ export default {
                     );
                 }
 
+                try {
+                    await currentContainer.sp2lSignalSchedulerJob.execute();
+                } catch (error) {
+                    console.error(
+                        "Failed to evaluate/publish SP2L signal:",
+                        error
+                    );
+                }
+
                 if (scheduledMinute % 30 !== 0) {
                     return;
                 }
