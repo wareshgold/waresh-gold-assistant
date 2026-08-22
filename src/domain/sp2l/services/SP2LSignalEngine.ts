@@ -12,23 +12,23 @@ import {
 
 import {
     SpikeDetector
-} from "../../../application/strategy/sp2l/SpikeDetector";
+} from "./SpikeDetector";
 
 import {
     TwoLegDetector
-} from "../../../application/strategy/sp2l/TwoLegDetector";
+} from "./TwoLegDetector";
 
 import {
     LevelDetector
-} from "../../../application/strategy/sp2l/LevelDetector";
+} from "./LevelDetector";
 
 import {
     SP2LRiskManager
-} from "../../../application/strategy/sp2l/SP2LRiskManager";
+} from "./SP2LRiskManager";
 
 import {
     SP2LValidator
-} from "../../../application/strategy/sp2l/SP2LValidator";
+} from "./SP2LValidator";
 
 export class SP2LSignalEngine {
 
