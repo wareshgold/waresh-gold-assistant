@@ -11,7 +11,7 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   validate:
@@ -23,7 +23,6 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.ref_name }}
-
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
