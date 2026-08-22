@@ -14,6 +14,7 @@ import { ExitCommandHandler } from "./handlers/ExitCommandHandler";
 import { VIPCommandHandler } from "./handlers/VIPCommandHandler";
 import { SP2LCommandHandler } from "./handlers/SP2LCommandHandler";
 import { GoldPriceAlertCommandHandler } from "./handlers/GoldPriceAlertCommandHandler";
+import { MarketReportCommandHandler } from "./handlers/MarketReportCommandHandler";
 import { GetGoldPriceUseCase } from "../../usecases/GetGoldPriceUseCase";
 import { GetGoldBubbleUseCase } from "../../market/GetGoldBubbleUseCase";
 import { GetMarketAnalyticsUseCase } from "../../market/GetMarketAnalyticsUseCase";
@@ -36,6 +37,7 @@ import { AIService } from "../../ai/services/AIService";
 import { VIPAccessService } from "../../vip/VIPAccessService";
 import { SP2LStrategyService } from "../../strategy/sp2l/SP2LStrategyService";
 import { GoldPriceAlertService } from "../../gold-alert/GoldPriceAlertService";
+import { MarketReportService } from "../../market-report/MarketReportService";
 
 export class TelegramCommandRegistry {
     static create(
@@ -53,7 +55,8 @@ export class TelegramCommandRegistry {
         aiService?: AIService,
         vipAccessService?: VIPAccessService,
         strategyService?: SP2LStrategyService,
-        goldPriceAlertService?: GoldPriceAlertService
+        goldPriceAlertService?: GoldPriceAlertService,
+        marketReportService?: MarketReportService
     ): TelegramCommandRouter {
         const welcomeMessageProvider = new RandomWelcomeMessageProvider();
         const menuRegistry = new MemoryTelegramMenuRegistry();
@@ -82,6 +85,10 @@ export class TelegramCommandRegistry {
 
         if (goldPriceAlertService) {
             handlers.push(new GoldPriceAlertCommandHandler(goldPriceAlertService));
+        }
+
+        if (marketReportService) {
+            handlers.push(new MarketReportCommandHandler(marketReportService));
         }
 
         if (aiService) {

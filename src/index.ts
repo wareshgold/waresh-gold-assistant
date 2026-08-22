@@ -57,6 +57,12 @@ export default {
                     console.error("Failed to send gold price alerts:", error);
                 }
 
+                try {
+                    await currentContainer.marketReportSchedulerJob.execute();
+                } catch (error) {
+                    console.error("Failed to send market reports:", error);
+                }
+
                 if (scheduledMinute % 30 !== 0) {
                     return;
                 }
