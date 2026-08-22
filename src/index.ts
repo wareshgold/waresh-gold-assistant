@@ -3,16 +3,12 @@ import { createContainer } from "./bootstrap/createContainer";
 import { AppEnv } from "./shared/config/env";
 
 let cachedContainer: ReturnType<typeof createContainer> | null = null;
-
 let commandsRegistered = false;
 
-function getContainer(
-    env: AppEnv
-) {
+function getContainer(env: AppEnv) {
     if (!cachedContainer) {
         cachedContainer = createContainer(env);
     }
-
     return cachedContainer;
 }
 
@@ -24,24 +20,13 @@ export default {
     ) {
         const container = getContainer(env);
 
-        if (
-            !commandsRegistered
-            && container.commandMenuService
-        ) {
-            await container
-                .commandMenuService
-                .registerCommands();
-
+        if (!commandsRegistered && container.commandMenuService) {
+            await container.commandMenuService.registerCommands();
             commandsRegistered = true;
         }
 
         const app = createApp(container);
-
-        return app.fetch(
-            request,
-            env,
-            ctx
-        );
+        return app.fetch(request, env, ctx);
     },
 
     async scheduled(
@@ -50,28 +35,26 @@ export default {
         ctx: ExecutionContext
     ): Promise<void> {
         const currentContainer = getContainer(env);
-        const scheduledMinute = new Date(
-            controller.scheduledTime
-        ).getUTCMinutes();
+        const scheduledMinute = new Date(controller.scheduledTime).getUTCMinutes();
 
         ctx.waitUntil(
             (async () => {
                 try {
                     await currentContainer.collectOunceTickJob.execute();
                 } catch (error) {
-                    console.error(
-                        "Failed to collect ounce tick:",
-                        error
-                    );
+                    console.error("Failed to collect ounce tick:", error);
                 }
 
                 try {
                     await currentContainer.sp2lSignalSchedulerJob.execute();
                 } catch (error) {
-                    console.error(
-                        "Failed to evaluate/publish SP2L signal:",
-                        error
-                    );
+                    console.error("Failed to evaluate/publish SP2L signal:", error);
+                }
+
+                try {
+                    await currentContainer.goldPriceAlertSchedulerJob.execute();
+                } catch (error) {
+                    console.error("Failed to send gold price alerts:", error);
                 }
 
                 if (scheduledMinute % 30 !== 0) {
@@ -81,10 +64,7 @@ export default {
                 try {
                     await currentContainer.refreshMarketPriceJob.execute();
                 } catch (error) {
-                    console.error(
-                        "Failed to refresh market price:",
-                        error
-                    );
+                    console.error("Failed to refresh market price:", error);
                 }
             })()
         );
