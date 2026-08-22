@@ -9,13 +9,14 @@ export class MarketReportCommandHandler implements TelegramCommandHandler {
     metadata() {
         return {
             command: "/reports",
-            description: "تنظیم گزارش دوره‌ای بازار"
+            description: "تنظیم و دریافت گزارش دوره‌ای بازار طلا",
         };
     }
 
     canHandle(command: string): boolean {
-        return command.trim().toLowerCase() === "/reports" ||
-            command.trim().toLowerCase() === "reports";
+        const normalizedCommand = command.trim().toLowerCase();
+
+        return normalizedCommand === "/reports" || normalizedCommand === "reports";
     }
 
     async execute(context: TelegramCommandContext) {
@@ -25,49 +26,79 @@ export class MarketReportCommandHandler implements TelegramCommandHandler {
 
         if (args[0] === "off") {
             await this.reportService.disable(userId);
+
             return {
                 type: "text" as const,
-                content: "🔕 گزارش دوره‌ای بازار غیرفعال شد."
+                content: [
+                    "🔕 گزارش دوره‌ای بازار غیرفعال شد.",
+                    "",
+                    "از این پس گزارش خودکار برای شما ارسال نمی‌شود.",
+                    "برای فعال‌سازی دوباره، /reports را ارسال کنید.",
+                ].join("\n"),
             };
         }
 
         if (isMarketReportInterval(value)) {
             await this.reportService.configure(
                 userId,
-                value as MarketReportInterval
+                value as MarketReportInterval,
             );
+
             return {
                 type: "text" as const,
-                content: `📊 گزارش بازار فعال شد.\n\n⏱ فاصله ارسال: هر ${value} ساعت`
+                content: [
+                    "📊 گزارش دوره‌ای بازار فعال شد.",
+                    "",
+                    `⏱ فاصله ارسال: هر ${value} ساعت`,
+                    "",
+                    "در هر گزارش، آخرین وضعیت بازار شامل موارد زیر ارسال می‌شود:",
+                    "• قیمت طلای ۱۸ عیار",
+                    "• قیمت دلار",
+                    "• قیمت اونس جهانی",
+                    "• تغییر بازار و روند آن",
+                    "• مقدار و درصد حباب طلا",
+                ].join("\n"),
             };
         }
 
         const current = await this.reportService.get(userId);
         const currentText = current?.enabled
-            ? `\n\nوضعیت فعلی: فعال — هر ${current.intervalHours} ساعت`
-            : "\n\nوضعیت فعلی: غیرفعال";
+            ? `فعال — هر ${current.intervalHours} ساعت`
+            : "غیرفعال";
 
         return {
             type: "text" as const,
-            content:
-                "📊 تنظیم گزارش دوره‌ای بازار\n\n" +
-                "فاصله ارسال را انتخاب کنید:" +
-                currentText,
+            content: [
+                "📊 گزارش دوره‌ای بازار طلا",
+                "━━━━━━━━━━━━━━━━━━",
+                "",
+                "این قابلیت با فاصله زمانی انتخابی، یک خلاصه تحلیلی از وضعیت بازار را به‌صورت خودکار برای شما ارسال می‌کند.",
+                "",
+                "محتوای گزارش:",
+                "• قیمت طلای ۱۸ عیار",
+                "• قیمت دلار و اونس جهانی",
+                "• تغییر و روند بازار",
+                "• مقدار و درصد حباب طلا",
+                "",
+                `وضعیت فعلی: ${currentText}`,
+                "",
+                "فاصله ارسال را انتخاب کنید:",
+            ].join("\n"),
             replyMarkup: {
                 type: "INLINE",
                 rows: [
                     [
                         { text: "⏱ هر ۱ ساعت", actionId: "reports:1h" },
-                        { text: "⏱ هر ۶ ساعت", actionId: "reports:6h" }
+                        { text: "⏱ هر ۶ ساعت", actionId: "reports:6h" },
                     ],
                     [
-                        { text: "⏱ هر ۱۲ ساعت", actionId: "reports:12h" }
+                        { text: "⏱ هر ۱۲ ساعت", actionId: "reports:12h" },
                     ],
                     [
-                        { text: "🔕 غیرفعال کردن", actionId: "reports:off" }
-                    ]
-                ]
-            }
+                        { text: "🔕 غیرفعال کردن", actionId: "reports:off" },
+                    ],
+                ],
+            },
         };
     }
 }
