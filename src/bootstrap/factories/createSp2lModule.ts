@@ -72,7 +72,6 @@ export function createSp2lModule(
 
     const marketDataProvider =
         new TelegramSp2lMarketDataProvider(
-            ounceMessageProvider,
             tickRepository,
             new OunceCandleAggregator(5)
         );
