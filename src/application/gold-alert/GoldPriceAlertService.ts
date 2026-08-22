@@ -20,6 +20,10 @@ export class GoldPriceAlertService {
         return this.repository.get(userId);
     }
 
+    async getDueAlerts(now: Date): Promise<GoldPriceAlert[]> {
+        return this.repository.listDue(now);
+    }
+
     async configure(
         userId: string,
         intervalHours: number
