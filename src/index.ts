@@ -29,6 +29,9 @@ export default {
         ctx: ExecutionContext
     ): Promise<void> {
         const currentContainer = getContainer(env);
+        const scheduledMinute = new Date(
+            controller.scheduledTime
+        ).getUTCMinutes();
 
         ctx.waitUntil(
             (async () => {
@@ -39,6 +42,10 @@ export default {
                         "Failed to collect ounce tick:",
                         error
                     );
+                }
+
+                if (scheduledMinute % 30 !== 0) {
+                    return;
                 }
 
                 try {
