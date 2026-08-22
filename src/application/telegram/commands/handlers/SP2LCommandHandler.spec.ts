@@ -21,6 +21,10 @@ import {
 } from "../../../../infrastructure/vip/MemoryUserVIPAccessRepository";
 
 import {
+    MemoryVIPActivationRepository
+} from "../../../../infrastructure/vip/MemoryVIPActivationRepository";
+
+import {
     VIPCode
 } from "../../../../domain/vip/entities/VIPCode";
 
@@ -50,12 +54,16 @@ import {
 
 describe("SP2LCommandHandler", () => {
     it("should deny non-VIP users", async () => {
+        const codes = new MemoryVIPCodeRepository();
+        const access = new MemoryUserVIPAccessRepository();
+        const activation = new MemoryVIPActivationRepository(
+            codes,
+            access
+        );
+
         const handler =
             new SP2LCommandHandler(
-                new VIPAccessService(
-                    new MemoryVIPCodeRepository(),
-                    new MemoryUserVIPAccessRepository()
-                ),
+                new VIPAccessService(codes, access, activation),
                 new SP2LStrategyService(
                     new SP2LSignalEngine(),
                     new MockSp2lMarketDataProvider(),
@@ -81,6 +89,10 @@ describe("SP2LCommandHandler", () => {
     it("should show signal for VIP users", async () => {
         const codes = new MemoryVIPCodeRepository();
         const accessRepo = new MemoryUserVIPAccessRepository();
+        const activation = new MemoryVIPActivationRepository(
+            codes,
+            accessRepo
+        );
 
         codes.seed(
             VIPCode.create({
@@ -95,7 +107,11 @@ describe("SP2LCommandHandler", () => {
         );
 
         const vip =
-            new VIPAccessService(codes, accessRepo);
+            new VIPAccessService(
+                codes,
+                accessRepo,
+                activation
+            );
 
         await vip.activateCode(
             "user-1",
