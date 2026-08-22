@@ -1,4 +1,4 @@
-﻿import {
+import {
     VIPFeature
 } from "../../domain/vip/VIPFeature";
 
@@ -9,6 +9,10 @@ import {
 import {
     UserVIPAccessRepository
 } from "../../domain/vip/repositories/UserVIPAccessRepository";
+
+import {
+    VIPActivationRepository
+} from "../../domain/vip/repositories/VIPActivationRepository";
 
 import {
     UserVIPAccess
@@ -33,6 +37,7 @@ export class VIPAccessService {
     constructor(
         private readonly codeRepository: VIPCodeRepository,
         private readonly accessRepository: UserVIPAccessRepository,
+        private readonly activationRepository: VIPActivationRepository,
         private readonly ownerUserIds: string[] = []
     ) {}
 
@@ -101,20 +106,6 @@ export class VIPAccessService {
 
         const redeemedAt = new Date();
 
-        const redeemed =
-            await this.codeRepository.redeem(
-                vipCode.id,
-                telegramUserId,
-                redeemedAt
-            );
-
-        if (!redeemed) {
-            return {
-                success: false,
-                reason: "CODE_ALREADY_USED"
-            };
-        }
-
         const access =
             UserVIPAccess.create({
                 id:
@@ -132,13 +123,49 @@ export class VIPAccessService {
                     vipCode.expiresAt
             });
 
-        await this.accessRepository.save(
-            access
-        );
+        const activated =
+            await this.activationRepository.activate(
+                vipCode.id,
+                telegramUserId,
+                redeemedAt,
+                access
+            );
+
+        if (activated) {
+            return {
+                success: true,
+                access
+            };
+        }
+
+        const currentCode =
+            await this.codeRepository.findByCode(
+                codeValue
+            );
+
+        if (!currentCode || currentCode.isUsed()) {
+            return {
+                success: false,
+                reason: "CODE_ALREADY_USED"
+            };
+        }
+
+        const currentAccess =
+            await this.accessRepository.findActiveAccess(
+                telegramUserId,
+                vipCode.feature
+            );
+
+        if (currentAccess && currentAccess.isActive()) {
+            return {
+                success: false,
+                reason: "ALREADY_ACTIVE"
+            };
+        }
 
         return {
-            success: true,
-            access
+            success: false,
+            reason: "CODE_ALREADY_USED"
         };
     }
 
