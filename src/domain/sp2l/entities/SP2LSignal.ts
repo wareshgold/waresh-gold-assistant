@@ -105,7 +105,8 @@ export class SP2LSignal {
             this.entryPrice,
             this.stopLoss,
             this.takeProfit,
-            this.strategyVersion
+            this.strategyVersion,
+            this.generatedAt.getTime()
         ]);
     }
 
