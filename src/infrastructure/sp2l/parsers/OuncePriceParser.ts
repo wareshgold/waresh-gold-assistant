@@ -56,8 +56,20 @@ export class OuncePriceParser {
             direction = "down";
         }
 
+        const hasTimestamp =
+            this.hasTimestamp(normalized);
+
         const messageTimestamp =
             this.extractTimestamp(normalized);
+
+        if (
+            hasTimestamp &&
+            messageTimestamp === null
+        ) {
+            throw new Error(
+                "Invalid ounce price message timestamp"
+            );
+        }
 
         return {
             price,
@@ -115,6 +127,14 @@ export class OuncePriceParser {
         );
     }
 
+    private static hasTimestamp(
+        normalized: string
+    ): boolean {
+        return /(?:^|\s)\d{4}[\/-]\d{1,2}[\/-]\d{1,2}\s+\d{1,2}:\d{2}:\d{2}(?:\s|$)/.test(
+            normalized
+        );
+    }
+
     private static extractTimestamp(
         normalized: string
     ): number | null {
@@ -135,6 +155,8 @@ export class OuncePriceParser {
         const second = Number(match[6]);
 
         if (
+            year < 1200 ||
+            year > 1600 ||
             month < 1 ||
             month > 12 ||
             hour > 23 ||
@@ -203,7 +225,7 @@ export class OuncePriceParser {
             return null;
         }
 
-        let gy = jy + 621;
+        const gy = jy + 621;
 
         const breaks = [
             -61, 9, 38, 199, 426, 686, 756,
