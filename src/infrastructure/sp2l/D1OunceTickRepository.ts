@@ -27,7 +27,14 @@ INSERT INTO ounce_ticks
     timestamp,
     created_at
 )
-VALUES (?, ?, ?, ?, ?)
+SELECT ?, ?, ?, ?, ?
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM ounce_ticks
+    WHERE timestamp = ?
+      AND price = ?
+      AND direction = ?
+)
 `
             )
             .bind(
@@ -35,7 +42,10 @@ VALUES (?, ?, ?, ?, ?)
                 tick.direction ?? null,
                 tick.rawMessage ?? null,
                 tick.timestamp,
-                Date.now()
+                Date.now(),
+                tick.timestamp,
+                tick.price,
+                tick.direction ?? null
             )
             .run();
     }
