@@ -1,7 +1,25 @@
-import { GetGoldBubbleDataUseCase } from "../market/GetGoldBubbleDataUseCase";
-import { GetMarketAnalyticsUseCase } from "../market/GetMarketAnalyticsUseCase";
 import { MarketPriceProvider } from "../../domain/market/providers/MarketPriceProvider";
 import { MarketReportService } from "../market-report/MarketReportService";
+
+export interface MarketReportBubbleData {
+    bubbleAmount: number;
+    bubblePercentage: number;
+}
+
+export interface MarketReportAnalyticsData {
+    analytics: {
+        getChange(): { formatted: string };
+        getTrend(): { type: string };
+    } | null;
+}
+
+export interface MarketReportBubbleUseCase {
+    execute(): Promise<MarketReportBubbleData>;
+}
+
+export interface MarketReportAnalyticsUseCase {
+    execute(): Promise<MarketReportAnalyticsData>;
+}
 
 export interface MarketReportData {
     gold18Price: number;
@@ -22,8 +40,8 @@ export class MarketReportSchedulerJob {
     constructor(
         private readonly reportService: MarketReportService,
         private readonly marketPriceProvider: MarketPriceProvider,
-        private readonly bubbleUseCase: GetGoldBubbleDataUseCase,
-        private readonly analyticsUseCase: GetMarketAnalyticsUseCase,
+        private readonly bubbleUseCase: MarketReportBubbleUseCase,
+        private readonly analyticsUseCase: MarketReportAnalyticsUseCase,
         private readonly notifier: MarketReportNotifier
     ) {}
 
