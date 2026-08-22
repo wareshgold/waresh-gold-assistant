@@ -244,6 +244,160 @@ describe(
 
 
 
+        it(
+
+            "should route gold bubble requests locally and use bubbleAmount",
+
+            async () => {
+
+
+
+                const registry =
+
+                    new DefaultAIToolRegistry();
+
+
+
+                registry.register({
+
+                    name:
+
+                        "get_gold_bubble",
+
+                    description:
+
+                        "Returns current gold bubble amount",
+
+                    async execute() {
+
+                        return {
+
+                            success:
+
+                                true,
+
+                            data: {
+
+                                bubbleAmount:
+
+                                    125000,
+
+                                bubblePercentage:
+
+                                    0.6
+
+                            }
+
+                        };
+
+                    }
+
+                });
+
+
+
+                const executionService =
+
+                    new AIToolExecutionService(
+
+                        new AIToolDecisionService(),
+
+                        new AIToolExecutor(
+
+                            registry
+
+                        )
+
+                    );
+
+
+
+                const router =
+
+                    new AILocalToolRouter(
+
+                        executionService
+
+                    );
+
+
+
+                const result =
+
+                    await router.route({
+
+                        message:
+
+                            "حباب چقدر ؟"
+
+                    });
+
+
+
+                expect(
+
+                    result.handled
+
+                )
+
+                    .toBe(
+
+                        true
+
+                    );
+
+
+
+                expect(
+
+                    result.toolName
+
+                )
+
+                    .toBe(
+
+                        "get_gold_bubble"
+
+                    );
+
+
+
+                expect(
+
+                    result.response
+
+                )
+
+                    .toContain(
+
+                        "125,000"
+
+                    );
+
+
+
+                expect(
+
+                    result.response
+
+                )
+
+                    .not
+
+                    .toContain(
+
+                        "intrinsic"
+
+                    );
+
+
+            }
+
+        );
+
+
+
+
 
         it(
 
@@ -387,7 +541,6 @@ describe(
 
 
 
-
         it(
 
             "should not intercept calculation requests",
@@ -503,7 +656,6 @@ describe(
 
 
 
-
         it(
 
             "should not intercept general conversation",
@@ -515,8 +667,6 @@ describe(
                 const registry =
 
                     new DefaultAIToolRegistry();
-
-
 
 
 
