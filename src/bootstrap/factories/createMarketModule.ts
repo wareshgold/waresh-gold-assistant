@@ -22,6 +22,9 @@ from "../../domain/market/analytics/services/VolatilityCalculator";
 import { MarketScoreCalculator }
 from "../../domain/market/analytics/services/MarketScoreCalculator";
 
+import { MarketPriceSource }
+from "../../domain/market/providers/MarketPriceSource";
+
 import { HttpPriceSourceClient }
 from "../../infrastructure/market/clients/HttpPriceSourceClient";
 
@@ -66,22 +69,16 @@ interface MonitoringModule {
 export interface MarketModule {
     cache:
         CacheModule["cache"];
-
     marketProvider:
         CompositeMarketPriceProvider;
-
     cachedMarketProvider:
         CachedMarketPriceProvider;
-
     snapshotService:
         MarketSnapshotService;
-
     marketChartService:
         MarketChartService;
-
     analyticsFacade:
         MarketAnalyticsFacade;
-
     priceRefreshService:
         PriceRefreshService;
 }
@@ -140,7 +137,7 @@ export function createMarketModule(
             createTelegramMessageProvider(env)
         );
 
-    const sources = [
+    const sources: MarketPriceSource[] = [
         telegramSource
     ];
 
@@ -154,7 +151,8 @@ export function createMarketModule(
                 new HttpPriceSourceClient(
                     env.MARKET_PRICE_API_URL
                 )
-            );
+            )
+        );
     }
 
     const marketProvider =
