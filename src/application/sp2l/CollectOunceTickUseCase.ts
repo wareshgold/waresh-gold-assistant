@@ -7,7 +7,11 @@ import {
 } from "../../domain/sp2l/value-objects/OunceTick";
 
 export interface OunceTickSource {
-    getLatestTicks(): Promise<OunceTick[]>;
+    getLatestTick(
+        timestamp?: number
+    ): Promise<OunceTick>;
+
+    getLatestTicks?(): Promise<OunceTick[]>;
 }
 
 export class CollectOunceTickUseCase {
@@ -19,7 +23,13 @@ export class CollectOunceTickUseCase {
 
     async execute(): Promise<OunceTick[]> {
         const ticks =
-            await this.source.getLatestTicks();
+            this.source.getLatestTicks
+                ? await this.source.getLatestTicks()
+                : [
+                    await this.source.getLatestTick(
+                        Date.now()
+                    )
+                ];
 
         const uniqueTicks =
             this.deduplicate(ticks);
