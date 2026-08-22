@@ -2,9 +2,25 @@
 
 > AI-powered Gold Business Platform for the Iranian gold & jewelry market.
 
+**Author:** Ali Mirzaei  
+**Project:** Waresh Gold  
+**Copyright:** © 2026 Waresh Gold / Ali Mirzaei
+
 Waresh Gold Assistant is the foundation of a larger digital infrastructure for gold businesses in Iran. Telegram is the first interface, not the product boundary.
 
 The platform is being designed so the same trusted business logic can power future **Website, Mobile Apps, REST APIs, Admin Dashboard, CRM, customer support, AI assistants, and automation services**.
+
+---
+
+## 📜 License & Usage
+
+This repository is **proprietary software** owned by **Waresh Gold / Ali Mirzaei**.
+
+Unless explicit written permission is granted by the copyright holder, the source code may **not** be copied, modified, distributed, sublicensed, sold, or used as the basis of another commercial product.
+
+Viewing the source code on GitHub does not grant permission to reuse it.
+
+See the [`LICENSE`](./LICENSE) file for the full terms.
 
 ---
 
@@ -155,7 +171,7 @@ SP2L is intended to live in the **domain layer** and remain independent from Tel
 /bubble         Gold bubble analysis
 /analytics      Market analytics
 /history        Price history
-/calc           Gold price calculation
+/calc            Gold price calculation
 /reverse-labor  Reverse labor calculation
 /calc-history   Calculation history
 /alerts         Price alerts
@@ -163,7 +179,7 @@ SP2L is intended to live in the **domain layer** and remain independent from Tel
 /ai             Waresh AI conversation
 /vip            VIP access
 /sp2l           Latest SP2L signal (VIP)
-/exit           Exit current conversation/calculation
+/exit            Exit current conversation/calculation
 ```
 
 The bot supports conversational AI sessions where users can enter `/ai` once and continue asking questions without repeating the command.
@@ -317,6 +333,9 @@ Telegram is only the first door into the platform.
 
 ---
 
-## 📄 License
+## 👤 Author
 
-This project is currently private/proprietary software developed for the Waresh Gold platform.
+**Ali Mirzaei**  
+Founder / Developer — Waresh Gold
+
+© 2026 Waresh Gold. All rights reserved.
