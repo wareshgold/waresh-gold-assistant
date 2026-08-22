@@ -10,6 +10,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -17,6 +20,44 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: One-time strategy naming migration
+        if: github.ref_name == 'fix/vip-sp2l-production-readiness'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          files=$(git grep -Il -e 'SP2L' -e 'Sp2l' -e 'sp2l' || true)
+          if [ -z "$files" ]; then
+            exit 0
+          fi
+
+          while IFS= read -r file; do
+            [ -f "$file" ] || continue
+            perl -0pi -e 's/SP2L/StrategyA/g; s/Sp2l/StrategyA/g; s/sp2l/strategy-a/g' "$file"
+          done <<< "$files"
+
+          while IFS= read -r old; do
+            [ -n "$old" ] || continue
+            new="$old"
+            new="${new//SP2L/StrategyA}"
+            new="${new//Sp2l/StrategyA}"
+            new="${new//sp2l/strategy-a}"
+            if [ "$old" != "$new" ]; then
+              mkdir -p "$(dirname "$new")"
+              git mv "$old" "$new"
+            fi
+          done < <(git ls-files | grep -i 'sp2l' | sort -r || true)
+
+          if git diff --quiet --exit-code; then
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "refactor(strategy): anonymize proprietary strategy naming"
+          git push origin HEAD:${{ github.ref_name }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
