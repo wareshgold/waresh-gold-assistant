@@ -5,7 +5,7 @@ import {
 export interface SP2LSignalRepository {
     save(
         signal: SP2LSignal
-    ): Promise<void>;
+    ): Promise<boolean>;
 
     getLatest(
         symbol: string
