@@ -22,12 +22,17 @@ export class TelegramActionCatalog {
         { id: "assistant.learn", command: "/help", callbackEnabled: true },
         { id: "assistant.help", command: "/help", callbackEnabled: true },
         { id: "settings.alerts", command: "/alerts", callbackEnabled: true },
+        { id: "settings.reports", command: "/reports", callbackEnabled: true },
         { id: "settings.account", command: "/help", callbackEnabled: true },
         { id: "settings.bot", command: "/help", callbackEnabled: true },
         { id: "alerts.1h", command: "/alerts 1", callbackEnabled: true },
         { id: "alerts.6h", command: "/alerts 6", callbackEnabled: true },
         { id: "alerts.12h", command: "/alerts 12", callbackEnabled: true },
-        { id: "alerts.off", command: "/alerts off", callbackEnabled: true }
+        { id: "alerts.off", command: "/alerts off", callbackEnabled: true },
+        { id: "reports.1h", command: "/reports 1", callbackEnabled: true },
+        { id: "reports.6h", command: "/reports 6", callbackEnabled: true },
+        { id: "reports.12h", command: "/reports 12", callbackEnabled: true },
+        { id: "reports.off", command: "/reports off", callbackEnabled: true }
     ];
 
     static getAll(): TelegramActionDefinition[] {
