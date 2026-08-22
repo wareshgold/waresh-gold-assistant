@@ -33,7 +33,6 @@ export class SpikeDetector {
             return null;
         }
 
-        // Scan recent windows ending at last closed-ish candle
         for (
             let end = candles.length - 1;
             end >= config.minSpikeCandles - 1;
@@ -112,9 +111,7 @@ export class SpikeDetector {
                 : window[0].high;
 
         const endPrice =
-            direction === "BUY"
-                ? window[window.length - 1].close
-                : window[window.length - 1].close;
+            window[window.length - 1].close;
 
         const move =
             Math.abs(endPrice - startPrice);
@@ -218,96 +215,52 @@ export class SpikeDetector {
     }
 
     /**
-     * P-Gap: cumulative directional displacement gaps
-     * between consecutive candles in spike direction.
+     * P-Gap is the three-candle displacement gap used by the
+     * SP2L spike definition. For a bullish spike the third
+     * candle must leave a gap above the first candle's high.
+     * For a bearish spike the third candle must leave a gap
+     * below the first candle's low.
      */
     private calculateGapSize(
         window: SP2LCandle[],
         direction: SP2LDirection
     ): number {
-        let gap = 0;
+        if (window.length < 3) {
+            return 0;
+        }
+
+        let largestGap = 0;
 
         for (
-            let i = 1;
+            let i = 2;
             i < window.length;
             i++
         ) {
-            const prev =
-                window[i - 1];
+            const first =
+                window[i - 2];
 
-            const curr =
+            const third =
                 window[i];
 
-            if (direction === "BUY") {
-                // Bullish displacement: current open/low jumps above prev close/body
-                const displacement =
-                    Math.max(
+            const gap =
+                direction === "BUY"
+                    ? Math.max(
                         0,
-                        curr.low - prev.close
+                        third.low - first.high
+                    )
+                    : Math.max(
+                        0,
+                        first.low - third.high
                     );
 
-                const bodyJump =
-                    Math.max(
-                        0,
-                        curr.open - prev.close
-                    );
-
-                gap +=
-                    Math.max(
-                        displacement,
-                        bodyJump
-                    );
-            } else {
-                const displacement =
-                    Math.max(
-                        0,
-                        prev.close - curr.high
-                    );
-
-                const bodyJump =
-                    Math.max(
-                        0,
-                        prev.close - curr.open
-                    );
-
-                gap +=
-                    Math.max(
-                        displacement,
-                        bodyJump
-                    );
-            }
+            largestGap =
+                Math.max(
+                    largestGap,
+                    gap
+                );
         }
 
-        // Also count large body continuity as gap-like pressure when pure gaps are small
-        if (gap === 0) {
-            for (
-                let i = 1;
-                i < window.length;
-                i++
-            ) {
-                const prev =
-                    window[i - 1];
-
-                const curr =
-                    window[i];
-
-                if (direction === "BUY") {
-                    gap +=
-                        Math.max(
-                            0,
-                            curr.close - prev.high
-                        ) * 0.5;
-                } else {
-                    gap +=
-                        Math.max(
-                            0,
-                            prev.low - curr.close
-                        ) * 0.5;
-                }
-            }
-        }
-
-        return gap;
+        return largestGap;
     }
 
     private averageRange(
