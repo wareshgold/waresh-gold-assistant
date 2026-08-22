@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { MarketReportCommandHandler } from "./MarketReportCommandHandler";
 import { MarketReportService } from "../../../market-report/MarketReportService";
-import { MemoryMarketReportPreferenceRepository } from "../../../infrastructure/market-report/MemoryMarketReportPreferenceRepository";
+import { MemoryMarketReportPreferenceRepository } from "../../../../infrastructure/market-report/MemoryMarketReportPreferenceRepository";
 
 describe("MarketReportCommandHandler", () => {
     it("shows the report settings menu", async () => {
