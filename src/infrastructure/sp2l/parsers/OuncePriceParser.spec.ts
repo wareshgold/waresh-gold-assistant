@@ -41,10 +41,8 @@ describe("OuncePriceParser", () => {
 
         expect(tick.price).toBe(4604.79);
         expect(tick.direction).toBe("up");
-
-        // Parser should use the source Jalali timestamp.
         expect(tick.timestamp).toBe(
-            Date.UTC(2026, 7, 22, 0, 24, 35)
+            Date.UTC(2026, 7, 21, 20, 54, 35)
         );
     });
 
@@ -57,9 +55,8 @@ describe("OuncePriceParser", () => {
 
         expect(tick.price).toBe(4604.78);
         expect(tick.direction).toBe("down");
-
         expect(tick.timestamp).toBe(
-            Date.UTC(2026, 7, 22, 0, 24, 36)
+            Date.UTC(2026, 7, 21, 20, 54, 36)
         );
     });
 
@@ -71,9 +68,21 @@ describe("OuncePriceParser", () => {
 
         expect(tick.price).toBe(4604.79);
         expect(tick.direction).toBe("up");
-
         expect(tick.timestamp).toBe(
-            Date.UTC(2026, 7, 22, 0, 24, 35)
+            Date.UTC(2026, 7, 21, 20, 54, 35)
+        );
+    });
+
+    it("parses Arabic-Indic digits in OunceMarkets messages", () => {
+        const tick =
+            OuncePriceParser.parse(
+                "🔺 ٤٦٠٤.٧٩ ١٤٠٥/٠٥/٣١ ٠٠:٢٤:٣٥"
+            );
+
+        expect(tick.price).toBe(4604.79);
+        expect(tick.direction).toBe("up");
+        expect(tick.timestamp).toBe(
+            Date.UTC(2026, 7, 21, 20, 54, 35)
         );
     });
 
@@ -86,7 +95,7 @@ describe("OuncePriceParser", () => {
         expect(tick).toBeNull();
     });
 
-    it("rejects a malformed low ounce price", () => {
+    it("rejects malformed low and invalid-date OunceMarkets ticks", () => {
         expect(
             OuncePriceParser.tryParse(
                 "انس طلا 7"
@@ -96,6 +105,12 @@ describe("OuncePriceParser", () => {
         expect(
             OuncePriceParser.tryParse(
                 "🔺 7 1405/05/29 16:27:10"
+            )
+        ).toBeNull();
+
+        expect(
+            OuncePriceParser.tryParse(
+                "🔺 4604.79 1405/07/31 00:24:35"
             )
         ).toBeNull();
     });
