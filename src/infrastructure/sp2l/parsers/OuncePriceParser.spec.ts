@@ -55,6 +55,20 @@ describe("OuncePriceParser", () => {
         expect(tick).toBeNull();
     });
 
+    it("rejects a malformed low ounce price", () => {
+        expect(
+            OuncePriceParser.tryParse(
+                "انس طلا 7"
+            )
+        ).toBeNull();
+
+        expect(
+            OuncePriceParser.tryParse(
+                "🔺 7 1405/05/29 16:27:10"
+            )
+        ).toBeNull();
+    });
+
     it("parses OunceMarkets down tick", () => {
         const tick =
             OuncePriceParser.parse(
