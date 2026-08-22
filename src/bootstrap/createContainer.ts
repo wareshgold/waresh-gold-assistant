@@ -46,10 +46,10 @@ export function createContainer(env: AppEnv) {
     const healthCheckService = new HealthCheckService(cache.cache, storage.snapshotRepository, monitoring.metricsStore);
     const market = createMarketModule(env, storage, cache, monitoring);
     const gold = createGoldModule();
-    const strategy-a = createStrategyAModule(env);
+    const strategyA = createStrategyAModule(env);
     const vip = createVipModule(env);
 
-    const ingestOunceTickFromTextUseCase = new IngestOunceTickFromTextUseCase(strategy-a.tickRepository);
+    const ingestOunceTickFromTextUseCase = new IngestOunceTickFromTextUseCase(strategyA.tickRepository);
     const saveGoldCalculationHistoryUseCase = new SaveGoldCalculationHistoryUseCase(storage.goldCalculationHistoryRepository);
     const getGoldCalculationHistoryUseCase = new GetGoldCalculationHistoryUseCase(storage.goldCalculationHistoryRepository);
     const getSystemMetricsUseCase = new GetSystemMetricsUseCase(monitoring.monitoringService);
@@ -66,7 +66,7 @@ export function createContainer(env: AppEnv) {
         calculateGoldFormulaUseCase: gold.calculateGoldFormulaUseCase,
         calculateReverseGoldUseCase: gold.calculateReverseGoldUseCase,
         calculateInvoiceUseCase: gold.calculateInvoiceUseCase,
-        strategy-aStrategyService: strategy-a.strategyService,
+        strategyAStrategyService: strategyA.strategyService,
         aiConversationMemory: storage.aiConversationMemory
     });
 
@@ -98,18 +98,18 @@ export function createContainer(env: AppEnv) {
         saveGoldCalculationHistoryUseCase,
         aiService: ai.aiService,
         vipAccessService: vip.vipAccessService,
-        strategyService: strategy-a.strategyService,
+        strategyService: strategyA.strategyService,
         ingestOunceTickFromTextUseCase,
         goldPriceAlertService,
         marketReportService
     });
 
     const evaluateAndPublishStrategyASignalUseCase = new EvaluateAndPublishStrategyASignalUseCase(
-        strategy-a.strategyService,
+        strategyA.strategyService,
         vip.vipAccessService,
         new TelegramStrategyASignalNotifier(telegram.telegramBotClient, new StrategyASignalMessageFormatter())
     );
-    const strategy-aSignalSchedulerJob = new StrategyASignalSchedulerJob(evaluateAndPublishStrategyASignalUseCase);
+    const strategyASignalSchedulerJob = new StrategyASignalSchedulerJob(evaluateAndPublishStrategyASignalUseCase);
     const goldPriceAlertSchedulerJob = new GoldPriceAlertSchedulerJob(
         goldPriceAlertService,
         market.cachedMarketProvider,
@@ -127,7 +127,7 @@ export function createContainer(env: AppEnv) {
         ...cache,
         ...market,
         ...gold,
-        ...strategy-a,
+        ...strategyA,
         ...vip,
         ...telegram,
         ...monitoring,
@@ -149,7 +149,7 @@ export function createContainer(env: AppEnv) {
         getGoldCalculationHistoryUseCase,
         ingestOunceTickFromTextUseCase,
         evaluateAndPublishStrategyASignalUseCase,
-        strategy-aSignalSchedulerJob,
+        strategyASignalSchedulerJob,
         goldPriceAlertService,
         goldPriceAlertSchedulerJob,
         marketReportService,
