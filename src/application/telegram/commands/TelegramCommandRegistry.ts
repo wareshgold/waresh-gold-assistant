@@ -31,6 +31,7 @@ import { TelegramInlineKeyboardBuilder } from "../keyboards/TelegramInlineKeyboa
 import { MarketBubbleMessageFormatter } from "../presentation/MarketBubbleMessageFormatter";
 import { MarketAnalyticsMessageFormatter } from "../presentation/MarketAnalyticsMessageFormatter";
 import { TelegramNumberFormatter } from "../presentation/TelegramNumberFormatter";
+import { SP2LSignalMessageFormatter } from "../presentation/SP2LSignalMessageFormatter";
 import { AIService } from "../../ai/services/AIService";
 import { VIPAccessService } from "../../vip/VIPAccessService";
 import { SP2LStrategyService } from "../../strategy/sp2l/SP2LStrategyService";
@@ -71,36 +72,16 @@ export class TelegramCommandRegistry {
             ),
             new HelpCommandHandler(() => commandRouter.getHandlers()),
             new GoldPriceCommandHandler(getGoldPriceUseCase),
-            new GetGoldBubbleCommandHandler(
-                getGoldBubbleUseCase,
-                marketBubbleMessageFormatter
-            ),
-            new GetMarketAnalyticsCommandHandler(
-                getMarketAnalyticsUseCase,
-                marketAnalyticsMessageFormatter
-            ),
-            new GetMarketHistoryCommandHandler(
-                getMarketHistoryUseCase,
-                telegramNumberFormatter
-            ),
-            new GetGoldCalculationHistoryCommandHandler(
-                getGoldCalculationHistoryUseCase,
-                telegramNumberFormatter
-            ),
-            new CalculateGoldCommandHandler(
-                calculateGoldFormulaUseCase,
-                sessionStore,
-                telegramNumberFormatter
-            ),
+            new GetGoldBubbleCommandHandler(getGoldBubbleUseCase, marketBubbleMessageFormatter),
+            new GetMarketAnalyticsCommandHandler(getMarketAnalyticsUseCase, marketAnalyticsMessageFormatter),
+            new GetMarketHistoryCommandHandler(getMarketHistoryUseCase, telegramNumberFormatter),
+            new GetGoldCalculationHistoryCommandHandler(getGoldCalculationHistoryUseCase, telegramNumberFormatter),
+            new CalculateGoldCommandHandler(calculateGoldFormulaUseCase, sessionStore, telegramNumberFormatter),
             new ReverseGoldCommandHandler(sessionStore)
         ];
 
         if (goldPriceAlertService) {
-            handlers.push(
-                new GoldPriceAlertCommandHandler(
-                    goldPriceAlertService
-                )
-            );
+            handlers.push(new GoldPriceAlertCommandHandler(goldPriceAlertService));
         }
 
         if (aiService) {
@@ -122,7 +103,6 @@ export class TelegramCommandRegistry {
         }
 
         handlers.push(new ExitCommandHandler(sessionStore));
-
         commandRouter = new TelegramCommandRouter(handlers);
         return commandRouter;
     }
