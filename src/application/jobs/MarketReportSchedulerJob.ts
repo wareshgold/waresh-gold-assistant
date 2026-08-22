@@ -1,20 +1,47 @@
 import { MarketPriceProvider } from "../../domain/market/providers/MarketPriceProvider";
 import { MarketReportService } from "../market-report/MarketReportService";
 
+export interface MarketReportBubbleData {
+    bubbleAmount: number;
+    bubblePercentage: number;
+}
+
+export interface MarketReportAnalyticsData {
+    analytics: {
+        getChange(): { formatted: string };
+        getTrend(): { type: string };
+    } | null;
+}
+
+export interface MarketReportBubbleUseCase {
+    execute(): Promise<MarketReportBubbleData>;
+}
+
+export interface MarketReportAnalyticsUseCase {
+    execute(): Promise<MarketReportAnalyticsData>;
+}
+
+export interface MarketReportData {
+    gold18Price: number;
+    currencyPrice: number;
+    ouncePrice: number | null;
+    updatedAt: Date;
+    bubbleAmount: number;
+    bubblePercentage: number;
+    marketChange: string | null;
+    marketTrend: string | null;
+}
+
 export interface MarketReportNotifier {
-    send(
-        userId: string,
-        gold18Price: number,
-        currencyPrice: number,
-        ouncePrice: number | null,
-        updatedAt: Date
-    ): Promise<void>;
+    send(userId: string, report: MarketReportData): Promise<void>;
 }
 
 export class MarketReportSchedulerJob {
     constructor(
         private readonly reportService: MarketReportService,
         private readonly marketPriceProvider: MarketPriceProvider,
+        private readonly bubbleUseCase: MarketReportBubbleUseCase,
+        private readonly analyticsUseCase: MarketReportAnalyticsUseCase,
         private readonly notifier: MarketReportNotifier
     ) {}
 
@@ -22,23 +49,32 @@ export class MarketReportSchedulerJob {
         const reports = await this.reportService.getDueReports(now);
         if (!reports.length) return;
 
-        const price = await this.marketPriceProvider.getCurrentPrice();
+        const [price, bubble, analytics] = await Promise.all([
+            this.marketPriceProvider.getCurrentPrice(),
+            this.bubbleUseCase.execute(),
+            this.analyticsUseCase.execute()
+        ]);
 
-        await Promise.all(reports.map(async report => {
-            const claimed = await this.reportService.claimDue(report, now);
+        const report: MarketReportData = {
+            gold18Price: price.gold18Price,
+            currencyPrice: price.currencyPrice,
+            ouncePrice: price.ouncePrice,
+            updatedAt: price.updatedAt,
+            bubbleAmount: bubble.bubbleAmount,
+            bubblePercentage: bubble.bubblePercentage,
+            marketChange: analytics.analytics?.getChange().formatted ?? null,
+            marketTrend: analytics.analytics?.getTrend().type ?? null
+        };
+
+        await Promise.all(reports.map(async preference => {
+            const claimed = await this.reportService.claimDue(preference, now);
             if (!claimed) return;
 
             try {
-                await this.notifier.send(
-                    report.userId,
-                    price.gold18Price,
-                    price.currencyPrice,
-                    price.ouncePrice,
-                    price.updatedAt
-                );
-                await this.reportService.markReported(report.userId, now);
+                await this.notifier.send(preference.userId, report);
+                await this.reportService.markReported(preference.userId, now);
             } catch (error) {
-                await this.reportService.releaseClaim(report.userId);
+                await this.reportService.releaseClaim(preference.userId);
                 throw error;
             }
         }));

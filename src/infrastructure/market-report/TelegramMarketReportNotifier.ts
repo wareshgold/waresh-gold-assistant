@@ -1,29 +1,42 @@
+import { MarketReportData, MarketReportNotifier } from "../../application/jobs/MarketReportSchedulerJob";
 import { TelegramBotClient } from "../telegram/TelegramBotClient";
-import { MarketReportNotifier } from "../../application/jobs/MarketReportSchedulerJob";
 
 export class TelegramMarketReportNotifier implements MarketReportNotifier {
     constructor(private readonly botClient: TelegramBotClient) {}
 
-    async send(
-        userId: string,
-        gold18Price: number,
-        currencyPrice: number,
-        ouncePrice: number | null,
-        updatedAt: Date
-    ): Promise<void> {
+    async send(userId: string, report: MarketReportData): Promise<void> {
         const format = (value: number) =>
             new Intl.NumberFormat("fa-IR").format(Math.round(value));
+
+        const trend = report.marketTrend === "UP"
+            ? "📈 صعودی"
+            : report.marketTrend === "DOWN"
+                ? "📉 نزولی"
+                : report.marketTrend === "VOLATILE"
+                    ? "📊 پرنوسان"
+                    : report.marketTrend === "STABLE"
+                        ? "➡️ باثبات"
+                        : "نامشخص";
+
+        const change = report.marketChange ?? "نامشخص";
+        const bubbleSign = report.bubbleAmount > 0 ? "+" : "";
 
         await this.botClient.sendMessage({
             chatId: userId,
             text: [
                 "📊 گزارش بازار طلا",
+                "━━━━━━━━━━━━━━",
                 "",
-                `🟡 طلای ۱۸ عیار: ${format(gold18Price)} تومان`,
-                `💵 دلار: ${format(currencyPrice)} تومان`,
-                `🌎 اونس جهانی: ${ouncePrice === null ? "ناموجود" : `${format(ouncePrice)} دلار`}`,
+                `🪙 طلای ۱۸ عیار: ${format(report.gold18Price)} تومان`,
+                `💵 دلار: ${format(report.currencyPrice)} تومان`,
+                `🌎 اونس جهانی: ${report.ouncePrice === null ? "ناموجود" : `${report.ouncePrice.toFixed(2)} دلار`}`,
                 "",
-                `🕒 بروزرسانی: ${updatedAt.toLocaleString("fa-IR", { timeZone: "Asia/Tehran" })}`
+                `📈 تغییر بازار: ${change}`,
+                `🧭 روند بازار: ${trend}`,
+                `🫧 حباب طلا: ${bubbleSign}${format(report.bubbleAmount)} تومان`,
+                `📊 حباب: ${report.bubblePercentage.toFixed(2)}%`,
+                "",
+                `🕒 بروزرسانی: ${report.updatedAt.toLocaleString("fa-IR", { timeZone: "Asia/Tehran" })}`
             ].join("\n")
         });
     }
