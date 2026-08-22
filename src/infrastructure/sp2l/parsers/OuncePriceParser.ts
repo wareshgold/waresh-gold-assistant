@@ -86,9 +86,14 @@ export class OuncePriceParser {
             );
         }
 
+        // OunceMarkets messages always provide the price immediately after
+        // the direction marker. Do not allow an arbitrary number elsewhere
+        // in the message to be interpreted as the price (for example the
+        // Jalali date "1405/05/29"), otherwise a malformed extraction can
+        // silently produce prices such as 7 or 1405.
         const marketMatch =
             normalized.match(
-                /(?:🔺|🔻|up|down)?\s*([0-9]{1,5}(?:,[0-9]{3})*(?:\.[0-9]+)?|[0-9]+(?:\.[0-9]+)?)/iu
+                /(?:🔺|🔻|up|down)\s*([0-9]{1,5}(?:,[0-9]{3})*(?:\.[0-9]+)?|[0-9]+(?:\.[0-9]+)?)/iu
             );
 
         if (!marketMatch) {
