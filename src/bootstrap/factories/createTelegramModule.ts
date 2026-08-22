@@ -38,6 +38,7 @@ import { VIPAccessService } from "../../application/vip/VIPAccessService";
 import { SP2LStrategyService } from "../../application/strategy/sp2l/SP2LStrategyService";
 import { IngestOunceTickFromTextUseCase } from "../../application/sp2l/IngestOunceTickFromTextUseCase";
 import { GoldPriceAlertService } from "../../application/gold-alert/GoldPriceAlertService";
+import { MarketReportService } from "../../application/market-report/MarketReportService";
 
 interface Dependencies {
     getGoldPriceUseCase: any;
@@ -58,6 +59,7 @@ interface Dependencies {
     strategyService?: SP2LStrategyService;
     ingestOunceTickFromTextUseCase?: IngestOunceTickFromTextUseCase;
     goldPriceAlertService?: GoldPriceAlertService;
+    marketReportService?: MarketReportService;
 }
 
 export function createTelegramModule(env: AppEnv, dependencies: Dependencies) {
@@ -114,7 +116,8 @@ export function createTelegramModule(env: AppEnv, dependencies: Dependencies) {
         dependencies.aiService,
         dependencies.vipAccessService,
         dependencies.strategyService,
-        dependencies.goldPriceAlertService
+        dependencies.goldPriceAlertService,
+        dependencies.marketReportService
     );
 
     const actionResolver = new CompositeTelegramActionResolver([
