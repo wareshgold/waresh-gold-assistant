@@ -2,6 +2,10 @@ import {
     OuncePriceParser
 } from "./parsers/OuncePriceParser";
 
+import {
+    OunceTick
+} from "../../domain/sp2l/value-objects/OunceTick";
+
 export class TelegramOunceMessageProvider {
 
     constructor(
@@ -11,6 +15,72 @@ export class TelegramOunceMessageProvider {
     ) {}
 
     async getLatestRawMessage(): Promise<string> {
+        const messages =
+            await this.getRawMessages();
+
+        if (messages.length === 0) {
+            throw new Error(
+                "Ounce telegram message not found"
+            );
+        }
+
+        return messages[messages.length - 1];
+    }
+
+    async getLatestTicks(): Promise<OunceTick[]> {
+        const messages =
+            await this.getRawMessages();
+
+        const ticks: OunceTick[] = [];
+        const seen = new Set<string>();
+
+        for (const message of messages) {
+            const tick =
+                OuncePriceParser.tryParse(message);
+
+            if (!tick) {
+                continue;
+            }
+
+            const key = [
+                tick.timestamp,
+                tick.price,
+                tick.direction
+            ].join(":");
+
+            if (seen.has(key)) {
+                continue;
+            }
+
+            seen.add(key);
+            ticks.push(tick);
+        }
+
+        if (ticks.length === 0) {
+            throw new Error(
+                "Ounce telegram message not found"
+            );
+        }
+
+        return ticks.sort(
+            (a, b) =>
+                a.timestamp - b.timestamp
+        );
+    }
+
+    async getLatestTick(
+        timestamp: number = Date.now()
+    ): Promise<OunceTick> {
+        const message =
+            await this.getLatestRawMessage();
+
+        return OuncePriceParser.parse(
+            message,
+            timestamp
+        );
+    }
+
+    private async getRawMessages(): Promise<string[]> {
         const controller =
             new AbortController();
 
@@ -51,35 +121,22 @@ export class TelegramOunceMessageProvider {
                 ...html.matchAll(
                     /<div[^>]*class=["'][^"']*tgme_widget_message_text[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi
                 )
-            ];
+            ]
+                .map(match =>
+                    this.cleanHtmlMessage(match[1])
+                )
+                .filter(message =>
+                    OuncePriceParser.tryParse(message) !== null
+                );
 
             if (messages.length > 0) {
-                for (
-                    let i = messages.length - 1;
-                    i >= 0;
-                    i--
-                ) {
-                    const message =
-                        this.cleanHtmlMessage(
-                            messages[i][1]
-                        );
-
-                    if (
-                        OuncePriceParser.tryParse(
-                            message
-                        )
-                    ) {
-                        return message;
-                    }
-                }
+                return messages;
             }
 
             const fallback =
-                this.extractOunceMessageFromHtml(
-                    html
-                );
+                this.extractOunceMessagesFromHtml(html);
 
-            if (fallback) {
+            if (fallback.length > 0) {
                 return fallback;
             }
 
@@ -102,39 +159,19 @@ export class TelegramOunceMessageProvider {
         }
     }
 
-    async getLatestTick(
-        timestamp: number = Date.now()
-    ) {
-        const message =
-            await this.getLatestRawMessage();
-
-        return OuncePriceParser.parse(
-            message,
-            timestamp
-        );
-    }
-
-    private extractOunceMessageFromHtml(
+    private extractOunceMessagesFromHtml(
         html: string
-    ): string | null {
+    ): string[] {
         const text =
             this.cleanHtmlMessage(html);
 
-        const lines =
-            text
-                .split("\n")
-                .map(line => line.trim())
-                .filter(Boolean);
-
-        for (let i = lines.length - 1; i >= 0; i--) {
-            if (
-                OuncePriceParser.tryParse(lines[i])
-            ) {
-                return lines[i];
-            }
-        }
-
-        return null;
+        return text
+            .split("\n")
+            .map(line => line.trim())
+            .filter(Boolean)
+            .filter(line =>
+                OuncePriceParser.tryParse(line) !== null
+            );
     }
 
     private cleanHtmlMessage(
