@@ -97,6 +97,18 @@ export class SP2LSignal {
         });
     }
 
+    getFingerprint(): string {
+        return JSON.stringify([
+            this.symbol,
+            this.timeframe,
+            this.signalType,
+            this.entryPrice,
+            this.stopLoss,
+            this.takeProfit,
+            this.strategyVersion
+        ]);
+    }
+
     isActionable(): boolean {
         return (
             this.signalType === "BUY" ||
