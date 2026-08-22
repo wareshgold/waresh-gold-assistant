@@ -43,49 +43,21 @@ export function createContainer(env: AppEnv) {
     const cache = createCacheModule(env);
     const monitoring = createMonitoringModule(env);
 
-    const healthCheckService = new HealthCheckService(
-        cache.cache,
-        storage.snapshotRepository,
-        monitoring.metricsStore
-    );
-
+    const healthCheckService = new HealthCheckService(cache.cache, storage.snapshotRepository, monitoring.metricsStore);
     const market = createMarketModule(env, storage, cache, monitoring);
     const gold = createGoldModule();
     const sp2l = createSp2lModule(env);
     const vip = createVipModule(env);
 
-    const ingestOunceTickFromTextUseCase = new IngestOunceTickFromTextUseCase(
-        sp2l.tickRepository
-    );
+    const ingestOunceTickFromTextUseCase = new IngestOunceTickFromTextUseCase(sp2l.tickRepository);
+    const saveGoldCalculationHistoryUseCase = new SaveGoldCalculationHistoryUseCase(storage.goldCalculationHistoryRepository);
+    const getGoldCalculationHistoryUseCase = new GetGoldCalculationHistoryUseCase(storage.goldCalculationHistoryRepository);
+    const getSystemMetricsUseCase = new GetSystemMetricsUseCase(monitoring.monitoringService);
+    const systemMetricsController = new SystemMetricsController(getSystemMetricsUseCase);
 
-    const saveGoldCalculationHistoryUseCase = new SaveGoldCalculationHistoryUseCase(
-        storage.goldCalculationHistoryRepository
-    );
-
-    const getGoldCalculationHistoryUseCase = new GetGoldCalculationHistoryUseCase(
-        storage.goldCalculationHistoryRepository
-    );
-
-    const getSystemMetricsUseCase = new GetSystemMetricsUseCase(
-        monitoring.monitoringService
-    );
-
-    const systemMetricsController = new SystemMetricsController(
-        getSystemMetricsUseCase
-    );
-
-    const currentMarketPriceUseCase = new GetCurrentMarketPriceUseCase(
-        market.cachedMarketProvider
-    );
-
-    const getCurrentGoldPriceUseCase = new GetCurrentGoldPriceUseCase(
-        market.cachedMarketProvider
-    );
-
-    const getGoldBubbleUseCase = new GetGoldBubbleUseCase(
-        market.cachedMarketProvider,
-        gold.goldBubbleCalculator
-    );
+    const currentMarketPriceUseCase = new GetCurrentMarketPriceUseCase(market.cachedMarketProvider);
+    const getCurrentGoldPriceUseCase = new GetCurrentGoldPriceUseCase(market.cachedMarketProvider);
+    const getGoldBubbleUseCase = new GetGoldBubbleUseCase(market.cachedMarketProvider, gold.goldBubbleCalculator);
 
     const ai = createAIModule(env, {
         getCurrentGoldPriceUseCase,
@@ -98,46 +70,17 @@ export function createContainer(env: AppEnv) {
         aiConversationMemory: storage.aiConversationMemory
     });
 
-    const goldPriceResolver = new DefaultGoldPriceResolver(
-        getCurrentGoldPriceUseCase
-    );
+    const goldPriceResolver = new DefaultGoldPriceResolver(getCurrentGoldPriceUseCase);
+    const getGoldPriceUseCase = new GetGoldPriceUseCase(currentMarketPriceUseCase);
+    const getGoldBubbleDataUseCase = new GetGoldBubbleDataUseCase(market.cachedMarketProvider, gold.goldBubbleCalculator);
+    const getMarketAnalyticsUseCase = new GetMarketAnalyticsUseCase(market.analyticsFacade);
+    const getMarketHistoryUseCase = new GetMarketHistoryUseCase(market.snapshotService);
+    const getMarketChartUseCase = new GetMarketChartUseCase(market.marketChartService);
+    const refreshMarketPriceUseCase = new RefreshMarketPriceUseCase(market.priceRefreshService);
+    const refreshMarketPriceJob = new RefreshMarketPriceJob(refreshMarketPriceUseCase);
 
-    const getGoldPriceUseCase = new GetGoldPriceUseCase(
-        currentMarketPriceUseCase
-    );
-
-    const getGoldBubbleDataUseCase = new GetGoldBubbleDataUseCase(
-        market.cachedMarketProvider,
-        gold.goldBubbleCalculator
-    );
-
-    const getMarketAnalyticsUseCase = new GetMarketAnalyticsUseCase(
-        market.analyticsFacade
-    );
-
-    const getMarketHistoryUseCase = new GetMarketHistoryUseCase(
-        market.snapshotService
-    );
-
-    const getMarketChartUseCase = new GetMarketChartUseCase(
-        market.marketChartService
-    );
-
-    const refreshMarketPriceUseCase = new RefreshMarketPriceUseCase(
-        market.priceRefreshService
-    );
-
-    const refreshMarketPriceJob = new RefreshMarketPriceJob(
-        refreshMarketPriceUseCase
-    );
-
-    const goldPriceAlertService = new GoldPriceAlertService(
-        new D1GoldPriceAlertRepository(env.waresh_gold_db)
-    );
-
-    const marketReportService = new MarketReportService(
-        new D1MarketReportPreferenceRepository(env.waresh_gold_db)
-    );
+    const goldPriceAlertService = new GoldPriceAlertService(new D1GoldPriceAlertRepository(env.waresh_gold_db));
+    const marketReportService = new MarketReportService(new D1MarketReportPreferenceRepository(env.waresh_gold_db));
 
     const telegram = createTelegramModule(env, {
         getGoldPriceUseCase,
@@ -164,30 +107,20 @@ export function createContainer(env: AppEnv) {
     const evaluateAndPublishSP2LSignalUseCase = new EvaluateAndPublishSP2LSignalUseCase(
         sp2l.strategyService,
         vip.vipAccessService,
-        new TelegramSP2LSignalNotifier(
-            telegram.telegramBotClient,
-            new SP2LSignalMessageFormatter()
-        )
+        new TelegramSP2LSignalNotifier(telegram.telegramBotClient, new SP2LSignalMessageFormatter())
     );
-
-    const sp2lSignalSchedulerJob = new SP2LSignalSchedulerJob(
-        evaluateAndPublishSP2LSignalUseCase
-    );
-
+    const sp2lSignalSchedulerJob = new SP2LSignalSchedulerJob(evaluateAndPublishSP2LSignalUseCase);
     const goldPriceAlertSchedulerJob = new GoldPriceAlertSchedulerJob(
         goldPriceAlertService,
         market.cachedMarketProvider,
-        new TelegramGoldPriceAlertNotifier(
-            telegram.telegramBotClient
-        )
+        new TelegramGoldPriceAlertNotifier(telegram.telegramBotClient)
     );
-
     const marketReportSchedulerJob = new MarketReportSchedulerJob(
         marketReportService,
         market.cachedMarketProvider,
-        new TelegramMarketReportNotifier(
-            telegram.telegramBotClient
-        )
+        getGoldBubbleDataUseCase,
+        getMarketAnalyticsUseCase,
+        new TelegramMarketReportNotifier(telegram.telegramBotClient)
     );
 
     return {
