@@ -15,6 +15,22 @@ import {
 } from "../../infrastructure/vip/MemoryUserVIPAccessRepository";
 
 import {
+    MemoryVIPActivationRepository
+} from "../../infrastructure/vip/MemoryVIPActivationRepository";
+
+import {
+    D1VIPCodeRepository
+} from "../../infrastructure/vip/D1VIPCodeRepository";
+
+import {
+    D1UserVIPAccessRepository
+} from "../../infrastructure/vip/D1UserVIPAccessRepository";
+
+import {
+    D1VIPActivationRepository
+} from "../../infrastructure/vip/D1VIPActivationRepository";
+
+import {
     VIPCode
 } from "../../domain/vip/entities/VIPCode";
 
@@ -25,6 +41,39 @@ import {
 export function createVipModule(
     env: AppEnv
 ) {
+    const ownerUserIds =
+        (env.OWNER_TELEGRAM_USER_IDS ?? "")
+            .split(",")
+            .map(value => value.trim())
+            .filter(Boolean);
+
+    if (env.ENVIRONMENT === "production") {
+        const codeRepository =
+            new D1VIPCodeRepository(
+                env.waresh_gold_db
+            );
+
+        const accessRepository =
+            new D1UserVIPAccessRepository(
+                env.waresh_gold_db
+            );
+
+        const activationRepository =
+            new D1VIPActivationRepository(
+                env.waresh_gold_db
+            );
+
+        return {
+            vipAccessService:
+                new VIPAccessService(
+                    codeRepository,
+                    accessRepository,
+                    activationRepository,
+                    ownerUserIds
+                )
+        };
+    }
+
     const codeRepository =
         new MemoryVIPCodeRepository();
 
@@ -34,29 +83,28 @@ export function createVipModule(
     codeRepository.seed(
         VIPCode.create({
             id: "bootstrap-sp2l",
-            code: "SP2L-8F92KD",
+            code: "DEV-SP2L-8F92KD",
             feature: VIP_FEATURE_SP2L_SIGNALS,
-            maxUsers: 50,
+            maxUsers: 1,
             usedCount: 0,
             expiresAt: null,
             createdAt: new Date()
         })
     );
 
-    const ownerUserIds =
-        (env.OWNER_TELEGRAM_USER_IDS ?? "")
-            .split(",")
-            .map(value => value.trim())
-            .filter(Boolean);
-
-    const vipAccessService =
-        new VIPAccessService(
+    const activationRepository =
+        new MemoryVIPActivationRepository(
             codeRepository,
-            accessRepository,
-            ownerUserIds
+            accessRepository
         );
 
     return {
-        vipAccessService
+        vipAccessService:
+            new VIPAccessService(
+                codeRepository,
+                accessRepository,
+                activationRepository,
+                ownerUserIds
+            )
     };
 }
