@@ -69,7 +69,7 @@ export class MarketReportCommandHandler implements TelegramCommandHandler {
         return {
             type: "text" as const,
             content: [
-                "📊 گزارش دوره‌ای بازار طلا",
+                "📊 تنظیم گزارش دوره‌ای بازار طلا",
                 "━━━━━━━━━━━━━━━━━━",
                 "",
                 "این قابلیت با فاصله زمانی انتخابی، یک خلاصه تحلیلی از وضعیت بازار را به‌صورت خودکار برای شما ارسال می‌کند.",
