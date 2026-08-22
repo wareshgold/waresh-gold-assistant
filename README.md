@@ -6,6 +6,21 @@ Waresh Gold Assistant is the foundation of a larger digital infrastructure for g
 
 The platform is being designed so the same trusted business logic can power future **Website, Mobile Apps, REST APIs, Admin Dashboard, CRM, customer support, AI assistants, and automation services**.
 
+**Author:** Ali Mirzaei  
+**Copyright:** © 2026 Waresh Gold / Ali Mirzaei
+
+---
+
+## 📜 License & Usage
+
+This repository is **proprietary software** owned by **Waresh Gold / Ali Mirzaei**.
+
+Unless explicit written permission is granted by the copyright holder, the source code may not be copied, modified, distributed, sublicensed, sold, or used as the basis of another commercial product.
+
+Viewing the source code on GitHub does not grant permission to reuse it.
+
+See [`LICENSE`](./LICENSE) for the full terms.
+
 ---
 
 ## 🎯 Vision
@@ -24,7 +39,7 @@ Waresh Gold aims to provide a reliable digital platform for the daily operations
 - Customer management
 - VIP services
 - AI-powered customer assistance
-- Strategy and signal services such as SP2L
+- Strategy and signal services
 
 The long-term goal is to build a reusable **Gold Business Platform Core**, rather than a Telegram-only bot.
 
@@ -64,18 +79,9 @@ The project follows Clean Architecture and Domain-Driven Design principles.
 
 ### Core architectural rule
 
-The Gold Domain Engine must remain independent from:
+The Gold Domain Engine must remain independent from Telegram, HTTP, databases, Cloudflare, AI providers, and external market APIs.
 
-- Telegram
-- HTTP
-- Databases
-- Cloudflare
-- AI providers
-- External market APIs
-
-External systems are adapters around the core platform.
-
-This keeps the financial logic portable, testable, and reusable across future products.
+External systems are adapters around the core platform. This keeps the financial logic portable, testable, and reusable across future products.
 
 ---
 
@@ -103,25 +109,7 @@ Verified Result
 AI Response
 ```
 
-### AI does NOT own financial logic
-
 The AI layer must never calculate or invent financial values itself.
-
-For example:
-
-```text
-User: "قیمت طلا چنده؟"
-
-AI
- ↓
-Gold Price Tool
- ↓
-Market Price Provider
- ↓
-Trusted Gold Result
- ↓
-AI explains the result
-```
 
 Current AI capabilities include:
 
@@ -144,7 +132,7 @@ The local router is intentionally deterministic for high-confidence requests so 
 
 The Gold Engine contains trusted domain-level financial calculations and rules.
 
-Implemented domain concepts include:
+Implemented concepts include:
 
 - Money
 - Gold Price
@@ -156,33 +144,18 @@ Implemented domain concepts include:
 - Market Price
 - Gold Bubble
 
-Gold bubble analysis separates the market price from the calculated intrinsic value and exposes the bubble amount and percentage instead of confusing the intrinsic price with the bubble itself.
+Gold bubble analysis separates the market price from the calculated intrinsic reference value and exposes the actual bubble amount and percentage.
 
 ---
 
 ## 📊 Market Features
 
-### Current Market Price
-
-Provides current market information such as:
-
-- 18K gold price
+- Current 18K gold price
 - Mithqal price
 - Ounce price
-- Market source metadata
-
-### Gold Bubble
-
-The platform calculates the difference between the market gold price and its calculated intrinsic reference value.
-
-The AI layer routes bubble questions to the dedicated bubble tool so the result is not mistaken for a normal gold price.
-
-### Analytics & History
-
-The platform includes foundations for:
-
 - Market analytics
 - Price history
+- Gold bubble analysis
 - Scheduled market reports
 - Periodic reporting preferences
 
@@ -190,7 +163,7 @@ The platform includes foundations for:
 
 ## 🧮 Gold Calculations
 
-Supported calculation workflows include:
+Supported workflows include:
 
 - Gold price calculation
 - Labor / wage calculation
@@ -199,39 +172,37 @@ Supported calculation workflows include:
 - Reverse labor calculation
 - Calculation history
 
-Business calculations are delegated to domain/application services rather than implemented inside Telegram handlers or AI prompts.
+Business calculations live in domain/application services rather than Telegram handlers or AI prompts.
 
 ---
 
 ## 🔔 Alerts & Reports
 
-The platform supports user-oriented market automation such as:
+The platform supports:
 
 - Configurable price alerts
 - Periodic market reports
 - Report scheduling preferences
 - Market summary generation
 
-The report system is designed as an application workflow so future interfaces can reuse it without duplicating business logic.
-
 ---
 
-## ⭐ VIP & SP2L
+## ⭐ VIP & Strategies
 
 VIP capabilities are being developed as a separate access-controlled part of the platform.
 
-The roadmap includes:
+The strategy architecture is intentionally generic so additional proprietary strategies can be added without exposing their internal names or implementation details.
 
-- VIP access management
-- VIP-only tools
-- SP2L strategy signal engine
-- Signal evaluation
-- Signal publishing
-- AI access to strategy information
+Strategies are identified internally by neutral identifiers such as:
 
-SP2L is intended to live in the **domain layer** and remain independent from Telegram and AI. Telegram and AI should only act as interfaces to trusted strategy services.
+```text
+Strategy A
+Strategy B
+Strategy C
+...
+```
 
-> The current branch is actively preparing the VIP/SP2L production architecture; SP2L should not be treated as production-complete until its real market-data evaluation and publishing workflow are fully verified.
+The strategy engine is designed to live in the **domain layer** and remain independent from Telegram and AI. Interfaces should expose only the information required by authorized users.
 
 ---
 
@@ -255,7 +226,7 @@ Available commands include:
 /reports        Periodic market reports
 /ai             Waresh AI conversation
 /vip            VIP access
-/sp2l           Latest SP2L signal (VIP)
+/strategy       Latest authorized strategy signal
 /exit           Exit current conversation/calculation
 ```
 
@@ -294,7 +265,7 @@ pnpm exec tsc --noEmit
 pnpm exec wrangler deploy
 ```
 
-The project follows these development standards:
+Development standards:
 
 - Clean Architecture
 - SOLID principles
@@ -312,8 +283,6 @@ Before production deployment, changes should pass tests, TypeScript validation, 
 
 ## 📁 Architectural Boundaries
 
-A simplified source structure is organized around responsibility rather than framework concerns:
-
 ```text
 src/
 ├── domain/
@@ -330,21 +299,17 @@ src/
 │   └── ...
 │
 ├── infrastructure/
-│   ├── cloudflare/
-│   ├── market/
-│   ├── persistence/
-│   ├── ai/
 │   └── ...
 │
 └── interfaces/
     └── ...
 ```
 
-The exact module structure evolves with the platform, but the dependency direction remains the important constraint:
+The dependency direction remains:
 
 ```text
 Interfaces → Application → Domain
-Infrastructure → Application/Domain contracts
+Infrastructure → Application / Domain contracts
 ```
 
 The domain must not depend on presentation or infrastructure technologies.
@@ -386,10 +351,11 @@ The domain must not depend on presentation or infrastructure technologies.
 ### VIP / Strategy
 
 - [ ] Production-ready VIP access control
-- [ ] Complete SP2L domain engine
+- [ ] Complete strategy engine
 - [ ] Real market-data evaluation pipeline
 - [ ] Signal publishing workflow
 - [ ] VIP AI strategy assistant
+- [ ] Additional proprietary strategies
 
 ### Platform Expansion
 
@@ -404,48 +370,13 @@ The domain must not depend on presentation or infrastructure technologies.
 
 ## 🔐 Security & Financial Integrity
 
-Financial calculations are treated as trusted business logic.
-
-Important principles:
-
 1. AI must not invent market values.
 2. AI must not replace domain calculations.
 3. Market values must come from trusted market tools/providers.
 4. Tool results are the source of truth for AI responses.
 5. Business rules must remain outside Telegram handlers.
 6. External providers must be replaceable through abstractions.
-
-This separation is especially important because Waresh Gold is intended to evolve into business infrastructure, not just a conversational bot.
-
----
-
-## 📌 Current Development Checkpoint
-
-Current development branch:
-
-```text
-fix/vip-sp2l-production-readiness
-```
-
-Current verified checkpoint:
-
-```text
-Commit: ae2f3f4
-Tag: checkpoint/ai-sp2l-vip-market-bubble-ready-2026-08-22
-```
-
-At this checkpoint, the project has:
-
-- 52 test files passing
-- 151 tests passing
-- TypeScript validation passing
-- Clean working tree
-- AI market-price routing
-- AI mithqal routing
-- AI gold-bubble routing
-- Professional Telegram help and market-report UX
-
-The checkpoint is intended as a safe rollback point before the next major VIP/SP2L and AI-session development phase.
+7. Proprietary strategy names and implementation details should not be exposed through public interfaces.
 
 ---
 
@@ -453,14 +384,15 @@ The checkpoint is intended as a safe rollback point before the next major VIP/SP
 
 Waresh Gold Assistant is intentionally being built as a **platform first and Telegram bot second**.
 
-The core principle is simple:
-
 > **Build the Gold Business Core once. Expose it everywhere.**
 
 Telegram is only the first door into the platform.
 
 ---
 
-## 📄 License
+## 👤 Author
 
-This project is currently private/proprietary software developed for the Waresh Gold platform.
+**Ali Mirzaei**  
+Founder / Developer — Waresh Gold
+
+© 2026 Waresh Gold. All rights reserved.
