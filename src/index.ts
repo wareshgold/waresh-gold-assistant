@@ -46,9 +46,9 @@ export default {
                 }
 
                 try {
-                    await currentContainer.strategy-aSignalSchedulerJob.execute();
+                    await currentContainer.strategyASignalSchedulerJob.execute();
                 } catch (error) {
-                    console.error("Failed to evaluate/publish StrategyA signal:", error);
+                    console.error("Failed to evaluate/publish Strategy A signal:", error);
                 }
 
                 try {
