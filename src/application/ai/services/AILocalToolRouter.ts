@@ -580,6 +580,24 @@ export class AILocalToolRouter {
 
         if (
 
+            this.isGoldBubbleRequest(
+
+                message
+
+            )
+
+        ) {
+
+
+            return "get_gold_bubble";
+
+
+        }
+
+
+
+        if (
+
             this.isCurrentGoldPriceRequest(
 
                 message
@@ -619,6 +637,37 @@ export class AILocalToolRouter {
 
 
         return undefined;
+
+
+    }
+
+
+
+
+
+    private isGoldBubbleRequest(
+
+        message:
+
+            string
+
+    ):
+
+        boolean {
+
+
+
+        const hasBubble =
+
+            /(حباب|حبابش|حبابش چقدره|حباب چقدره|حباب چقدر)/i.test(
+
+                message
+
+            );
+
+
+
+        return hasBubble;
 
 
     }
@@ -1070,6 +1119,74 @@ export class AILocalToolRouter {
 
             toolName ===
 
+            "get_gold_bubble"
+
+        ) {
+
+
+            const data =
+
+                result.data as
+
+                    Record<string, unknown> |
+
+                    undefined;
+
+
+
+            const bubbleAmount =
+
+                data?.bubbleAmount;
+
+
+            const bubblePercentage =
+
+                data?.bubblePercentage;
+
+
+
+            if (
+
+                typeof bubbleAmount ===
+
+                "number"
+
+            ) {
+
+
+                const percentageText =
+
+                    typeof bubblePercentage ===
+
+                    "number"
+
+                        ? ` (${this.formatNumber(bubblePercentage)}٪)`
+
+                        : "";
+
+
+                return (
+
+                    `حباب فعلی طلا: ${this.formatNumber(bubbleAmount)} تومان` +
+                    percentageText
+
+                );
+
+            }
+
+
+            return "مقدار حباب طلا در حال حاضر معتبر نیست.";
+
+        }
+
+
+
+
+
+        if (
+
+            toolName ===
+
             "get_current_gold_price"
 
         ) {
@@ -1110,7 +1227,6 @@ export class AILocalToolRouter {
 
 
             }
-
 
         }
 
@@ -1155,11 +1271,9 @@ export class AILocalToolRouter {
                 return (
 
                     `قیمت فعلی مثقال طلا: ` +
-
                     `${this.formatNumber(price)} تومان`
 
                 );
-
 
             }
 
@@ -1325,7 +1439,6 @@ export class AILocalToolRouter {
 
             }
 
-
         }
 
 
@@ -1337,7 +1450,6 @@ export class AILocalToolRouter {
             "اطلاعات دریافت شد."
 
         );
-
 
     }
 
