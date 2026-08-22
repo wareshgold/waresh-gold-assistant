@@ -7,9 +7,7 @@ import {
 } from "../../domain/sp2l/value-objects/OunceTick";
 
 export interface OunceTickSource {
-    getLatestTick(
-        timestamp?: number
-    ): Promise<OunceTick>;
+    getLatestTicks(): Promise<OunceTick[]>;
 }
 
 export class CollectOunceTickUseCase {
@@ -19,14 +17,38 @@ export class CollectOunceTickUseCase {
         private readonly repository: OunceTickRepository
     ) {}
 
-    async execute(): Promise<OunceTick> {
-        const tick =
-            await this.source.getLatestTick(
-                Date.now()
-            );
+    async execute(): Promise<OunceTick[]> {
+        const ticks =
+            await this.source.getLatestTicks();
 
-        await this.repository.save(tick);
+        const uniqueTicks =
+            this.deduplicate(ticks);
 
-        return tick;
+        for (const tick of uniqueTicks) {
+            await this.repository.save(tick);
+        }
+
+        return uniqueTicks;
+    }
+
+    private deduplicate(
+        ticks: OunceTick[]
+    ): OunceTick[] {
+        const seen = new Set<string>();
+
+        return ticks.filter(tick => {
+            const key = [
+                tick.timestamp,
+                tick.price,
+                tick.direction
+            ].join(":");
+
+            if (seen.has(key)) {
+                return false;
+            }
+
+            seen.add(key);
+            return true;
+        });
     }
 }
