@@ -97,18 +97,16 @@ export class SP2LSignal {
         });
     }
 
-    /**
-     * Stable persistence identity for an SP2L setup.
-     * Evaluation time is deliberately excluded so repeated evaluations of
-     * the same setup are treated as the same signal.
-     */
     getFingerprint(): string {
         return JSON.stringify([
             this.symbol,
             this.timeframe,
             this.signalType,
             this.entryPrice,
-            this.strategyVersion
+            this.stopLoss,
+            this.takeProfit,
+            this.strategyVersion,
+            this.generatedAt.getTime()
         ]);
     }
 
