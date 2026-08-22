@@ -1,0 +1,75 @@
+name: Strategy naming refactor
+
+on:
+  workflow_dispatch:
+
+jobs:
+  refactor:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: refactor/strategy-naming
+          fetch-depth: 0
+
+      - name: Rename SP2L identifiers to StrategyA
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Rename file and directory paths first, deepest paths first.
+          while IFS= read -r -d '' path; do
+            base="$(basename "$path")"
+            dir="$(dirname "$path")"
+            newbase="${base//SP2L/StrategyA}"
+            newbase="${newbase//sp2l/strategy-a}"
+            newbase="${newbase//Sp2l/StrategyA}"
+            if [ "$base" != "$newbase" ]; then
+              mkdir -p "$dir"
+              git mv "$path" "$dir/$newbase"
+            fi
+          done < <(find src -depth -print0 | grep -z -E 'SP2L|sp2l|Sp2l')
+
+          # Rename identifiers and references in text files.
+          find src -type f \( -name '*.ts' -o -name '*.json' -o -name '*.md' -o -name '*.jsonc' \) -print0 |
+            xargs -0 sed -i \
+              -e 's/SP2L/StrategyA/g' \
+              -e 's/sp2l/strategy-a/g' \
+              -e 's/Sp2l/StrategyA/g'
+
+          # Remove stale tracked references outside src where applicable.
+          git grep -Il -E 'SP2L|sp2l|Sp2l' -- . ':!pnpm-lock.yaml' ':!package-lock.json' | while IFS= read -r file; do
+            sed -i \
+              -e 's/SP2L/StrategyA/g' \
+              -e 's/sp2l/strategy-a/g' \
+              -e 's/Sp2l/StrategyA/g' "$file"
+          done || true
+
+          if git grep -n -E 'SP2L|sp2l|Sp2l' -- . ':!pnpm-lock.yaml' ':!package-lock.json'; then
+            echo 'ERROR: stale strategy name references remain.'
+            exit 1
+          fi
+
+          pnpm install --frozen-lockfile
+          pnpm exec tsc --noEmit
+          pnpm test -- --run
+
+      - name: Commit and push
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Waresh Gold'
+          git config user.email 'wareshgold@users.noreply.github.com'
+          git add -A
+          git commit -m 'refactor(strategy): anonymize strategy naming' || exit 0
+          git push origin refactor/strategy-naming
+
+      - name: Remove temporary workflow
+        if: success()
+        shell: bash
+        run: |
+          git rm .github/workflows/strategy-naming-refactor.yml
+          git commit -m 'chore: remove temporary strategy refactor workflow'
+          git push origin refactor/strategy-naming
