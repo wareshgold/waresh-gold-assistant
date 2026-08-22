@@ -1,0 +1,70 @@
+name: Anonymize Strategy Names
+
+on:
+  push:
+    branches:
+      - fix/vip-sp2l-production-readiness
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  anonymize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: fix/vip-sp2l-production-readiness
+
+      - name: Replace proprietary strategy identifiers
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mapfile -t files < <(git grep -Il -e 'SP2L' -e 'Sp2l' -e 'sp2l' || true)
+
+          for file in "${files[@]}"; do
+            [ -f "$file" ] || continue
+            perl -0pi -e 's/SP2L/StrategyA/g; s/Sp2l/StrategyA/g; s/sp2l/strategy-a/g' "$file"
+          done
+
+          mapfile -t paths < <(git ls-files | grep -i 'sp2l' || true)
+
+          for old in "${paths[@]}"; do
+            [ -n "$old" ] || continue
+            new="$old"
+            new="${new//SP2L/StrategyA}"
+            new="${new//Sp2l/StrategyA}"
+            new="${new//sp2l/strategy-a}"
+            if [ "$old" != "$new" ]; then
+              mkdir -p "$(dirname "$new")"
+              git mv "$old" "$new"
+            fi
+          done
+
+          if git grep -Il -e 'SP2L' -e 'Sp2l' -e 'sp2l' >/tmp/remaining 2>/dev/null; then
+            echo 'ERROR: proprietary strategy identifiers remain:'
+            cat /tmp/remaining
+            exit 1
+          fi
+
+          git status --short
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'refactor(strategy): anonymize proprietary strategy naming'
+          git push origin HEAD:fix/vip-sp2l-production-readiness
+
+      - name: Remove temporary workflow
+        if: success()
+        shell: bash
+        run: |
+          git rm .github/workflows/anonymize-strategy.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore: remove temporary strategy anonymization workflow'
+          git push origin HEAD:fix/vip-sp2l-production-readiness
