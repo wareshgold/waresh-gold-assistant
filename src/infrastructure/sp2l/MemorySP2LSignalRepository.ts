@@ -12,13 +12,26 @@ export class MemorySP2LSignalRepository
     private readonly latestBySymbol =
         new Map<string, SP2LSignal>();
 
+    private readonly fingerprints =
+        new Set<string>();
+
     async save(
         signal: SP2LSignal
-    ): Promise<void> {
+    ): Promise<boolean> {
+        const fingerprint =
+            signal.getFingerprint();
+
+        if (this.fingerprints.has(fingerprint)) {
+            return false;
+        }
+
+        this.fingerprints.add(fingerprint);
         this.latestBySymbol.set(
             signal.symbol,
             signal
         );
+
+        return true;
     }
 
     async getLatest(
