@@ -35,14 +35,45 @@ describe("OuncePriceParser", () => {
     it("parses OunceMarkets up tick", () => {
         const tick =
             OuncePriceParser.parse(
-                "🔺 4473.49     1405/05/29 16:27:04",
-                1000
+                "🔺 4604.79 1405/05/31 00:24:35",
+                2000
             );
 
-        expect(tick.price).toBe(4473.49);
+        expect(tick.price).toBe(4604.79);
         expect(tick.direction).toBe("up");
+
+        // Parser should use the source Jalali timestamp.
         expect(tick.timestamp).toBe(
-            Date.UTC(2026, 7, 20, 16, 27, 4)
+            Date.UTC(2026, 7, 22, 0, 24, 35)
+        );
+    });
+
+    it("parses OunceMarkets down tick", () => {
+        const tick =
+            OuncePriceParser.parse(
+                "🔻 4604.78 1405/05/31 00:24:36",
+                2000
+            );
+
+        expect(tick.price).toBe(4604.78);
+        expect(tick.direction).toBe("down");
+
+        expect(tick.timestamp).toBe(
+            Date.UTC(2026, 7, 22, 0, 24, 36)
+        );
+    });
+
+    it("parses Persian digits in OunceMarkets messages", () => {
+        const tick =
+            OuncePriceParser.parse(
+                "🔺 ۴۶۰۴.۷۹ ۱۴۰۵/۰۵/۳۱ ۰۰:۲۴:۳۵"
+            );
+
+        expect(tick.price).toBe(4604.79);
+        expect(tick.direction).toBe("up");
+
+        expect(tick.timestamp).toBe(
+            Date.UTC(2026, 7, 22, 0, 24, 35)
         );
     });
 
@@ -67,19 +98,6 @@ describe("OuncePriceParser", () => {
                 "🔺 7 1405/05/29 16:27:10"
             )
         ).toBeNull();
-    });
-
-    it("parses OunceMarkets down tick", () => {
-        const tick =
-            OuncePriceParser.parse(
-                "🔻 4473.69     1405/05/29 16:27:10"
-            );
-
-        expect(tick.price).toBe(4473.69);
-        expect(tick.direction).toBe("down");
-        expect(tick.timestamp).toBe(
-            Date.UTC(2026, 7, 20, 16, 27, 10)
-        );
     });
 
     it("parses multiple sample messages", () => {
