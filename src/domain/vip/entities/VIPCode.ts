@@ -10,6 +10,13 @@ export interface VIPCodeProps {
     createdAt: Date;
     redeemedBy?: string | null;
     redeemedAt?: Date | null;
+
+    /**
+     * Legacy compatibility fields from the pre-single-use VIP model.
+     * They are intentionally not used by the current domain rules.
+     */
+    maxUsers?: number;
+    usedCount?: number;
 }
 
 export class VIPCode {
