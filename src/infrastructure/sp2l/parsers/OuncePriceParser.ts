@@ -3,9 +3,17 @@ import {
 } from "../../../domain/sp2l/value-objects/OunceTick";
 
 /**
- * Parses messages like:
- * 🔴 انس طلا 4,492.42 دلار
- * 🔵 انس طلا 4,492.83 دلار
+ * Parses ounce-market messages from the supported Telegram sources.
+ *
+ * Supported formats:
+ *
+ * Legacy:
+ *   🔴 انس طلا 4,492.42 دلار
+ *   🔵 انس طلا 4,492.83 دلار
+ *
+ * OunceMarkets:
+ *   🔺 4604.79 1405/05/31 00:24:35
+ *   🔻 4604.78 1405/05/31 00:24:36
  */
 export class OuncePriceParser {
 
@@ -16,51 +24,46 @@ export class OuncePriceParser {
         const normalized =
             this.normalize(message);
 
-        const match =
+        const legacyMatch =
             normalized.match(
                 /انس\s*طلا\s*([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?|[0-9]+(?:\.[0-9]+)?)/i
             );
 
-        if (!match) {
-            throw new Error(
-                "Invalid ounce price message"
-            );
+        if (legacyMatch) {
+            const price =
+                this.parsePrice(legacyMatch[1]);
+
+            return {
+                price,
+                timestamp,
+                direction: this.parseLegacyDirection(message),
+                rawMessage: message
+            };
         }
 
-        const price =
-            Number(
-                match[1].replace(/,/g, "")
+        const ounceMarketsMatch =
+            normalized.match(
+                /(?:🔺|🔻)\s*([0-9]+(?:\.[0-9]+)?)\s+(\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2})/
             );
 
-        if (
-            !Number.isFinite(price) ||
-            price <= 0
-        ) {
-            throw new Error(
-                "Invalid ounce price value"
-            );
+        if (ounceMarketsMatch) {
+            const price =
+                this.parsePrice(ounceMarketsMatch[1]);
+
+            return {
+                price,
+                timestamp,
+                direction:
+                    ounceMarketsMatch[0].includes("🔺")
+                        ? "up"
+                        : "down",
+                rawMessage: message
+            };
         }
 
-        let direction: OunceTick["direction"] =
-            "unknown";
-
-        if (
-            message.includes("🔵") ||
-            message.includes("🟢")
-        ) {
-            direction = "up";
-        } else if (
-            message.includes("🔴")
-        ) {
-            direction = "down";
-        }
-
-        return {
-            price,
-            timestamp,
-            direction,
-            rawMessage: message
-        };
+        throw new Error(
+            "Invalid ounce price message"
+        );
     }
 
     static tryParse(
@@ -75,6 +78,45 @@ export class OuncePriceParser {
         } catch {
             return null;
         }
+    }
+
+    private static parsePrice(
+        value: string
+    ): number {
+        const price =
+            Number(
+                value.replace(/,/g, "")
+            );
+
+        if (
+            !Number.isFinite(price) ||
+            price <= 0
+        ) {
+            throw new Error(
+                "Invalid ounce price value"
+            );
+        }
+
+        return price;
+    }
+
+    private static parseLegacyDirection(
+        message: string
+    ): OunceTick["direction"] {
+        if (
+            message.includes("🔵") ||
+            message.includes("🟢")
+        ) {
+            return "up";
+        }
+
+        if (
+            message.includes("🔴")
+        ) {
+            return "down";
+        }
+
+        return "unknown";
     }
 
     private static normalize(
