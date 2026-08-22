@@ -14,9 +14,19 @@ export class MemoryOunceTickRepository
     async save(
         tick: OunceTick
     ): Promise<void> {
+        const duplicate =
+            this.ticks.some(existing =>
+                existing.timestamp === tick.timestamp &&
+                existing.price === tick.price &&
+                existing.direction === tick.direction
+            );
+
+        if (duplicate) {
+            return;
+        }
+
         this.ticks.push(tick);
 
-        // keep last ~5000 ticks in memory
         if (this.ticks.length > 5000) {
             this.ticks.splice(
                 0,
