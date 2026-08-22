@@ -3,13 +3,17 @@ import {
 } from "../../../domain/sp2l/value-objects/OunceTick";
 
 /**
- * Parses ounce ticks from supported Telegram message formats.
+ * Parses ounce-market messages from the supported Telegram sources.
  *
- * Examples:
- * 🔴 انس طلا 4,492.42 دلار
- * 🔵 انس طلا 4,492.83 دلار
- * 🔺 4473.49     1405/05/29 16:27:04
- * 🔻 4473.69     1405/05/29 16:27:10
+ * Supported formats:
+ *
+ * Legacy:
+ *   🔴 انس طلا 4,492.42 دلار
+ *   🔵 انس طلا 4,492.83 دلار
+ *
+ * OunceMarkets:
+ *   🔺 4604.79 1405/05/31 00:24:35
+ *   🔻 4604.78 1405/05/31 00:24:36
  */
 export class OuncePriceParser {
 
@@ -183,6 +187,7 @@ export class OuncePriceParser {
         }
 
         let gy = jy + 621;
+
         const breaks = [
             -61, 9, 38, 199, 426, 686, 756,
             818, 1111, 1181, 1210, 1635, 2060,
@@ -199,6 +204,7 @@ export class OuncePriceParser {
 
         for (let i = 1; i < breaks.length; i++) {
             const jmBreak = breaks[i];
+
             jump = jmBreak - jp;
 
             if (jy < jmBreak) {
@@ -210,12 +216,17 @@ export class OuncePriceParser {
                 Math.floor(
                     (jump % 33) / 4
                 );
+
             jp = jmBreak;
         }
 
         const n = jy - jp;
-        leapJ += Math.floor(n / 33) * 8 +
-            Math.floor(((n % 33) + 3) / 4);
+
+        leapJ +=
+            Math.floor(n / 33) * 8 +
+            Math.floor(
+                ((n % 33) + 3) / 4
+            );
 
         if (
             jump % 33 === 4 &&
@@ -226,7 +237,9 @@ export class OuncePriceParser {
 
         leapG =
             Math.floor(gy / 4) -
-            Math.floor((Math.floor(gy / 100) + 1) * 3 / 4) -
+            Math.floor(
+                (Math.floor(gy / 100) + 1) * 3 / 4
+            ) -
             150;
 
         march =
@@ -235,12 +248,16 @@ export class OuncePriceParser {
             leapG;
 
         if (jm <= 6) {
-            leap = (jm - 1) * 31 + jd - 1;
+            leap =
+                (jm - 1) * 31 +
+                jd -
+                1;
         } else {
             leap =
                 (jm - 1) * 30 +
                 6 +
-                jd - 1;
+                jd -
+                1;
         }
 
         const gregorianDay =
@@ -253,9 +270,14 @@ export class OuncePriceParser {
             );
 
         return {
-            year: gregorianDay.getUTCFullYear(),
-            month: gregorianDay.getUTCMonth() + 1,
-            day: gregorianDay.getUTCDate()
+            year:
+                gregorianDay.getUTCFullYear(),
+
+            month:
+                gregorianDay.getUTCMonth() + 1,
+
+            day:
+                gregorianDay.getUTCDate()
         };
     }
 
