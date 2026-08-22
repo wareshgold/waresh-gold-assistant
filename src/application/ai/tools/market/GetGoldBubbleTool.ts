@@ -34,7 +34,7 @@ implements AITool {
 
     readonly description =
 
-        "Returns current gold bubble analysis including intrinsic price, bubble amount and percentage.";
+        "Returns the current gold bubble amount and bubble percentage. bubbleAmount is the actual bubble amount in Iranian toman; do not confuse it with intrinsicPrice or marketPrice.";
 
 
 
@@ -84,7 +84,12 @@ implements AITool {
                 await this.useCase.execute();
 
 
+            const data =
 
+                result.data as {
+                    bubbleAmount?: unknown;
+                    bubblePercentage?: unknown;
+                } | undefined;
 
 
             return {
@@ -95,9 +100,15 @@ implements AITool {
                     true,
 
 
-                data:
+                data: {
 
-                    result.data
+                    bubbleAmount:
+                        data?.bubbleAmount,
+
+                    bubblePercentage:
+                        data?.bubblePercentage
+
+                }
 
 
             };
