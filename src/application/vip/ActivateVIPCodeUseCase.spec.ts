@@ -21,6 +21,10 @@ import {
 } from "../../infrastructure/vip/MemoryUserVIPAccessRepository";
 
 import {
+    MemoryVIPActivationRepository
+} from "../../infrastructure/vip/MemoryVIPActivationRepository";
+
+import {
     VIPCode
 } from "../../domain/vip/entities/VIPCode";
 
@@ -32,6 +36,10 @@ describe("ActivateVIPCodeUseCase", () => {
     it("should activate a valid VIP code", async () => {
         const codes = new MemoryVIPCodeRepository();
         const access = new MemoryUserVIPAccessRepository();
+        const activation = new MemoryVIPActivationRepository(
+            codes,
+            access
+        );
 
         codes.seed(
             VIPCode.create({
@@ -47,7 +55,7 @@ describe("ActivateVIPCodeUseCase", () => {
 
         const useCase =
             new ActivateVIPCodeUseCase(
-                new VIPAccessService(codes, access)
+                new VIPAccessService(codes, access, activation)
             );
 
         const result =
@@ -60,12 +68,16 @@ describe("ActivateVIPCodeUseCase", () => {
     });
 
     it("should reject an empty user id or code", async () => {
+        const codes = new MemoryVIPCodeRepository();
+        const access = new MemoryUserVIPAccessRepository();
+        const activation = new MemoryVIPActivationRepository(
+            codes,
+            access
+        );
+
         const useCase =
             new ActivateVIPCodeUseCase(
-                new VIPAccessService(
-                    new MemoryVIPCodeRepository(),
-                    new MemoryUserVIPAccessRepository()
-                )
+                new VIPAccessService(codes, access, activation)
             );
 
         const emptyUser =
