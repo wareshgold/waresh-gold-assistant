@@ -19,6 +19,11 @@ import {
     SP2LConfiguration
 } from "../../../domain/sp2l/value-objects/SP2LConfiguration";
 
+export interface SP2LEvaluationResult {
+    signal: SP2LSignal;
+    stored: boolean;
+}
+
 export class SP2LStrategyService {
 
     constructor(
@@ -30,6 +35,13 @@ export class SP2LStrategyService {
     ) {}
 
     async evaluateAndStore(): Promise<SP2LSignal> {
+        const result =
+            await this.evaluateAndStoreWithResult();
+
+        return result.signal;
+    }
+
+    async evaluateAndStoreWithResult(): Promise<SP2LEvaluationResult> {
         const marketData =
             await this.marketDataProvider.getMarketData(
                 this.config.symbol,
@@ -42,11 +54,13 @@ export class SP2LStrategyService {
                 this.config
             );
 
-        await this.signalRepository.save(
-            signal
-        );
+        const stored =
+            await this.signalRepository.save(signal);
 
-        return signal;
+        return {
+            signal,
+            stored
+        };
     }
 
     async getLatestSignal(): Promise<SP2LSignal | null> {
