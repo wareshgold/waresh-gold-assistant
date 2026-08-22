@@ -6,7 +6,7 @@ export class TelegramOunceMessageProvider {
 
     constructor(
         private readonly channelUrl: string =
-            "https://t.me/s/gheymatOunce",
+            "https://t.me/s/OunceMarkets",
         private readonly timeoutMs: number = 5000
     ) {}
 
