@@ -13,6 +13,9 @@ import {
  */
 export class OuncePriceParser {
 
+    private static readonly MIN_VALID_OUNCE_PRICE =
+        1000;
+
     static parse(
         message: string,
         timestamp: number = Date.now()
@@ -26,7 +29,7 @@ export class OuncePriceParser {
         if (
             price === null ||
             !Number.isFinite(price) ||
-            price <= 0
+            price < this.MIN_VALID_OUNCE_PRICE
         ) {
             throw new Error(
                 "Invalid ounce price message"
