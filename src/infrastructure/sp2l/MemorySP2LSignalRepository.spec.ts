@@ -5,6 +5,10 @@ import {
 } from "../../domain/sp2l/entities/SP2LSignal";
 
 import {
+    createSP2LSignalIdentity
+} from "../../domain/sp2l/value-objects/SP2LSignalIdentity";
+
+import {
     MemorySP2LSignalRepository
 } from "./MemorySP2LSignalRepository";
 
@@ -77,5 +81,40 @@ describe("MemorySP2LSignalRepository", () => {
             );
 
         expect(stored).toBe(true);
+    });
+
+    it("finds a signal by its stable identity", async () => {
+        const repository =
+            new MemorySP2LSignalRepository();
+        const signal = createSignal();
+
+        await repository.save(signal);
+
+        const found =
+            await repository.findByIdentity(
+                createSP2LSignalIdentity(signal)
+            );
+
+        expect(found).toBe(signal);
+    });
+
+    it("does not match a different candle identity", async () => {
+        const repository =
+            new MemorySP2LSignalRepository();
+        const signal = createSignal();
+
+        await repository.save(signal);
+
+        const nextCandle = createSignal({
+            generatedAt:
+                new Date("2026-08-22T06:05:00.000Z")
+        });
+
+        const found =
+            await repository.findByIdentity(
+                createSP2LSignalIdentity(nextCandle)
+            );
+
+        expect(found).toBeNull();
     });
 });

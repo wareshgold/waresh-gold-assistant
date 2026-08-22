@@ -6,6 +6,10 @@ import {
     SP2LSignalRepository
 } from "../../domain/sp2l/repositories/SP2LSignalRepository";
 
+import {
+    SP2LSignalIdentity
+} from "../../domain/sp2l/value-objects/SP2LSignalIdentity";
+
 export class MemorySP2LSignalRepository
     implements SP2LSignalRepository {
 
@@ -32,6 +36,25 @@ export class MemorySP2LSignalRepository
         );
 
         return true;
+    }
+
+    async findByIdentity(
+        identity: SP2LSignalIdentity
+    ): Promise<SP2LSignal | null> {
+        const signal =
+            this.latestBySymbol.get(identity.symbol);
+
+        if (!signal) return null;
+
+        return (
+            signal.timeframe === identity.timeframe &&
+            signal.signalType === identity.signalType &&
+            signal.entryPrice === identity.entryPrice &&
+            signal.strategyVersion === identity.strategyVersion &&
+            signal.generatedAt.getTime() === identity.generatedAt
+        )
+            ? signal
+            : null;
     }
 
     async getLatest(
