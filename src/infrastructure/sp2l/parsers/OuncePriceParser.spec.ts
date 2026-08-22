@@ -46,6 +46,15 @@ describe("OuncePriceParser", () => {
         );
     });
 
+    it("does not parse the Jalali date as the OunceMarkets price", () => {
+        const tick =
+            OuncePriceParser.tryParse(
+                "1405/05/29 16:27:04"
+            );
+
+        expect(tick).toBeNull();
+    });
+
     it("parses OunceMarkets down tick", () => {
         const tick =
             OuncePriceParser.parse(
