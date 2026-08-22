@@ -36,10 +36,13 @@ export class EvaluateAndPublishSP2LSignalUseCase {
     ) {}
 
     async execute(): Promise<EvaluateAndPublishResult> {
-        const signal =
-            await this.strategyService.evaluateAndStore();
+        const evaluation =
+            await this.strategyService
+                .evaluateAndStoreWithResult();
 
-        if (!signal.isActionable()) {
+        const signal = evaluation.signal;
+
+        if (!signal.isActionable() || !evaluation.stored) {
             return {
                 signal,
                 notifiedUserCount: 0,
