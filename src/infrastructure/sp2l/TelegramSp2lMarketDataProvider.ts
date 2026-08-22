@@ -14,15 +14,10 @@ import {
     OunceCandleAggregator
 } from "../../domain/sp2l/services/OunceCandleAggregator";
 
-import {
-    TelegramOunceMessageProvider
-} from "./TelegramOunceMessageProvider";
-
 export class TelegramSp2lMarketDataProvider
     implements Sp2lMarketDataProvider {
 
     constructor(
-        private readonly messageProvider: TelegramOunceMessageProvider,
         private readonly tickRepository: OunceTickRepository,
         private readonly candleAggregator: OunceCandleAggregator =
             new OunceCandleAggregator(5)
@@ -32,20 +27,6 @@ export class TelegramSp2lMarketDataProvider
         symbol: string,
         timeframe: string
     ): Promise<SP2LMarketData> {
-        try {
-            const tick =
-                await this.messageProvider.getLatestTick();
-
-            await this.tickRepository.save(
-                tick
-            );
-        } catch (error) {
-            console.error(
-                "OUNCE_TICK_FETCH_FAILED",
-                error
-            );
-        }
-
         const hoursBack = 6;
         const since =
             Date.now() -
