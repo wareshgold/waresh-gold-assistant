@@ -33,6 +33,10 @@ import { D1GoldPriceAlertRepository } from "../infrastructure/gold-alert/D1GoldP
 import { GoldPriceAlertService } from "../application/gold-alert/GoldPriceAlertService";
 import { GoldPriceAlertSchedulerJob } from "../application/jobs/GoldPriceAlertSchedulerJob";
 import { TelegramGoldPriceAlertNotifier } from "../infrastructure/gold-alert/TelegramGoldPriceAlertNotifier";
+import { D1MarketReportPreferenceRepository } from "../infrastructure/market-report/D1MarketReportPreferenceRepository";
+import { MarketReportService } from "../application/market-report/MarketReportService";
+import { MarketReportSchedulerJob } from "../application/jobs/MarketReportSchedulerJob";
+import { TelegramMarketReportNotifier } from "../infrastructure/market-report/TelegramMarketReportNotifier";
 
 export function createContainer(env: AppEnv) {
     const storage = createStorageModule(env);
@@ -131,6 +135,10 @@ export function createContainer(env: AppEnv) {
         new D1GoldPriceAlertRepository(env.waresh_gold_db)
     );
 
+    const marketReportService = new MarketReportService(
+        new D1MarketReportPreferenceRepository(env.waresh_gold_db)
+    );
+
     const telegram = createTelegramModule(env, {
         getGoldPriceUseCase,
         getGoldBubbleUseCase,
@@ -149,7 +157,8 @@ export function createContainer(env: AppEnv) {
         vipAccessService: vip.vipAccessService,
         strategyService: sp2l.strategyService,
         ingestOunceTickFromTextUseCase,
-        goldPriceAlertService
+        goldPriceAlertService,
+        marketReportService
     });
 
     const evaluateAndPublishSP2LSignalUseCase = new EvaluateAndPublishSP2LSignalUseCase(
@@ -169,6 +178,14 @@ export function createContainer(env: AppEnv) {
         goldPriceAlertService,
         market.cachedMarketProvider,
         new TelegramGoldPriceAlertNotifier(
+            telegram.telegramBotClient
+        )
+    );
+
+    const marketReportSchedulerJob = new MarketReportSchedulerJob(
+        marketReportService,
+        market.cachedMarketProvider,
+        new TelegramMarketReportNotifier(
             telegram.telegramBotClient
         )
     );
@@ -201,6 +218,8 @@ export function createContainer(env: AppEnv) {
         evaluateAndPublishSP2LSignalUseCase,
         sp2lSignalSchedulerJob,
         goldPriceAlertService,
-        goldPriceAlertSchedulerJob
+        goldPriceAlertSchedulerJob,
+        marketReportService,
+        marketReportSchedulerJob
     };
 }
