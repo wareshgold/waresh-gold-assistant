@@ -1,6 +1,9 @@
 name: internal strategy refactor
 
 on:
+  pull_request:
+    branches:
+      - main
   push:
     branches:
       - fix/vip-sp2l-production-readiness
@@ -10,7 +13,7 @@ permissions:
 
 jobs:
   refactor:
-    if: ${{ !contains(github.event.head_commit.message, 'internal strategy refactor') }}
+    if: ${{ github.event_name == 'pull_request' || !contains(github.event.head_commit.message, 'internal strategy refactor') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -64,7 +67,6 @@ jobs:
           text = text.replace("/strategy-a", "/strategy")
           text = text.replace('"strategy-a"', '"strategy"')
           text = text.replace("'strategy-a'", "'strategy'")
-          text = text.replace("/strategy-a", "/strategy")
           path.write_text(text, encoding="utf-8")
           PY
           done
