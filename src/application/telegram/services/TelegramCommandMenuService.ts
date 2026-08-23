@@ -99,7 +99,7 @@ export class TelegramCommandMenuService {
 
                     command:
 
-                        "strategy-a",
+                        "strategy_a",
 
 
                     description:
