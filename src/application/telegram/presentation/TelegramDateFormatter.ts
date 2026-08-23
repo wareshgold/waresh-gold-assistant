@@ -2,58 +2,38 @@ export class TelegramDateFormatter {
 
 
     format(
-
-        date:
-            Date
-
+        date: Date
     ): string {
-
-
         return new Intl.DateTimeFormat(
-
-            "fa-IR",
-
+            "fa-IR-u-ca-persian",
             {
-
-                timeZone:
-                    "Asia/Tehran",
-
-
-                year:
-                    "numeric",
-
-
-                month:
-                    "2-digit",
-
-
-                day:
-                    "2-digit",
-
-
-                hour:
-                    "2-digit",
-
-
-                minute:
-                    "2-digit",
-
-
-                second:
-                    "2-digit",
-
-
-                hour12:
-                    false
-
+                timeZone: "Asia/Tehran",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false
             }
-
-        )
-
-        .format(date);
-
-
+        ).format(date);
     }
 
 
+    formatCompact(
+        date: Date
+    ): string {
+        return new Intl.DateTimeFormat(
+            "fa-IR-u-ca-persian",
+            {
+                timeZone: "Asia/Tehran",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false
+            }
+        ).format(date).replace(",", " •");
+    }
 }
