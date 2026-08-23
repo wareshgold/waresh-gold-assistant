@@ -12,6 +12,22 @@ export const TelegramMainMenu: TelegramMenuItem[] = [
         },
     },
     {
+        id: "menu.gold-price",
+        label: "💰 قیمت طلا",
+        action: {
+            type: TelegramMenuActionType.CALLBACK,
+            value: NavigationAction.GOLD_PRICE,
+        },
+    },
+    {
+        id: "menu.bubble",
+        label: "🫧 حباب طلا",
+        action: {
+            type: TelegramMenuActionType.CALLBACK,
+            value: NavigationAction.GOLD_BUBBLE,
+        },
+    },
+    {
         id: "menu.calculate",
         label: "🧮 محاسبه",
         action: {
