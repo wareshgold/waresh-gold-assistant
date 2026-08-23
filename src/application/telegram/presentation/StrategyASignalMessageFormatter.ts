@@ -1,43 +1,41 @@
-import {
-    StrategyASignal
-} from "../../../domain/strategy-a/entities/StrategyASignal";
+import { StrategyASignal } from "../../../domain/strategy-a/entities/StrategyASignal";
 
 export class StrategyASignalMessageFormatter {
+    format(signal: StrategyASignal): string {
+        const direction = this.direction(signal.signalType);
 
-    format(
-        signal: StrategyASignal
-    ): string {
-        const directionIcon =
-            signal.signalType === "BUY"
-                ? "🟢"
-                : signal.signalType === "SELL"
-                    ? "🔴"
-                    : "⚪";
-
-        return `
-${directionIcon} StrategyA SIGNAL
-
-Symbol: ${signal.symbol}
-Timeframe: ${signal.timeframe}
-Direction: ${signal.signalType}
-Entry: ${this.formatNumber(signal.entryPrice)}
-SL: ${this.formatNumber(signal.stopLoss)}
-TP: ${this.formatNumber(signal.takeProfit)}
-Risk: 1:${this.formatNumber(signal.riskReward)}
-Confidence: ${Math.round(signal.confidence * 100)}%
-Strategy: ${signal.strategyVersion}
-Reason: ${signal.reason}
-`.trim();
+        return [
+            `${direction.icon} <b>سیگنال Strategy A</b>`,
+            "",
+            `بازار: ${signal.symbol}  •  تایم‌فریم: ${signal.timeframe}`,
+            `جهت: <b>${direction.label}</b>`,
+            "",
+            `ورود   <code>${this.formatNumber(signal.entryPrice)}</code>`,
+            `حد ضرر <code>${this.formatNumber(signal.stopLoss)}</code>`,
+            `هدف    <code>${this.formatNumber(signal.takeProfit)}</code>`,
+            "",
+            `ریسک به بازده: 1:${this.formatNumber(signal.riskReward)}`,
+            `اطمینان: ${Math.round(signal.confidence * 100)}٪`,
+            `نسخه: ${signal.strategyVersion}`,
+            "",
+            `💡 ${signal.reason}`
+        ].join("\n");
     }
 
-    private formatNumber(
-        value: number
-    ): string {
-        return new Intl.NumberFormat(
-            "en-US",
-            {
-                maximumFractionDigits: 2
-            }
-        ).format(value);
+    private direction(signalType: string): { icon: string; label: string } {
+        switch (signalType) {
+            case "BUY":
+                return { icon: "🟢", label: "خرید" };
+            case "SELL":
+                return { icon: "🔴", label: "فروش" };
+            default:
+                return { icon: "⚪", label: "خنثی" };
+        }
+    }
+
+    private formatNumber(value: number): string {
+        return new Intl.NumberFormat("en-US", {
+            maximumFractionDigits: 2,
+        }).format(value);
     }
 }
