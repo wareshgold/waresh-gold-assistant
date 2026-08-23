@@ -1,4 +1,4 @@
-import {
+﻿import {
     StrategyASignal
 } from "../../domain/strategy-a/entities/StrategyASignal";
 
@@ -24,7 +24,7 @@ export class D1StrategyASignalRepository
             await this.db
                 .prepare(
 `
-INSERT OR IGNORE INTO "strategy-a_signals"
+INSERT OR IGNORE INTO strategy_a_signals
 (
     symbol,
     timeframe,
@@ -80,7 +80,7 @@ SELECT
     reason,
     strategy_version,
     generated_at
-FROM "strategy-a_signals"
+FROM strategy_a_signals
 WHERE symbol = ?
   AND timeframe = ?
   AND signal_type = ?
@@ -113,7 +113,9 @@ LIMIT 1
                 }>();
 
         const row = result.results?.[0];
-        if (!row) return null;
+        if (!row) {
+            return null;
+        }
 
         return StrategyASignal.create({
             symbol: row.symbol,
@@ -149,7 +151,7 @@ SELECT
     reason,
     strategy_version,
     generated_at
-FROM "strategy-a_signals"
+FROM strategy_a_signals
 WHERE symbol = ?
 ORDER BY generated_at DESC, id DESC
 LIMIT 1
