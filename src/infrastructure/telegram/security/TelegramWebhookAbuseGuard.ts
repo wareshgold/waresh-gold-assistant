@@ -1,5 +1,3 @@
-import { AppEnv } from "../../../shared/config/env";
-
 export type TelegramWebhookAbuseDecision =
     | {
         allowed: true;
@@ -66,8 +64,7 @@ export class TelegramWebhookAbuseGuard {
 
         if (typeof update.update_id === "number") {
             const duplicate = await this.isDuplicateUpdate(
-                update.update_id,
-                now
+                update.update_id
             );
 
             if (duplicate) {
@@ -104,27 +101,11 @@ export class TelegramWebhookAbuseGuard {
         );
     }
 
-    private async isDuplicateUpdate(
-        updateId: number,
-        now: number
-    ): Promise<boolean> {
+    async markProcessed(
+        updateId: number
+    ): Promise<void> {
+        const now = Math.floor(Date.now() / 1000);
         const checkpointKey = "telegram:webhook";
-
-        const row = await this.db
-            .prepare(
-                `SELECT last_update_id
-                 FROM telegram_webhook_update_checkpoints
-                 WHERE checkpoint_key = ?`
-            )
-            .bind(checkpointKey)
-            .first<{ last_update_id: number }>();
-
-        if (
-            row &&
-            updateId <= Number(row.last_update_id)
-        ) {
-            return true;
-        }
 
         await this.db
             .prepare(
@@ -143,8 +124,24 @@ export class TelegramWebhookAbuseGuard {
                 now
             )
             .run();
+    }
 
-        return false;
+    private async isDuplicateUpdate(
+        updateId: number
+    ): Promise<boolean> {
+        const row = await this.db
+            .prepare(
+                `SELECT last_update_id
+                 FROM telegram_webhook_update_checkpoints
+                 WHERE checkpoint_key = ?`
+            )
+            .bind("telegram:webhook")
+            .first<{ last_update_id: number }>();
+
+        return Boolean(
+            row &&
+            updateId <= Number(row.last_update_id)
+        );
     }
 
     private async consumeRateLimit(
