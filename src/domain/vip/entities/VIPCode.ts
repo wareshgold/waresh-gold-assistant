@@ -44,7 +44,11 @@ export class VIPCode {
             throw new Error("VIP code id is required");
         }
 
-        if (props.redeemedBy !== undefined && props.redeemedBy !== null && !props.redeemedBy.trim()) {
+        if (
+            props.redeemedBy !== undefined &&
+            props.redeemedBy !== null &&
+            !props.redeemedBy.trim()
+        ) {
             throw new Error("redeemedBy cannot be empty");
         }
 
@@ -54,9 +58,15 @@ export class VIPCode {
     private static normalizeCode(value: string): string {
         const normalized = value.trim();
 
-        return normalized.replace(
+        const strategyNormalized = normalized.replace(
             /^strategy[-_]?a(?=-|_|$)/i,
             "StrategyA"
+        );
+
+        return strategyNormalized.replace(
+            /(-|_)([^-_]+)$/,
+            (_, separator, suffix) =>
+                `${separator}${suffix.toUpperCase()}`
         );
     }
 
