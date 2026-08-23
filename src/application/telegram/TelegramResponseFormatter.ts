@@ -87,7 +87,7 @@ export class TelegramResponseFormatter {
                     );
 
 
-                    return `__HTML_BLOCK_${index}__`;
+                    return `__HTML_BLOCK_${this.toAlphaToken(index)}__`;
 
                 }
 
@@ -149,13 +149,104 @@ export class TelegramResponseFormatter {
 
         return formattedText.replace(
 
-            /__HTML_BLOCK_(\d+)__/g,
+            /__HTML_BLOCK_([A-Z]+)__/g,
 
-            (_, index) =>
+            (_, token) =>
 
-                protectedBlocks[Number(index)]
+                protectedBlocks[
+
+                    this.fromAlphaToken(token)
+
+                ]
 
         );
+
+    }
+
+
+
+
+
+
+
+    private toAlphaToken(
+
+        value:
+            number
+
+    ): string {
+
+        let current =
+
+            value;
+
+        let token =
+
+            "";
+
+
+        do {
+
+            token =
+
+                String.fromCharCode(
+
+                    65 + (current % 26)
+
+                ) + token;
+
+
+            current =
+
+                Math.floor(current / 26) - 1;
+
+        } while (
+
+            current >= 0
+
+        );
+
+
+        return token;
+
+    }
+
+
+
+
+
+
+
+    private fromAlphaToken(
+
+        token:
+            string
+
+    ): number {
+
+        let value =
+
+            0;
+
+
+        for (
+
+            const character of token
+
+        ) {
+
+            value =
+
+                value * 26 +
+
+                character.charCodeAt(0) -
+
+                64;
+
+        }
+
+
+        return value - 1;
 
     }
 
