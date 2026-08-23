@@ -1,214 +1,44 @@
-import {
-    MarketAnalytics
-}
-from "../../../domain/market/analytics/entities/MarketAnalytics";
-
-
-import {
-    MarketScore
-}
-from "../../../domain/market/analytics/value-objects/MarketScore";
-
-
-import {
-    TelegramMessageBuilder
-}
-from "./TelegramMessageBuilder";
-
-
-import {
-    TelegramNumberFormatter
-}
-from "./TelegramNumberFormatter";
-
-
-
+import { MarketAnalytics } from "../../../domain/market/analytics/entities/MarketAnalytics";
+import { MarketScore } from "../../../domain/market/analytics/value-objects/MarketScore";
+import { TelegramMessageBuilder } from "./TelegramMessageBuilder";
+import { TelegramNumberFormatter } from "./TelegramNumberFormatter";
 
 export class MarketAnalyticsMessageFormatter {
-
-
     constructor(
-
-        private readonly builder:
-            TelegramMessageBuilder,
-
-
-        private readonly numberFormatter:
-            TelegramNumberFormatter
-
+        private readonly builder: TelegramMessageBuilder,
+        private readonly numberFormatter: TelegramNumberFormatter
     ) {}
 
-
-
-
-
-    format(
-
-        analytics:
-            MarketAnalytics,
-
-        score:
-            MarketScore
-
-    ): string {
-
-
-        const change =
-            analytics.getChange();
-
-
-        const trend =
-            analytics.getTrend();
-
-
-        const range =
-            analytics.getPriceRange();
-
-
-
+    format(analytics: MarketAnalytics, score: MarketScore): string {
+        const change = analytics.getChange();
+        const trend = analytics.getTrend();
+        const range = analytics.getPriceRange();
 
         return this.builder.build([
-
-
-
-            "📊 تحلیل بازار طلا",
-
-
-
+            "📊 <b>تحلیل کوتاه بازار</b>",
             "",
-
-
-
-            `امتیاز بازار: ${score.formatted}`,
-
-
-
+            `امتیاز بازار     ${score.formatted}`,
+            `روند             ${trend.emoji} ${this.translateTrend(trend.type)}`,
+            `تغییر            ${change.formatted}`,
+            `نوسان            ${this.numberFormatter.percent(analytics.getVolatility())}`,
             "",
-
-
-
-            `📈 روند: ${trend.emoji} ${this.translateTrend(trend.type)}`,
-
-
-
-            `📊 تغییر: ${change.formatted}`,
-
-
-
-            `⚡ نوسان: ${this.formatPercent(analytics.getVolatility())}`,
-
-
-
-            "",
-
-
-
-            `💰 قیمت فعلی: ${this.numberFormatter.money(
-                analytics.getCurrentPrice()
-            )}`,
-
-
-
-            `📉 بازه:
-
-حداقل: ${this.numberFormatter.money(range.min)}
-
-حداکثر: ${this.numberFormatter.money(range.max)}`
-
-
-
+            `قیمت فعلی        ${this.numberFormatter.money(analytics.getCurrentPrice())}`,
+            `بازه بازار       ${this.numberFormatter.money(range.min)} تا ${this.numberFormatter.money(range.max)}`
         ]);
-
     }
 
-
-
-
-
-
-
-    private translateTrend(
-
-        trend:
-            string
-
-    ): string {
-
-
+    private translateTrend(trend: string): string {
         switch (trend) {
-
-
             case "UP":
-
                 return "صعودی";
-
-
             case "DOWN":
-
                 return "نزولی";
-
-
             case "STABLE":
-
                 return "متعادل";
-
-
             case "VOLATILE":
-
                 return "پرنوسان";
-
-
             default:
-
                 return "نامشخص";
-
         }
-
     }
-
-
-
-
-
-
-
-    private formatPercent(
-
-        value:
-            number
-
-    ): string {
-
-
-        return (
-
-            new Intl.NumberFormat(
-
-                "fa-IR",
-
-                {
-
-                    minimumFractionDigits:
-                        2,
-
-
-                    maximumFractionDigits:
-                        2
-
-                }
-
-            )
-
-            .format(value)
-
-            +
-
-            "٪"
-
-        );
-
-
-    }
-
-
 }
