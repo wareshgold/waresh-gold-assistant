@@ -1,341 +1,83 @@
 # 🟡 Waresh Gold Assistant
 
-> AI-powered Gold Business Platform for the Iranian gold & jewelry market.
+> AI-powered assistant for the Iranian gold and jewelry market.
 
-**Author:** Ali Mirzaei  
-**Project:** Waresh Gold  
-**Copyright:** © 2026 Waresh Gold / Ali Mirzaei
+Waresh Gold Assistant is a digital platform designed to help gold businesses and users access smarter tools for gold calculation, market information, and business workflows.
 
-Waresh Gold Assistant is the foundation of a larger digital infrastructure for gold businesses in Iran. Telegram is the first interface, not the product boundary.
-
-The platform is being designed so the same trusted business logic can power future **Website, Mobile Apps, REST APIs, Admin Dashboard, CRM, customer support, AI assistants, and automation services**.
+Telegram is the first user interface, with a vision to expand into a complete digital platform.
 
 ---
 
-## 📜 License & Usage
+## 🎯 What is Waresh Gold?
 
-This repository is **proprietary software** owned by **Waresh Gold / Ali Mirzaei**.
+Waresh Gold focuses on building practical tools for the gold industry:
 
-Unless explicit written permission is granted by the copyright holder, the source code may **not** be copied, modified, distributed, sublicensed, sold, or used as the basis of another commercial product.
-
-Viewing the source code on GitHub does not grant permission to reuse it.
-
-See the [`LICENSE`](./LICENSE) file for the full terms.
-
----
-
-## 🎯 Vision
-
-Waresh Gold aims to provide a reliable digital platform for the daily operations of gold businesses:
-
-- Live gold market prices
-- Gold and invoice calculations
-- Reverse gold calculations
-- Market analytics
+- Live gold market information
+- Gold price calculations
+- Invoice and purchase calculations
+- Reverse calculations
+- Market insights
 - Gold bubble analysis
-- Historical market data
 - Price alerts
-- Scheduled market reports
-- Product and order workflows
-- Customer management
-- VIP services
-- AI-powered customer assistance
-- Strategy and signal services such as SP2L
-
-The long-term goal is to build a reusable **Gold Business Platform Core**, rather than a Telegram-only bot.
-
----
-
-## 🏗️ Architecture
-
-The project follows Clean Architecture and Domain-Driven Design principles.
-
-```text
-Interfaces / Presentation
-Telegram · Web · Mobile · REST API · CRM
-                ↓
-Application Layer
-Use Cases · Workflows · AI Orchestration · Jobs · Tool Execution
-                ↓
-Domain Layer
-Gold Rules · Calculations · Entities · Value Objects · Strategy Logic
-                ↓
-Infrastructure Layer
-Cloudflare · D1 · KV · External APIs · AI · Market Data Providers
-```
-
-### Core architectural rule
-
-The Gold Domain Engine must remain independent from Telegram, HTTP, databases, Cloudflare, AI providers, and external market APIs. External systems are adapters around the core platform.
-
----
-
-## 🤖 Waresh AI
-
-Waresh AI is an orchestration layer on top of the Gold Platform. It understands intent, selects trusted tools, executes business workflows, and explains verified results.
-
-```text
-User Request
-    ↓
-AI Service / Local Router
-    ↓
-Tool Selection
-    ↓
-Tool Execution Engine
-    ↓
-Gold Domain Services
-    ↓
-Verified Result
-    ↓
-AI Response
-```
-
-AI does **not** own financial logic and must never invent market values or replace trusted domain calculations.
-
-Current AI capabilities include local deterministic routing for:
-
-- Current 18K gold price
-- Current mithqal price
-- Gold calculations
-- Reverse labor calculation
-- Gold bubble analysis
-- Tool validation and execution
-
----
-
-## 🟡 Gold Engine
-
-The Gold Engine contains trusted domain-level financial calculations and rules.
-
-Implemented concepts include Money, Gold Price, Gold Weight, Labor, Profit, Tax, Discount, Market Price, and Gold Bubble.
-
-Gold bubble analysis separates the market price from the calculated intrinsic reference value and exposes the actual bubble amount and percentage.
-
----
-
-## 📊 Market Features
-
-- Current 18K gold price
-- Mithqal price
-- Ounce price
-- Market analytics
-- Price history
-- Gold bubble analysis
-- Scheduled market reports
-- Periodic reporting preferences
-
----
-
-## 🧮 Gold Calculations
-
-Supported workflows include:
-
-- Gold price calculation
-- Labor / wage calculation
-- Profit and tax handling
-- Discount handling
-- Reverse labor calculation
-- Calculation history
-
-Business calculations live in domain/application services rather than Telegram handlers or AI prompts.
-
----
-
-## 🔔 Alerts & Reports
-
-The platform supports:
-
-- Configurable price alerts
 - Periodic market reports
-- Report scheduling preferences
-- Market summary generation
+- Smart AI assistance
+- Premium business services
+
+The goal is to make daily gold operations faster, easier, and more reliable.
 
 ---
 
-## ⭐ VIP & SP2L
+## 🤖 AI Assistant
 
-VIP capabilities are being developed as a separate access-controlled part of the platform.
+Waresh AI helps users interact naturally with gold-related services.
 
-The roadmap includes VIP access management, VIP-only tools, the SP2L strategy signal engine, signal evaluation, signal publishing, and AI access to strategy information.
+It can assist with:
 
-SP2L is intended to live in the **domain layer** and remain independent from Telegram and AI. The current branch is preparing the VIP/SP2L production architecture; SP2L should not be treated as production-complete until its real market-data evaluation and publishing workflow are fully verified.
+- Understanding user requests
+- Providing gold-related information
+- Helping with calculations
+- Explaining market concepts
+- Guiding users through platform features
 
----
-
-## 📱 Telegram Commands
-
-```text
-/start          Start Waresh Gold
-/help           Complete command guide
-/price          Current gold price
-/bubble         Gold bubble analysis
-/analytics      Market analytics
-/history        Price history
-/calc            Gold price calculation
-/reverse-labor  Reverse labor calculation
-/calc-history   Calculation history
-/alerts         Price alerts
-/reports        Periodic market reports
-/ai             Waresh AI conversation
-/vip            VIP access
-/sp2l           Latest SP2L signal (VIP)
-/exit            Exit current conversation/calculation
-```
-
-The bot supports conversational AI sessions where users can enter `/ai` once and continue asking questions without repeating the command.
+Financial calculations and market values are handled through trusted platform services to maintain accuracy.
 
 ---
 
-## ☁️ Deployment
+## ⭐ Premium Services
 
-The first deployment target is **Cloudflare Workers**.
+Waresh Gold is being developed with advanced services for professional users and gold businesses.
 
-Infrastructure includes:
+Future premium capabilities include:
 
-- Cloudflare Workers
-- Cloudflare D1
-- Cloudflare KV
-- Wrangler
-- Cron Triggers
-- Hono
-- Drizzle ORM
-- Zod
-
-The architecture remains portable so the core business logic can later run on dedicated backend infrastructure without rewriting the domain layer.
+- Advanced market tools
+- Professional reports
+- Specialized strategy services
+- Business automation features
 
 ---
 
-## 🧪 Development & Quality
+## 📱 Access
 
-The project uses TypeScript and Vitest.
+The platform is initially available through Telegram and is designed to support future products such as:
 
-```bash
-pnpm test
-pnpm exec tsc --noEmit
-pnpm exec wrangler deploy
-```
-
-Development standards include Clean Architecture, SOLID, domain-driven design, dependency inversion, testable business logic, deterministic financial calculations, and strong separation of concerns.
+- Web applications
+- Mobile applications
+- Business dashboards
+- Professional services
 
 ---
 
-## 📁 Architectural Boundaries
+## 🚀 Project Status
 
-```text
-src/
-├── domain/
-├── application/
-├── infrastructure/
-└── interfaces/
-```
+Waresh Gold Assistant is under active development.
 
-The dependency direction remains:
-
-```text
-Interfaces → Application → Domain
-Infrastructure → Application / Domain contracts
-```
-
-The domain must not depend on presentation or infrastructure technologies.
+The platform foundation, gold calculation services, market tools, AI assistance, and business features are being developed step by step.
 
 ---
 
-## 🗺️ Roadmap
-
-### Foundation
-
-- [x] Gold domain models and value objects
-- [x] Market price providers
-- [x] Gold calculation workflows
-- [x] Telegram command architecture
-- [x] Cloudflare Worker deployment
-- [x] Automated test foundation
-
-### AI Foundation
-
-- [x] AI service abstraction
-- [x] Local deterministic tool routing
-- [x] Tool registry
-- [x] Tool execution engine
-- [x] Tool input validation
-- [x] Current gold price tool
-- [x] Mithqal price tool
-- [x] Gold calculation tool
-- [x] Gold bubble routing
-- [ ] Complete production AI conversation/session architecture
-
-### Business Automation
-
-- [x] Price alerts foundation
-- [x] Periodic market reports
-- [ ] Production-grade scheduling and monitoring
-- [ ] Advanced customer workflows
-- [ ] CRM integration
-
-### VIP / Strategy
-
-- [ ] Production-ready VIP access control
-- [ ] Complete SP2L domain engine
-- [ ] Real market-data evaluation pipeline
-- [ ] Signal publishing workflow
-- [ ] VIP AI strategy assistant
-
-### Platform Expansion
-
-- [ ] REST API
-- [ ] Web application
-- [ ] Mobile applications
-- [ ] Admin dashboard
-- [ ] Customer support platform
-- [ ] Business automation services
-
----
-
-## 🔐 Security & Financial Integrity
-
-1. AI must not invent market values.
-2. AI must not replace domain calculations.
-3. Market values must come from trusted market tools/providers.
-4. Tool results are the source of truth for AI responses.
-5. Business rules must remain outside Telegram handlers.
-6. External providers must be replaceable through abstractions.
-
----
-
-## 📌 Current Development Checkpoint
-
-```text
-Branch: fix/vip-sp2l-production-readiness
-Commit: ae2f3f4
-Tag: checkpoint/ai-sp2l-vip-market-bubble-ready-2026-08-22
-```
-
-Verified at this checkpoint:
-
-- 52 test files passing
-- 151 tests passing
-- TypeScript validation passing
-- Clean working tree
-- AI market-price routing
-- AI mithqal routing
-- AI gold-bubble routing
-- Professional Telegram help and market-report UX
-
----
-
-## 🚀 Project Direction
-
-Waresh Gold Assistant is intentionally being built as a **platform first and Telegram bot second**.
-
-> **Build the Gold Business Core once. Expose it everywhere.**
-
-Telegram is only the first door into the platform.
-
----
-
-## 👤 Author
+## 👤 Creator
 
 **Ali Mirzaei**  
-Founder / Developer — Waresh Gold
+Founder — Waresh Gold
 
 © 2026 Waresh Gold. All rights reserved.
