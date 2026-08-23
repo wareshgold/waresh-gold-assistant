@@ -13,6 +13,7 @@ import { ReverseGoldConversationFlow } from "../../application/telegram/flows/Re
 import { AIConversationFlow } from "../../application/telegram/flows/AIConversationFlow";
 import { TelegramWebhookController } from "../../interfaces/telegram/TelegramWebhookController";
 import { TelegramWebhookSecurityGuard } from "../../interfaces/telegram/TelegramWebhookSecurityGuard";
+import { TelegramWebhookAbuseGuard } from "../../infrastructure/telegram/security/TelegramWebhookAbuseGuard";
 import { TelegramKeyboardMapper } from "../../infrastructure/telegram/TelegramKeyboardMapper";
 import { TelegramCallbackRegistry } from "../../application/telegram/callbacks/TelegramCallbackRegistry";
 import { TelegramCallbackProcessor } from "../../application/telegram/services/TelegramCallbackProcessor";
@@ -176,7 +177,8 @@ export function createTelegramModule(env: AppEnv, dependencies: Dependencies) {
 
     const webhookController = new TelegramWebhookController(
         processor,
-        new TelegramWebhookSecurityGuard(env.TELEGRAM_WEBHOOK_SECRET)
+        new TelegramWebhookSecurityGuard(env.TELEGRAM_WEBHOOK_SECRET),
+        new TelegramWebhookAbuseGuard(env.waresh_gold_db)
     );
 
     return {
