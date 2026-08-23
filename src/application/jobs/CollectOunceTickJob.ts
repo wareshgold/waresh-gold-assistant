@@ -1,11 +1,11 @@
-import {
-    CollectOunceTickUseCase
-} from "../sp2l/CollectOunceTickUseCase";
+export interface CollectOunceTickExecutable {
+    execute(): Promise<unknown>;
+}
 
 export class CollectOunceTickJob {
 
     constructor(
-        private readonly collectOunceTickUseCase: CollectOunceTickUseCase
+        private readonly collectOunceTickUseCase: CollectOunceTickExecutable
     ) {}
 
     async execute() {
