@@ -2,20 +2,22 @@ import { TelegramCommandContext } from "../TelegramCommandContext";
 import { TelegramCommandHandler } from "../TelegramCommandHandler";
 import { MarketReportService } from "../../../market-report/MarketReportService";
 import { MarketReportInterval, isMarketReportInterval } from "../../../../domain/market-report/value-objects/MarketReportInterval";
+import { TelegramDateTimeFormatter } from "../../presentation/TelegramDateTimeFormatter";
 
 export class MarketReportCommandHandler implements TelegramCommandHandler {
+    private readonly dateTimeFormatter = new TelegramDateTimeFormatter();
+
     constructor(private readonly reportService: MarketReportService) {}
 
     metadata() {
         return {
             command: "/reports",
-            description: "تنظیم و دریافت گزارش دوره‌ای بازار طلا",
+            description: "تنظیم و دریافت گزارش دوره‌ای بازار طلا"
         };
     }
 
     canHandle(command: string): boolean {
         const normalizedCommand = command.trim().toLowerCase();
-
         return normalizedCommand === "/reports" || normalizedCommand === "reports";
     }
 
@@ -23,6 +25,7 @@ export class MarketReportCommandHandler implements TelegramCommandHandler {
         const userId = context.userId ?? "";
         const args = context.arguments;
         const value = Number(args[0]);
+        const now = this.dateTimeFormatter.format();
 
         if (args[0] === "off") {
             await this.reportService.disable(userId);
@@ -30,75 +33,68 @@ export class MarketReportCommandHandler implements TelegramCommandHandler {
             return {
                 type: "text" as const,
                 content: [
-                    "🔕 گزارش دوره‌ای بازار غیرفعال شد.",
+                    "🔕 <b>گزارش دوره‌ای خاموش شد</b>",
                     "",
-                    "از این پس گزارش خودکار برای شما ارسال نمی‌شود.",
-                    "برای فعال‌سازی دوباره، /reports را ارسال کنید.",
-                ].join("\n"),
+                    `🕐 ${now}`,
+                    "",
+                    "ارسال خودکار گزارش بازار متوقف شد."
+                ].join("\n")
             };
         }
 
         if (isMarketReportInterval(value)) {
             await this.reportService.configure(
                 userId,
-                value as MarketReportInterval,
+                value as MarketReportInterval
             );
 
             return {
                 type: "text" as const,
                 content: [
-                    "📊 گزارش دوره‌ای بازار فعال شد.",
+                    "📊 <b>گزارش دوره‌ای فعال شد</b>",
                     "",
-                    `⏱ فاصله ارسال: هر ${value} ساعت`,
+                    `⏱ هر ${value} ساعت`,
+                    `🕐 ${now}`,
                     "",
-                    "در هر گزارش، آخرین وضعیت بازار شامل موارد زیر ارسال می‌شود:",
-                    "• قیمت طلای ۱۸ عیار",
-                    "• قیمت دلار",
-                    "• قیمت اونس جهانی",
-                    "• تغییر بازار و روند آن",
-                    "• مقدار و درصد حباب طلا",
-                ].join("\n"),
+                    "گزارش شامل قیمت طلا، دلار، اونس، تغییر بازار و حباب خواهد بود."
+                ].join("\n")
             };
         }
 
         const current = await this.reportService.get(userId);
         const currentText = current?.enabled
-            ? `فعال — هر ${current.intervalHours} ساعت`
+            ? `فعال • هر ${current.intervalHours} ساعت`
             : "غیرفعال";
 
         return {
             type: "text" as const,
             content: [
-                "📊 تنظیم گزارش دوره‌ای بازار طلا",
-                "━━━━━━━━━━━━━━━━━━",
+                "📊 <b>گزارش دوره‌ای بازار</b>",
                 "",
-                "این قابلیت با فاصله زمانی انتخابی، یک خلاصه تحلیلی از وضعیت بازار را به‌صورت خودکار برای شما ارسال می‌کند.",
+                `وضعیت: <b>${currentText}</b>`,
+                `🕐 ${now}`,
                 "",
                 "محتوای گزارش:",
-                "• قیمت طلای ۱۸ عیار",
-                "• قیمت دلار و اونس جهانی",
+                "• طلای ۱۸ عیار",
+                "• دلار و اونس جهانی",
                 "• تغییر و روند بازار",
-                "• مقدار و درصد حباب طلا",
+                "• مقدار و درصد حباب",
                 "",
-                `وضعیت فعلی: ${currentText}`,
-                "",
-                "فاصله ارسال را انتخاب کنید:",
+                "فاصله ارسال را انتخاب کنید:"
             ].join("\n"),
             replyMarkup: {
                 type: "INLINE",
                 rows: [
                     [
-                        { text: "⏱ هر ۱ ساعت", actionId: "reports:1h" },
-                        { text: "⏱ هر ۶ ساعت", actionId: "reports:6h" },
+                        { text: "۱ ساعت", actionId: "reports:1h" },
+                        { text: "۶ ساعت", actionId: "reports:6h" },
+                        { text: "۱۲ ساعت", actionId: "reports:12h" }
                     ],
                     [
-                        { text: "⏱ هر ۱۲ ساعت", actionId: "reports:12h" },
-                    ],
-                    [
-                        { text: "🔕 غیرفعال کردن", actionId: "reports:off" },
-                    ],
-                ],
-            },
+                        { text: "🔕 خاموش کردن", actionId: "reports:off" }
+                    ]
+                ]
+            }
         };
     }
 }
