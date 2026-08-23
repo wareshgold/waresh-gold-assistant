@@ -42,6 +42,10 @@ import { HealthCheckService }
 from "../application/system/HealthCheckService";
 
 
+import { CalculateGoldPriceUseCase }
+from "../application/gold/CalculateGoldPriceUseCase";
+
+
 
 
 
@@ -66,6 +70,11 @@ interface AppContainer {
 
     healthCheckService:
         HealthCheckService;
+
+
+
+    calculateGoldPriceUseCase:
+        CalculateGoldPriceUseCase;
 
 
 
@@ -463,6 +472,206 @@ export function createApp(
 
 
 
+
+
+
+    app.post(
+
+        "/api/v1/calculate/gold-price",
+
+        async(c)=>{
+
+            const body =
+
+                await c.req.json()
+
+                    .catch(
+
+                        ()=>null
+
+                    ) as Record<
+
+                        string,
+
+                        unknown
+
+                    > | null;
+
+
+            if (!body) {
+
+                return c.json(
+
+                    {
+                        error:
+                            "درخواست نامعتبر است."
+                    },
+
+                    400
+
+                );
+
+            }
+
+
+            const numberField = (
+
+                value:
+
+                    unknown
+
+            ):
+
+                number | null => {
+
+
+                const num =
+
+                    typeof value === "string"
+
+                        ? Number(value)
+
+                        : value;
+
+
+                return (
+
+                    typeof num === "number" &&
+
+                    Number.isFinite(num)
+
+                )
+
+                    ? num
+
+                    : null;
+
+            };
+
+
+            const weight =
+                numberField(body.weight);
+
+            const goldPrice =
+                numberField(body.goldPrice);
+
+            const laborPercent =
+                numberField(body.laborPercent);
+
+            const profitPercent =
+                numberField(body.profitPercent);
+
+            const taxPercent =
+                numberField(body.taxPercent);
+
+
+            if (
+
+                weight === null ||
+                goldPrice === null ||
+                laborPercent === null ||
+                profitPercent === null ||
+                taxPercent === null ||
+                weight <= 0 ||
+                goldPrice <= 0 ||
+                laborPercent < 0 ||
+                profitPercent < 0 ||
+                taxPercent < 0
+
+            ) {
+
+                return c.json(
+
+                    {
+                        error:
+                            "مقادیر ورودی معتبر نیستند."
+                    },
+
+                    400
+
+                );
+
+            }
+
+
+            let discount:
+
+                number | undefined;
+
+
+            if (
+
+                body.discount !== undefined &&
+                body.discount !== null &&
+                body.discount !== ""
+
+            ) {
+
+                const parsed =
+                    numberField(body.discount);
+
+
+                if (
+
+                    parsed === null ||
+                    parsed < 0
+
+                ) {
+
+                    return c.json(
+
+                        {
+                            error:
+                                "مقادیر ورودی معتبر نیستند."
+                        },
+
+                        400
+
+                    );
+
+                }
+
+                discount =
+                    parsed;
+
+            }
+
+
+            const result =
+
+                container
+
+                    .calculateGoldPriceUseCase
+
+                    .execute({
+
+                        weight,
+
+                        goldPrice,
+
+                        laborPercent,
+
+                        profitPercent,
+
+                        taxPercent,
+
+                        ...(discount !== undefined
+                            ? { discount }
+                            : {})
+
+                    });
+
+
+            return c.json({
+
+                total:
+                    result.total
+
+            });
+
+        }
+
+    );
 
 
 

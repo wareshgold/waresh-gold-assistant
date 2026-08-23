@@ -12,56 +12,17 @@ export default function PriceCard({
   description,
 }: PriceCardProps) {
   return (
-    <div
-      className="
-        rounded-2xl
-        bg-white
-        p-6
-        shadow-sm
-        border
-        border-zinc-200
-        transition
-        hover:shadow-md
-      "
-    >
-
-      <div className="flex items-center justify-between">
-
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur transition hover:border-amber-400/40 hover:bg-white/[0.07]">
+      <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-sm text-zinc-500">
-            {title}
-          </p>
-
-          <p className="mt-3 text-2xl font-bold text-zinc-900">
-            {value}
-          </p>
+          <p className="text-sm text-stone-400">{title}</p>
+          <p className="mt-3 text-2xl font-bold text-stone-50">{value}</p>
         </div>
-
-
-        <div
-          className="
-            flex
-            h-12
-            w-12
-            items-center
-            justify-center
-            rounded-xl
-            bg-yellow-100
-            text-2xl
-          "
-        >
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-amber-400/20 bg-amber-400/10 text-2xl">
           {icon}
         </div>
-
       </div>
-
-
-      {description && (
-        <p className="mt-4 text-sm text-zinc-500">
-          {description}
-        </p>
-      )}
-
+      {description && <p className="mt-4 text-sm text-stone-500">{description}</p>}
     </div>
   );
 }
