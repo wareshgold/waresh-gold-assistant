@@ -1,27 +1,44 @@
+import {
+    TelegramDateFormatter
+} from "./TelegramDateFormatter";
+
+
 export class TelegramMessageBuilder {
 
 
-    build(
-
-        sections: string[]
-
-    ): string {
+    private readonly dateFormatter:
+        TelegramDateFormatter;
 
 
-        return [
-
-            ...sections,
-
-            "",
-
-            "━━━━━━━━━━━━━━",
-
-            "🟡 Waresh Gold Assistant"
-
-        ].join("\n");
-
-
+    constructor(
+        dateFormatter?: TelegramDateFormatter
+    ) {
+        this.dateFormatter =
+            dateFormatter ??
+            new TelegramDateFormatter();
     }
 
 
+    build(
+        sections: string[],
+        updatedAt?: Date
+    ): string {
+
+        const cleanSections =
+            sections
+                .map(section => section.trim())
+                .filter(Boolean);
+
+        const timestamp =
+            this.dateFormatter.formatCompact(
+                updatedAt ?? new Date()
+            );
+
+        return [
+            ...cleanSections,
+            "",
+            `🕐 ${timestamp}`,
+            "🟡 Waresh Gold"
+        ].join("\n");
+    }
 }
