@@ -50,30 +50,23 @@ implements TelegramCommandExecutor {
 
     constructor(
 
-
         private readonly router:
 
             TelegramCommandRouter,
-
 
         private readonly conversationManager?:
 
             TelegramConversationManager,
 
-
         contextBuilder?:
 
             TelegramCommandContextBuilder,
-
 
         private readonly aiSessionManager?:
 
             TelegramAISessionManager
 
-
-
     ) {
-
 
         this.contextBuilder =
 
@@ -81,12 +74,7 @@ implements TelegramCommandExecutor {
 
             new TelegramCommandContextBuilder();
 
-
     }
-
-
-
-
 
 
 
@@ -97,8 +85,6 @@ implements TelegramCommandExecutor {
 
     ):
         Promise<TelegramExecutorResponse> {
-
-
 
         const normalizedMessage:
             IncomingMessage =
@@ -119,22 +105,17 @@ implements TelegramCommandExecutor {
                 message;
 
 
-
         console.log(
             "INCOMING MESSAGE:",
             normalizedMessage
         );
 
 
-
         const text =
             normalizedMessage.text.trim();
 
-
-
         const normalizedText =
             text.toLowerCase();
-
 
 
         if (
@@ -165,6 +146,37 @@ implements TelegramCommandExecutor {
         }
 
 
+        const resolvedCommand =
+            this.router.resolveCommand(text);
+
+        const navigationHandler =
+            this.router
+                .getHandlers()
+                .find(
+                    handler =>
+                        handler.canHandle(resolvedCommand)
+                );
+
+        const isReplyKeyboardNavigation =
+            resolvedCommand !== normalizedText &&
+            Boolean(navigationHandler);
+
+        if (isReplyKeyboardNavigation) {
+
+            const context =
+                this.contextBuilder.build(
+                    resolvedCommand,
+                    normalizedMessage.userId,
+                    [],
+                    normalizedMessage.username,
+                    normalizedMessage.firstName
+                );
+
+            return this.router.execute(
+                context
+            );
+        }
+
 
         if (
             text.startsWith("/")
@@ -179,13 +191,11 @@ implements TelegramCommandExecutor {
                     normalizedMessage.firstName
                 );
 
-
             return this.router.execute(
                 context
             );
 
         }
-
 
 
         if (
@@ -198,7 +208,6 @@ implements TelegramCommandExecutor {
                     text
                 );
 
-
             if (
                 aiResponse
             ) {
@@ -208,7 +217,6 @@ implements TelegramCommandExecutor {
             }
 
         }
-
 
 
         if (
@@ -221,7 +229,6 @@ implements TelegramCommandExecutor {
                     text
                 );
 
-
             if (
                 activeConversation
             ) {
@@ -233,7 +240,6 @@ implements TelegramCommandExecutor {
         }
 
 
-
         const context =
             this.contextBuilder.build(
                 text,
@@ -242,7 +248,6 @@ implements TelegramCommandExecutor {
                 normalizedMessage.username,
                 normalizedMessage.firstName
             );
-
 
 
         const commandExists =
@@ -257,8 +262,6 @@ implements TelegramCommandExecutor {
                         )
                 );
 
-
-
         if (
             commandExists
         ) {
@@ -268,7 +271,6 @@ implements TelegramCommandExecutor {
             );
 
         }
-
 
 
         return this.router.execute(
