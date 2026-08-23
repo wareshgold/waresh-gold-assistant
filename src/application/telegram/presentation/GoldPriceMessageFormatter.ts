@@ -1,185 +1,44 @@
-import {
-    ApplicationResponse
-}
-from "../../common/models/ApplicationResponse";
-
-
-import {
-    TelegramMessageBuilder
-}
-from "./TelegramMessageBuilder";
-
-
-import {
-    TelegramDateFormatter
-}
-from "./TelegramDateFormatter";
-
-
-import {
-    TelegramNumberFormatter
-}
-from "./TelegramNumberFormatter";
-
-
+import { ApplicationResponse } from "../../common/models/ApplicationResponse";
+import { TelegramMessageBuilder } from "./TelegramMessageBuilder";
+import { TelegramDateFormatter } from "./TelegramDateFormatter";
+import { TelegramNumberFormatter } from "./TelegramNumberFormatter";
 
 export class GoldPriceMessageFormatter {
-
-
     constructor(
-
-
-        private readonly builder:
-            TelegramMessageBuilder,
-
-
-        private readonly dateFormatter:
-            TelegramDateFormatter,
-
-
-        private readonly numberFormatter:
-            TelegramNumberFormatter
-
-
+        private readonly builder: TelegramMessageBuilder,
+        private readonly dateFormatter: TelegramDateFormatter,
+        private readonly numberFormatter: TelegramNumberFormatter
     ) {}
 
-
-
-
-
-    format(
-
-        response:
-            ApplicationResponse
-
-    ): string {
-
-
-        const metadata =
-            response.metadata ?? {};
-
-
+    format(response: ApplicationResponse): string {
+        const metadata = response.metadata ?? {};
 
         return this.builder.build([
-
-
-
-            "🟡 قیمت لحظه‌ای طلا",
-
-
+            "🟡 <b>قیمت لحظه‌ای بازار</b>",
             "",
-
-
-
-            "💰 طلای ۱۸ عیار",
-
-            this.number(
-
-                metadata.gold18Price
-
-            ) + " تومان",
-
-
-
+            `طلای ۱۸ عیار   ${this.money(metadata.gold18Price)}`,
+            `دلار            ${this.money(metadata.currencyPrice)}`,
+            `اونس جهانی      ${this.ounce(metadata.ouncePrice)}`,
             "",
-
-
-
-            "💵 دلار",
-
-            this.number(
-
-                metadata.currencyPrice
-
-            ) + " تومان",
-
-
-
-            "",
-
-
-
-            "🌎 اونس جهانی",
-
-            this.number(
-
-                metadata.ouncePrice
-
-            ) + " دلار",
-
-
-
-            "",
-
-
-
-            "🕒 بروزرسانی",
-
-            this.date(
-
-                metadata.updatedAt
-
-            )
-
+            `آخرین بروزرسانی: ${this.date(metadata.updatedAt)}`
         ]);
-
-
     }
 
-
-
-
-
-
-
-    private number(
-
-        value:
-            unknown
-
-    ): string {
-
-
+    private money(value: unknown): string {
         return typeof value === "number"
-
-            ? this.numberFormatter.formatCode(value)
-
+            ? this.numberFormatter.money(value)
             : "-";
-
-
     }
 
+    private ounce(value: unknown): string {
+        return typeof value === "number"
+            ? `${this.numberFormatter.formatCode(value)} دلار`
+            : "-";
+    }
 
-
-
-
-
-
-
-
-    private date(
-
-        value:
-            unknown
-
-    ): string {
-
-
+    private date(value: unknown): string {
         return value
-
-            ? this.dateFormatter.format(
-
-                new Date(
-                    value as string
-                )
-
-            )
-
+            ? this.dateFormatter.format(new Date(value as string))
             : "-";
-
-
     }
-
-
-
 }
