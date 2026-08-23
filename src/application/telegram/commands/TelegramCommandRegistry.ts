@@ -15,6 +15,8 @@ import { VIPCommandHandler } from "./handlers/VIPCommandHandler";
 import { StrategyACommandHandler } from "./handlers/StrategyACommandHandler";
 import { GoldPriceAlertCommandHandler } from "./handlers/GoldPriceAlertCommandHandler";
 import { MarketReportCommandHandler } from "./handlers/MarketReportCommandHandler";
+import { OpenMenuCommandHandler } from "./handlers/OpenMenuCommandHandler";
+import { TelegramNavigationService } from "../navigation/TelegramNavigationService";
 import { GetGoldPriceUseCase } from "../../usecases/GetGoldPriceUseCase";
 import { GetGoldBubbleUseCase } from "../../market/GetGoldBubbleUseCase";
 import { GetMarketAnalyticsUseCase } from "../../market/GetMarketAnalyticsUseCase";
@@ -56,7 +58,8 @@ export class TelegramCommandRegistry {
         vipAccessService?: VIPAccessService,
         strategyService?: StrategyAStrategyService,
         goldPriceAlertService?: GoldPriceAlertService,
-        marketReportService?: MarketReportService
+        marketReportService?: MarketReportService,
+        navigationService?: TelegramNavigationService
     ): TelegramCommandRouter {
         const welcomeMessageProvider = new RandomWelcomeMessageProvider();
         const menuRegistry = new MemoryTelegramMenuRegistry();
@@ -74,6 +77,9 @@ export class TelegramCommandRegistry {
                 telegramReplyKeyboardBuilder,
                 profileStore
             ),
+            ...(navigationService
+                ? [new OpenMenuCommandHandler(navigationService)]
+                : []),
             new HelpCommandHandler(() => commandRouter.getHandlers()),
             new GoldPriceCommandHandler(getGoldPriceUseCase),
             new GetGoldBubbleCommandHandler(getGoldBubbleUseCase, marketBubbleMessageFormatter),

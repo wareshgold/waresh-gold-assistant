@@ -118,7 +118,8 @@ export function createTelegramModule(env: AppEnv, dependencies: Dependencies) {
         dependencies.vipAccessService,
         dependencies.strategyService,
         dependencies.goldPriceAlertService,
-        dependencies.marketReportService
+        dependencies.marketReportService,
+        telegramNavigationService
     );
 
     const actionResolver = new CompositeTelegramActionResolver([

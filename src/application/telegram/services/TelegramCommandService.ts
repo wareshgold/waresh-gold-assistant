@@ -240,38 +240,17 @@ implements TelegramCommandExecutor {
         }
 
 
+        const fallbackCommand =
+            this.router.resolveCommand(text);
+
         const context =
             this.contextBuilder.build(
-                text,
+                fallbackCommand,
                 normalizedMessage.userId,
                 [],
                 normalizedMessage.username,
                 normalizedMessage.firstName
             );
-
-
-        const commandExists =
-            this.router
-                .getHandlers()
-                .some(
-                    handler =>
-                        handler.canHandle(
-                            context.command
-                                .trim()
-                                .toLowerCase()
-                        )
-                );
-
-        if (
-            commandExists
-        ) {
-
-            return this.router.execute(
-                context
-            );
-
-        }
-
 
         return this.router.execute(
             context

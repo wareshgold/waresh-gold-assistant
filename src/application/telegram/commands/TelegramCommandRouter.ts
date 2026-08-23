@@ -46,22 +46,70 @@ export class TelegramCommandRouter {
     }
 
     private normalizeCommand(value: string): string {
-        const normalized = value.trim().toLowerCase();
+        const normalized = value
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, " ");
 
-        const aliases: Record<string, string> = {
-            "🟡 بازار": "/price",
-            "🧮 محاسبه": "/calc",
+        const exactAliases: Record<string, string> = {
+            "🟡 بازار": "menu:market",
+            "🧮 محاسبه": "menu:calculate",
             "🤖 دستیار ai": "/ai",
             "🔔 اعلان‌ها": "/alerts",
-            "⚙️ تنظیمات": "/help",
-
-            "🟡 بازار طلا": "/price",
-            "🧮 ماشین حساب طلا": "/calc",
+            "⚙️ تنظیمات": "menu:settings",
+            "🟡 بازار طلا": "menu:market",
+            "🧮 ماشین حساب": "menu:calculate",
+            "🧮 ماشین حساب طلا": "menu:calculate",
             "🤖 دستیار هوشمند": "/ai",
             "📊 تحلیل بازار": "/analytics",
-            "📊 گزارش بازار": "/reports"
+            "📊 گزارش بازار": "/reports",
+            "⬅️ بازگشت": "menu:main",
+            "🏠 منوی اصلی": "menu:main"
         };
 
-        return aliases[normalized] ?? normalized;
+        if (exactAliases[normalized]) {
+            return exactAliases[normalized];
+        }
+
+        if (
+            normalized.includes("بازار") &&
+            !normalized.includes("تحلیل") &&
+            !normalized.includes("گزارش") &&
+            !normalized.startsWith("/")
+        ) {
+            return "menu:market";
+        }
+
+        if (
+            (normalized.includes("محاسبه") ||
+                normalized.includes("ماشین حساب")) &&
+            !normalized.startsWith("/")
+        ) {
+            return "menu:calculate";
+        }
+
+        if (
+            normalized.includes("تنظیمات") &&
+            !normalized.startsWith("/")
+        ) {
+            return "menu:settings";
+        }
+
+        if (
+            normalized.includes("دستیار") &&
+            !normalized.startsWith("/")
+        ) {
+            return "/ai";
+        }
+
+        if (
+            (normalized.includes("اعلان") ||
+                normalized.includes("alerts")) &&
+            !normalized.startsWith("/")
+        ) {
+            return "/alerts";
+        }
+
+        return normalized;
     }
 }
