@@ -11,10 +11,6 @@ export interface VIPCodeProps {
     redeemedBy?: string | null;
     redeemedAt?: Date | null;
 
-    /**
-     * Legacy compatibility fields from the pre-single-use VIP model.
-     * They are intentionally not used by the current domain rules.
-     */
     maxUsers?: number;
     usedCount?: number;
 }
@@ -33,7 +29,7 @@ export class VIPCode {
         props: VIPCodeProps
     ) {
         this.id = props.id;
-        this.code = props.code.trim().toUpperCase();
+        this.code = VIPCode.normalizeCode(props.code);
         this.feature = props.feature;
         this.expiresAt = props.expiresAt;
         this.createdAt = props.createdAt;
@@ -52,15 +48,15 @@ export class VIPCode {
             throw new Error("VIP code id is required");
         }
 
-        if (
-            props.redeemedBy !== null &&
-            props.redeemedBy !== undefined &&
-            !props.redeemedBy.trim()
-        ) {
-            throw new Error("VIP code redeemedBy is invalid");
-        }
-
         return new VIPCode(props);
+    }
+
+    private static normalizeCode(
+        value: string
+    ): string {
+        return value
+            .trim()
+            .replace(/strategy[-_]?a/gi, "StrategyA");
     }
 
     isExpired(
