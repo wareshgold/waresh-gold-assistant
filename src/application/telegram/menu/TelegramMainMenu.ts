@@ -28,6 +28,14 @@ export const TelegramMainMenu: TelegramMenuItem[] = [
         },
     },
     {
+        id: "menu.strategy",
+        label: "📈 استراتژی",
+        action: {
+            type: TelegramMenuActionType.CALLBACK,
+            value: NavigationAction.STRATEGY,
+        },
+    },
+    {
         id: "menu.alerts",
         label: "🔔 اعلان‌ها",
         action: {
