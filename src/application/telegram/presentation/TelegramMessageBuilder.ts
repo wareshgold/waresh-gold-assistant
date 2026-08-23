@@ -1,44 +1,25 @@
-import {
-    TelegramDateFormatter
-} from "./TelegramDateFormatter";
-
+import { TelegramDateFormatter } from "./TelegramDateFormatter";
 
 export class TelegramMessageBuilder {
+    private readonly dateFormatter: TelegramDateFormatter;
 
-
-    private readonly dateFormatter:
-        TelegramDateFormatter;
-
-
-    constructor(
-        dateFormatter?: TelegramDateFormatter
-    ) {
-        this.dateFormatter =
-            dateFormatter ??
-            new TelegramDateFormatter();
+    constructor(dateFormatter?: TelegramDateFormatter) {
+        this.dateFormatter = dateFormatter ?? new TelegramDateFormatter();
     }
 
+    build(sections: string[], updatedAt?: Date): string {
+        const cleanSections = sections
+            .map(section => section.trim())
+            .filter(Boolean);
 
-    build(
-        sections: string[],
-        updatedAt?: Date
-    ): string {
-
-        const cleanSections =
-            sections
-                .map(section => section.trim())
-                .filter(Boolean);
-
-        const timestamp =
-            this.dateFormatter.formatCompact(
-                updatedAt ?? new Date()
-            );
+        const timestamp = this.dateFormatter.formatCompact(
+            updatedAt ?? new Date()
+        );
 
         return [
             ...cleanSections,
             "",
-            `🕐 ${timestamp}`,
-            "🟡 Waresh Gold"
+            `🕐 ${timestamp}  •  Waresh Gold`
         ].join("\n");
     }
 }
