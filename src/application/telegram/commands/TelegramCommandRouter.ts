@@ -64,7 +64,26 @@ export class TelegramCommandRouter {
             "📊 تحلیل بازار": "/analytics",
             "📊 گزارش بازار": "/reports",
             "⬅️ بازگشت": "menu:main",
-            "🏠 منوی اصلی": "menu:main"
+            "🏠 منوی اصلی": "menu:main",
+
+            "💰 قیمت لحظه‌ای": "/price",
+            "🫧 حباب طلا": "/bubble",
+            "📊 نمودار قیمت": "/chart",
+            "📜 تاریخچه قیمت": "/history",
+            "📈 تحلیل بازار": "/analytics",
+
+            "🧮 محاسبه قیمت طلا": "/calc",
+            "🧾 محاسبه فاکتور": "/invoice",
+            "🔄 محاسبه معکوس طلا": "/reverse-labor",
+            "📐 حل فرمول طلا": "/formula",
+            "📜 تاریخچه محاسبات": "/calc-history",
+
+            "🔔 تنظیم اعلان‌ها": "/alerts",
+            "👤 حساب کاربری": "/help",
+            "⚙️ تنظیمات ربات": "/help",
+
+            "📚 آموزش و اطلاعات طلا": "/help",
+            "❓ راهنما": "/help"
         };
 
         if (exactAliases[normalized]) {
@@ -72,42 +91,56 @@ export class TelegramCommandRouter {
         }
 
         if (
+            !normalized.startsWith("/") &&
             normalized.includes("بازار") &&
             !normalized.includes("تحلیل") &&
             !normalized.includes("گزارش") &&
-            !normalized.startsWith("/")
+            !normalized.includes("قیمت") &&
+            !normalized.includes("حباب") &&
+            !normalized.includes("نمودار") &&
+            !normalized.includes("تاریخچه")
         ) {
             return "menu:market";
         }
 
         if (
-            (normalized.includes("محاسبه") ||
-                normalized.includes("ماشین حساب")) &&
-            !normalized.startsWith("/")
+            !normalized.startsWith("/") &&
+            (normalized === "🧮 محاسبه" ||
+                normalized === "محاسبه" ||
+                normalized === "ماشین حساب" ||
+                normalized === "🧮 ماشین حساب")
         ) {
             return "menu:calculate";
         }
 
         if (
-            normalized.includes("تنظیمات") &&
-            !normalized.startsWith("/")
+            !normalized.startsWith("/") &&
+            (normalized === "⚙️ تنظیمات" ||
+                normalized === "تنظیمات")
         ) {
             return "menu:settings";
         }
 
         if (
-            normalized.includes("دستیار") &&
-            !normalized.startsWith("/")
+            !normalized.startsWith("/") &&
+            normalized.includes("دستیار")
         ) {
             return "/ai";
         }
 
         if (
-            (normalized.includes("اعلان") ||
-                normalized.includes("alerts")) &&
-            !normalized.startsWith("/")
+            !normalized.startsWith("/") &&
+            normalized.includes("اعلان")
         ) {
             return "/alerts";
+        }
+
+        if (
+            !normalized.startsWith("/") &&
+            (normalized.includes("بازگشت") ||
+                normalized.includes("منوی اصلی"))
+        ) {
+            return "menu:main";
         }
 
         return normalized;
