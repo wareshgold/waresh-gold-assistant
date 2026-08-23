@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS user_vip_access (
 CREATE INDEX IF NOT EXISTS idx_user_vip_access_user_feature
 ON user_vip_access(telegram_user_id, feature);
 
-CREATE TABLE IF NOT EXISTS strategy-a_signals (
+CREATE TABLE IF NOT EXISTS "strategy-a_signals" (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     symbol TEXT NOT NULL,
     timeframe TEXT NOT NULL,
@@ -36,5 +36,5 @@ CREATE TABLE IF NOT EXISTS strategy-a_signals (
     generated_at INTEGER NOT NULL
 );
 
-CREATE INDEX IF NOT EXISTS idx_strategy-a_signals_symbol_generated
-ON strategy-a_signals(symbol, generated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_strategy_a_signals_symbol_generated
+ON "strategy-a_signals"(symbol, generated_at DESC);

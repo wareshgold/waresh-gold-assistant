@@ -24,7 +24,7 @@ export class D1StrategyASignalRepository
             await this.db
                 .prepare(
 `
-INSERT OR IGNORE INTO strategy-a_signals
+INSERT OR IGNORE INTO "strategy-a_signals"
 (
     symbol,
     timeframe,
@@ -80,7 +80,7 @@ SELECT
     reason,
     strategy_version,
     generated_at
-FROM strategy-a_signals
+FROM "strategy-a_signals"
 WHERE symbol = ?
   AND timeframe = ?
   AND signal_type = ?
@@ -149,7 +149,7 @@ SELECT
     reason,
     strategy_version,
     generated_at
-FROM strategy-a_signals
+FROM "strategy-a_signals"
 WHERE symbol = ?
 ORDER BY generated_at DESC, id DESC
 LIMIT 1
