@@ -63,7 +63,7 @@ export class VIPAccessService {
         rawCode: string
     ): Promise<ActivateVIPResult> {
         const codeValue =
-            rawCode.trim();
+            this.normalizeLookupCode(rawCode);
 
         const vipCode =
             await this.codeRepository.findByCode(
@@ -208,6 +208,23 @@ export class VIPAccessService {
     ): boolean {
         return this.ownerUserIds.includes(
             telegramUserId
+        );
+    }
+
+    private normalizeLookupCode(
+        value: string
+    ): string {
+        const normalized = value.trim();
+
+        const strategyNormalized = normalized.replace(
+            /^strategy[-_]?a(?=-|_|$)/i,
+            "StrategyA"
+        );
+
+        return strategyNormalized.replace(
+            /(-|_)([^-_]+)$/,
+            (_, separator, suffix) =>
+                `${separator}${suffix.toUpperCase()}`
         );
     }
 }
