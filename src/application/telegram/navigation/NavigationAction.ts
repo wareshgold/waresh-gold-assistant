@@ -29,4 +29,9 @@ export enum NavigationAction {
     SETTINGS_ALERTS = "settings:alerts",
     SETTINGS_ACCOUNT = "settings:account",
     SETTINGS_BOT = "settings:bot",
+
+    ALERTS_LIVE_PRICE = "alerts:live-price",
+    ALERTS_MARKET_ANALYSIS = "alerts:market-analysis",
+    ALERTS_PRICE_TARGET = "alerts:price-target",
+    ALERTS_MY_ALERTS = "alerts:my-alerts",
 }
