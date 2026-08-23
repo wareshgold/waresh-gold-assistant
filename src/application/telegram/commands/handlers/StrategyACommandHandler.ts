@@ -33,7 +33,7 @@ export class StrategyACommandHandler
 
     metadata() {
         return {
-            command: "/strategy-a",
+            command: "/strategy_a",
             description: "آخرین سیگنال StrategyA (VIP)"
         };
     }
@@ -45,6 +45,8 @@ export class StrategyACommandHandler
             command.trim().toLowerCase();
 
         return (
+            normalized === "/strategy_a" ||
+            normalized === "strategy_a" ||
             normalized === "/strategy-a" ||
             normalized === "strategy-a"
         );
