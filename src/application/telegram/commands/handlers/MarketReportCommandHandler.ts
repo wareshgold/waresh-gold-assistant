@@ -69,7 +69,7 @@ export class MarketReportCommandHandler implements TelegramCommandHandler {
         return {
             type: "text" as const,
             content: [
-                "📊 <b>گزارش دوره‌ای بازار</b>",
+                "📊 <b>تنظیم گزارش دوره‌ای بازار</b>",
                 "",
                 `وضعیت: <b>${currentText}</b>`,
                 `🕐 ${now}`,
