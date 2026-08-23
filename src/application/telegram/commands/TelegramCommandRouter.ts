@@ -45,10 +45,15 @@ export class TelegramCommandRouter {
         const normalized = value.trim().toLowerCase();
 
         const aliases: Record<string, string> = {
+            "🟡 بازار": "/price",
+            "🧮 محاسبه": "/calc",
+            "🤖 دستیار ai": "/ai",
+            "🔔 اعلان‌ها": "/alerts",
+            "⚙️ تنظیمات": "/help",
+
             "🟡 بازار طلا": "/price",
             "🧮 ماشین حساب طلا": "/calc",
             "🤖 دستیار هوشمند": "/ai",
-            "⚙️ تنظیمات": "/help",
             "📊 تحلیل بازار": "/analytics",
             "🔔 اعلان‌ها": "/alerts",
             "📊 گزارش بازار": "/reports"
