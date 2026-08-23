@@ -25,9 +25,7 @@ export class VIPCode {
     readonly redeemedBy: string | null;
     readonly redeemedAt: Date | null;
 
-    private constructor(
-        props: VIPCodeProps
-    ) {
+    private constructor(props: VIPCodeProps) {
         this.id = props.id;
         this.code = VIPCode.normalizeCode(props.code);
         this.feature = props.feature;
@@ -37,9 +35,7 @@ export class VIPCode {
         this.redeemedAt = props.redeemedAt ?? null;
     }
 
-    static create(
-        props: VIPCodeProps
-    ): VIPCode {
+    static create(props: VIPCodeProps): VIPCode {
         if (!props.code.trim()) {
             throw new Error("VIP code is required");
         }
@@ -48,20 +44,23 @@ export class VIPCode {
             throw new Error("VIP code id is required");
         }
 
+        if (props.redeemedBy !== undefined && props.redeemedBy !== null && !props.redeemedBy.trim()) {
+            throw new Error("redeemedBy cannot be empty");
+        }
+
         return new VIPCode(props);
     }
 
-    private static normalizeCode(
-        value: string
-    ): string {
-        return value
-            .trim()
-            .replace(/strategy[-_]?a/gi, "StrategyA");
+    private static normalizeCode(value: string): string {
+        const normalized = value.trim();
+
+        return normalized.replace(
+            /^strategy[-_]?a(?=-|_|$)/i,
+            "StrategyA"
+        );
     }
 
-    isExpired(
-        now: Date = new Date()
-    ): boolean {
+    isExpired(now: Date = new Date()): boolean {
         if (!this.expiresAt) {
             return false;
         }
@@ -73,9 +72,7 @@ export class VIPCode {
         return this.redeemedBy !== null;
     }
 
-    canActivate(
-        now: Date = new Date()
-    ): boolean {
+    canActivate(now: Date = new Date()): boolean {
         return !this.isExpired(now) && !this.isUsed();
     }
 }
