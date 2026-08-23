@@ -55,7 +55,6 @@ export class TelegramCommandRouter {
             "🧮 ماشین حساب طلا": "/calc",
             "🤖 دستیار هوشمند": "/ai",
             "📊 تحلیل بازار": "/analytics",
-            "🔔 اعلان‌ها": "/alerts",
             "📊 گزارش بازار": "/reports"
         };
 
