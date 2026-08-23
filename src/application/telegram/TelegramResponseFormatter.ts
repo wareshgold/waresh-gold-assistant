@@ -20,7 +20,6 @@ export class TelegramResponseFormatter {
 
 
 
-
     format(
 
         response:
@@ -65,41 +64,20 @@ export class TelegramResponseFormatter {
     ): string {
 
 
-
         const protectedBlocks: string[] = [];
-
-
-
 
 
         const protectedText =
 
             text.replace(
 
-                /<code>[\s\S]*?<\/code>/gi,
+                /<\/?(?:b|strong|i|em|u|ins|s|strike|del|code|pre|blockquote)(?:\s[^>]*)?>/gi,
 
                 match => {
-
-
 
                     const index =
 
                         protectedBlocks.length;
-
-
-
-
-
-                    const letter =
-
-                        String.fromCharCode(
-
-                            65 + index
-
-                        );
-
-
-
 
 
                     protectedBlocks.push(
@@ -109,21 +87,11 @@ export class TelegramResponseFormatter {
                     );
 
 
-
-
-
-                    return `__CODE_BLOCK_${letter}__`;
-
+                    return `__HTML_BLOCK_${index}__`;
 
                 }
 
             );
-
-
-
-
-
-
 
 
         const escapedText =
@@ -155,12 +123,6 @@ export class TelegramResponseFormatter {
                 );
 
 
-
-
-
-
-
-
         const formattedText =
 
             escapedText.replace(
@@ -168,8 +130,6 @@ export class TelegramResponseFormatter {
                 /[0-9۰-۹][0-9۰-۹,٬]*/g,
 
                 value => {
-
-
 
                     const normalizedValue =
 
@@ -180,45 +140,24 @@ export class TelegramResponseFormatter {
                         );
 
 
-
-
-
                     return `<code>${normalizedValue}</code>`;
-
 
                 }
 
             );
 
 
-
-
-
-
-
-
         return formattedText.replace(
 
-            /__CODE_BLOCK_([A-Z]+)__/g,
+            /__HTML_BLOCK_(\d+)__/g,
 
-            (_, letter) => {
+            (_, index) =>
 
-
-
-                return protectedBlocks[
-
-                    letter.charCodeAt(0) - 65
-
-                ];
-
-
-            }
+                protectedBlocks[Number(index)]
 
         );
 
-
     }
-
 
 
 
@@ -233,12 +172,9 @@ export class TelegramResponseFormatter {
 
     ): string {
 
-
-
         const persianDigits =
 
             "۰۱۲۳۴۵۶۷۸۹";
-
 
 
         const englishDigits =
@@ -246,15 +182,9 @@ export class TelegramResponseFormatter {
             "0123456789";
 
 
-
-
-
         let result =
 
             value;
-
-
-
 
 
         for (
@@ -266,8 +196,6 @@ export class TelegramResponseFormatter {
             i++
 
         ) {
-
-
 
             result =
 
@@ -285,12 +213,7 @@ export class TelegramResponseFormatter {
 
                 );
 
-
         }
-
-
-
-
 
 
         return result.replace(
@@ -300,7 +223,6 @@ export class TelegramResponseFormatter {
             ""
 
         );
-
 
     }
 
