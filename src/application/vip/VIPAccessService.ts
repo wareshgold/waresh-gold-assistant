@@ -63,7 +63,7 @@ export class VIPAccessService {
         rawCode: string
     ): Promise<ActivateVIPResult> {
         const codeValue =
-            rawCode.trim().toUpperCase();
+            rawCode.trim();
 
         const vipCode =
             await this.codeRepository.findByCode(
