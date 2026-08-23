@@ -41,6 +41,10 @@ export class TelegramCommandRouter {
         });
     }
 
+    resolveCommand(value: string): string {
+        return this.normalizeCommand(value);
+    }
+
     private normalizeCommand(value: string): string {
         const normalized = value.trim().toLowerCase();
 
