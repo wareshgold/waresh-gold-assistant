@@ -28,7 +28,7 @@ import { RandomWelcomeMessageProvider } from "../welcome/RandomWelcomeMessagePro
 import { MemoryTelegramMenuRegistry } from "../menu/MemoryTelegramMenuRegistry";
 import { TelegramMenuService } from "../menu/TelegramMenuService";
 import { TelegramMainMenu } from "../menu/TelegramMainMenu";
-import { TelegramInlineKeyboardBuilder } from "../keyboards/TelegramInlineKeyboardBuilder";
+import { TelegramReplyKeyboardBuilder } from "../keyboards/TelegramReplyKeyboardBuilder";
 import { MarketBubbleMessageFormatter } from "../presentation/MarketBubbleMessageFormatter";
 import { MarketAnalyticsMessageFormatter } from "../presentation/MarketAnalyticsMessageFormatter";
 import { TelegramNumberFormatter } from "../presentation/TelegramNumberFormatter";
@@ -62,6 +62,7 @@ export class TelegramCommandRegistry {
         const menuRegistry = new MemoryTelegramMenuRegistry();
         const telegramMenuService = new TelegramMenuService(menuRegistry);
         telegramMenuService.registerMenu(TelegramMainMenu);
+        const telegramReplyKeyboardBuilder = new TelegramReplyKeyboardBuilder();
 
         let commandRouter: TelegramCommandRouter;
         const telegramNumberFormatter = new TelegramNumberFormatter();
@@ -70,7 +71,7 @@ export class TelegramCommandRegistry {
             new StartCommandHandler(
                 welcomeMessageProvider,
                 telegramMenuService,
-                new TelegramInlineKeyboardBuilder(),
+                telegramReplyKeyboardBuilder,
                 profileStore
             ),
             new HelpCommandHandler(() => commandRouter.getHandlers()),
