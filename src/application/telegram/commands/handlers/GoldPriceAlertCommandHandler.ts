@@ -85,7 +85,7 @@ export class GoldPriceAlertCommandHandler implements TelegramCommandHandler {
         return {
             type: "text" as const,
             content: [
-                "🔔 <b>اعلان قیمت طلا</b>",
+                "🔔 <b>تنظیم اعلان قیمت طلا</b>",
                 "",
                 `وضعیت: <b>${currentText}</b>`,
                 `🕐 ${now}`,
