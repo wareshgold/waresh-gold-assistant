@@ -5,31 +5,15 @@ import { NavigationAction } from "../navigation/NavigationAction";
 export const TelegramMainMenu: TelegramMenuItem[] = [
     {
         id: "menu.market",
-        label: "🟡 بازار",
+        label: "🟡 بازار و قیمت‌ها",
         action: {
             type: TelegramMenuActionType.CALLBACK,
             value: NavigationAction.MARKET,
         },
     },
     {
-        id: "menu.gold-price",
-        label: "💰 قیمت طلا",
-        action: {
-            type: TelegramMenuActionType.CALLBACK,
-            value: NavigationAction.GOLD_PRICE,
-        },
-    },
-    {
-        id: "menu.bubble",
-        label: "🫧 حباب طلا",
-        action: {
-            type: TelegramMenuActionType.CALLBACK,
-            value: NavigationAction.GOLD_BUBBLE,
-        },
-    },
-    {
         id: "menu.calculate",
-        label: "🧮 محاسبه",
+        label: "🧮 ماشین حساب طلا",
         action: {
             type: TelegramMenuActionType.CALLBACK,
             value: NavigationAction.CALCULATE,
@@ -37,7 +21,7 @@ export const TelegramMainMenu: TelegramMenuItem[] = [
     },
     {
         id: "menu.assistant",
-        label: "🤖 دستیار AI",
+        label: "🤖 دستیار هوشمند",
         action: {
             type: TelegramMenuActionType.CALLBACK,
             value: NavigationAction.ASSISTANT,
