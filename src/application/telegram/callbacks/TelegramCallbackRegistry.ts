@@ -46,6 +46,28 @@ import {
 from "../../../infrastructure/chart/MarketChartImageGenerator";
 
 
+import {
+    TelegramSessionStore,
+}
+from "../state/TelegramSessionStore";
+
+
+import {
+    GoldCalculationWorkflow,
+}
+from "../../gold/workflows/GoldCalculationWorkflow";
+
+
+import {
+    TelegramNumberFormatter,
+}
+from "../presentation/TelegramNumberFormatter";
+
+
+import {
+    GoldPriceResolver,
+}
+from "../../gold/pricing/GoldPriceResolver";
 
 
 
@@ -54,7 +76,6 @@ export class TelegramCallbackRegistry {
 
 
     static create(
-
 
 
         telegramActionExecutor:
@@ -89,18 +110,41 @@ export class TelegramCallbackRegistry {
 
         marketChartImageGenerator:
 
-            MarketChartImageGenerator
+            MarketChartImageGenerator,
+
+
+
+        sessionStore:
+
+            TelegramSessionStore,
+
+
+
+        goldCalculationWorkflow:
+
+            GoldCalculationWorkflow,
+
+
+
+        numberFormatter:
+
+            TelegramNumberFormatter,
+
+
+
+        goldPriceResolver:
+
+            GoldPriceResolver
 
 
 
     ):
 
-        TelegramCallbackRouter {
+    TelegramCallbackRouter {
 
 
 
         const handlers =
-
 
 
             TelegramCallbackHandlerFactory.create(
@@ -127,11 +171,29 @@ export class TelegramCallbackRegistry {
 
 
 
-                marketChartImageGenerator
+                marketChartImageGenerator,
+
+
+
+                sessionStore,
+
+
+
+                goldCalculationWorkflow,
+
+
+
+                numberFormatter,
+
+
+
+                goldPriceResolver
 
 
 
             );
+
+
 
 
 
@@ -142,6 +204,7 @@ export class TelegramCallbackRegistry {
             handlers
 
         );
+
 
 
     }

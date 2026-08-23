@@ -5,78 +5,372 @@ from "../../gold/workflows/GoldCalculationStep";
 
 
 
+export interface GoldCalculationPrompt {
+
+
+    text:
+
+        string;
+
+
+    replyMarkup?:
+
+        unknown;
+
+
+}
+
+
+
+
+
+
 
 export class GoldCalculationPromptFormatter {
-
-
 
 
 
     format(
 
         step:
-
             GoldCalculationStep
 
-    ): string {
+    ):
+
+    GoldCalculationPrompt {
 
 
 
-        const messages:
-
-            Record<GoldCalculationStep, string> = {
+        switch(step) {
 
 
 
-                [GoldCalculationStep.WAITING_WEIGHT]:
-
-                    "وزن طلا را وارد کنید:",
+            case GoldCalculationStep.WAITING_WEIGHT:
 
 
-
-                [GoldCalculationStep.WAITING_PRICE]:
-
-                    "قیمت هر گرم طلا را وارد کنید:",
+                return {
 
 
+                    text:
 
-                [GoldCalculationStep.WAITING_LABOR]:
-
-                    "درصد اجرت را وارد کنید:",
-
+                        "⚖️ وزن طلا را وارد کنید:"
 
 
-                [GoldCalculationStep.WAITING_PROFIT]:
-
-                    "درصد سود را وارد کنید:",
-
-
-
-                [GoldCalculationStep.WAITING_TAX]:
-
-                    "درصد مالیات را وارد کنید:"
-
-
-            };
+                };
 
 
 
 
 
 
-        return (
 
-            messages[step]
+            case GoldCalculationStep.WAITING_PRICE_SELECTION:
 
-            ??
 
-            "مرحله محاسبه نامشخص است"
+                return {
 
-        );
+
+                    text:
+
+`
+💰 انتخاب قیمت طلا
+
+لطفاً روش تعیین قیمت هر گرم طلا را انتخاب کنید:
+`.trim(),
+
+
+
+                    replyMarkup:
+
+                    {
+
+
+                        type:
+
+                            "INLINE",
+
+
+
+                        rows:
+
+                        [
+
+
+                            [
+
+
+                                {
+
+
+                                    text:
+
+                                        "🟡 استفاده از قیمت لحظه‌ای بازار",
+
+
+
+                                    actionId:
+
+                                        "calculator:use-current-price"
+
+
+                                }
+
+
+                            ],
+
+
+
+                            [
+
+
+                                {
+
+
+                                    text:
+
+                                        "✍️ ورود دستی قیمت",
+
+
+
+                                    actionId:
+
+                                        "calculator:manual-price"
+
+
+                                }
+
+
+                            ],
+
+
+
+                            [
+
+
+                                this.backButton()
+
+
+                            ]
+
+
+                        ]
+
+
+                    }
+
+
+                };
+
+
+
+
+
+
+
+            case GoldCalculationStep.WAITING_PRICE:
+
+
+                return {
+
+
+                    text:
+
+                        "💰 قیمت هر گرم طلا را وارد کنید:",
+
+
+
+                    replyMarkup:
+
+                        this.backMarkup()
+
+
+                };
+
+
+
+
+
+
+
+            case GoldCalculationStep.WAITING_LABOR:
+
+
+                return {
+
+
+                    text:
+
+                        "📈 درصد اجرت را وارد کنید:",
+
+
+
+                    replyMarkup:
+
+                        this.backMarkup()
+
+
+                };
+
+
+
+
+
+
+
+            case GoldCalculationStep.WAITING_PROFIT:
+
+
+                return {
+
+
+                    text:
+
+                        "💹 درصد سود را وارد کنید:",
+
+
+
+                    replyMarkup:
+
+                        this.backMarkup()
+
+
+                };
+
+
+
+
+
+
+
+            case GoldCalculationStep.WAITING_TAX:
+
+
+                return {
+
+
+                    text:
+
+                        "🧾 درصد مالیات را وارد کنید:",
+
+
+
+                    replyMarkup:
+
+                        this.backMarkup()
+
+
+                };
+
+
+
+
+
+
+
+            default:
+
+
+                return {
+
+
+                    text:
+
+                        "مرحله محاسبه نامشخص است"
+
+
+                };
+
+
+        }
 
 
     }
 
+
+
+
+
+
+
+    private backMarkup():
+
+    unknown {
+
+
+        return {
+
+
+            type:
+
+                "INLINE",
+
+
+
+            rows:
+
+            [
+
+
+                [
+
+
+                    this.backButton()
+
+
+                ]
+
+
+            ]
+
+
+        };
+
+
+    }
+
+
+
+
+
+
+
+    private backButton():
+
+    {
+
+
+        text:
+
+            string;
+
+
+        actionId:
+
+            string;
+
+
+    } {
+
+
+
+        return {
+
+
+            text:
+
+                "⬅️ اصلاح مرحله قبل",
+
+
+
+            actionId:
+
+                "calculator:back"
+
+
+        };
+
+
+    }
 
 
 }

@@ -62,7 +62,8 @@ export class VIPAccessService {
         telegramUserId: string,
         rawCode: string
     ): Promise<ActivateVIPResult> {
-        const codeValue = this.normalizeCode(rawCode);
+        const codeValue =
+            this.normalizeLookupCode(rawCode);
 
         const vipCode =
             await this.codeRepository.findByCode(
@@ -107,11 +108,19 @@ export class VIPAccessService {
 
         const access =
             UserVIPAccess.create({
-                id: crypto.randomUUID(),
+                id:
+                    crypto.randomUUID(),
+
                 telegramUserId,
-                feature: vipCode.feature,
-                activatedAt: redeemedAt,
-                expiresAt: vipCode.expiresAt
+
+                feature:
+                    vipCode.feature,
+
+                activatedAt:
+                    redeemedAt,
+
+                expiresAt:
+                    vipCode.expiresAt
             });
 
         const activated =
@@ -194,23 +203,28 @@ export class VIPAccessService {
         ];
     }
 
-    private normalizeCode(value: string): string {
-        const normalized = value.trim();
-
-        return normalized
-            .replace(/^strategy[-_]?a(?=-|_|$)/i, "StrategyA")
-            .replace(
-                /(-|_)([^-_]+)$/,
-                (_, separator, suffix) =>
-                    `${separator}${suffix.toUpperCase()}`
-            );
-    }
-
     private isOwner(
         telegramUserId: string
     ): boolean {
         return this.ownerUserIds.includes(
             telegramUserId
+        );
+    }
+
+    private normalizeLookupCode(
+        value: string
+    ): string {
+        const normalized = value.trim();
+
+        const strategyNormalized = normalized.replace(
+            /^strategy[-_]?a(?=-|_|$)/i,
+            "StrategyA"
+        );
+
+        return strategyNormalized.replace(
+            /(-|_)([^-_]+)$/,
+            (_, separator, suffix) =>
+                `${separator}${suffix.toUpperCase()}`
         );
     }
 }

@@ -1,13 +1,43 @@
-import { ApplicationResponse } from "../../common/models/ApplicationResponse";
-import { IncomingMessage } from "../../common/models/IncomingMessage";
+import {
+    IncomingMessage
+}
+from "../../common/models/IncomingMessage";
+
+
+import {
+    TelegramCommandResponse
+}
+from "../commands/TelegramCommandHandler";
+
+
+
+
+
+export type TelegramExecutorResponse =
+
+    | TelegramCommandResponse
+
+    | string;
+
+
+
+
+
 
 
 export interface TelegramCommandExecutor {
 
 
     execute(
-        message: IncomingMessage
-    ): Promise<ApplicationResponse>;
+
+        message:
+
+            IncomingMessage
+
+    ):
+
+        Promise<TelegramExecutorResponse>;
+
 
 
 }

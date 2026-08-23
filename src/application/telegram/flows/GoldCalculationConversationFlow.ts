@@ -47,23 +47,13 @@ from "../../gold/SaveGoldCalculationHistoryUseCase";
 
 
 
-
-
-
-
 export class GoldCalculationConversationFlow
 
 implements TelegramConversationFlow {
 
 
-
-
     private readonly promptFormatter:
-
         GoldCalculationPromptFormatter;
-
-
-
 
 
 
@@ -71,27 +61,22 @@ implements TelegramConversationFlow {
 
 
         private readonly sessionStore:
-
             TelegramSessionStore,
 
 
         private readonly workflow:
-
             GoldCalculationWorkflow,
 
 
         private readonly resultFormatter:
-
             GoldCalculationResultFormatter,
 
 
         private readonly saveHistoryUseCase:
-
             SaveGoldCalculationHistoryUseCase,
 
 
         promptFormatter?:
-
             GoldCalculationPromptFormatter
 
 
@@ -115,11 +100,10 @@ implements TelegramConversationFlow {
 
 
 
-
-
     canHandle(
 
-        state: string
+        state:
+            string
 
     ): boolean {
 
@@ -128,7 +112,8 @@ implements TelegramConversationFlow {
 
             GoldCalculationStep
 
-        ).includes(
+        )
+        .includes(
 
             state as GoldCalculationStep
 
@@ -144,14 +129,15 @@ implements TelegramConversationFlow {
 
 
 
-
     async execute(
 
 
-        userId: string,
+        userId:
+            string,
 
 
-        message: string
+        message:
+            string
 
 
     ): Promise<{
@@ -162,8 +148,9 @@ implements TelegramConversationFlow {
 
         metadata?: Record<string, unknown>;
 
-    }> {
+        replyMarkup?: unknown;
 
+    }> {
 
 
 
@@ -184,17 +171,275 @@ implements TelegramConversationFlow {
 
             return {
 
-                type: "text",
+
+                type:
+                    "text",
+
 
                 content:
+                    "❌ جلسه محاسبه پیدا نشد"
 
-                    "Session not found"
 
             };
 
 
         }
 
+
+
+
+
+
+        const normalizedMessage =
+
+            message.trim().toLowerCase();
+
+
+
+
+
+        if (
+
+            normalizedMessage === "back"
+
+            ||
+
+            normalizedMessage === "بازگشت"
+
+            ||
+
+            normalizedMessage === "⬅️ اصلاح"
+
+            ||
+
+            normalizedMessage === "اصلاح"
+
+        ) {
+
+
+
+            const result =
+
+                this.workflow.goBack(
+
+                    session.data
+
+                );
+
+
+
+
+
+            if (result.error) {
+
+
+                return {
+
+
+                    type:
+                        "text",
+
+
+                    content:
+                        result.error.join("\n")
+
+
+                };
+
+
+            }
+
+
+
+
+
+            session.state =
+
+                result.nextStep!;
+
+
+            session.data =
+
+                result.updatedData!;
+
+
+            session.updatedAt =
+
+                Date.now();
+
+
+
+
+
+            await this.sessionStore.save(
+
+                session
+
+            );
+
+
+
+
+
+            const prompt =
+
+                this.promptFormatter.format(
+
+                    result.nextStep!
+
+                );
+
+
+
+
+
+            return {
+
+
+                type:
+                    "text",
+
+
+                content:
+
+                    `⬅️ به مرحله قبل برگشتید\n\n${prompt.text}`,
+
+
+                replyMarkup:
+
+                    prompt.replyMarkup
+
+
+            };
+
+
+        }
+
+
+
+
+
+
+
+        const promptResponse =
+
+            (step: GoldCalculationStep) => {
+
+
+                const prompt =
+
+                    this.promptFormatter.format(step);
+
+
+
+                return {
+
+
+                    type:
+                        "text" as const,
+
+
+                    content:
+                        prompt.text,
+
+
+                    replyMarkup:
+                        prompt.replyMarkup
+
+
+                };
+
+
+            };
+
+
+
+
+
+
+
+
+        if (
+
+            session.state ===
+
+            GoldCalculationStep.WAITING_PRICE_SELECTION
+
+        ) {
+
+
+
+            if (
+
+                message === "MANUAL"
+
+                ||
+
+                message === "دستی"
+
+            ) {
+
+
+                const result =
+
+                    this.workflow.selectManualPrice(
+
+                        session.data
+
+                    );
+
+
+
+                session.state =
+                    result.nextStep!;
+
+
+                session.data =
+                    result.updatedData!;
+
+
+                session.updatedAt =
+                    Date.now();
+
+
+
+
+                await this.sessionStore.save(
+
+                    session
+
+                );
+
+
+
+                return promptResponse(
+
+                    result.nextStep!
+
+                );
+
+
+            }
+
+
+
+
+
+            return {
+
+
+                type:
+                    "text",
+
+
+                content:
+                    "لطفاً یکی از گزینه‌های قیمت بازار یا دستی را انتخاب کنید"
+
+
+            };
+
+
+        }
 
 
 
@@ -214,8 +459,6 @@ implements TelegramConversationFlow {
 
 
 
-
-
         if (
 
             Number.isNaN(value)
@@ -225,17 +468,19 @@ implements TelegramConversationFlow {
 
             return {
 
-                type: "text",
+
+                type:
+                    "text",
+
 
                 content:
+                    "❌ لطفاً فقط عدد وارد کنید"
 
-                    "Please enter a valid number"
 
             };
 
 
         }
-
 
 
 
@@ -248,7 +493,6 @@ implements TelegramConversationFlow {
             this.workflow.execute(
 
 
-
                 session.state as GoldCalculationStep,
 
 
@@ -258,10 +502,7 @@ implements TelegramConversationFlow {
                 value
 
 
-
             );
-
-
 
 
 
@@ -273,11 +514,14 @@ implements TelegramConversationFlow {
 
             return {
 
-                type: "text",
+
+                type:
+                    "text",
+
 
                 content:
-
                     result.error.join("\n")
+
 
             };
 
@@ -290,25 +534,61 @@ implements TelegramConversationFlow {
 
 
 
-
-
         if (result.completed) {
 
 
+            const response = {
 
 
-            await this.saveHistoryUseCase.execute(
+                type:
+                    "text" as const,
 
 
-                userId,
+                content:
+
+                    this.resultFormatter.format(
+
+                        result.result!
+
+                    )
 
 
-                result.updatedData!,
+            };
 
 
-                result.result!
 
-            );
+
+
+            try {
+
+
+                await this.saveHistoryUseCase.execute(
+
+                    userId,
+
+                    result.updatedData!,
+
+                    result.result!
+
+                );
+
+
+            }
+
+            catch(error) {
+
+
+                console.error(
+
+                    "GOLD CALCULATION HISTORY SAVE FAILED",
+
+                    error
+
+                );
+
+
+            }
+
 
 
 
@@ -322,27 +602,10 @@ implements TelegramConversationFlow {
 
 
 
-
-
-
-            return {
-
-                type: "text",
-
-                content:
-
-                    this.resultFormatter.format(
-
-                        result.result!
-
-                    )
-
-            };
+            return response;
 
 
         }
-
-
 
 
 
@@ -370,8 +633,6 @@ implements TelegramConversationFlow {
 
 
 
-
-
         await this.sessionStore.save(
 
             session
@@ -382,25 +643,12 @@ implements TelegramConversationFlow {
 
 
 
+        return promptResponse(
 
+            result.nextStep!
 
-        return {
-
-            type: "text",
-
-            content:
-
-                this.promptFormatter.format(
-
-                    result.nextStep!
-
-                )
-
-        };
-
+        );
 
     }
-
-
 
 }

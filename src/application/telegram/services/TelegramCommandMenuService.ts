@@ -23,7 +23,6 @@ export class TelegramCommandMenuService {
 
 
 
-
     async registerCommands():
 
         Promise<void> {
@@ -76,6 +75,36 @@ export class TelegramCommandMenuService {
                     description:
 
                         "قیمت لحظه‌ای طلا"
+
+                },
+
+
+
+                {
+
+                    command:
+
+                        "vip",
+
+
+                    description:
+
+                        "فعال‌سازی دسترسی VIP"
+
+                },
+
+
+
+                {
+
+                    command:
+
+                        "strategy_a",
+
+
+                    description:
+
+                        "سیگنال StrategyA انس طلا"
 
                 }
 

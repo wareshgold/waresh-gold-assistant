@@ -58,8 +58,14 @@ from "../application/telegram/flows/TelegramConversationManager";
 import { GoldCalculationConversationFlow }
 from "../application/telegram/flows/GoldCalculationConversationFlow";
 
+import { ReverseGoldConversationFlow }
+from "../application/telegram/flows/ReverseGoldConversationFlow";
+
 import { GoldCalculationWorkflow }
 from "../application/gold/workflows/GoldCalculationWorkflow";
+
+import { GoldCalculationHistoryManager }
+from "../application/gold/workflows/GoldCalculationHistoryManager";
 
 import { GoldCalculationValidator }
 from "../application/gold/validation/GoldCalculationValidator";
@@ -97,12 +103,14 @@ from "../application/telegram/presentation/TelegramMessageBuilder";
 import { MarketBubbleMessageFormatter }
 from "../application/telegram/presentation/MarketBubbleMessageFormatter";
 
+import { MarketAnalyticsMessageFormatter }
+from "../application/telegram/presentation/MarketAnalyticsMessageFormatter";
+
 import { GoldCalculationResultFormatter }
 from "../application/telegram/presentation/GoldCalculationResultFormatter";
 
 import { TelegramNumberFormatter }
 from "../application/telegram/presentation/TelegramNumberFormatter";
-
 
 
 
@@ -120,63 +128,64 @@ export class ApplicationContainer {
 
 
 
-
-
     constructor() {
 
 
 
         const messageProvider =
 
-            createTelegramMessageProvider(
+            createTelegramMessageProvider({
 
-                {
+                TELEGRAM_MARKET_SOURCE_URL:
 
-                    TELEGRAM_MARKET_SOURCE_URL:
+                    "https://example.com"
 
-                        "https://example.com"
+            } as any);
 
-                } as any
 
-            );
+
+
+
+        const historyRepository = {
+
+            async save() {},
+
+            async getByUserId() {
+
+                return [];
+
+            }
+
+        };
+
+
+
 
 
         const saveGoldCalculationHistoryUseCase =
 
             new SaveGoldCalculationHistoryUseCase(
 
-                {
-                    async save() {},
-
-                    async getByUserId() {
-
-                        return [];
-
-                    }
-
-                }
+                historyRepository
 
             );
+
+
+
 
 
         const getGoldCalculationHistoryUseCase =
 
             new GetGoldCalculationHistoryUseCase(
 
-                {
-                    async save() {},
+                historyRepository
 
-                    async getByUserId() {
+            );
 
-                        return [];
 
-                    }
 
-                }
 
-        );
 
-        
         const marketProvider =
 
             new TelegramMarketPriceProvider(
@@ -331,7 +340,9 @@ export class ApplicationContainer {
 
                 calculateGoldFormulaUseCase,
 
-                new GoldCalculationValidator()
+                new GoldCalculationValidator(),
+
+                new GoldCalculationHistoryManager()
 
             );
 
@@ -355,11 +366,19 @@ export class ApplicationContainer {
 
 
 
+        const telegramNumberFormatter =
+
+            new TelegramNumberFormatter();
+
+
+
+
+
         const goldCalculationResultFormatter =
 
             new GoldCalculationResultFormatter(
 
-                new TelegramNumberFormatter()
+                telegramNumberFormatter
 
             );
 
@@ -385,6 +404,16 @@ export class ApplicationContainer {
 
                         saveGoldCalculationHistoryUseCase
 
+                    ),
+
+                    new ReverseGoldConversationFlow(
+
+                        sessionStore,
+
+                        this.calculateReverseGoldUseCase,
+
+                        telegramNumberFormatter
+
                     )
 
                 ]
@@ -399,7 +428,23 @@ export class ApplicationContainer {
 
             new MarketBubbleMessageFormatter(
 
-                new TelegramMessageBuilder()
+                new TelegramMessageBuilder(),
+
+                telegramNumberFormatter
+
+            );
+
+
+
+
+
+        const marketAnalyticsMessageFormatter =
+
+            new MarketAnalyticsMessageFormatter(
+
+                new TelegramMessageBuilder(),
+
+                telegramNumberFormatter
 
             );
 
@@ -429,7 +474,9 @@ export class ApplicationContainer {
 
                 profileStore,
 
-                marketBubbleMessageFormatter
+                marketBubbleMessageFormatter,
+
+                marketAnalyticsMessageFormatter
 
             );
 
@@ -461,8 +508,6 @@ export class ApplicationContainer {
 
             );
 
-
     }
-
 
 }

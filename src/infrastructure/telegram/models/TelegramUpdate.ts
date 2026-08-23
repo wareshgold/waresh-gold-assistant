@@ -11,6 +11,12 @@ export interface TelegramUpdate {
 
             id: number;
 
+            username?: string;
+
+            title?: string;
+
+            type?: string;
+
         };
 
 
@@ -29,12 +35,42 @@ export interface TelegramUpdate {
 
 
 
+        date?: number;
+
+
+
         text?: string;
 
 
     };
 
 
+
+    channel_post?: {
+
+
+        chat?: {
+
+            id: number;
+
+            username?: string;
+
+            title?: string;
+
+            type?: string;
+
+        };
+
+
+
+        date?: number;
+
+
+
+        text?: string;
+
+
+    };
 
 
 
@@ -75,7 +111,6 @@ export interface TelegramUpdate {
 
 
             };
-
 
             message_id?: number;
 

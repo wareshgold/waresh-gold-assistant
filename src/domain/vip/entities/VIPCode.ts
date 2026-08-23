@@ -1,0 +1,88 @@
+import {
+    VIPFeature
+} from "../VIPFeature";
+
+export interface VIPCodeProps {
+    id: string;
+    code: string;
+    feature: VIPFeature;
+    expiresAt: Date | null;
+    createdAt: Date;
+    redeemedBy?: string | null;
+    redeemedAt?: Date | null;
+
+    maxUsers?: number;
+    usedCount?: number;
+}
+
+export class VIPCode {
+
+    readonly id: string;
+    readonly code: string;
+    readonly feature: VIPFeature;
+    readonly expiresAt: Date | null;
+    readonly createdAt: Date;
+    readonly redeemedBy: string | null;
+    readonly redeemedAt: Date | null;
+
+    private constructor(props: VIPCodeProps) {
+        this.id = props.id;
+        this.code = VIPCode.normalizeCode(props.code);
+        this.feature = props.feature;
+        this.expiresAt = props.expiresAt;
+        this.createdAt = props.createdAt;
+        this.redeemedBy = props.redeemedBy ?? null;
+        this.redeemedAt = props.redeemedAt ?? null;
+    }
+
+    static create(props: VIPCodeProps): VIPCode {
+        if (!props.code.trim()) {
+            throw new Error("VIP code is required");
+        }
+
+        if (!props.id.trim()) {
+            throw new Error("VIP code id is required");
+        }
+
+        if (
+            props.redeemedBy !== undefined &&
+            props.redeemedBy !== null &&
+            !props.redeemedBy.trim()
+        ) {
+            throw new Error("redeemedBy cannot be empty");
+        }
+
+        return new VIPCode(props);
+    }
+
+    private static normalizeCode(value: string): string {
+        const normalized = value.trim();
+
+        const strategyNormalized = normalized.replace(
+            /^strategy[-_]?a(?=-|_|$)/i,
+            "StrategyA"
+        );
+
+        return strategyNormalized.replace(
+            /(-|_)([^-_]+)$/,
+            (_, separator, suffix) =>
+                `${separator}${suffix.toUpperCase()}`
+        );
+    }
+
+    isExpired(now: Date = new Date()): boolean {
+        if (!this.expiresAt) {
+            return false;
+        }
+
+        return this.expiresAt.getTime() <= now.getTime();
+    }
+
+    isUsed(): boolean {
+        return this.redeemedBy !== null;
+    }
+
+    canActivate(now: Date = new Date()): boolean {
+        return !this.isExpired(now) && !this.isUsed();
+    }
+}

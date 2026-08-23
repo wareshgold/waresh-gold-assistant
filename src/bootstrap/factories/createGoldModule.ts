@@ -2,12 +2,20 @@ import { GoldBubbleCalculator }
 from "../../domain/market/services/GoldBubbleCalculator";
 
 
+import { CalculateGoldPriceUseCase }
+from "../../application/gold/CalculateGoldPriceUseCase";
+
+
 import { CalculateGoldFormulaUseCase }
 from "../../application/gold/CalculateGoldFormulaUseCase";
 
 
 import { CalculateReverseGoldUseCase }
 from "../../application/gold/CalculateReverseGoldUseCase";
+
+
+import { CalculateInvoiceUseCase }
+from "../../application/gold/CalculateInvoiceUseCase";
 
 
 import { ReverseGoldCalculator }
@@ -26,9 +34,19 @@ import { GoldCalculationValidator }
 from "../../application/gold/validation/GoldCalculationValidator";
 
 
+import { GoldCalculationHistoryManager }
+from "../../application/gold/workflows/GoldCalculationHistoryManager";
+
+
+
 
 
 export interface GoldModule {
+
+
+
+    calculateGoldPriceUseCase:
+        CalculateGoldPriceUseCase;
 
 
 
@@ -39,6 +57,11 @@ export interface GoldModule {
 
     calculateReverseGoldUseCase:
         CalculateReverseGoldUseCase;
+
+
+
+    calculateInvoiceUseCase:
+        CalculateInvoiceUseCase;
 
 
 
@@ -60,6 +83,8 @@ export interface GoldModule {
 
 
 
+
+
 export function createGoldModule()
 : GoldModule {
 
@@ -73,6 +98,22 @@ export function createGoldModule()
 
 
 
+
+    const calculateGoldPriceUseCase =
+
+        new CalculateGoldPriceUseCase(
+
+            goldRuleEngine
+
+        );
+
+
+
+
+
+
+
+
     const calculateGoldFormulaUseCase =
 
         new CalculateGoldFormulaUseCase(
@@ -80,6 +121,8 @@ export function createGoldModule()
             goldRuleEngine
 
         );
+
+
 
 
 
@@ -100,9 +143,34 @@ export function createGoldModule()
 
 
 
+
+    const calculateInvoiceUseCase =
+
+        new CalculateInvoiceUseCase();
+
+
+
+
+
+
+
+
     const goldBubbleCalculator =
 
         new GoldBubbleCalculator();
+
+
+
+
+
+
+
+
+
+    const goldCalculationHistoryManager =
+
+        new GoldCalculationHistoryManager();
+
 
 
 
@@ -116,9 +184,13 @@ export function createGoldModule()
 
             calculateGoldFormulaUseCase,
 
-            new GoldCalculationValidator()
+            new GoldCalculationValidator(),
+
+            goldCalculationHistoryManager
 
         );
+
+
 
 
 
@@ -130,10 +202,16 @@ export function createGoldModule()
 
 
 
+        calculateGoldPriceUseCase,
+
+
         calculateGoldFormulaUseCase,
 
 
         calculateReverseGoldUseCase,
+
+
+        calculateInvoiceUseCase,
 
 
         goldBubbleCalculator,

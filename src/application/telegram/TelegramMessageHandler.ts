@@ -1,234 +1,69 @@
-import { TelegramCommandExecutor }
-from "./interfaces/TelegramCommandExecutor";
+import {
+    TelegramCommandExecutor
+} from "./interfaces/TelegramCommandExecutor";
 
+import {
+    IncomingMessage
+} from "../common/models/IncomingMessage";
 
-import { IncomingMessage }
-from "../common/models/IncomingMessage";
+import {
+    TelegramResponseFormatter
+} from "./TelegramResponseFormatter";
 
+import {
+    TelegramReplyKeyboardBuilder
+} from "./keyboards/TelegramReplyKeyboardBuilder";
 
-import { TelegramResponseFormatter }
-from "./TelegramResponseFormatter";
-
-
-
-
+import {
+    TelegramMainMenu
+} from "./menu/TelegramMainMenu";
 
 export interface TelegramHandledResponse {
-
-
     content: string;
-
-
     replyMarkup?: any;
-
-
 }
 
-
-
-
-
-
-
 export class TelegramMessageHandler {
-
-
-
-
-
+    private readonly replyKeyboardBuilder = new TelegramReplyKeyboardBuilder();
 
     constructor(
-
-
-        private readonly commandService:
-            TelegramCommandExecutor,
-
-
-        private readonly formatter?:
-            TelegramResponseFormatter
-
-
-
+        private readonly commandService: TelegramCommandExecutor,
+        private readonly formatter: TelegramResponseFormatter
     ) {}
 
-
-
-
-
-
-
-
-
-
-
-    async handle(
-
-
-        message:
-            IncomingMessage
-
-
-    ): Promise<string> {
-
-
-
-        const response =
-
-            await this.commandService.execute(
-
-                message
-
-            );
-
-
-
-
+    async handle(message: IncomingMessage): Promise<string> {
+        const response = await this.commandService.execute(message);
 
         if (!response) {
-
-
             return "";
-
-
         }
-
-
-
-
-
-
 
         if (typeof response === "string") {
-
-
-            return response;
-
-
+            return this.formatter.format(response);
         }
 
-
-
-
-
-
-
-        return response.content ?? "";
-
-
-
+        return this.formatter.format(response.content ?? "");
     }
-
-
-
-
-
-
-
-
-
-
-
 
     async handleResponse(
-
-
-        message:
-            IncomingMessage
-
-
+        message: IncomingMessage
     ): Promise<TelegramHandledResponse | string> {
-
-
-
-        const response =
-
-            await this.commandService.execute(
-
-                message
-
-            );
-
-
-
-
-
-
+        const response = await this.commandService.execute(message);
 
         if (!response) {
-
-
             return "";
-
-
         }
-
-
-
-
-
-
 
         if (typeof response === "string") {
-
-
-            return response;
-
-
+            return this.formatter.format(response);
         }
 
-
-
-
-
-
-
-
         return {
-
-
             ...response,
-
-
-
-            content:
-
-
-
-                this.formatter
-
-
-
-                    ? this.formatter.format(
-
-
-                        {
-
-
-                            type: "text",
-
-
-                            content: response.content ?? ""
-
-
-                        }
-
-
-                    )
-
-
-                    : response.content
-
-
-
+            content: this.formatter.format(response.content ?? ""),
+            replyMarkup:
+                response.replyMarkup ??
+                this.replyKeyboardBuilder.build(TelegramMainMenu)
         };
-
-
-
     }
-
-
-
-
-
-
 }

@@ -24,6 +24,7 @@ from "../commands/TelegramCommandHandler";
 
 
 
+
 export interface TelegramActionExecutionContext {
 
     userId?: string;
@@ -108,7 +109,9 @@ export class TelegramActionExecutor {
 
 
 
-    ): Promise<TelegramCommandResponse | string> {
+    ):
+
+        Promise<TelegramCommandResponse | string> {
 
 
 
@@ -182,7 +185,7 @@ export class TelegramActionExecutor {
 
 
 
-        return this.router.execute(
+        return await this.router.execute(
 
             context
 

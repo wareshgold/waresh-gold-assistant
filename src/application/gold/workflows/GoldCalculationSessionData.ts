@@ -1,55 +1,83 @@
+import {
+    GoldCalculationHistoryEntry,
+    GoldCalculationPriceSource
+}
+from "./GoldCalculationHistory";
+
+
 export interface GoldCalculationSessionData {
 
-
-    weight: number | null;
-
-
-    goldPrice: number | null;
+    weight:
+        number | null;
 
 
-    laborPercent: number | null;
+    goldPrice:
+        number | null;
 
 
-    profitPercent: number | null;
+    priceSource:
+        GoldCalculationPriceSource | null;
 
 
-    taxPercent: number | null;
+    laborPercent:
+        number | null;
 
 
-    discount: number | null;
+    profitPercent:
+        number | null;
 
+
+    taxPercent:
+        number | null;
+
+
+    discount:
+        number | null;
+
+
+    history:
+        GoldCalculationHistoryEntry[];
 
 }
-
 
 
 export function createGoldCalculationSessionData():
 
 GoldCalculationSessionData {
 
-
     return {
 
-
-        weight: null,
-
-
-        goldPrice: null,
+        weight:
+            null,
 
 
-        laborPercent: null,
+        goldPrice:
+            null,
 
 
-        profitPercent: null,
+        priceSource:
+            null,
 
 
-        taxPercent: null,
+        laborPercent:
+            null,
 
 
-        discount: null
+        profitPercent:
+            null,
 
+
+        taxPercent:
+            null,
+
+
+        discount:
+            null,
+
+
+        history:
+            []
 
     };
-
 
 }

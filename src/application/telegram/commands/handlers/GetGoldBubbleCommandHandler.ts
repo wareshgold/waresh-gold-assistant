@@ -28,6 +28,19 @@ import {
 from "../../presentation/TelegramMessageBuilder";
 
 
+import {
+    TelegramNumberFormatter
+}
+from "../../presentation/TelegramNumberFormatter";
+
+
+import {
+    GoldBubbleResult
+}
+from "../../../../domain/market/services/GoldBubbleCalculator";
+
+
+
 
 
 
@@ -42,6 +55,15 @@ implements TelegramCommandHandler {
 
 
 
+    private readonly marketBubbleMessageFormatter:
+        MarketBubbleMessageFormatter;
+
+
+
+
+
+
+
     constructor(
 
 
@@ -49,17 +71,30 @@ implements TelegramCommandHandler {
             GetGoldBubbleUseCase,
 
 
-        private readonly marketBubbleMessageFormatter:
-            MarketBubbleMessageFormatter =
-
-                new MarketBubbleMessageFormatter(
-
-                    new TelegramMessageBuilder()
-
-                )
+        marketBubbleMessageFormatter?:
+            MarketBubbleMessageFormatter
 
 
-    ) {}
+    ) {
+
+
+
+        this.marketBubbleMessageFormatter =
+
+            marketBubbleMessageFormatter
+
+            ??
+
+            new MarketBubbleMessageFormatter(
+
+                new TelegramMessageBuilder(),
+
+                new TelegramNumberFormatter()
+
+            );
+
+
+    }
 
 
 
@@ -117,7 +152,6 @@ implements TelegramCommandHandler {
 
         return (
 
-
             normalizedCommand === "/bubble"
 
             ||
@@ -127,7 +161,6 @@ implements TelegramCommandHandler {
             ||
 
             normalizedCommand === "حباب طلا"
-
 
         );
 
@@ -160,6 +193,16 @@ implements TelegramCommandHandler {
 
 
 
+        const bubble:
+
+            GoldBubbleResult =
+
+            response.data as GoldBubbleResult;
+
+
+
+
+
 
         return {
 
@@ -178,7 +221,7 @@ implements TelegramCommandHandler {
 
                 this.marketBubbleMessageFormatter.format(
 
-                    response.data as any
+                    bubble
 
                 )
 

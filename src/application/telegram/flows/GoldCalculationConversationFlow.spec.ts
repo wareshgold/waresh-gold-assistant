@@ -21,6 +21,10 @@ import { GoldCalculationValidator }
 from "../../gold/validation/GoldCalculationValidator";
 
 
+import { GoldCalculationHistoryManager }
+from "../../gold/workflows/GoldCalculationHistoryManager";
+
+
 import { createGoldRuleEngine }
 from "../../../domain/gold/services/createGoldRuleEngine";
 
@@ -67,7 +71,9 @@ describe(
 
                         useCase,
 
-                        new GoldCalculationValidator()
+                        new GoldCalculationValidator(),
+
+                        new GoldCalculationHistoryManager()
 
                     );
 
@@ -132,8 +138,25 @@ describe(
                     state:
                         "GOLD_CALCULATION_WAITING_WEIGHT",
 
-                    data:
-                        {},
+                    data: {
+
+                        weight: null,
+
+                        goldPrice: null,
+
+                        priceSource: null,
+
+                        laborPercent: null,
+
+                        profitPercent: null,
+
+                        taxPercent: null,
+
+                        discount: null,
+
+                        history: []
+
+                    },
 
                     updatedAt:
                         Date.now()
@@ -142,28 +165,66 @@ describe(
 
 
 
+
+
                 await flow.execute(
+
                     "user-1",
+
                     "5"
+
                 );
 
 
+
+
+
                 await flow.execute(
+
                     "user-1",
+
+                    "MANUAL"
+
+                );
+
+
+
+
+
+                await flow.execute(
+
+                    "user-1",
+
                     "18000000"
+
                 );
 
 
+
+
+
                 await flow.execute(
+
                     "user-1",
+
                     "15"
+
                 );
+
+
+
 
 
                 await flow.execute(
+
                     "user-1",
+
                     "7"
+
                 );
+
+
+
 
 
                 const result =
@@ -178,39 +239,62 @@ describe(
 
 
 
+
+
                 expect(
+
                     result.type
+
                 )
+
                 .toBe(
+
                     "text"
+
                 );
+
+
 
 
 
                 expect(
+
                     result.content
+
                 )
+
                 .contain(
+
                     "نتیجه محاسبه طلا"
+
                 );
+
+
 
 
 
                 const session =
 
                     await sessionStore.get(
+
                         "user-1"
+
                     );
 
 
 
+
+
                 expect(session)
+
                     .toBeNull();
 
 
             }
+
         );
 
 
     }
+
 );

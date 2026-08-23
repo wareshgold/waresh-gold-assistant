@@ -33,7 +33,6 @@ export class TelegramConversationManager {
 
 
 
-
     async execute(
 
         userId: string,
@@ -74,7 +73,6 @@ export class TelegramConversationManager {
 
 
 
-
         const flow =
 
             this.flows.find(
@@ -95,7 +93,6 @@ export class TelegramConversationManager {
 
 
 
-
         if (!flow) {
 
 
@@ -108,12 +105,31 @@ export class TelegramConversationManager {
 
 
 
-
         return flow.execute(
 
             userId,
 
             message
+
+        );
+
+
+    }
+
+
+
+
+
+    async cancel(
+
+        userId: string
+
+    ): Promise<void> {
+
+
+        await this.sessionStore.delete(
+
+            userId
 
         );
 

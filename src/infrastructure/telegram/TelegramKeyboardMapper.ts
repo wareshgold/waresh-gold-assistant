@@ -1,190 +1,49 @@
 import {
     TelegramKeyboardMarkup
-}
-from "../../application/telegram/keyboards/TelegramKeyboardMarkup";
-
-
-
+} from "../../application/telegram/keyboards/TelegramKeyboardMarkup";
 
 export interface TelegramReplyMarkup {
-
-
     keyboard: {
-
-
         text: string;
-
-
     }[][];
-
-
-
     resize_keyboard: boolean;
-
-
+    is_persistent: boolean;
 }
-
-
-
-
 
 export interface TelegramInlineMarkup {
-
-
     inline_keyboard: {
-
-
         text: string;
-
-
         callback_data: string;
-
-
     }[][];
-
-
 }
 
-
-
-
-
-
-
 export class TelegramKeyboardMapper {
-
-
-
-
     map(
-
-
-        markup:
-            TelegramKeyboardMarkup
-
-
-    ):
-
-        TelegramReplyMarkup
-        |
-        TelegramInlineMarkup
-        |
-        undefined {
-
-
-
-
-
-        if (
-
-            markup.type === "REPLY"
-
-        ) {
-
-
+        markup: TelegramKeyboardMarkup
+    ): TelegramReplyMarkup | TelegramInlineMarkup | undefined {
+        if (markup.type === "REPLY") {
             return {
-
-
-                keyboard:
-
-                    markup.rows.map(
-
-                        row =>
-
-                            row.map(
-
-                                button => ({
-
-
-                                    text:
-
-                                        button.text
-
-
-                                })
-
-
-                            )
-
-
-                    ),
-
-
-
-                resize_keyboard:
-
-                    true
-
-
+                keyboard: markup.rows.map(row =>
+                    row.map(button => ({
+                        text: button.text
+                    }))
+                ),
+                resize_keyboard: true,
+                is_persistent: true
             };
-
-
         }
 
-
-
-
-
-
-
-        if (
-
-            markup.type === "INLINE"
-
-        ) {
-
-
+        if (markup.type === "INLINE") {
             return {
-
-
-                inline_keyboard:
-
-                    markup.rows.map(
-
-                        row =>
-
-                            row.map(
-
-                                button => ({
-
-
-
-                                    text:
-
-                                        button.text,
-
-
-
-                                    callback_data:
-
-                                        button.actionId ?? ""
-
-
-                                })
-
-
-                            )
-
-
-                    )
-
-
+                inline_keyboard: markup.rows.map(row =>
+                    row.map(button => ({
+                        text: button.text,
+                        callback_data: button.actionId ?? ""
+                    }))
+                )
             };
-
-
         }
-
-
-
-
-
-
 
         return undefined;
-
-
     }
-
-
-
 }

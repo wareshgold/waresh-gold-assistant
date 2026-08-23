@@ -1,3 +1,4 @@
+
 import {
     TelegramCallbackHandler,
 }
@@ -53,6 +54,30 @@ from "./handlers/GetMarketChartCallbackHandler";
 
 
 import {
+    CalculateGoldCallbackHandler,
+}
+from "./handlers/CalculateGoldCallbackHandler";
+
+
+import {
+    CalculateGoldLivePriceCallbackHandler,
+}
+from "./handlers/CalculateGoldLivePriceCallbackHandler";
+
+
+import {
+    CalculateGoldManualPriceCallbackHandler,
+}
+from "./handlers/CalculateGoldManualPriceCallbackHandler";
+
+
+import {
+    BackCalculationCallbackHandler,
+}
+from "./handlers/BackCalculationCallbackHandler";
+
+
+import {
     TelegramActionExecutor,
 }
 from "../actions/TelegramActionExecutor";
@@ -94,7 +119,28 @@ import {
 from "../../../infrastructure/chart/MarketChartImageGenerator";
 
 
+import {
+    TelegramSessionStore,
+}
+from "../state/TelegramSessionStore";
 
+
+import {
+    GoldCalculationWorkflow,
+}
+from "../../gold/workflows/GoldCalculationWorkflow";
+
+
+import {
+    TelegramNumberFormatter,
+}
+from "../presentation/TelegramNumberFormatter";
+
+
+import {
+    GoldPriceResolver,
+}
+from "../../gold/pricing/GoldPriceResolver";
 
 
 
@@ -102,52 +148,55 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-
-
     static create(
 
 
         telegramActionExecutor:
-
             TelegramActionExecutor,
 
 
         telegramNavigationService:
-
             TelegramNavigationService,
 
 
         telegramNavigationStateService:
-
             TelegramNavigationStateService,
 
 
         getMarketChartUseCase:
-
             GetMarketChartUseCase,
 
 
         marketChartRenderer:
-
             MarketChartRenderer,
 
 
         marketChartImageGenerator:
+            MarketChartImageGenerator,
 
-            MarketChartImageGenerator
+
+        sessionStore:
+            TelegramSessionStore,
+
+
+        goldCalculationWorkflow:
+            GoldCalculationWorkflow,
+
+
+        numberFormatter:
+            TelegramNumberFormatter,
+
+
+        goldPriceResolver:
+            GoldPriceResolver
 
 
     ):
-
         TelegramCallbackHandler[] {
 
 
 
-
-
-
         const actionHandlers =
-
 
             TelegramActionCatalog
 
@@ -155,9 +204,7 @@ export class TelegramCallbackHandlerFactory {
 
                 .map(
 
-
                     action =>
-
 
                         new ActionCallbackHandler(
 
@@ -167,11 +214,7 @@ export class TelegramCallbackHandlerFactory {
 
                         )
 
-
                 );
-
-
-
 
 
 
@@ -245,10 +288,54 @@ export class TelegramCallbackHandlerFactory {
 
 
 
+            new CalculateGoldCallbackHandler(
+
+                sessionStore
+
+            ),
+
+
+
+            new CalculateGoldLivePriceCallbackHandler(
+
+                sessionStore,
+
+                goldPriceResolver,
+
+                goldCalculationWorkflow,
+
+                numberFormatter
+
+            ),
+
+
+
+            new CalculateGoldManualPriceCallbackHandler(
+
+                sessionStore,
+
+                goldCalculationWorkflow
+
+            ),
+
+
+
+            new BackCalculationCallbackHandler(
+
+                sessionStore,
+
+                goldCalculationWorkflow
+
+            ),
+
+
+
             ...actionHandlers
 
 
+
         ];
+
 
 
     }

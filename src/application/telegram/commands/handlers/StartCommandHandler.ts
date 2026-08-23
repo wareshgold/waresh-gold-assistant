@@ -23,9 +23,9 @@ from "../../menu/TelegramMenuService";
 
 
 import {
-    TelegramInlineKeyboardBuilder
+    TelegramReplyKeyboardBuilder
 }
-from "../../keyboards/TelegramInlineKeyboardBuilder";
+from "../../keyboards/TelegramReplyKeyboardBuilder";
 
 
 import {
@@ -53,9 +53,9 @@ implements TelegramCommandHandler {
             TelegramMenuService,
 
 
-        private readonly telegramInlineKeyboardBuilder:
+        private readonly telegramReplyKeyboardBuilder:
 
-            TelegramInlineKeyboardBuilder,
+            TelegramReplyKeyboardBuilder,
 
 
         private readonly profileStore?:
@@ -200,14 +200,11 @@ implements TelegramCommandHandler {
 
 
 
-
         const welcomeMessage =
-
 
             isFirstTimeUser
 
                 ?
-
 
 `
 🟡 به وارش گلد (Waresh Gold Assistant) خوش آمدید ${name}
@@ -228,7 +225,6 @@ implements TelegramCommandHandler {
 📐 حل فرمول‌های طلا
 
 🔄 محاسبات معکوس خرید و فروش
-
 📊 تحلیل و تاریخچه بازار
 
 
@@ -251,7 +247,6 @@ implements TelegramCommandHandler {
 `
 
                 :
-
 
 `
 👋 خوش برگشتی ${name}
@@ -279,20 +274,15 @@ implements TelegramCommandHandler {
 
 
 
-
-
         const menuItems =
 
             this.telegramMenuService.getMainMenu();
 
 
 
+        const replyKeyboard =
 
-
-        const inlineKeyboard =
-
-
-            this.telegramInlineKeyboardBuilder.build(
+            this.telegramReplyKeyboardBuilder.build(
 
                 menuItems
 
@@ -300,19 +290,15 @@ implements TelegramCommandHandler {
 
 
 
-
-
         return {
-
 
             content:
 
                 welcomeMessage.trim(),
 
-
             replyMarkup:
 
-                inlineKeyboard
+                replyKeyboard
 
         };
 

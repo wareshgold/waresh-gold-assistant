@@ -27,6 +27,8 @@ export class GetGoldPriceUseCase {
 
 
 
+
+
     async execute():
 
         Promise<ApplicationResponse> {
@@ -45,10 +47,17 @@ export class GetGoldPriceUseCase {
 
 
 
+
+
         return {
 
 
-            type: "text",
+            type:
+
+                "text",
+
+
+
 
 
             content:
@@ -59,19 +68,19 @@ export class GetGoldPriceUseCase {
 
                     "",
 
-                    `💰 طلای ۱۸ عیار:`,
+                    "💰 طلای ۱۸ عیار:",
 
                     `${this.formatNumber(price.gold18Price)} تومان`,
 
                     "",
 
-                    `💵 دلار:`,
+                    "💵 دلار:",
 
                     `${this.formatNumber(price.currencyPrice)} تومان`,
 
                     "",
 
-                    `🌎 اونس جهانی:`,
+                    "🌎 اونس جهانی:",
 
                     `${
                         price.ouncePrice !== null
@@ -81,12 +90,13 @@ export class GetGoldPriceUseCase {
 
                     "",
 
-                    `🕒 بروزرسانی:`,
+                    "🕒 بروزرسانی:",
 
                     price.updatedAt.toLocaleString(
                         "fa-IR",
                         {
-                            timeZone: "Asia/Tehran"
+                            timeZone:
+                                "Asia/Tehran"
                         }
                     )
 
@@ -131,6 +141,8 @@ export class GetGoldPriceUseCase {
 
 
 
+
+
     private formatNumber(
 
         value: number
@@ -142,7 +154,8 @@ export class GetGoldPriceUseCase {
 
             "fa-IR"
 
-        ).format(
+        )
+        .format(
 
             Math.round(value)
 

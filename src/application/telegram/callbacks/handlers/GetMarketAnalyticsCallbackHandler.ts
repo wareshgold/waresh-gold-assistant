@@ -38,8 +38,6 @@ from "../../navigation/TelegramNavigationService";
 
 
 
-
-
 export class GetMarketAnalyticsCallbackHandler
 
 implements TelegramCallbackHandler {
@@ -102,8 +100,6 @@ implements TelegramCallbackHandler {
 
 
 
-
-
     async execute(
 
         context:
@@ -125,7 +121,7 @@ implements TelegramCallbackHandler {
 
 
 
-        if (!result.analytics) {
+        if (!result.analytics || !result.score) {
 
 
             return {
@@ -172,7 +168,9 @@ implements TelegramCallbackHandler {
 
                 this.marketAnalyticsMessageFormatter.format(
 
-                    result.analytics
+                    result.analytics,
+
+                    result.score
 
                 ),
 

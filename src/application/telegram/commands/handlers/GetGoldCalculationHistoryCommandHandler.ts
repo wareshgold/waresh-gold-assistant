@@ -9,22 +9,48 @@ import {
 from "../TelegramCommandHandler";
 
 
-import { GetGoldCalculationHistoryUseCase }
+import {
+    GetGoldCalculationHistoryUseCase
+}
 from "../../../gold/GetGoldCalculationHistoryUseCase";
+
+
+import {
+    TelegramNumberFormatter
+}
+from "../../presentation/TelegramNumberFormatter";
 
 
 
 export class GetGoldCalculationHistoryCommandHandler
+
 implements TelegramCommandHandler {
+
+
+
+    private readonly numberFormatter:
+        TelegramNumberFormatter;
+
+
 
 
 
     constructor(
 
         private readonly getGoldCalculationHistoryUseCase:
-            GetGoldCalculationHistoryUseCase
+            GetGoldCalculationHistoryUseCase,
 
-    ) {}
+        numberFormatter:
+            TelegramNumberFormatter
+
+    ) {
+
+
+        this.numberFormatter = numberFormatter;
+
+
+    }
+
 
 
 
@@ -208,7 +234,7 @@ implements TelegramCommandHandler {
 
                         input.weight !== undefined
 
-                            ? `⚖️ وزن: ${input.weight.toLocaleString("fa-IR")} گرم`
+                            ? `⚖️ وزن: ${this.numberFormatter.format(input.weight)} گرم`
 
                             : "",
 
@@ -216,13 +242,13 @@ implements TelegramCommandHandler {
 
                         input.goldPrice !== undefined
 
-                            ? `💰 قیمت طلا: ${input.goldPrice.toLocaleString("fa-IR")}`
+                            ? `💰 قیمت طلا: ${this.numberFormatter.format(input.goldPrice)}`
 
                             : "",
 
 
 
-                        `💵 مبلغ نهایی: ${result.finalPrice.toLocaleString("fa-IR")} تومان`,
+                        `💵 مبلغ نهایی: ${this.numberFormatter.format(result.finalPrice)} تومان`,
 
 
                         `🕒 ${history.createdAt.toLocaleString("fa-IR")}`
