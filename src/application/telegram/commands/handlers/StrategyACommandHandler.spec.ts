@@ -149,7 +149,7 @@ describe("StrategyACommandHandler", () => {
                 ? response
                 : response.content;
 
-        expect(content).toContain("StrategyA SIGNAL");
+        expect(content).toContain("سیگنال Strategy A");
         expect(content).toContain("XAUUSD");
     });
 });
