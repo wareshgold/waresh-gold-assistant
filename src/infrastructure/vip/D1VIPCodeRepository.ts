@@ -1,5 +1,6 @@
 import {
-    VIPFeature
+    VIPFeature,
+    VIP_FEATURE_StrategyA_SIGNALS
 } from "../../domain/vip/VIPFeature";
 
 import {
@@ -27,6 +28,14 @@ export class D1VIPCodeRepository implements VIPCodeRepository {
     ) {}
 
     async findByCode(code: string): Promise<VIPCode | null> {
+        const normalizedCode = VIPCode.create({
+            id: "lookup",
+            code,
+            feature: VIP_FEATURE_StrategyA_SIGNALS,
+            expiresAt: null,
+            createdAt: new Date()
+        }).code;
+
         const row = await this.db
             .prepare(
                 `SELECT
@@ -41,15 +50,7 @@ export class D1VIPCodeRepository implements VIPCodeRepository {
                  WHERE code = ?
                  LIMIT 1`
             )
-            .bind(
-                VIPCode.create({
-                    id: "lookup",
-                    code,
-                    feature: VIPFeature.StrategyA_SIGNALS,
-                    expiresAt: null,
-                    createdAt: new Date()
-                }).code
-            )
+            .bind(normalizedCode)
             .first<VIPCodeRow>();
 
         if (!row) {
