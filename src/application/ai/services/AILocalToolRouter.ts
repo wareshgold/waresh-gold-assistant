@@ -650,7 +650,7 @@ export class AILocalToolRouter {
 
         const hasGoldDomain =
 
-            /(طلا|بازار|قیمت|حباب|اونس|مثقال|خرید|فروش|تحلیل)/i.test(
+            /(طلا|بازار|قیمت|حباب|انس|مثقال|خرید|فروش|تحلیل)/i.test(
 
                 message
 

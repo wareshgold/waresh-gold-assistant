@@ -10,7 +10,7 @@ export class OutOfDomainGuard {    private readonly inDomainSignals = [
 
         "گرم",
 
-        "اونس",
+        "انس",
 
         "اجرت",
 

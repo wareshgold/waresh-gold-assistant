@@ -186,7 +186,7 @@ implements TelegramCommandHandler {
 
                         `💵 دلار: ${this.numberFormatter.format(item.currencyPrice)}`,
 
-                        `🌎 اونس: ${
+                        `🌎 انس: ${
                             item.ouncePrice !== null
 
                                 ? this.numberFormatter.format(item.ouncePrice)

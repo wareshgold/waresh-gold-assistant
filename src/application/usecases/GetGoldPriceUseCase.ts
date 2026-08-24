@@ -80,7 +80,7 @@ export class GetGoldPriceUseCase {
 
                     "",
 
-                    "🌎 اونس جهانی:",
+                    "🌎 انس جهانی:",
 
                     `${
                         price.ouncePrice !== null

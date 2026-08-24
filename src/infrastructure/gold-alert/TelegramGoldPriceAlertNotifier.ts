@@ -30,7 +30,7 @@ implements GoldPriceAlertNotifier {
                 "",
                 `🟡 طلای ۱۸ عیار: ${format(gold18Price)} تومان`,
                 `💵 دلار: ${format(currencyPrice)} تومان`,
-                `🌎 اونس جهانی: ${ouncePrice === null ? "ناموجود" : `${format(ouncePrice)} دلار`}`,
+                `🌎 انس جهانی: ${ouncePrice === null ? "ناموجود" : `${format(ouncePrice)} دلار`}`,
                 "",
                 `🕒 بروزرسانی: ${updatedAt.toLocaleString("fa-IR", { timeZone: "Asia/Tehran" })}`
             ].join("\n")

@@ -125,7 +125,7 @@ export class TelegramCommandRouter {
 
     private isGoldQuestion(text: string): boolean {
         const goldKeywords = [
-            "گرم", "طلا", "اونس", "مثقال", "عیار",
+            "گرم", "طلا", "انس", "مثقال", "عیار",
             "اجرت", "سود", "مالیات", "حباب", "قیمت",
             "خرید", "فروش", "سکه", "شمش", "دلار",
             "FACTOR", "gram", "gold", "ounce"

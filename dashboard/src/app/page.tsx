@@ -13,7 +13,7 @@ const features = [
   {
     icon: "🟡",
     title: "قیمت لحظه‌ای طلا",
-    description: "قیمت هر گرم طلای ۱۸ عیار، دلار تهران و اونس جهانی، مستقیم از بازار.",
+    description: "قیمت هر گرم طلای ۱۸ عیار، دلار تهران و انس جهانی، مستقیم از بازار.",
   },
   {
     icon: "🧮",
@@ -163,7 +163,7 @@ export default async function Home() {
                 description="نرخ بازار آزاد"
               />
               <PriceCard
-                title="اونس جهانی"
+                title="انس جهانی"
                 value={`${formatToman(market.ouncePrice)} دلار`}
                 icon="🌎"
                 description="قیمت جهانی طلا"
