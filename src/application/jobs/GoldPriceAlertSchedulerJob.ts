@@ -24,6 +24,17 @@ export class GoldPriceAlertSchedulerJob {
     ) {}
 
     async execute(now = new Date()): Promise<void> {
+        // Quiet hours: 12am-6am Iran time (no price alerts)
+        const iranHour = new Date(
+            now.toLocaleString("en-US", {
+                timeZone: "Asia/Tehran"
+            })
+        ).getHours();
+
+        if (iranHour >= 0 && iranHour < 6) {
+            return;
+        }
+
         const alerts = await this.alertService
             .getDueAlerts(now);
 

@@ -5,27 +5,27 @@ import { NavigationAction } from "../navigation/NavigationAction";
 
 export const TelegramAlertsMenu: TelegramMenuItem[] = [
     {
-        id: "alerts.live-price",
-        label: "📌 قیمت لحظه‌ای",
-        action: {
-            type: TelegramMenuActionType.CALLBACK,
-            value: NavigationAction.ALERTS_LIVE_PRICE,
-        },
-    },
-    {
-        id: "alerts.market-analysis",
-        label: "📊 تحلیل و تغییرات بازار",
-        action: {
-            type: TelegramMenuActionType.CALLBACK,
-            value: NavigationAction.ALERTS_MARKET_ANALYSIS,
-        },
-    },
-    {
         id: "alerts.price-target",
         label: "🎯 هشدار رسیدن به قیمت",
         action: {
             type: TelegramMenuActionType.CALLBACK,
             value: NavigationAction.ALERTS_PRICE_TARGET,
+        },
+    },
+    {
+        id: "alerts.periodic-price",
+        label: "🔔 اعلان قیمت خودکار",
+        action: {
+            type: TelegramMenuActionType.CALLBACK,
+            value: NavigationAction.ALERTS_PERIODIC_PRICE,
+        },
+    },
+    {
+        id: "alerts.market-analysis",
+        label: "📊 تحلیل بازار",
+        action: {
+            type: TelegramMenuActionType.CALLBACK,
+            value: NavigationAction.ALERTS_MARKET_ANALYSIS,
         },
     },
     {
