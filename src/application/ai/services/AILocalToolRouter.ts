@@ -879,27 +879,43 @@ export class AILocalToolRouter {
             profitPercent: number;
             taxPercent: number;
             discount?: number;
-        } | null {
+        } | null {        const hasCalculationIntent =
 
+            /(حساب|محاسبه|فاکتور|بگیرم|بخرم|بخر|بشه|باید بشه|چقدر|چنده|میشه|بشه|چقدره)/i.test(
 
-        const hasCalculationIntent =
-
-            /(حساب|محاسبه|فاکتور|بگیرم|بخرم|بخر|بشه|باید بشه)/i.test(
                 message
+
             );
+
 
 
         const hasLabor =
 
-            /(اجرت|کارمزد)/i.test(
+            /(اجرت|کارمزد|اجرت)/i.test(
+
                 message
+
             );
 
 
-        if (
-            !hasCalculationIntent ||
-            !hasLabor
-        ) {
+
+        // Also match simple patterns like "5 گرم طلا با اجرت 10 درصد"
+
+        const hasWeightAndLabor =
+
+            /\d+\s*گرم/.test(message) && /\d+\s*(%|٪|درصد)/.test(message);
+
+
+
+        if (!hasCalculationIntent && !hasWeightAndLabor) {
+
+            return null;
+
+        }
+
+
+
+        if (!hasLabor && !hasWeightAndLabor) {
 
             return null;
 
