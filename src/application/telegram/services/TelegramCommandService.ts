@@ -115,10 +115,7 @@ implements TelegramCommandExecutor {
             normalizedMessage.text.trim();
 
         const normalizedText =
-            text.toLowerCase();
-
-
-        if (
+            text.toLowerCase();        if (
             normalizedText === "/cancel" ||
             normalizedText === "/reset" ||
             normalizedText === "cancel" ||
@@ -128,21 +125,23 @@ implements TelegramCommandExecutor {
         ) {
 
             if (this.conversationManager) {
-
                 await this.conversationManager.cancel(
                     normalizedMessage.userId
                 );
+            }
 
+            if (this.aiSessionManager) {
+                await this.aiSessionManager.stop(
+                    normalizedMessage.userId
+                );
             }
 
             return {
                 type:
                     "text",
-
                 content:
                     "جلسه فعلی لغو شد. از اینجا به بعد می‌تونی دستور یا سؤال جدیدت رو بفرستی."
             };
-
         }
 
 

@@ -75,80 +75,93 @@ export class TelegramUpdateProcessor {
             IngestOunceTickFromTextUseCase
 
 
-    ) {}
-
-
-
-
-
-
-    async process(
-
+    ) {}    async process(
         update:
             TelegramUpdate
+    ): Promise<void> {
 
+        try {
+            await this.processUpdate(update);
+        } catch (error) {
+            console.error("TELEGRAM_UPDATE_ERROR:", error);
+
+            // Try to send error message to user if we have chatId
+            const chatId =
+                update.callback_query?.message?.chat?.id
+                ?? (update as any).message?.chat?.id;
+
+            if (chatId) {
+                try {
+                    await this.sendResponse(
+                        {
+                            type: "text",
+                            content: "متأسفانه خطایی پیش اومد. لطفاً دوباره تلاش کن."
+                        },
+                        String(chatId)
+                    );
+                } catch {
+                    // Can't even send error message
+                }
+            }
+        }
+    }
+
+
+
+    private async processUpdate(
+        update:
+            TelegramUpdate
     ): Promise<void> {
 
 
 
         if (
-
             update.callback_query
-
             &&
-
             this.callbackProcessor
-
         ) {
 
 
 
             const chatId =
-
                 update.callback_query.message?.chat?.id;
 
 
 
             if (!chatId) {
-
-
                 console.warn(
-
                     "Ignoring callback query without chat id"
-
                 );
 
 
-                return;
 
+                return;
             }
 
 
 
 
+
             const response =
-
                 await this.callbackProcessor.process(
-
                     update
-
                 );
 
 
 
 
+
             await this.sendResponse(
-
                 response,
-
                 String(chatId)
-
             );
 
 
-            return;
 
+            return;
         }
+
+
 
 
 
@@ -156,25 +169,21 @@ export class TelegramUpdateProcessor {
 
 
         const message =
-
             this.mapper.map(update);
 
 
 
 
         if (!message) {
-
-
             console.warn(
-
                 "Ignoring unsupported Telegram update"
-
             );
 
 
-            return;
 
+            return;
         }
+
 
 
 
@@ -183,15 +192,15 @@ export class TelegramUpdateProcessor {
             this.ingestOunceTickFromTextUseCase &&
             message.text.trim()
         ) {
-
             const tick =
                 await this.ingestOunceTickFromTextUseCase.execute(
                     message.text,
                     message.timestamp
                 );
 
-            if (tick) {
 
+
+            if (tick) {
                 console.log(
                     "OUNCE_TICK_INGESTED",
                     {
@@ -200,16 +209,19 @@ export class TelegramUpdateProcessor {
                     }
                 );
 
+
+
                 if (
                     message.source === "channel_post"
                 ) {
                     return;
                 }
 
+
+
                 if (
                     !message.text.trim().startsWith("/")
                 ) {
-
                     await this.sendResponse(
                         {
                             type: "text",
@@ -219,12 +231,15 @@ export class TelegramUpdateProcessor {
                         String(message.chatId)
                     );
 
+
+
                     return;
                 }
 
             }
 
         }
+
 
 
 
@@ -238,6 +253,8 @@ export class TelegramUpdateProcessor {
 
 
 
+
+
         const response =
 
 
@@ -245,26 +262,30 @@ export class TelegramUpdateProcessor {
 
 
 
-                userId:
 
+
+                userId:
                     message.userId,
 
 
 
-                text:
 
+
+                text:
                     message.text,
 
 
 
-                username:
 
+
+                username:
                     message.username,
 
 
 
-                firstName:
 
+
+                firstName:
                     message.firstName
 
 
@@ -276,17 +297,14 @@ export class TelegramUpdateProcessor {
 
 
 
+
         await this.sendResponse(
-
             response,
-
             String(
-
                 message.chatId
-
             )
-
         );
+
 
 
 
