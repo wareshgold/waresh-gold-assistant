@@ -146,6 +146,26 @@ import {
 }
 from "../../gold/pricing/GoldPriceResolver";
 
+import {
+    BubbleAlertService,
+}
+from "../../bubble-alert/BubbleAlertService";
+
+import {
+    GoldPriceAlertService,
+}
+from "../../gold-alert/GoldPriceAlertService";
+
+import {
+    BubbleThresholdCallbackHandler,
+}
+from "./handlers/BubbleThresholdCallbackHandler";
+
+import {
+    AlertIntervalCallbackHandler,
+}
+from "./handlers/AlertIntervalCallbackHandler";
+
 
 
 export class TelegramCallbackHandlerFactory {
@@ -188,11 +208,17 @@ export class TelegramCallbackHandlerFactory {
 
 
         numberFormatter:
-            TelegramNumberFormatter,
+            TelegramNumberFormatter,        goldPriceResolver:
+            GoldPriceResolver,
 
 
-        goldPriceResolver:
-            GoldPriceResolver
+        bubbleAlertService:
+            BubbleAlertService,
+
+
+        alertService:
+            GoldPriceAlertService
+
 
 
     ):
@@ -338,7 +364,15 @@ export class TelegramCallbackHandlerFactory {
 
 
 
-            ...actionHandlers
+            ...actionHandlers,
+
+            new BubbleThresholdCallbackHandler(
+                bubbleAlertService
+            ),
+
+            new AlertIntervalCallbackHandler(
+                alertService
+            )
 
 
 

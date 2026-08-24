@@ -41,6 +41,9 @@ import { IngestOunceTickFromTextUseCase } from "../../application/strategy-a/Ing
 import { GoldPriceAlertService } from "../../application/gold-alert/GoldPriceAlertService";
 import { MarketReportService } from "../../application/market-report/MarketReportService";
 import { CalculateInvoiceUseCase } from "../../application/gold/CalculateInvoiceUseCase";
+import { BubbleAlertService } from "../../application/bubble-alert/BubbleAlertService";
+import { D1BubbleAlertRepository } from "../../infrastructure/bubble-alert/D1BubbleAlertRepository";
+import { D1GoldPriceAlertRepository } from "../../infrastructure/gold-alert/D1GoldPriceAlertRepository";
 
 interface Dependencies {
     getGoldPriceUseCase: any;
@@ -163,7 +166,9 @@ export function createTelegramModule(env: AppEnv, dependencies: Dependencies) {
         dependencies.sessionStore,
         dependencies.goldCalculationWorkflow,
         telegramNumberFormatter,
-        dependencies.goldPriceResolver
+        dependencies.goldPriceResolver,
+        dependencies.bubbleAlertService ?? new BubbleAlertService(new D1BubbleAlertRepository(env.waresh_gold_db)),
+        dependencies.goldPriceAlertService ?? new GoldPriceAlertService(new D1GoldPriceAlertRepository(env.waresh_gold_db))
     );
 
     const callbackProcessor = new TelegramCallbackProcessor(
