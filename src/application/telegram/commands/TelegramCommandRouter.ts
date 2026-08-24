@@ -84,7 +84,10 @@ export class TelegramCommandRouter {
             "📊 سیگنال استراتژی a": "/strategy-a",
             "📜 تاریخچه قیمت": "/history",
             "📜 تاریخچه محاسبات": "/calc-history",
-            "🔄 محاسبه معکوس طلا": "/reverse-labor"
+            "🔄 محاسبه معکوس طلا": "/reverse-labor",
+            "ℹ️ درباره ربات": "/about",
+            "درباره ربات": "/about",
+            "درباره": "/about"
         };
 
         if (exactAliases[normalized]) {

@@ -12,6 +12,7 @@ import { ReverseGoldCommandHandler } from "./handlers/ReverseGoldCommandHandler"
 import { InvoiceCommandHandler } from "./handlers/InvoiceCommandHandler";
 import { AICommandHandler } from "./handlers/AICommandHandler";
 import { ExitCommandHandler } from "./handlers/ExitCommandHandler";
+import { AboutCommandHandler } from "./handlers/AboutCommandHandler";
 import { VIPCommandHandler } from "./handlers/VIPCommandHandler";
 import { StrategyACommandHandler } from "./handlers/StrategyACommandHandler";
 import { GoldPriceAlertCommandHandler } from "./handlers/GoldPriceAlertCommandHandler";
@@ -139,6 +140,7 @@ export class TelegramCommandRegistry {
         }
 
         handlers.push(new ExitCommandHandler(sessionStore));
+        handlers.push(new AboutCommandHandler());
         commandRouter = new TelegramCommandRouter(handlers);
         return commandRouter;
     }

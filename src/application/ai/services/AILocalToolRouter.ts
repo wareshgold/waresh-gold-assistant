@@ -168,32 +168,18 @@ export class AILocalToolRouter {
 
             );
 
-        }
-
-
-
-
-
-        const dateTimeResponse =
-
+        }        const dateTimeResponse =
             this.handleDateTimeRequest(
-
                 message
-
             );
 
 
 
         if (dateTimeResponse) {
-
             return {
-
                 handled: true,
-
                 response: dateTimeResponse
-
             };
-
         }
 
 
@@ -201,13 +187,31 @@ export class AILocalToolRouter {
 
 
 
+        // Fast path: ounce price direct from use case
+        if (this.isOuncePriceRequest(message) && this.goldPriceUseCase) {
+            const result = await this.goldPriceUseCase.execute();
+            const lines: string[] = [];
+            if (result.ouncePrice && result.ouncePrice > 0) {
+                lines.push(`🌎 انس جهانی: ${this.formatNumber(result.ouncePrice)} دلار`);
+            }
+            if (result.dollarPrice && result.dollarPrice > 0) {
+                lines.push(`💵 دلار: ${this.formatNumber(result.dollarPrice)} تومان`);
+            }
+            if (result.price && result.price > 0) {
+                lines.push(`🟡 طلای ۱۸ عیار: ${this.formatNumber(result.price)} تومان`);
+            }
+            return {
+                handled: true,
+                toolName: "get_current_ounce_price",
+                response: lines.length > 0 ? lines.join("\n") : "قیمت انس در دسترس نیست."
+            };
+        }
+
+
 
         const toolName =
-
             this.resolveTool(
-
                 message
-
             );
 
 
@@ -767,18 +771,10 @@ export class AILocalToolRouter {
 
     ):
 
-        string | undefined {
-
-
-
-        if (
-
+        string | undefined {        if (
             this.isGoldBubbleRequest(
-
                 message
-
             )
-
         ) {
 
 
@@ -790,13 +786,9 @@ export class AILocalToolRouter {
 
 
         if (
-
             this.isCurrentGoldPriceRequest(
-
                 message
-
             )
-
         ) {
 
 
@@ -810,13 +802,9 @@ export class AILocalToolRouter {
 
 
         if (
-
             this.isCurrentMithqalPriceRequest(
-
                 message
-
             )
-
         ) {
 
 
@@ -899,15 +887,10 @@ export class AILocalToolRouter {
 
                 message
 
-            );
-
-
-
-        // Also match simple patterns like "5 گرم طلا با اجرت 10 درصد"
-
+            );        // Also match simple patterns like "5 گرم طلا با اجرت 10 درصد" or "5 گرم اجرت 10"
         const hasWeightAndLabor =
-
-            /\d+\s*گرم/.test(message) && /\d+\s*(%|٪|درصد)/.test(message);
+            /\d+\s*گرم/.test(message) && 
+            (/\d+\s*(%|٪|درصد)/.test(message) || /اجرت\s*\d+/.test(message) || /کارمزد\s*\d+/.test(message));
 
 
 
@@ -932,25 +915,21 @@ export class AILocalToolRouter {
 
                 /(\d+(?:[.,]\d+)?)\s*(?:گرم|گرمی)/
 
-            );
-
-
+            );        // Match "اجرت 10" (without درصد) or "10 درصد"
         const laborMatch =
-
             message.match(
-
+                /(?:اجرت|کارمزد)\s*(\d+(?:[.,]\d+)?)/
+            ) || message.match(
                 /(\d+(?:[.,]\d+)?)\s*(?:درصد|٪|%)/
-
             );
+
 
 
         if (
             !weightMatch ||
             !laborMatch
         ) {
-
             return null;
-
         }
 
 
@@ -977,33 +956,23 @@ export class AILocalToolRouter {
 
             return null;
 
-        }
-
-
-        const profitMatch =
-
+        }        const profitMatch =
             message.match(
-
-                /(?:سود)\s*(?:با|برابر|به)?\s*(\d+(?:[.,]\d+)?)\s*(?:درصد|٪|%)/
-
+                /(?:سود)\s*(?:با|برابر|به)?\s*(\d+(?:[.,]\d+)?)\s*(?:درصد|٪|%)?/
             );
+
 
 
         const taxMatch =
-
             message.match(
-
-                /(?:مالیات)\s*(?:با|برابر|به)?\s*(\d+(?:[.,]\d+)?)\s*(?:درصد|٪|%)/
-
+                /(?:مالیات)\s*(?:با|برابر|به)?\s*(\d+(?:[.,]\d+)?)\s*(?:درصد|٪|%)?/
             );
 
 
+
         const discountMatch =
-
             message.match(
-
-                /(?:تخفیف)\s*(?:با|برابر|به)?\s*(\d+(?:[.,]\d+)?)\s*(?:درصد|٪|%)/
-
+                /(?:تخفیف)\s*(?:با|برابر|به)?\s*(\d+(?:[.,]\d+)?)\s*(?:درصد|٪|%)?/
             );
 
 
@@ -1150,6 +1119,24 @@ export class AILocalToolRouter {
         };
 
 
+    }    private isOuncePriceRequest(
+        message:
+            string
+    ):
+        boolean {
+
+
+
+        const hasOunce =
+            /(انس|اونس|اونج|انس جهانی|انس طلا)/i.test(
+                message
+            );
+
+
+
+        return hasOunce;
+
+
     }
 
 
@@ -1157,23 +1144,16 @@ export class AILocalToolRouter {
 
 
     private isCurrentGoldPriceRequest(
-
         message:
-
             string
-
     ):
-
         boolean {
 
 
 
         const hasGold =
-
             /(طلا|طلای|زر)/i.test(
-
                 message
-
             );
 
 
@@ -1461,6 +1441,40 @@ export class AILocalToolRouter {
 
             }
 
+        }        if (
+            toolName ===
+            "get_current_gold_mithqal_price"
+        ) {
+
+
+
+            const data =
+                result.data as
+                    Record<string, unknown> |
+                    undefined;
+
+
+
+
+            const price =
+                data?.mithqalPrice;
+
+
+
+
+            if (
+                typeof price ===
+                "number"
+            ) {
+
+
+                return (
+                    `قیمت فعلی مثقال طلا: ` +
+                    `${this.formatNumber(price)} تومان`
+                );
+
+            }
+
         }
 
 
@@ -1468,45 +1482,54 @@ export class AILocalToolRouter {
 
 
         if (
-
             toolName ===
-
-            "get_current_gold_mithqal_price"
-
+            "get_current_ounce_price"
         ) {
 
 
+
             const data =
-
                 result.data as
-
                     Record<string, unknown> |
-
                     undefined;
 
 
 
-            const price =
 
-                data?.mithqalPrice;
+            const ouncePrice =
+                data?.ouncePrice ?? data?.price;
+
 
 
 
             if (
-
-                typeof price ===
-
-                "number"
-
+                typeof ouncePrice ===
+                "number" &&
+                ouncePrice > 0
             ) {
 
 
-                return (
+                const lines = [
+                    `🌎 انس جهانی: ${this.formatNumber(ouncePrice)} دلار`
+                ];
 
-                    `قیمت فعلی مثقال طلا: ` +
-                    `${this.formatNumber(price)} تومان`
 
-                );
+
+                const dollarPrice = data?.dollarPrice;
+                if (typeof dollarPrice === "number" && dollarPrice > 0) {
+                    lines.push(`💵 دلار: ${this.formatNumber(dollarPrice)} تومان`);
+                }
+
+
+
+                const goldPrice = data?.price;
+                if (typeof goldPrice === "number" && goldPrice > 0) {
+                    lines.push(`🟡 طلای ۱۸ عیار: ${this.formatNumber(goldPrice)} تومان`);
+                }
+
+
+
+                return lines.join("\n");
 
             }
 

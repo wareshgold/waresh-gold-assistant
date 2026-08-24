@@ -7,9 +7,9 @@ export class AboutBotCallbackHandler implements TelegramCallbackHandler {
     private readonly dateTimeFormatter = new TelegramDateTimeFormatter();
 
     canHandle(context: TelegramCallbackContext): boolean {
-        console.log("ABOUT_DEBUG", { data: context.data, namespace: context.callback.namespace, action: context.callback.action });
-        return context.data === "settings:about"
-            || context.callback.namespace === "settings" && context.callback.action === "about";
+        return context.data === "settings.about"
+            || context.data === "settings:about"
+            || (context.callback.namespace === "settings" && context.callback.action === "about");
     }
 
     async execute(_context: TelegramCallbackContext): Promise<TelegramCommandResponse> {
