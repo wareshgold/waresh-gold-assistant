@@ -315,6 +315,10 @@ export class AILocalToolRouter {
 
 
 
+            console.log("CALC_RESULT", JSON.stringify(calcResult));
+
+
+
             return {
 
                 handled: true,
@@ -1542,19 +1546,7 @@ export class AILocalToolRouter {
 
             if (typeof total === "number") {
 
-                const lines = [
-
-                    `🧮 <b>نتیجه محاسبه طلا</b>`,
-
-                    "",
-
-                    `💰 قیمت نهایی: <b>${this.formatNumber(total)} تومان</b>`,
-
-                    "",
-
-                    "جزئیات:"
-
-                ];
+                const lines: string[] = [];
 
 
 
@@ -1570,23 +1562,29 @@ export class AILocalToolRouter {
 
                 }
 
-                if (typeof laborAmount === "number") {
+                if (typeof laborAmount === "number" && laborAmount > 0) {
 
                     lines.push(`🛠 اجرت: ${this.formatNumber(laborAmount)} تومان`);
 
                 }
 
-                if (typeof profitAmount === "number") {
+                if (typeof profitAmount === "number" && profitAmount > 0) {
 
                     lines.push(`💹 سود: ${this.formatNumber(profitAmount)} تومان`);
 
                 }
 
-                if (typeof taxAmount === "number") {
+                if (typeof taxAmount === "number" && taxAmount > 0) {
 
                     lines.push(`🧾 مالیات: ${this.formatNumber(taxAmount)} تومان`);
 
                 }
+
+
+
+                lines.push("");
+
+                lines.push(`💰 قیمت نهایی: ${this.formatNumber(total)} تومان`);
 
 
 
