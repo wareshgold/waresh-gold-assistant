@@ -50,7 +50,7 @@ export class TelegramCommandRouter {
         const normalized =
             KeyboardLayoutNormalizer.normalize(
                 value.trim().toLowerCase().replace(/\s+/g, " ")
-            );
+            ).replace(/[\uFE0E\uFE0F]/g, "");
 
         const exactAliases: Record<string, string> = {
             "🟡 بازار": "menu:market",
@@ -85,7 +85,7 @@ export class TelegramCommandRouter {
             "📜 تاریخچه قیمت": "/history",
             "📜 تاریخچه محاسبات": "/calc-history",
             "🔄 محاسبه معکوس طلا": "/reverse-labor",
-            "ℹ️ درباره ربات": "/about",
+            "ℹ درباره ربات": "/about",
             "درباره ربات": "/about",
             "درباره": "/about"
         };
