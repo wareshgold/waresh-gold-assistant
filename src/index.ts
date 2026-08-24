@@ -63,6 +63,12 @@ export default {
                     console.error("Failed to send market reports:", error);
                 }
 
+                try {
+                    await currentContainer.signalMonitorJob.execute();
+                } catch (error) {
+                    console.error("Failed to monitor signal levels:", error);
+                }
+
                 if (scheduledMinute % 30 !== 0) {
                     return;
                 }

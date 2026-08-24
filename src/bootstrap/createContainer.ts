@@ -26,7 +26,10 @@ import { SaveGoldCalculationHistoryUseCase } from "../application/gold/SaveGoldC
 import { GetGoldCalculationHistoryUseCase } from "../application/gold/GetGoldCalculationHistoryUseCase";
 import { EvaluateAndPublishStrategyASignalUseCase } from "../application/strategy/strategy-a/EvaluateAndPublishStrategyASignalUseCase";
 import { StrategyASignalSchedulerJob } from "../application/jobs/StrategyASignalSchedulerJob";
+import { SignalMonitorJob } from "../application/jobs/SignalMonitorJob";
+import { MonitorSignalLevelsUseCase } from "../application/strategy/strategy-a/MonitorSignalLevelsUseCase";
 import { TelegramStrategyASignalNotifier } from "../infrastructure/strategy-a/TelegramStrategyASignalNotifier";
+import { TelegramSignalLevelNotifier } from "../infrastructure/strategy-a/TelegramSignalLevelNotifier";
 import { StrategyASignalMessageFormatter } from "../application/telegram/presentation/StrategyASignalMessageFormatter";
 import { IngestOunceTickFromTextUseCase } from "../application/strategy-a/IngestOunceTickFromTextUseCase";
 import { D1GoldPriceAlertRepository } from "../infrastructure/gold-alert/D1GoldPriceAlertRepository";
@@ -111,6 +114,25 @@ export function createContainer(env: AppEnv) {
         new TelegramStrategyASignalNotifier(telegram.telegramBotClient, new StrategyASignalMessageFormatter())
     );
     const strategyASignalSchedulerJob = new StrategyASignalSchedulerJob(evaluateAndPublishStrategyASignalUseCase);
+
+    const signalLevelNotifier = new TelegramSignalLevelNotifier(telegram.telegramBotClient);
+    const monitorSignalLevelsUseCase = new MonitorSignalLevelsUseCase(
+        strategyA.signalRepository,
+        {
+            getCurrentPrice: async (symbol: string) => {
+                const price = await getCurrentGoldPriceUseCase.execute();
+                return price.price;
+            }
+        },
+        signalLevelNotifier,
+        async () => {
+            const vipUsers = await vip.vipAccessService.listActiveUsers("STRATEGY_A_SIGNALS" as any);
+            return vipUsers.map(u => u.telegramUserId);
+        },
+        24
+    );
+    const signalMonitorJob = new SignalMonitorJob(monitorSignalLevelsUseCase);
+
     const goldPriceAlertSchedulerJob = new GoldPriceAlertSchedulerJob(
         goldPriceAlertService,
         market.cachedMarketProvider,
@@ -151,6 +173,7 @@ export function createContainer(env: AppEnv) {
         ingestOunceTickFromTextUseCase,
         evaluateAndPublishStrategyASignalUseCase,
         strategyASignalSchedulerJob,
+        signalMonitorJob,
         goldPriceAlertService,
         goldPriceAlertSchedulerJob,
         marketReportService,
