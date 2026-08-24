@@ -368,21 +368,12 @@ export class TelegramCallbackHandlerFactory {
 
                 goldCalculationWorkflow
 
-            ),
-
-
-
-            new BackCalculationCallbackHandler(
-
+            ),            new BackCalculationCallbackHandler(
                 sessionStore,
-
                 goldCalculationWorkflow
-
             ),
 
-
-
-            ...actionHandlers,
+            new AboutBotCallbackHandler(),
 
             new BubbleThresholdCallbackHandler(
                 bubbleAlertService
@@ -396,7 +387,7 @@ export class TelegramCallbackHandlerFactory {
                 priceTargetAlertService
             ),
 
-            new AboutBotCallbackHandler()
+            ...actionHandlers
 
 
 
