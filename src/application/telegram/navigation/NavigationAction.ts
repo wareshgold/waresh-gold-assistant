@@ -25,7 +25,6 @@ export enum NavigationAction {
     ASSISTANT_LEARN = "assistant:learn",
     ASSISTANT_HELP = "assistant:help",
 
-    SP2L = "strategy:sp2l",
     STRATEGY_A = "strategy:strategy-a",
 
     SETTINGS_ALERTS = "settings:alerts",

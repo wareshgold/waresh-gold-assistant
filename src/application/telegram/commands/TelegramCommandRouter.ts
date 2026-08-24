@@ -69,8 +69,7 @@ export class TelegramCommandRouter {
             "📊 تحلیل و تغییرات بازار": "/analytics",
             "🎯 هشدار رسیدن به قیمت": "/alerts",
             "📋 هشدارهای من": "/alerts",
-            "📊 استراتژی a (سیگنال طلا)": "/strategy-a",
-            "📈 استراتژی sp2l": "/strategy-a",
+            "📊 سیگنال استراتژی a": "/strategy-a",
             "📜 تاریخچه قیمت": "/history",
             "📜 تاریخچه محاسبات": "/calc-history",
             "🔄 محاسبه معکوس طلا": "/reverse-labor"

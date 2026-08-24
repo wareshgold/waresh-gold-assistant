@@ -22,7 +22,6 @@ export class TelegramActionCatalog {
         { id: "assistant.learn", command: "/help", callbackEnabled: true },
         { id: "assistant.help", command: "/help", callbackEnabled: true },
         { id: "strategy.strategy-a", command: "/strategy-a", callbackEnabled: true },
-        { id: "strategy.sp2l", command: "/strategy-a", callbackEnabled: true },
         { id: "alerts.live-price", command: "/price", callbackEnabled: true },
         { id: "alerts.market-analysis", command: "/analytics", callbackEnabled: true },
         { id: "alerts.price-target", command: "/alerts", callbackEnabled: true },
