@@ -100,6 +100,28 @@ export class TelegramCommandContextBuilder {
             command = "/help";
 
 
+        }        else if (
+
+            normalized.includes("محاسبه") ||
+
+            normalized.includes("حساب") ||
+
+            normalized.includes("فاکتور") ||
+
+            normalized.includes("اجرت") ||
+
+            normalized.includes("گرم") ||
+
+            /[\d]+\s*گرم/.test(normalized) ||
+
+            /\d+%/.test(normalized)
+
+        ) {
+
+            command = "/ai";
+
+            argumentsList = [normalized];
+
         }
 
         else if (
@@ -113,7 +135,9 @@ export class TelegramCommandContextBuilder {
         ) {
 
 
+
             command = "/price";
+
 
 
         }

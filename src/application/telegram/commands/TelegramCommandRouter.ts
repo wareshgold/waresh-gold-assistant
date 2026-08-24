@@ -115,6 +115,23 @@ export class TelegramCommandRouter {
             return "/reverse-labor";
         }
 
+        // If it looks like a gold-related question, route to AI
+        if (!normalized.startsWith("/") && this.isGoldQuestion(normalized)) {
+            return "/ai";
+        }
+
         return normalized;
+    }
+
+    private isGoldQuestion(text: string): boolean {
+        const goldKeywords = [
+            "گرم", "طلا", "اونس", "مثقال", "عیار",
+            "اجرت", "سود", "مالیات", "حباب", "قیمت",
+            "خرید", "فروش", "سکه", "شمش", "دلار",
+            "FACTOR", "gram", "gold", "ounce"
+        ];
+        return goldKeywords.some(keyword =>
+            text.includes(keyword.toLowerCase())
+        );
     }
 }
