@@ -13,6 +13,14 @@ export const TelegramAlertsMenu: TelegramMenuItem[] = [
         },
     },
     {
+        id: "alerts.bubble",
+        label: "🫧 هشدار حباب طلا",
+        action: {
+            type: TelegramMenuActionType.CALLBACK,
+            value: NavigationAction.ALERTS_BUBBLE,
+        },
+    },
+    {
         id: "alerts.periodic-price",
         label: "🔔 اعلان قیمت خودکار",
         action: {

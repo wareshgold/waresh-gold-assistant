@@ -34,4 +34,5 @@ export enum NavigationAction {
     ALERTS_PRICE_TARGET = "alerts:price-target",
     ALERTS_MY_ALERTS = "alerts:my-alerts",
     ALERTS_PERIODIC_PRICE = "alerts:periodic-price",
+    ALERTS_BUBBLE = "alerts:bubble",
 }

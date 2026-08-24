@@ -26,6 +26,7 @@ export class TelegramActionCatalog {
         { id: "alerts.price-target", command: "/alerts", callbackEnabled: true },
         { id: "alerts.my-alerts", command: "/my-alerts", callbackEnabled: true },
         { id: "alerts.periodic-price", command: "/alerts", callbackEnabled: true },
+        { id: "alerts.bubble", command: "/bubble-alert", callbackEnabled: true },
         { id: "settings.alerts", command: "/alerts", callbackEnabled: true },
         { id: "settings.reports", command: "/reports", callbackEnabled: true },
         { id: "settings.about", command: "/help", callbackEnabled: true },

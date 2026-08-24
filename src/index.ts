@@ -69,6 +69,12 @@ export default {
                     console.error("Failed to monitor signal levels:", error);
                 }
 
+                try {
+                    await currentContainer.bubbleAlertSchedulerJob.execute();
+                } catch (error) {
+                    console.error("Failed to send bubble alerts:", error);
+                }
+
                 if (scheduledMinute % 30 !== 0) {
                     return;
                 }

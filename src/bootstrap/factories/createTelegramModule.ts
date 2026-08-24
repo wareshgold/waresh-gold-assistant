@@ -61,6 +61,7 @@ interface Dependencies {
     strategyService?: StrategyAStrategyService;
     ingestOunceTickFromTextUseCase?: IngestOunceTickFromTextUseCase;
     goldPriceAlertService?: GoldPriceAlertService;
+    bubbleAlertService?: any;
     marketReportService?: MarketReportService;
     calculateInvoiceUseCase?: CalculateInvoiceUseCase;
 }
@@ -120,6 +121,7 @@ export function createTelegramModule(env: AppEnv, dependencies: Dependencies) {
         dependencies.vipAccessService,
         dependencies.strategyService,
         dependencies.goldPriceAlertService,
+        dependencies.bubbleAlertService,
         dependencies.marketReportService,
         telegramNavigationService,
         dependencies.calculateInvoiceUseCase

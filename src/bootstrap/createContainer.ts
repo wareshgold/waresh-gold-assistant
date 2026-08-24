@@ -35,6 +35,10 @@ import { IngestOunceTickFromTextUseCase } from "../application/strategy-a/Ingest
 import { D1GoldPriceAlertRepository } from "../infrastructure/gold-alert/D1GoldPriceAlertRepository";
 import { GoldPriceAlertService } from "../application/gold-alert/GoldPriceAlertService";
 import { GoldPriceAlertSchedulerJob } from "../application/jobs/GoldPriceAlertSchedulerJob";
+import { BubbleAlertService } from "../application/bubble-alert/BubbleAlertService";
+import { D1BubbleAlertRepository } from "../infrastructure/bubble-alert/D1BubbleAlertRepository";
+import { BubbleAlertSchedulerJob } from "../application/jobs/BubbleAlertSchedulerJob";
+import { TelegramBubbleAlertNotifier } from "../infrastructure/bubble-alert/TelegramBubbleAlertNotifier";
 import { TelegramGoldPriceAlertNotifier } from "../infrastructure/gold-alert/TelegramGoldPriceAlertNotifier";
 import { D1MarketReportPreferenceRepository } from "../infrastructure/market-report/D1MarketReportPreferenceRepository";
 import { MarketReportService } from "../application/market-report/MarketReportService";
@@ -83,6 +87,7 @@ export function createContainer(env: AppEnv) {
     const refreshMarketPriceJob = new RefreshMarketPriceJob(refreshMarketPriceUseCase);
 
     const goldPriceAlertService = new GoldPriceAlertService(new D1GoldPriceAlertRepository(env.waresh_gold_db));
+    const bubbleAlertService = new BubbleAlertService(new D1BubbleAlertRepository(env.waresh_gold_db));
     const marketReportService = new MarketReportService(new D1MarketReportPreferenceRepository(env.waresh_gold_db));
 
     const telegram = createTelegramModule(env, {
@@ -104,6 +109,7 @@ export function createContainer(env: AppEnv) {
         strategyService: strategyA.strategyService,
         ingestOunceTickFromTextUseCase,
         goldPriceAlertService,
+        bubbleAlertService,
         marketReportService,
         calculateInvoiceUseCase: gold.calculateInvoiceUseCase
     });
@@ -132,6 +138,13 @@ export function createContainer(env: AppEnv) {
         24
     );
     const signalMonitorJob = new SignalMonitorJob(monitorSignalLevelsUseCase);
+
+    const bubbleAlertSchedulerJob = new BubbleAlertSchedulerJob(
+        bubbleAlertService,
+        market.cachedMarketProvider,
+        gold.goldBubbleCalculator,
+        new TelegramBubbleAlertNotifier(telegram.telegramBotClient)
+    );
 
     const goldPriceAlertSchedulerJob = new GoldPriceAlertSchedulerJob(
         goldPriceAlertService,
@@ -176,6 +189,7 @@ export function createContainer(env: AppEnv) {
         signalMonitorJob,
         goldPriceAlertService,
         goldPriceAlertSchedulerJob,
+        bubbleAlertSchedulerJob,
         marketReportService,
         marketReportSchedulerJob
     };
