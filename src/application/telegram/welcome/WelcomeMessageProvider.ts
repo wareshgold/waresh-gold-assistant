@@ -5,7 +5,9 @@ export interface WelcomeMessageProvider {
 
         firstName?: string,
 
-        username?: string
+        username?: string,
+
+        returning?: boolean
 
     ): string;
 

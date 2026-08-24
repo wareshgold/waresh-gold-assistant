@@ -1,18 +1,11 @@
 import { WelcomeMessageProvider }
 from "./WelcomeMessageProvider";
 
-
-
 export class RandomWelcomeMessageProvider
 
 implements WelcomeMessageProvider {
 
-
-
-    private readonly messages = [
-
-
-
+    private readonly firstTimeMessages = [
         `
 به وارش گلد خوش آمدید.
 
@@ -23,16 +16,8 @@ implements WelcomeMessageProvider {
 🧮 محاسبات خرید و فروش
 🔍 بررسی حباب طلا
 
-اینجا کمک می‌کنیم بازار طلا را
-ساده‌تر، سریع‌تر و دقیق‌تر بشناسید.
-
 از منوی زیر شروع کنید 👇
         `,
-
-
-
-
-
         `
 ✨ خوش آمدید به وارش گلد.
 
@@ -48,18 +33,11 @@ implements WelcomeMessageProvider {
 
 همه در یک دستیار هوشمند.
         `,
-
-
-
-
-
         `
 📈 به وارش گلد خوش آمدید.
 
 اینجا فقط یک نمایشگر قیمت نیست؛
 یک همراه هوشمند برای شناخت بهتر بازار طلاست.
-
-امکانات شما:
 
 💎 قیمت‌های لحظه‌ای
 📊 تحلیل بازار
@@ -68,27 +46,14 @@ implements WelcomeMessageProvider {
 
 شروع کنیم؟ 👇
         `,
-
-
-
-
-
         `
 🌟 سلام و خوش آمدید.
 
 وارش گلد کنار شماست تا دنیای طلا
 را ساده‌تر و قابل فهم‌تر تجربه کنید.
 
-از ارزش‌گذاری طلا تا تحلیل بازار،
-اطلاعات مورد نیازتان همیشه همراه شماست.
-
 💎 با آگاهی بیشتر، تصمیم بهتر.
         `,
-
-
-
-
-
         `
 💰 خوش آمدید به وارش گلد.
 
@@ -101,84 +66,63 @@ implements WelcomeMessageProvider {
 
 آماده‌اید بازار امروز را ببینیم؟ 👇
         `
-
-
-
     ];
 
+    private readonly returningMessages = [
+        `
+👋 خوش برگشتی!
+دستیار هوشمند بازار طلای شما فعاله.
 
+از منوی زیر خدمات موردنظر خود را انتخاب کنید.
+        `,
+        `
+✨ دوباره سلام!
+وارش گلد همیشه آماده‌ست.
 
+بازار طلا چطوره؟ از منوی زیر شروع کنید.
+        `,
+        `
+🌟 برگشتی! چه خوب.
+اطلاعات لحظه‌ای بازار طلا در دسترس شماست.
 
+از منوی زیر انتخاب کنید 👇
+        `,
+        `
+👋 سلام دوباره!
+بازار طلا همیشه در حال تغییره.
+بذار ببینیم امروز چه خبره!
 
+از منوی زیر شروع کنید.
+        `,
+        `
+💰 خوش اومدی!
+دستیار هوشمند طلای ورش گلد فعاله.
+
+از منوی زیر شروع کنید 👇
+        `
+    ];
 
     getWelcomeMessage(
-
         firstName?: string,
-
-        username?: string
-
+        username?: string,
+        returning?: boolean
     ): string {
+        const messages = returning
+            ? this.returningMessages
+            : this.firstTimeMessages;
 
-
-
-        const index =
-
-            Math.floor(
-
-                Math.random()
-
-                *
-
-                this.messages.length
-
-            );
-
-
-
-
-
-        const message =
-
-            this.messages[index].trim();
-
-
-
-
-
-        const name =
-
-            firstName
-
-            ??
-
-            username;
-
-
-
-
+        const index = Math.floor(Math.random() * messages.length);
+        const message = messages[index].trim();
+        const name = firstName ?? username;
 
         if (!name) {
-
             return message;
-
         }
 
+        if (returning) {
+            return message;
+        }
 
-
-
-
-        return (
-
-            `✨ سلام ${name} جان\n\n`
-
-            +
-
-            message
-
-        );
-
-
+        return `✨ سلام ${name} جان\n\n${message}`;
     }
-
-
 }
