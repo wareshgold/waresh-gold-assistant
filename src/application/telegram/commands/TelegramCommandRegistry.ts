@@ -9,6 +9,7 @@ import { GetMarketHistoryCommandHandler } from "./handlers/GetMarketHistoryComma
 import { GetGoldCalculationHistoryCommandHandler } from "./handlers/GetGoldCalculationHistoryCommandHandler";
 import { CalculateGoldCommandHandler } from "./handlers/CalculateGoldCommandHandler";
 import { ReverseGoldCommandHandler } from "./handlers/ReverseGoldCommandHandler";
+import { InvoiceCommandHandler } from "./handlers/InvoiceCommandHandler";
 import { AICommandHandler } from "./handlers/AICommandHandler";
 import { ExitCommandHandler } from "./handlers/ExitCommandHandler";
 import { VIPCommandHandler } from "./handlers/VIPCommandHandler";
@@ -24,6 +25,7 @@ import { GetMarketHistoryUseCase } from "../../market/GetMarketHistoryUseCase";
 import { GetGoldCalculationHistoryUseCase } from "../../gold/GetGoldCalculationHistoryUseCase";
 import { CalculateGoldFormulaUseCase } from "../../gold/CalculateGoldFormulaUseCase";
 import { CalculateReverseGoldUseCase } from "../../gold/CalculateReverseGoldUseCase";
+import { CalculateInvoiceUseCase } from "../../gold/CalculateInvoiceUseCase";
 import { TelegramSessionStore } from "../state/TelegramSessionStore";
 import { TelegramUserProfileStore } from "../profile/TelegramUserProfileStore";
 import { RandomWelcomeMessageProvider } from "../welcome/RandomWelcomeMessageProvider";
@@ -59,7 +61,8 @@ export class TelegramCommandRegistry {
         strategyService?: StrategyAStrategyService,
         goldPriceAlertService?: GoldPriceAlertService,
         marketReportService?: MarketReportService,
-        navigationService?: TelegramNavigationService
+        navigationService?: TelegramNavigationService,
+        calculateInvoiceUseCase?: CalculateInvoiceUseCase
     ): TelegramCommandRouter {
         const welcomeMessageProvider = new RandomWelcomeMessageProvider();
         const menuRegistry = new MemoryTelegramMenuRegistry();
@@ -89,6 +92,10 @@ export class TelegramCommandRegistry {
             new CalculateGoldCommandHandler(calculateGoldFormulaUseCase, sessionStore, telegramNumberFormatter),
             new ReverseGoldCommandHandler(sessionStore)
         ];
+
+        if (calculateInvoiceUseCase) {
+            handlers.push(new InvoiceCommandHandler(calculateInvoiceUseCase));
+        }
 
         if (goldPriceAlertService) {
             handlers.push(new GoldPriceAlertCommandHandler(goldPriceAlertService));

@@ -27,6 +27,14 @@ import {
     TelegramSettingsMenu,
 } from "../menu/TelegramSettingsMenu";
 
+import {
+    TelegramStrategyMenu,
+} from "../menu/TelegramStrategyMenu";
+
+import {
+    TelegramAlertsMenu,
+} from "../menu/TelegramAlertsMenu";
+
 
 
 
@@ -39,6 +47,10 @@ export type TelegramNavigationMenuId =
     | "calculate"
 
     | "assistant"
+
+    | "strategy"
+
+    | "alerts"
 
     | "settings";
 
@@ -78,6 +90,18 @@ export class TelegramNavigationCatalog {
             assistant:
 
                 TelegramAssistantMenu,
+
+
+            strategy:
+
+                TelegramStrategyMenu,
+
+
+
+            alerts:
+
+                TelegramAlertsMenu,
+
 
 
             settings:

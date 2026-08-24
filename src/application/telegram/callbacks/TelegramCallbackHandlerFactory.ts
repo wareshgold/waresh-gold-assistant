@@ -26,13 +26,17 @@ from "./handlers/OpenCalculatorMenuCallbackHandler";
 import {
     OpenAssistantMenuCallbackHandler,
 }
-from "./handlers/OpenAssistantMenuCallbackHandler";
-
+from "./handlers/OpenAssistantMenuCallbackHandler";import {
+    OpenSettingsMenuCallbackHandler,
+} from "./handlers/OpenSettingsMenuCallbackHandler";
 
 import {
-    OpenSettingsMenuCallbackHandler,
-}
-from "./handlers/OpenSettingsMenuCallbackHandler";
+    OpenStrategyMenuCallbackHandler,
+} from "./handlers/OpenStrategyMenuCallbackHandler";
+
+import {
+    OpenAlertsMenuCallbackHandler,
+} from "./handlers/OpenAlertsMenuCallbackHandler";
 
 
 import {
@@ -254,22 +258,26 @@ export class TelegramCallbackHandlerFactory {
 
                 telegramNavigationService
 
+            ),            new OpenAssistantMenuCallbackHandler(
+                telegramNavigationService
             ),
 
 
 
-            new OpenAssistantMenuCallbackHandler(
-
+            new OpenStrategyMenuCallbackHandler(
                 telegramNavigationService
+            ),
 
+
+
+            new OpenAlertsMenuCallbackHandler(
+                telegramNavigationService
             ),
 
 
 
             new OpenSettingsMenuCallbackHandler(
-
                 telegramNavigationService
-
             ),
 
 

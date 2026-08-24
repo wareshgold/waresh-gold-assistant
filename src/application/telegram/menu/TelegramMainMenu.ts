@@ -40,7 +40,7 @@ export const TelegramMainMenu: TelegramMenuItem[] = [
         label: "🔔 اعلان‌ها",
         action: {
             type: TelegramMenuActionType.CALLBACK,
-            value: NavigationAction.SETTINGS_ALERTS,
+            value: NavigationAction.ALERTS,
         },
     },
     {

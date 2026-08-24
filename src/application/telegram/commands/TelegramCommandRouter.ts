@@ -60,7 +60,10 @@ export class TelegramCommandRouter {
             "🤖 دستیار ai": "/ai",
             "💰 قیمت لحظه‌ای": "/price",
             "🫧 حباب طلا": "/bubble",
-            "📊 تحلیل بازار": "/analytics"
+            "📊 تحلیل بازار": "/analytics",
+            "🧾 محاسبه فاکتور": "/invoice",
+            "📐 حل فرمول": "/formula",
+            "📐 حل فرمول طلا": "/formula"
         };
 
         if (exactAliases[normalized]) {

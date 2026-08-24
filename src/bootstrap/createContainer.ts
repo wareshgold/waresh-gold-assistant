@@ -101,7 +101,8 @@ export function createContainer(env: AppEnv) {
         strategyService: strategyA.strategyService,
         ingestOunceTickFromTextUseCase,
         goldPriceAlertService,
-        marketReportService
+        marketReportService,
+        calculateInvoiceUseCase: gold.calculateInvoiceUseCase
     });
 
     const evaluateAndPublishStrategyASignalUseCase = new EvaluateAndPublishStrategyASignalUseCase(

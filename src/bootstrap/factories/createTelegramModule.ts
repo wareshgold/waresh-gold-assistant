@@ -40,6 +40,7 @@ import { StrategyAStrategyService } from "../../application/strategy/strategy-a/
 import { IngestOunceTickFromTextUseCase } from "../../application/strategy-a/IngestOunceTickFromTextUseCase";
 import { GoldPriceAlertService } from "../../application/gold-alert/GoldPriceAlertService";
 import { MarketReportService } from "../../application/market-report/MarketReportService";
+import { CalculateInvoiceUseCase } from "../../application/gold/CalculateInvoiceUseCase";
 
 interface Dependencies {
     getGoldPriceUseCase: any;
@@ -61,6 +62,7 @@ interface Dependencies {
     ingestOunceTickFromTextUseCase?: IngestOunceTickFromTextUseCase;
     goldPriceAlertService?: GoldPriceAlertService;
     marketReportService?: MarketReportService;
+    calculateInvoiceUseCase?: CalculateInvoiceUseCase;
 }
 
 export function createTelegramModule(env: AppEnv, dependencies: Dependencies) {
@@ -119,7 +121,8 @@ export function createTelegramModule(env: AppEnv, dependencies: Dependencies) {
         dependencies.strategyService,
         dependencies.goldPriceAlertService,
         dependencies.marketReportService,
-        telegramNavigationService
+        telegramNavigationService,
+        dependencies.calculateInvoiceUseCase
     );
 
     const actionResolver = new CompositeTelegramActionResolver([
