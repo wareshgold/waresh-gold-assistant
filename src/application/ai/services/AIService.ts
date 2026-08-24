@@ -40,11 +40,15 @@ import {
 
 import {
     AICasualMessageGuard
-} from "../guards/AICasualMessageGuard";
+} from "../guards/AICasualMessageGuard";import {
+    OutOfDomainGuard
+}
+from "../guards/OutOfDomainGuard";
 
 import {
-    OutOfDomainGuard
-} from "../guards/OutOfDomainGuard";import {
+    KeyboardLayoutNormalizer
+}
+from "../guards/KeyboardLayoutNormalizer";import {
     MetricRecorder
 }
 from "../../system/observability/MetricRecorder";
@@ -169,25 +173,44 @@ export class AIService {
 
         }
 
-    }
-
-
-
-
-
-
-
-    async process(
+    }    async process(
 
         request:
+
             AIRequest
 
     ):
+
         Promise<AIResponse> {
 
 
 
+        // Normalize English keyboard layout to Persian
+
+        const normalizedMessage =
+
+            KeyboardLayoutNormalizer.normalize(
+
+                request.message
+
+            );
+
+
+
+        const normalizedRequest = {
+
+            ...request,
+
+            message: normalizedMessage
+
+        };
+
+
+
+
+
         const startedAt =
+
             Date.now();
 
 
@@ -197,11 +220,11 @@ export class AIService {
 
 
 
-            const casual =
-                this.casualMessageGuard.handle(
-                    request.message,
-                    request.userName
-                );
+        const casual =
+            this.casualMessageGuard.handle(
+                normalizedRequest.message,
+                normalizedRequest.userName
+            );
 
 
 
@@ -259,7 +282,7 @@ export class AIService {
 
                 const local =
                     await this.localToolRouter.route(
-                        request
+                        normalizedRequest
                     );
 
 
@@ -357,7 +380,7 @@ export class AIService {
 
             const outOfDomain =
                 this.outOfDomainGuard.handle(
-                    request.message
+                    normalizedRequest.message
                 );
 
 

@@ -10,6 +10,10 @@ import {
     TelegramExecutorResponse
 } from "../interfaces/TelegramCommandExecutor";
 
+import {
+    KeyboardLayoutNormalizer
+} from "../../ai/guards/KeyboardLayoutNormalizer";
+
 export class TelegramCommandRouter {
     private readonly handlers: TelegramCommandHandler[];
 
@@ -43,7 +47,10 @@ export class TelegramCommandRouter {
     }
 
     private normalizeCommand(value: string): string {
-        const normalized = value.trim().toLowerCase().replace(/\s+/g, " ");
+        const normalized =
+            KeyboardLayoutNormalizer.normalize(
+                value.trim().toLowerCase().replace(/\s+/g, " ")
+            );
 
         const exactAliases: Record<string, string> = {
             "🟡 بازار": "menu:market",
