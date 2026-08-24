@@ -94,16 +94,28 @@ export class VIPCommandHandler
             };
         }
 
-        if (!result.success) {
-            const messages: Record<string, string> = {
+        if (!result.success) {            const messages: Record<string, string> = {
+
                 INVALID_CODE:
+
                     "کد VIP نامعتبر است.",
+
                 EXPIRED_CODE:
+
                     "این کد منقضی شده است.",
+
                 CAPACITY_FULL:
+
                     "ظرفیت این کد تکمیل شده است.",
+
                 ALREADY_ACTIVE:
-                    "دسترسی VIP شما از قبل فعال است."
+
+                    "دسترسی VIP شما از قبل فعال است.",
+
+                CODE_ALREADY_USED:
+
+                    "این کد قبلاً استفاده شده است."
+
             };
 
             return {
