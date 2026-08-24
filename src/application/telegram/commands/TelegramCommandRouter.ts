@@ -53,6 +53,7 @@ export class TelegramCommandRouter {
             "🧮 محاسبه": "menu:calculate",
             "🧮 ماشین حساب": "menu:calculate",
             "🧮 ماشین حساب طلا": "menu:calculate",
+            "🧮 محاسبه قیمت طلا": "menu:calculate",
             "⚙️ تنظیمات": "menu:settings",
             "⬅️ بازگشت": "menu:main",
             "🏠 منوی اصلی": "menu:main",
