@@ -63,7 +63,17 @@ export class TelegramCommandRouter {
             "📊 تحلیل بازار": "/analytics",
             "🧾 محاسبه فاکتور": "/invoice",
             "📐 حل فرمول": "/formula",
-            "📐 حل فرمول طلا": "/formula"
+            "📐 حل فرمول طلا": "/formula",
+            "📈 استراتژی": "menu:strategy",
+            "📌 قیمت لحظه‌ای": "/price",
+            "📊 تحلیل و تغییرات بازار": "/analytics",
+            "🎯 هشدار رسیدن به قیمت": "/alerts",
+            "📋 هشدارهای من": "/alerts",
+            "📊 استراتژی a (سیگنال طلا)": "/strategy-a",
+            "📈 استراتژی sp2l": "/strategy-a",
+            "📜 تاریخچه قیمت": "/history",
+            "📜 تاریخچه محاسبات": "/calc-history",
+            "🔄 محاسبه معکوس طلا": "/reverse-labor"
         };
 
         if (exactAliases[normalized]) {
@@ -80,6 +90,18 @@ export class TelegramCommandRouter {
 
         if (!normalized.startsWith("/") && normalized.includes("دستیار")) {
             return "/ai";
+        }
+
+        if (!normalized.startsWith("/") && normalized.includes("استراتژی")) {
+            return "menu:strategy";
+        }
+
+        if (!normalized.startsWith("/") && normalized.includes("هشدار")) {
+            return "menu:alerts";
+        }
+
+        if (!normalized.startsWith("/") && normalized.includes("محاسبه معکوس")) {
+            return "/reverse-labor";
         }
 
         return normalized;

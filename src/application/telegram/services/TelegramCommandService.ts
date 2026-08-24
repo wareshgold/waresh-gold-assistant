@@ -161,7 +161,15 @@ implements TelegramCommandExecutor {
             resolvedCommand !== normalizedText &&
             Boolean(navigationHandler);
 
-        if (isReplyKeyboardNavigation) {
+        const isMenuCommand = resolvedCommand.startsWith("menu:");
+
+        if (isReplyKeyboardNavigation || isMenuCommand) {
+
+            if (isMenuCommand && this.conversationManager) {
+                await this.conversationManager.cancel(
+                    normalizedMessage.userId
+                );
+            }
 
             const context =
                 this.contextBuilder.build(
