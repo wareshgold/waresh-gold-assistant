@@ -70,7 +70,7 @@ export class TelegramCommandRouter {
             "🫧 حباب طلا": "/bubble",
             "📈 تحلیل بازار": "/analytics",
             "📊 تحلیل بازار": "/analytics",
-            "📊 نمودار قیمت": "/chart",
+            "📊 نمودار قیمت": "/analytics",
             "🔔 اعلان قیمت خودکار": "/alerts",
             "🫧 هشدار حباب طلا": "/bubble-alert",
             "🧾 محاسبه فاکتور": "/invoice",
