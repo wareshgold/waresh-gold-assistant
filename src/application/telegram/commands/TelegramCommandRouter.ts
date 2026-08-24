@@ -94,6 +94,9 @@ export class TelegramCommandRouter {
             return exactAliases[normalized];
         }
 
+        // Debug: log unmatched commands for diagnosis
+        console.log("ROUTER_UNMATCHED", { raw: value, normalized, keys: Object.keys(exactAliases).filter(k => k.includes("ربات") || k.includes("about") || k.includes("درباره")) });
+
         if (!normalized.startsWith("/") && normalized.includes("بازار")) {
             return "menu:market";
         }
