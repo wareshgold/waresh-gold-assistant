@@ -155,70 +155,43 @@ implements TelegramCommandExecutor {
                 .find(
                     handler =>
                         handler.canHandle(resolvedCommand)
-                );
+                );        const isReplyKeyboardNavigation =
 
-        const isReplyKeyboardNavigation =
             resolvedCommand !== normalizedText &&
+
             Boolean(navigationHandler);
+
+
 
         const isMenuCommand = resolvedCommand.startsWith("menu:");
 
-        if (isReplyKeyboardNavigation || isMenuCommand) {
 
-            if (isMenuCommand && this.conversationManager) {
-                await this.conversationManager.cancel(
-                    normalizedMessage.userId
-                );
-            }
 
-            const context =
-                this.contextBuilder.build(
-                    resolvedCommand,
-                    normalizedMessage.userId,
-                    [],
-                    normalizedMessage.username,
-                    normalizedMessage.firstName
-                );
-
-            return this.router.execute(
-                context
-            );
-        }
-
+        // Check AI session FIRST for regular text messages
 
         if (
-            text.startsWith("/")
-        ) {
 
-            const context =
-                this.contextBuilder.build(
-                    text,
-                    normalizedMessage.userId,
-                    [],
-                    normalizedMessage.username,
-                    normalizedMessage.firstName
-                );
+            !text.startsWith("/") &&
 
-            return this.router.execute(
-                context
-            );
+            !isMenuCommand &&
 
-        }
-
-
-        if (
             this.aiSessionManager
+
         ) {
 
             const aiResponse =
+
                 await this.aiSessionManager.execute(
+
                     normalizedMessage.userId,
+
                     text
+
                 );
 
-            if (
-                aiResponse
-            ) {
+
+
+            if (aiResponse) {
 
                 return aiResponse;
 
@@ -227,22 +200,36 @@ implements TelegramCommandExecutor {
         }
 
 
+
         if (
+
+            !text.startsWith("/") &&
+
+            !isMenuCommand &&
+
             this.conversationManager
+
         ) {
 
             const activeConversation =
+
                 await this.conversationManager.execute(
+
                     normalizedMessage.userId,
+
                     text,
+
                     {
+
                         userName: normalizedMessage.firstName ?? normalizedMessage.username
+
                     }
+
                 );
 
-            if (
-                activeConversation
-            ) {
+
+
+            if (activeConversation) {
 
                 return activeConversation;
 
@@ -251,7 +238,64 @@ implements TelegramCommandExecutor {
         }
 
 
-        const fallbackCommand =
+
+        if (isReplyKeyboardNavigation || isMenuCommand) {
+
+
+
+            if (isMenuCommand && this.conversationManager) {
+
+                await this.conversationManager.cancel(
+
+                    normalizedMessage.userId
+
+                );
+
+            }
+
+
+
+            const context =
+
+                this.contextBuilder.build(
+
+                    resolvedCommand,
+
+                    normalizedMessage.userId,
+
+                    [],
+
+                    normalizedMessage.username,
+
+                    normalizedMessage.firstName
+
+                );
+
+
+
+            return this.router.execute(
+
+                context
+
+            );
+
+        }        if (
+            text.startsWith("/")
+        ) {
+            const context =
+                this.contextBuilder.build(
+                    text,
+                    normalizedMessage.userId,
+                    [],
+                    normalizedMessage.username,
+                    normalizedMessage.firstName
+                );
+
+            return this.router.execute(
+                context
+            );
+
+        }        const fallbackCommand =
             this.router.resolveCommand(text);
 
         const context =
