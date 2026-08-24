@@ -1417,19 +1417,43 @@ export class AILocalToolRouter {
 
                 typeof price ===
 
-                "number"
-
-            ) {
+                "number"            ) {
 
 
-                return (
 
-                    `قیمت فعلی طلای ۱۸ عیار: ` +
+                const lines = [
 
-                    `${this.formatNumber(price)} تومان`
+                    `💰 <b>قیمت لحظه‌ای طلا</b>`,
 
-                );
+                    "",
 
+                    `🟡 طلای ۱۸ عیار: ${this.formatNumber(price)} تومان`
+
+                ];
+
+
+
+                const ouncePrice = data?.ouncePrice;
+
+                if (typeof ouncePrice === "number" && ouncePrice > 0) {
+
+                    lines.push(`🌎 انس جهانی: ${this.formatNumber(ouncePrice)} دلار`);
+
+                }
+
+
+
+                const dollarPrice = data?.dollarPrice;
+
+                if (typeof dollarPrice === "number" && dollarPrice > 0) {
+
+                    lines.push(`💵 دلار: ${this.formatNumber(dollarPrice)} تومان`);
+
+                }
+
+
+
+                return lines.join("\n");
 
             }
 
