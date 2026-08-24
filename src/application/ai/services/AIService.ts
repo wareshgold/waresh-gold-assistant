@@ -44,11 +44,18 @@ import {
 
 import {
     OutOfDomainGuard
-} from "../guards/OutOfDomainGuard";
+} from "../guards/OutOfDomainGuard";import {
+    MetricRecorder
+}
+from "../../system/observability/MetricRecorder";
 
 import {
-    MetricRecorder
-} from "../../system/observability/MetricRecorder";
+    GetCurrentGoldPriceUseCase
+} from "../../gold/GetCurrentGoldPriceUseCase";
+
+import {
+    CalculateGoldPriceUseCase
+} from "../../gold/CalculateGoldPriceUseCase";
 
 import {
     MetricType
@@ -115,7 +122,16 @@ export class AIService {
 
 
         private readonly metricRecorder?:
-            MetricRecorder
+            MetricRecorder,
+
+
+
+        goldPriceUseCase?:
+            GetCurrentGoldPriceUseCase,
+
+
+        calculateGoldPriceUseCase?:
+            CalculateGoldPriceUseCase
 
     ) {
 
@@ -137,15 +153,18 @@ export class AIService {
 
 
         this.outOfDomainGuard =
-            new OutOfDomainGuard();
-
-
-
-        if (toolExecutionService) {
+            new OutOfDomainGuard();        if (toolExecutionService) {
 
             this.localToolRouter =
+
                 new AILocalToolRouter(
-                    toolExecutionService
+
+                    toolExecutionService,
+
+                    goldPriceUseCase,
+
+                    calculateGoldPriceUseCase
+
                 );
 
         }

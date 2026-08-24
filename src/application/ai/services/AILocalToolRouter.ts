@@ -13,6 +13,16 @@ import {
 } from "../models/AIRequest";
 
 
+import {
+    GetCurrentGoldPriceUseCase
+} from "../../gold/GetCurrentGoldPriceUseCase";
+
+
+import {
+    CalculateGoldPriceUseCase
+} from "../../gold/CalculateGoldPriceUseCase";
+
+
 
 export interface AILocalToolRouteResult {
 
@@ -52,7 +62,19 @@ export class AILocalToolRouter {
 
         private readonly toolExecutionService:
 
-            AIToolExecutionService
+            AIToolExecutionService,
+
+
+
+        private readonly goldPriceUseCase?:
+
+            GetCurrentGoldPriceUseCase,
+
+
+
+        private readonly calculateGoldPriceUseCase?:
+
+            CalculateGoldPriceUseCase
 
     ) {}
 
@@ -221,22 +243,22 @@ export class AILocalToolRouter {
         );
 
 
-    }
-
-
-
-
-
-    private async executeGoldCalculation(
+    }    private async executeGoldCalculation(
 
         calculation:
 
             {
+
                 weight: number;
+
                 laborPercent: number;
+
                 profitPercent: number;
+
                 taxPercent: number;
+
                 discount?: number;
+
             },
 
         request:
@@ -248,68 +270,72 @@ export class AILocalToolRouter {
         Promise<AILocalToolRouteResult> {
 
 
-        const marketResult =
 
-            await this.toolExecutionService.executeIfRequired(
+        // Fast path: call use cases directly if available
 
-                {
+        if (this.goldPriceUseCase && this.calculateGoldPriceUseCase) {
 
-                    content:
-                        "",
+            const priceResult = await this.goldPriceUseCase.execute();
 
-                    toolCalls:
-
-                    [
-
-                        {
-
-                            id:
-                                `local-market-${Date.now()}`,
-
-                            name:
-                                "get_current_gold_price",
-
-                            arguments:
-                                {}
-
-                        }
-
-                    ]
-
-                },
-
-                {
-
-                    userId:
-                        request.userId,
-
-                    metadata:
-                        request.context
-
-                }
-
-            );
+            const goldPrice = priceResult?.price;
 
 
 
-        if (
-            !marketResult?.success
-        ) {
+            if (!goldPrice || goldPrice <= 0) {
+
+                return {
+
+                    handled: true,
+
+                    toolName: "calculate_gold_price",
+
+                    response: "قیمت فعلی طلا معتبر نیست."
+
+                };
+
+            }
+
+
+
+            const calcResult = await this.calculateGoldPriceUseCase.execute({
+
+                weight: calculation.weight,
+
+                goldPrice,
+
+                laborPercent: calculation.laborPercent,
+
+                profitPercent: calculation.profitPercent,
+
+                taxPercent: calculation.taxPercent,
+
+                discount: calculation.discount
+
+            });
+
+
 
             return {
 
-                handled:
-                    true,
+                handled: true,
 
-                toolName:
-                    "calculate_gold_price",
+                toolName: "calculate_gold_price",
 
-                toolResult:
-                    marketResult,
+                toolResult: {
 
-                response:
-                    marketResult?.error ??
-                    "دریافت قیمت فعلی طلا با خطا مواجه شد."
+                    success: true,
+
+                    data: calcResult
+
+                },
+
+                response: this.buildResponse("calculate_gold_price", {
+
+                    success: true,
+
+                    data: calcResult
+
+                })
 
             };
 
@@ -317,44 +343,75 @@ export class AILocalToolRouter {
 
 
 
-        const marketData =
+        // Fallback: go through tool execution service
 
-            marketResult.data as
-                Record<string, unknown> |
-                undefined;
+        const marketResult =
 
+            await this.toolExecutionService.executeIfRequired(
 
-        const goldPrice =
-            marketData?.price;
+                {
 
+                    content: "",
 
+                    toolCalls: [{
 
-        if (
-            typeof goldPrice !== "number" ||
-            !Number.isFinite(goldPrice) ||
-            goldPrice <= 0
-        ) {
+                        id: `local-market-${Date.now()}`,
 
-            return {
+                        name: "get_current_gold_price",
 
-                handled:
-                    true,
+                        arguments: {}
 
-                toolName:
-                    "calculate_gold_price",
-
-                toolResult: {
-
-                    success:
-                        false,
-
-                    error:
-                        "قیمت فعلی طلا معتبر نیست."
+                    }]
 
                 },
 
-                response:
-                    "قیمت فعلی طلا معتبر نیست."
+                {
+
+                    userId: request.userId,
+
+                    metadata: request.context
+
+                }
+
+            );
+
+
+
+        if (!marketResult?.success) {
+
+            return {
+
+                handled: true,
+
+                toolName: "calculate_gold_price",
+
+                toolResult: marketResult,
+
+                response: marketResult?.error ?? "دریافت قیمت فعلی طلا با خطا مواجه شد."
+
+            };
+
+        }
+
+
+
+        const marketData = marketResult.data as Record<string, unknown> | undefined;
+
+        const goldPrice = marketData?.price;
+
+
+
+        if (typeof goldPrice !== "number" || !Number.isFinite(goldPrice) || goldPrice <= 0) {
+
+            return {
+
+                handled: true,
+
+                toolName: "calculate_gold_price",
+
+                toolResult: { success: false, error: "قیمت فعلی طلا معتبر نیست." },
+
+                response: "قیمت فعلی طلا معتبر نیست."
 
             };
 
@@ -368,56 +425,39 @@ export class AILocalToolRouter {
 
                 {
 
-                    content:
-                        "",
+                    content: "",
 
-                    toolCalls:
+                    toolCalls: [{
 
-                    [
+                        id: `local-calculation-${Date.now()}`,
 
-                        {
+                        name: "calculate_gold_price",
 
-                            id:
-                                `local-calculation-${Date.now()}`,
+                        arguments: {
 
-                            name:
-                                "calculate_gold_price",
+                            weight: calculation.weight,
 
-                            arguments:
-                            {
+                            goldPrice,
 
-                                weight:
-                                    calculation.weight,
+                            laborPercent: calculation.laborPercent,
 
-                                goldPrice,
+                            profitPercent: calculation.profitPercent,
 
-                                laborPercent:
-                                    calculation.laborPercent,
+                            taxPercent: calculation.taxPercent,
 
-                                profitPercent:
-                                    calculation.profitPercent,
-
-                                taxPercent:
-                                    calculation.taxPercent,
-
-                                discount:
-                                    calculation.discount
-
-                            }
+                            discount: calculation.discount
 
                         }
 
-                    ]
+                    }]
 
                 },
 
                 {
 
-                    userId:
-                        request.userId,
+                    userId: request.userId,
 
-                    metadata:
-                        request.context
+                    metadata: request.context
 
                 }
 
