@@ -176,6 +176,11 @@ import {
 }
 from "./handlers/PriceTargetCallbackHandler";
 
+import {
+    AboutBotCallbackHandler,
+}
+from "./handlers/AboutBotCallbackHandler";
+
 
 
 export class TelegramCallbackHandlerFactory {
@@ -389,7 +394,9 @@ export class TelegramCallbackHandlerFactory {
 
             new PriceTargetCallbackHandler(
                 priceTargetAlertService
-            )
+            ),
+
+            new AboutBotCallbackHandler()
 
 
 
