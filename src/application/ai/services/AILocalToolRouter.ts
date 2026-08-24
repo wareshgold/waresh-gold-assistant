@@ -1482,19 +1482,14 @@ export class AILocalToolRouter {
 
             }
 
-        }
-
-
-
-
-
-        if (
+        }        if (
 
             toolName ===
 
             "calculate_gold_price"
 
         ) {
+
 
 
             const data =
@@ -1507,17 +1502,71 @@ export class AILocalToolRouter {
 
 
 
-            const total =
-                data?.total;
+            const total = data?.total;
+
+            const goldValue = data?.goldValue;
+
+            const laborAmount = data?.laborAmount;
+
+            const profitAmount = data?.profitAmount;
+
+            const taxAmount = data?.taxAmount;
+
+            const weight = data?.weight;
 
 
-            if (
-                typeof total === "number"
-            ) {
 
-                return (
-                    `قیمت نهایی: ${this.formatNumber(total)} تومان`
-                );
+            if (typeof total === "number") {
+
+                const lines = [
+
+                    `🧮 <b>نتیجه محاسبه طلا</b>`,
+
+                    "",
+
+                    `💰 قیمت نهایی: <b>${this.formatNumber(total)} تومان</b>`,
+
+                    "",
+
+                    "جزئیات:"
+
+                ];
+
+
+
+                if (typeof weight === "number") {
+
+                    lines.push(`⚖️ وزن: ${weight} گرم`);
+
+                }
+
+                if (typeof goldValue === "number") {
+
+                    lines.push(`🟡 ارزش طلا: ${this.formatNumber(goldValue)} تومان`);
+
+                }
+
+                if (typeof laborAmount === "number") {
+
+                    lines.push(`🛠 اجرت: ${this.formatNumber(laborAmount)} تومان`);
+
+                }
+
+                if (typeof profitAmount === "number") {
+
+                    lines.push(`💹 سود: ${this.formatNumber(profitAmount)} تومان`);
+
+                }
+
+                if (typeof taxAmount === "number") {
+
+                    lines.push(`🧾 مالیات: ${this.formatNumber(taxAmount)} تومان`);
+
+                }
+
+
+
+                return lines.join("\n");
 
             }
 
