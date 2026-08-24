@@ -15,6 +15,7 @@ import { ExitCommandHandler } from "./handlers/ExitCommandHandler";
 import { VIPCommandHandler } from "./handlers/VIPCommandHandler";
 import { StrategyACommandHandler } from "./handlers/StrategyACommandHandler";
 import { GoldPriceAlertCommandHandler } from "./handlers/GoldPriceAlertCommandHandler";
+import { MyAlertsCommandHandler } from "./handlers/MyAlertsCommandHandler";
 import { MarketReportCommandHandler } from "./handlers/MarketReportCommandHandler";
 import { OpenMenuCommandHandler } from "./handlers/OpenMenuCommandHandler";
 import { TelegramNavigationService } from "../navigation/TelegramNavigationService";
@@ -99,6 +100,7 @@ export class TelegramCommandRegistry {
 
         if (goldPriceAlertService) {
             handlers.push(new GoldPriceAlertCommandHandler(goldPriceAlertService));
+            handlers.push(new MyAlertsCommandHandler(goldPriceAlertService));
         }
 
         if (marketReportService) {
