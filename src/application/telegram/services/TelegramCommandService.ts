@@ -163,122 +163,65 @@ implements TelegramCommandExecutor {
 
 
 
-        const isMenuCommand = resolvedCommand.startsWith("menu:");
-
-
-
-        // Check AI session FIRST for regular text messages
-
-        if (
-
-            !text.startsWith("/") &&
-
-            !isMenuCommand &&
-
-            this.aiSessionManager
-
-        ) {
-
-            const aiResponse =
-
-                await this.aiSessionManager.execute(
-
-                    normalizedMessage.userId,
-
-                    text
-
-                );
-
-
-
-            if (aiResponse) {
-
-                return aiResponse;
-
-            }
-
-        }
-
-
-
-        if (
-
-            !text.startsWith("/") &&
-
-            !isMenuCommand &&
-
-            this.conversationManager
-
-        ) {
-
-            const activeConversation =
-
-                await this.conversationManager.execute(
-
-                    normalizedMessage.userId,
-
-                    text,
-
-                    {
-
-                        userName: normalizedMessage.firstName ?? normalizedMessage.username
-
-                    }
-
-                );
-
-
-
-            if (activeConversation) {
-
-                return activeConversation;
-
-            }
-
-        }
-
-
-
+        const isMenuCommand = resolvedCommand.startsWith("menu:");        // IMPORTANT: Reply keyboard navigation and menu commands ALWAYS
+        // bypass AI session and conversation manager. This prevents
+        // getting stuck when user clicks menu buttons during AI chat.
         if (isReplyKeyboardNavigation || isMenuCommand) {
 
-
-
-            if (isMenuCommand && this.conversationManager) {
-
+            if (this.conversationManager) {
                 await this.conversationManager.cancel(
-
                     normalizedMessage.userId
-
                 );
-
             }
 
-
-
             const context =
-
                 this.contextBuilder.build(
-
                     resolvedCommand,
-
                     normalizedMessage.userId,
-
                     [],
-
                     normalizedMessage.username,
-
                     normalizedMessage.firstName
-
                 );
 
-
-
             return this.router.execute(
-
                 context
-
             );
+        }
 
+        // Check AI session for non-command, non-menu text messages
+        if (
+            !text.startsWith("/") &&
+            this.aiSessionManager
+        ) {
+            const aiResponse =
+                await this.aiSessionManager.execute(
+                    normalizedMessage.userId,
+                    text
+                );
+
+            if (aiResponse) {
+                return aiResponse;
+            }
+        }
+
+
+        // Check active conversation (calculator workflow, etc.)
+        if (
+            !text.startsWith("/") &&
+            this.conversationManager
+        ) {
+            const activeConversation =
+                await this.conversationManager.execute(
+                    normalizedMessage.userId,
+                    text,
+                    {
+                        userName: normalizedMessage.firstName ?? normalizedMessage.username
+                    }
+                );
+
+            if (activeConversation) {
+                return activeConversation;
+            }
         }        if (
             text.startsWith("/")
         ) {
