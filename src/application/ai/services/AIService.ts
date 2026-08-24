@@ -180,7 +180,8 @@ export class AIService {
 
             const casual =
                 this.casualMessageGuard.handle(
-                    request.message
+                    request.message,
+                    request.userName
                 );
 
 

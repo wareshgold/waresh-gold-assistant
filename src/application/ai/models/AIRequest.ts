@@ -13,6 +13,12 @@ export interface AIRequest {
 
 
 
+    userName?:
+
+        string;
+
+
+
     context?:
 
         Record<string, unknown>;

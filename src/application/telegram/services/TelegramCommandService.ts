@@ -234,7 +234,10 @@ implements TelegramCommandExecutor {
             const activeConversation =
                 await this.conversationManager.execute(
                     normalizedMessage.userId,
-                    text
+                    text,
+                    {
+                        userName: normalizedMessage.firstName ?? normalizedMessage.username
+                    }
                 );
 
             if (

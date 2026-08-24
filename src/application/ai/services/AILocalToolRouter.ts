@@ -152,6 +152,34 @@ export class AILocalToolRouter {
 
 
 
+        const dateTimeResponse =
+
+            this.handleDateTimeRequest(
+
+                message
+
+            );
+
+
+
+        if (dateTimeResponse) {
+
+            return {
+
+                handled: true,
+
+                response: dateTimeResponse
+
+            };
+
+        }
+
+
+
+
+
+
+
         const toolName =
 
             this.resolveTool(
@@ -561,6 +589,127 @@ export class AILocalToolRouter {
 
 
     }
+
+
+
+
+
+    private handleDateTimeRequest(
+
+        message:
+
+            string
+
+    ):
+
+        string | null {
+
+
+
+        // Only handle pure date/time questions, not market-related ones
+
+        const hasGoldDomain =
+
+            /(طلا|بازار|قیمت|حباب|اونس|مثقال|خرید|فروش|تحلیل)/i.test(
+
+                message
+
+            );
+
+
+
+        if (hasGoldDomain) {
+
+            return null;
+
+        }
+
+
+
+        const isTimeRequest =
+
+            /(ساعت|الان چند|چه ساعتی| ساعت چنده)/i.test(
+
+                message
+
+            );
+
+
+
+        const isDateRequest =
+
+            /(تاریخ|چندم|چندمی|چه روزی|تقویم|کدوم روز| امروز چندمه|امروز چندمه)/i.test(
+
+                message
+
+            );
+
+
+
+        if (!isDateRequest && !isTimeRequest) {
+
+            return null;
+
+        }
+
+
+
+        const now = new Date();
+
+
+
+        const gregorian = new Date(
+
+            now.toLocaleString("en-US", {
+
+                timeZone: "Asia/Tehran"
+
+            })
+
+        );
+
+
+
+        const hours = gregorian.getHours();
+
+        const minutes = gregorian.getMinutes();
+
+        const timeStr = `${hours}:${minutes.toString().padStart(2, "0")}`;
+
+
+
+        if (isTimeRequest && isDateRequest) {
+
+            return `الان ساعت ${timeStr} به وقت تهران هست.`;
+
+        }
+
+
+
+        if (isTimeRequest) {
+
+            return `الان ساعت ${timeStr} به وقت تهران هست.`;
+
+        }
+
+
+
+        const monthNames = [
+
+            "ژانویه", "فوریه", "مارس", "آوریل",
+
+            "مه", "ژوئن", "ژوئیه", "اوت",
+
+            "سپتامبر", "اکتبر", "نوامبر", "دسامبر"
+
+        ];
+
+
+
+        return `امروز ${gregorian.getDate()} ${monthNames[gregorian.getMonth()]} ${gregorian.getFullYear()} هست.\nساعت: ${timeStr} به وقت تهران.`;
+
+    }
+
 
 
 

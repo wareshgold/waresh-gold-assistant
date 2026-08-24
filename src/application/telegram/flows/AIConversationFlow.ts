@@ -49,7 +49,13 @@ implements TelegramConversationFlow {
 
         message:
 
-            string
+            string,
+
+        context?: {
+
+            userName?: string;
+
+        }
 
     ): Promise<{
 
@@ -67,7 +73,9 @@ implements TelegramConversationFlow {
 
                 message,
 
-                userId
+                userId,
+
+                userName: context?.userName
 
             });
 
