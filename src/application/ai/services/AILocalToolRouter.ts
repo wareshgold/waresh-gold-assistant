@@ -193,6 +193,8 @@ export class AILocalToolRouter {
             const lines: string[] = [];
             if (result.ouncePrice && result.ouncePrice > 0) {
                 lines.push(`🌎 انس جهانی: ${this.formatNumber(result.ouncePrice)} دلار`);
+            } else {
+                lines.push(`🌎 انس جهانی: ناموجود`);
             }
             if (result.dollarPrice && result.dollarPrice > 0) {
                 lines.push(`💵 دلار: ${this.formatNumber(result.dollarPrice)} تومان`);
