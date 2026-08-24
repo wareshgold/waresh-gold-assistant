@@ -80,11 +80,19 @@ export class VIPCommandHandler
             };
         }
 
-        const result =
-            await this.vipAccessService.activateCode(
+        let result;
+        try {
+            result = await this.vipAccessService.activateCode(
                 userId,
                 code
             );
+        } catch (error) {
+            console.error("VIP activation error", { userId, code, error });
+            return {
+                type: "text" as const,
+                content: "❌ خطا در فعال‌سازی VIP. لطفاً دوباره تلاش کنید."
+            };
+        }
 
         if (!result.success) {
             const messages: Record<string, string> = {
