@@ -30,14 +30,14 @@ export interface StrategyAConfiguration {
 export const DEFAULT_StrategyA_CONFIGURATION: StrategyAConfiguration = {
     symbol: "XAUUSD",
     timeframe: "M5",
-    strategyVersion: "StrategyA-v1",
+    strategyVersion: "SP2L-v1",
     minSpikeCandles: 3,
     maxSpikeCandles: 3,
     minBodyRatio: 0.65,
     minSpikeRangeMultiplier: 1.8,
     minSpikeMovePercent: 0.12,
     minGapRatio: 0.15,
-    minRetracementPercent: 35,
-    maxRetracementPercent: 70,
+    minRetracementPercent: 20,
+    maxRetracementPercent: 85,
     riskReward: 1
 };

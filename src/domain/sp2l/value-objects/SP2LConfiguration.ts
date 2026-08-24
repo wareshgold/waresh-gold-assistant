@@ -37,7 +37,7 @@ export const DEFAULT_SP2L_CONFIGURATION: SP2LConfiguration = {
     minSpikeRangeMultiplier: 1.8,
     minSpikeMovePercent: 0.12,
     minGapRatio: 0.15,
-    minRetracementPercent: 35,
-    maxRetracementPercent: 70,
+    minRetracementPercent: 20,
+    maxRetracementPercent: 85,
     riskReward: 1
 };
