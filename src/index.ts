@@ -75,6 +75,12 @@ export default {
                     console.error("Failed to send bubble alerts:", error);
                 }
 
+                try {
+                    await currentContainer.priceTargetAlertSchedulerJob.execute();
+                } catch (error) {
+                    console.error("Failed to check price target alerts:", error);
+                }
+
                 if (scheduledMinute % 30 !== 0) {
                     return;
                 }

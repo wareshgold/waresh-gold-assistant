@@ -44,6 +44,8 @@ import { CalculateInvoiceUseCase } from "../../application/gold/CalculateInvoice
 import { BubbleAlertService } from "../../application/bubble-alert/BubbleAlertService";
 import { D1BubbleAlertRepository } from "../../infrastructure/bubble-alert/D1BubbleAlertRepository";
 import { D1GoldPriceAlertRepository } from "../../infrastructure/gold-alert/D1GoldPriceAlertRepository";
+import { PriceTargetAlertService } from "../../application/price-target-alert/PriceTargetAlertService";
+import { D1PriceTargetAlertRepository } from "../../infrastructure/price-target-alert/D1PriceTargetAlertRepository";
 
 interface Dependencies {
     getGoldPriceUseCase: any;
@@ -67,6 +69,7 @@ interface Dependencies {
     bubbleAlertService?: any;
     marketReportService?: MarketReportService;
     calculateInvoiceUseCase?: CalculateInvoiceUseCase;
+    priceTargetAlertService?: any;
 }
 
 export function createTelegramModule(env: AppEnv, dependencies: Dependencies) {
@@ -127,7 +130,8 @@ export function createTelegramModule(env: AppEnv, dependencies: Dependencies) {
         dependencies.bubbleAlertService,
         dependencies.marketReportService,
         telegramNavigationService,
-        dependencies.calculateInvoiceUseCase
+        dependencies.calculateInvoiceUseCase,
+        dependencies.priceTargetAlertService
     );
 
     const actionResolver = new CompositeTelegramActionResolver([
@@ -168,7 +172,8 @@ export function createTelegramModule(env: AppEnv, dependencies: Dependencies) {
         telegramNumberFormatter,
         dependencies.goldPriceResolver,
         dependencies.bubbleAlertService ?? new BubbleAlertService(new D1BubbleAlertRepository(env.waresh_gold_db)),
-        dependencies.goldPriceAlertService ?? new GoldPriceAlertService(new D1GoldPriceAlertRepository(env.waresh_gold_db))
+        dependencies.goldPriceAlertService ?? new GoldPriceAlertService(new D1GoldPriceAlertRepository(env.waresh_gold_db)),
+        dependencies.priceTargetAlertService ?? new PriceTargetAlertService(new D1PriceTargetAlertRepository(env.waresh_gold_db))
     );
 
     const callbackProcessor = new TelegramCallbackProcessor(

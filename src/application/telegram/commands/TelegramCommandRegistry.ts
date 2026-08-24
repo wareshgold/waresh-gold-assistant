@@ -17,6 +17,7 @@ import { StrategyACommandHandler } from "./handlers/StrategyACommandHandler";
 import { GoldPriceAlertCommandHandler } from "./handlers/GoldPriceAlertCommandHandler";
 import { MyAlertsCommandHandler } from "./handlers/MyAlertsCommandHandler";
 import { BubbleAlertCommandHandler } from "./handlers/BubbleAlertCommandHandler";
+import { PriceTargetAlertCommandHandler } from "./handlers/PriceTargetAlertCommandHandler";
 import { BubbleAlertService } from "../../bubble-alert/BubbleAlertService";
 import { MarketReportCommandHandler } from "./handlers/MarketReportCommandHandler";
 import { OpenMenuCommandHandler } from "./handlers/OpenMenuCommandHandler";
@@ -66,7 +67,8 @@ export class TelegramCommandRegistry {
         bubbleAlertService?: any,
         marketReportService?: MarketReportService,
         navigationService?: TelegramNavigationService,
-        calculateInvoiceUseCase?: CalculateInvoiceUseCase
+        calculateInvoiceUseCase?: CalculateInvoiceUseCase,
+        priceTargetAlertService?: any
     ): TelegramCommandRouter {
         const welcomeMessageProvider = new RandomWelcomeMessageProvider();
         const menuRegistry = new MemoryTelegramMenuRegistry();
@@ -108,6 +110,10 @@ export class TelegramCommandRegistry {
 
         if (bubbleAlertService) {
             handlers.push(new BubbleAlertCommandHandler(bubbleAlertService));
+        }
+
+        if (priceTargetAlertService) {
+            handlers.push(new PriceTargetAlertCommandHandler(priceTargetAlertService));
         }
 
         if (marketReportService) {

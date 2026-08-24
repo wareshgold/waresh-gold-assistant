@@ -79,6 +79,11 @@ import {
 }
 from "../../gold-alert/GoldPriceAlertService";
 
+import {
+    PriceTargetAlertService,
+}
+from "../../price-target-alert/PriceTargetAlertService";
+
 
 
 export class TelegramCallbackRegistry {
@@ -147,7 +152,10 @@ export class TelegramCallbackRegistry {
 
 
         alertService:
-            GoldPriceAlertService
+            GoldPriceAlertService,
+
+        priceTargetAlertService:
+            PriceTargetAlertService
 
 
 
@@ -205,7 +213,9 @@ export class TelegramCallbackRegistry {
                 bubbleAlertService,
 
 
-                alertService
+                alertService,
+
+                priceTargetAlertService
 
 
 

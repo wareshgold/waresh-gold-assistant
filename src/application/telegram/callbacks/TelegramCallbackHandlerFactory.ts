@@ -157,6 +157,11 @@ import {
 from "../../gold-alert/GoldPriceAlertService";
 
 import {
+    PriceTargetAlertService,
+}
+from "../../price-target-alert/PriceTargetAlertService";
+
+import {
     BubbleThresholdCallbackHandler,
 }
 from "./handlers/BubbleThresholdCallbackHandler";
@@ -165,6 +170,11 @@ import {
     AlertIntervalCallbackHandler,
 }
 from "./handlers/AlertIntervalCallbackHandler";
+
+import {
+    PriceTargetCallbackHandler,
+}
+from "./handlers/PriceTargetCallbackHandler";
 
 
 
@@ -217,7 +227,10 @@ export class TelegramCallbackHandlerFactory {
 
 
         alertService:
-            GoldPriceAlertService
+            GoldPriceAlertService,
+
+        priceTargetAlertService:
+            PriceTargetAlertService
 
 
 
@@ -372,6 +385,10 @@ export class TelegramCallbackHandlerFactory {
 
             new AlertIntervalCallbackHandler(
                 alertService
+            ),
+
+            new PriceTargetCallbackHandler(
+                priceTargetAlertService
             )
 
 
