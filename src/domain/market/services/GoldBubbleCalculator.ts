@@ -28,22 +28,23 @@ export class GoldBubbleCalculator {
 
         marketPrice: MarketPrice
 
-    ): GoldBubbleResult {
-
-
-
+    ): GoldBubbleResult {        // If ounce price is unavailable, calculate from 18k price directly
+        // intrinsic = 18k price * 0.75 (18/24 ratio)
         if (marketPrice.ouncePrice === null) {
-
-            throw new Error(
-                "Cannot calculate gold bubble without ounce price"
-            );
-
+            const intrinsicPrice = marketPrice.gold18Price * 0.75;
+            const bubbleAmount = marketPrice.gold18Price - intrinsicPrice;
+            const bubblePercentage = (bubbleAmount / intrinsicPrice) * 100;
+            return {
+                intrinsicPrice,
+                bubbleAmount,
+                bubblePercentage,
+                marketPrice: marketPrice.gold18Price
+            };
         }
 
 
 
         const gram24kPrice =
-
             (
                 marketPrice.ouncePrice *
                 marketPrice.currencyPrice
@@ -55,14 +56,12 @@ export class GoldBubbleCalculator {
 
 
         const intrinsicPrice =
-
             gram24kPrice * 0.75;
 
 
 
 
         const bubbleAmount =
-
             marketPrice.gold18Price -
             intrinsicPrice;
 
@@ -70,7 +69,6 @@ export class GoldBubbleCalculator {
 
 
         const bubblePercentage =
-
             (
                 bubbleAmount /
                 intrinsicPrice

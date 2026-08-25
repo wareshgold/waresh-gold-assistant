@@ -62,17 +62,23 @@ export class TwoLegDetector {
         fromIndex: number,
         config: SP2LConfiguration
     ): TwoLeg | null {
-        const leg1End =
-            this.findSwingLowIndex(
-                candles,
-                fromIndex,
-                candles.length - 1
-            );
+        let leg1End: number | null = null;
 
-        if (
-            leg1End === null ||
-            leg1End <= fromIndex
+        for (
+            let i = fromIndex + 1;
+            i < candles.length;
+            i++
         ) {
+            const prev = candles[i - 1];
+            const curr = candles[i];
+
+            if (curr.low < prev.low) {
+                leg1End = i;
+                break;
+            }
+        }
+
+        if (leg1End === null) {
             return null;
         }
 
@@ -85,41 +91,30 @@ export class TwoLegDetector {
                 candles[leg1End].low
         };
 
-        const bounceEnd =
-            this.findSwingHighIndex(
-                candles,
-                leg1End + 1,
-                candles.length - 1
-            );
+        let completionIndex = leg1End;
 
-        if (
-            bounceEnd === null ||
-            bounceEnd <= leg1End
+        for (
+            let i = leg1End + 1;
+            i < candles.length;
+            i++
         ) {
-            return null;
-        }
-
-        const leg2End =
-            this.findSwingLowIndex(
-                candles,
-                bounceEnd + 1,
-                candles.length - 1
-            );
-
-        if (
-            leg2End === null ||
-            leg2End <= bounceEnd
-        ) {
-            return null;
+            if (
+                candles[i].low <
+                candles[completionIndex].low
+            ) {
+                completionIndex = i;
+            } else {
+                break;
+            }
         }
 
         const leg2: SwingLeg = {
-            startIndex: bounceEnd,
-            endIndex: leg2End,
+            startIndex: leg1End,
+            endIndex: completionIndex,
             startPrice:
-                candles[bounceEnd].high,
+                candles[leg1End].high,
             endPrice:
-                candles[leg2End].low
+                candles[completionIndex].low
         };
 
         return this.buildTwoLeg(
@@ -136,17 +131,23 @@ export class TwoLegDetector {
         fromIndex: number,
         config: SP2LConfiguration
     ): TwoLeg | null {
-        const leg1End =
-            this.findSwingHighIndex(
-                candles,
-                fromIndex,
-                candles.length - 1
-            );
+        let leg1End: number | null = null;
 
-        if (
-            leg1End === null ||
-            leg1End <= fromIndex
+        for (
+            let i = fromIndex + 1;
+            i < candles.length;
+            i++
         ) {
+            const prev = candles[i - 1];
+            const curr = candles[i];
+
+            if (curr.high > prev.high) {
+                leg1End = i;
+                break;
+            }
+        }
+
+        if (leg1End === null) {
             return null;
         }
 
@@ -159,41 +160,30 @@ export class TwoLegDetector {
                 candles[leg1End].high
         };
 
-        const dipEnd =
-            this.findSwingLowIndex(
-                candles,
-                leg1End + 1,
-                candles.length - 1
-            );
+        let completionIndex = leg1End;
 
-        if (
-            dipEnd === null ||
-            dipEnd <= leg1End
+        for (
+            let i = leg1End + 1;
+            i < candles.length;
+            i++
         ) {
-            return null;
-        }
-
-        const leg2End =
-            this.findSwingHighIndex(
-                candles,
-                dipEnd + 1,
-                candles.length - 1
-            );
-
-        if (
-            leg2End === null ||
-            leg2End <= dipEnd
-        ) {
-            return null;
+            if (
+                candles[i].high >
+                candles[completionIndex].high
+            ) {
+                completionIndex = i;
+            } else {
+                break;
+            }
         }
 
         const leg2: SwingLeg = {
-            startIndex: dipEnd,
-            endIndex: leg2End,
+            startIndex: leg1End,
+            endIndex: completionIndex,
             startPrice:
-                candles[dipEnd].low,
+                candles[leg1End].low,
             endPrice:
-                candles[leg2End].high
+                candles[completionIndex].high
         };
 
         return this.buildTwoLeg(
@@ -247,57 +237,5 @@ export class TwoLegDetector {
             completionIndex:
                 leg2.endIndex
         };
-    }
-
-    private findSwingLowIndex(
-        candles: SP2LCandle[],
-        from: number,
-        to: number
-    ): number | null {
-        if (from > to || from >= candles.length) {
-            return null;
-        }
-
-        let minIdx = from;
-        let minVal = candles[from].low;
-
-        for (
-            let i = from;
-            i <= Math.min(to, candles.length - 1);
-            i++
-        ) {
-            if (candles[i].low < minVal) {
-                minVal = candles[i].low;
-                minIdx = i;
-            }
-        }
-
-        return minIdx;
-    }
-
-    private findSwingHighIndex(
-        candles: SP2LCandle[],
-        from: number,
-        to: number
-    ): number | null {
-        if (from > to || from >= candles.length) {
-            return null;
-        }
-
-        let maxIdx = from;
-        let maxVal = candles[from].high;
-
-        for (
-            let i = from;
-            i <= Math.min(to, candles.length - 1);
-            i++
-        ) {
-            if (candles[i].high > maxVal) {
-                maxVal = candles[i].high;
-                maxIdx = i;
-            }
-        }
-
-        return maxIdx;
     }
 }

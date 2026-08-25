@@ -20,14 +20,14 @@ describe("TelegramChannelScraperMessageProvider", () => {
         <div class="tgme_widget_message_text">
             🔻طلای ۱۸ عیار: 18,306,478 تومان<br/>
             دلار تهران: 187,790 تومان<br/>
-            اونس طلا: 3350 دلار
+            انس طلا: 3350 دلار
         </div>
 
 
         <div class="tgme_widget_message_text">
             🔻طلای ۱۸ عیار: 18,500,000 تومان<br/>
             دلار تهران: 188,000 تومان<br/>
-            اونس طلا: 3360 دلار
+            انس طلا: 3360 دلار
         </div>
 
         `;

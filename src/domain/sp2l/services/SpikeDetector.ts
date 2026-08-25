@@ -24,9 +24,15 @@ export class SpikeDetector {
             return null;
         }
 
+        const contextCandles =
+            candles.slice(
+                0,
+                candles.length - 1
+            );
+
         const avgRange =
             this.averageRange(
-                candles.slice(0, -1)
+                contextCandles
             );
 
         if (avgRange <= 0) {
@@ -91,6 +97,7 @@ export class SpikeDetector {
         avgRange: number,
         config: SP2LConfiguration
     ): Spike | null {
+        // Step 1: All candles must be strong in the spike direction
         const allStrong =
             window.every(
                 candle =>
@@ -105,6 +112,27 @@ export class SpikeDetector {
             return null;
         }
 
+        // Step 2: Check P-Gap between consecutive candles
+        // P-Gap is MANDATORY — spike without gap is invalid
+        const gapSize =
+            this.calculateConsecutiveGapSize(
+                window,
+                direction
+            );
+
+        if (gapSize <= 0) {
+            return null;
+        }
+
+        // Gap must be meaningful relative to average range
+        if (
+            gapSize <
+            avgRange * config.minGapRatio
+        ) {
+            return null;
+        }
+
+        // Step 3: Check total move
         const startPrice =
             direction === "BUY"
                 ? window[0].low
@@ -133,19 +161,7 @@ export class SpikeDetector {
             return null;
         }
 
-        const gapSize =
-            this.calculateGapSize(
-                window,
-                direction
-            );
-
-        if (
-            gapSize <
-            avgRange * config.minGapRatio
-        ) {
-            return null;
-        }
-
+        // Step 4: Calculate extremes for SL
         const extremeHigh =
             Math.max(
                 ...window.map(c => c.high)
@@ -156,6 +172,7 @@ export class SpikeDetector {
                 ...window.map(c => c.low)
             );
 
+        // Step 5: Calculate strength
         const strength =
             Math.min(
                 1,
@@ -176,8 +193,7 @@ export class SpikeDetector {
                 startIndex + window.length - 1,
             strength,
             gapSize,
-            candlesCount:
-                window.length,
+            candlesCount: window.length,
             extremeHigh,
             extremeLow
         };
@@ -214,46 +230,42 @@ export class SpikeDetector {
         return candle.close < candle.open;
     }
 
-    private calculateGapSize(
+    /**
+     * P-Gap: Gap between consecutive candles.
+     * For BUY spike: current candle's low must be above previous candle's high
+     * For SELL spike: current candle's high must be below previous candle's low
+     * 
+     * Returns the largest gap across all consecutive pairs in the window.
+     */
+    private calculateConsecutiveGapSize(
         window: SP2LCandle[],
         direction: SP2LDirection
     ): number {
-        if (window.length < 3) {
+        if (window.length < 2) {
             return 0;
         }
 
-        let largestGap = 0;
+        let totalGap = 0;
+        let hasGap = true;
 
-        for (
-            let i = 2;
-            i < window.length;
-            i++
-        ) {
-            const first =
-                window[i - 2];
-
-            const third =
-                window[i];
+        for (let i = 1; i < window.length; i++) {
+            const prev = window[i - 1];
+            const curr = window[i];
 
             const gap =
                 direction === "BUY"
-                    ? Math.max(
-                        0,
-                        third.low - first.high
-                    )
-                    : Math.max(
-                        0,
-                        first.low - third.high
-                    );
+                    ? curr.low - prev.high
+                    : prev.low - curr.high;
 
-            largestGap =
-                Math.max(
-                    largestGap,
-                    gap
-                );
+            if (gap <= 0) {
+                hasGap = false;
+                break;
+            }
+
+            totalGap += gap;
         }
 
-        return largestGap;
+        return hasGap ? totalGap : 0;
     }
 
     private averageRange(

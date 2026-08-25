@@ -97,20 +97,13 @@ implements TelegramCommandHandler {
         };
 
 
-    }
-
-
-
-
-    canHandle(
-
+    }    canHandle(
         command:
             string
-
     ): boolean {
 
 
-        return command === "/calc";
+        return command === "/calc" || command === "/formula";
 
 
     }

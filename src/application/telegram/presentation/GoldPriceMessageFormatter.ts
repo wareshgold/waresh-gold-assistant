@@ -18,7 +18,7 @@ export class GoldPriceMessageFormatter {
             "",
             `طلای ۱۸ عیار   ${this.money(metadata.gold18Price)}`,
             `دلار            ${this.money(metadata.currencyPrice)}`,
-            `اونس جهانی      ${this.ounce(metadata.ouncePrice)}`,
+            `انس جهانی      ${this.ounce(metadata.ouncePrice)}`,
             "",
             `آخرین بروزرسانی: ${this.date(metadata.updatedAt)}`
         ]);

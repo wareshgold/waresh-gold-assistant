@@ -57,7 +57,11 @@ export class TelegramPriceParser {
         const ouncePrice =
             this.extractNumber(
                 normalized,
-                /اونس\s*طلا\s*:\s*([\d,]+)(?:\$)?/i
+                /(?:اونس|انس)\s*(?:طلا|جهانی)?\s*:\s*([\d,]+)(?:\$)?/i
+            )
+            ?? this.extractNumber(
+                normalized,
+                /xau(?:usd)?\s*:\s*([\d,]+)/i
             );
 
 

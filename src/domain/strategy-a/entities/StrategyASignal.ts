@@ -3,6 +3,10 @@ import {
 } from "../value-objects/StrategyASignalType";
 
 import {
+    SignalStatus
+} from "../value-objects/SignalStatus";
+
+import {
     Spike
 } from "../models/Spike";
 
@@ -26,6 +30,7 @@ export interface StrategyASignalProps {
     reason: string;
     generatedAt: Date;
     strategyVersion: string;
+    status?: SignalStatus;
     spikeData?: Spike;
     twoLegData?: TwoLeg;
     levelData?: EntryLevel;
@@ -44,6 +49,7 @@ export class StrategyASignal {
     readonly reason: string;
     readonly generatedAt: Date;
     readonly strategyVersion: string;
+    readonly status: SignalStatus;
     readonly spikeData?: Spike;
     readonly twoLegData?: TwoLeg;
     readonly levelData?: EntryLevel;
@@ -62,6 +68,7 @@ export class StrategyASignal {
         this.reason = props.reason;
         this.generatedAt = props.generatedAt;
         this.strategyVersion = props.strategyVersion;
+        this.status = props.status ?? "ACTIVE";
         this.spikeData = props.spikeData;
         this.twoLegData = props.twoLegData;
         this.levelData = props.levelData;
@@ -115,5 +122,49 @@ export class StrategyASignal {
             this.signalType === "BUY" ||
             this.signalType === "SELL"
         );
+    }
+
+    /**
+     * Check if current price has hit SL or TP.
+     * Returns the terminal status if hit, null otherwise.
+     */
+    checkPriceLevel(
+        currentPrice: number
+    ): SignalStatus | null {
+        if (!this.isActionable()) {
+            return null;
+        }
+
+        if (this.signalType === "BUY") {
+            if (currentPrice <= this.stopLoss) {
+                return "SL_HIT";
+            }
+            if (currentPrice >= this.takeProfit) {
+                return "TP_HIT";
+            }
+        } else {
+            // SELL
+            if (currentPrice >= this.stopLoss) {
+                return "SL_HIT";
+            }
+            if (currentPrice <= this.takeProfit) {
+                return "TP_HIT";
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Check if signal has expired (older than maxAgeHours).
+     */
+    isExpired(
+        maxAgeHours: number = 24
+    ): boolean {
+        const ageMs =
+            Date.now() -
+            this.generatedAt.getTime();
+
+        return ageMs > maxAgeHours * 60 * 60 * 1000;
     }
 }

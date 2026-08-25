@@ -6,6 +6,7 @@ export enum NavigationAction {
     CALCULATE = "menu:calculate",
     ASSISTANT = "menu:assistant",
     STRATEGY = "menu:strategy",
+    ALERTS = "menu:alerts",
     SETTINGS = "menu:settings",
 
     GOLD_PRICE = "gold:price",
@@ -24,14 +25,14 @@ export enum NavigationAction {
     ASSISTANT_LEARN = "assistant:learn",
     ASSISTANT_HELP = "assistant:help",
 
-    SP2L = "strategy:sp2l",
+    STRATEGY_A = "strategy:strategy-a",
 
     SETTINGS_ALERTS = "settings:alerts",
-    SETTINGS_ACCOUNT = "settings:account",
-    SETTINGS_BOT = "settings:bot",
+    SETTINGS_ABOUT = "settings:about",
 
-    ALERTS_LIVE_PRICE = "alerts:live-price",
     ALERTS_MARKET_ANALYSIS = "alerts:market-analysis",
     ALERTS_PRICE_TARGET = "alerts:price-target",
     ALERTS_MY_ALERTS = "alerts:my-alerts",
+    ALERTS_PERIODIC_PRICE = "alerts:periodic-price",
+    ALERTS_BUBBLE = "alerts:bubble",
 }

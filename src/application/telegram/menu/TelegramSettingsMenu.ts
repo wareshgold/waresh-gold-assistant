@@ -48,7 +48,7 @@ export const TelegramSettingsMenu: TelegramMenuItem[] = [
             "settings.account",
 
         label:
-            "👤 حساب کاربری",
+            "❓ راهنما",
 
         action: {
 
@@ -56,7 +56,7 @@ export const TelegramSettingsMenu: TelegramMenuItem[] = [
                 TelegramMenuActionType.CALLBACK,
 
             value:
-                NavigationAction.SETTINGS_ACCOUNT,
+                NavigationAction.ASSISTANT_HELP,
 
         },
 
@@ -66,10 +66,10 @@ export const TelegramSettingsMenu: TelegramMenuItem[] = [
 
     {
         id:
-            "settings.bot",
+            "settings.about",
 
         label:
-            "⚙️ تنظیمات ربات",
+            "ℹ️ درباره ربات",
 
         action: {
 
@@ -77,7 +77,7 @@ export const TelegramSettingsMenu: TelegramMenuItem[] = [
                 TelegramMenuActionType.CALLBACK,
 
             value:
-                NavigationAction.SETTINGS_BOT,
+                NavigationAction.SETTINGS_ABOUT,
 
         },
 

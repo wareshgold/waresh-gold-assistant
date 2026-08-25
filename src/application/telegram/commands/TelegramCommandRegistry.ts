@@ -9,11 +9,17 @@ import { GetMarketHistoryCommandHandler } from "./handlers/GetMarketHistoryComma
 import { GetGoldCalculationHistoryCommandHandler } from "./handlers/GetGoldCalculationHistoryCommandHandler";
 import { CalculateGoldCommandHandler } from "./handlers/CalculateGoldCommandHandler";
 import { ReverseGoldCommandHandler } from "./handlers/ReverseGoldCommandHandler";
+import { InvoiceCommandHandler } from "./handlers/InvoiceCommandHandler";
 import { AICommandHandler } from "./handlers/AICommandHandler";
 import { ExitCommandHandler } from "./handlers/ExitCommandHandler";
+import { AboutCommandHandler } from "./handlers/AboutCommandHandler";
 import { VIPCommandHandler } from "./handlers/VIPCommandHandler";
 import { StrategyACommandHandler } from "./handlers/StrategyACommandHandler";
 import { GoldPriceAlertCommandHandler } from "./handlers/GoldPriceAlertCommandHandler";
+import { MyAlertsCommandHandler } from "./handlers/MyAlertsCommandHandler";
+import { BubbleAlertCommandHandler } from "./handlers/BubbleAlertCommandHandler";
+import { PriceTargetAlertCommandHandler } from "./handlers/PriceTargetAlertCommandHandler";
+import { BubbleAlertService } from "../../bubble-alert/BubbleAlertService";
 import { MarketReportCommandHandler } from "./handlers/MarketReportCommandHandler";
 import { OpenMenuCommandHandler } from "./handlers/OpenMenuCommandHandler";
 import { TelegramNavigationService } from "../navigation/TelegramNavigationService";
@@ -24,6 +30,7 @@ import { GetMarketHistoryUseCase } from "../../market/GetMarketHistoryUseCase";
 import { GetGoldCalculationHistoryUseCase } from "../../gold/GetGoldCalculationHistoryUseCase";
 import { CalculateGoldFormulaUseCase } from "../../gold/CalculateGoldFormulaUseCase";
 import { CalculateReverseGoldUseCase } from "../../gold/CalculateReverseGoldUseCase";
+import { CalculateInvoiceUseCase } from "../../gold/CalculateInvoiceUseCase";
 import { TelegramSessionStore } from "../state/TelegramSessionStore";
 import { TelegramUserProfileStore } from "../profile/TelegramUserProfileStore";
 import { RandomWelcomeMessageProvider } from "../welcome/RandomWelcomeMessageProvider";
@@ -58,8 +65,11 @@ export class TelegramCommandRegistry {
         vipAccessService?: VIPAccessService,
         strategyService?: StrategyAStrategyService,
         goldPriceAlertService?: GoldPriceAlertService,
+        bubbleAlertService?: any,
         marketReportService?: MarketReportService,
-        navigationService?: TelegramNavigationService
+        navigationService?: TelegramNavigationService,
+        calculateInvoiceUseCase?: CalculateInvoiceUseCase,
+        priceTargetAlertService?: any
     ): TelegramCommandRouter {
         const welcomeMessageProvider = new RandomWelcomeMessageProvider();
         const menuRegistry = new MemoryTelegramMenuRegistry();
@@ -90,8 +100,21 @@ export class TelegramCommandRegistry {
             new ReverseGoldCommandHandler(sessionStore)
         ];
 
+        if (calculateInvoiceUseCase) {
+            handlers.push(new InvoiceCommandHandler(calculateInvoiceUseCase));
+        }
+
         if (goldPriceAlertService) {
             handlers.push(new GoldPriceAlertCommandHandler(goldPriceAlertService));
+            handlers.push(new MyAlertsCommandHandler(goldPriceAlertService));
+        }
+
+        if (bubbleAlertService) {
+            handlers.push(new BubbleAlertCommandHandler(bubbleAlertService));
+        }
+
+        if (priceTargetAlertService) {
+            handlers.push(new PriceTargetAlertCommandHandler(priceTargetAlertService));
         }
 
         if (marketReportService) {
@@ -117,6 +140,7 @@ export class TelegramCommandRegistry {
         }
 
         handlers.push(new ExitCommandHandler(sessionStore));
+        handlers.push(new AboutCommandHandler());
         commandRouter = new TelegramCommandRouter(handlers);
         return commandRouter;
     }

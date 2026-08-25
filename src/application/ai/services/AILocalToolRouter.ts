@@ -13,6 +13,16 @@ import {
 } from "../models/AIRequest";
 
 
+import {
+    GetCurrentGoldPriceUseCase
+} from "../../gold/GetCurrentGoldPriceUseCase";
+
+
+import {
+    CalculateGoldPriceUseCase
+} from "../../gold/CalculateGoldPriceUseCase";
+
+
 
 export interface AILocalToolRouteResult {
 
@@ -52,7 +62,19 @@ export class AILocalToolRouter {
 
         private readonly toolExecutionService:
 
-            AIToolExecutionService
+            AIToolExecutionService,
+
+
+
+        private readonly goldPriceUseCase?:
+
+            GetCurrentGoldPriceUseCase,
+
+
+
+        private readonly calculateGoldPriceUseCase?:
+
+            CalculateGoldPriceUseCase
 
     ) {}
 
@@ -146,18 +168,52 @@ export class AILocalToolRouter {
 
             );
 
+        }        const dateTimeResponse =
+            this.handleDateTimeRequest(
+                message
+            );
+
+
+
+        if (dateTimeResponse) {
+            return {
+                handled: true,
+                response: dateTimeResponse
+            };
         }
 
 
 
 
 
+
+        // Fast path: ounce price direct from use case
+        if (this.isOuncePriceRequest(message) && this.goldPriceUseCase) {
+            const result = await this.goldPriceUseCase.execute();
+            const lines: string[] = [];
+            if (result.ouncePrice && result.ouncePrice > 0) {
+                lines.push(`🌎 انس جهانی: ${this.formatNumber(result.ouncePrice)} دلار`);
+            } else {
+                lines.push(`🌎 انس جهانی: ناموجود`);
+            }
+            if (result.dollarPrice && result.dollarPrice > 0) {
+                lines.push(`💵 دلار: ${this.formatNumber(result.dollarPrice)} تومان`);
+            }
+            if (result.price && result.price > 0) {
+                lines.push(`🟡 طلای ۱۸ عیار: ${this.formatNumber(result.price)} تومان`);
+            }
+            return {
+                handled: true,
+                toolName: "get_current_ounce_price",
+                response: lines.length > 0 ? lines.join("\n") : "قیمت انس در دسترس نیست."
+            };
+        }
+
+
+
         const toolName =
-
             this.resolveTool(
-
                 message
-
             );
 
 
@@ -193,22 +249,22 @@ export class AILocalToolRouter {
         );
 
 
-    }
-
-
-
-
-
-    private async executeGoldCalculation(
+    }    private async executeGoldCalculation(
 
         calculation:
 
             {
+
                 weight: number;
+
                 laborPercent: number;
+
                 profitPercent: number;
+
                 taxPercent: number;
+
                 discount?: number;
+
             },
 
         request:
@@ -220,68 +276,76 @@ export class AILocalToolRouter {
         Promise<AILocalToolRouteResult> {
 
 
-        const marketResult =
 
-            await this.toolExecutionService.executeIfRequired(
+        // Fast path: call use cases directly if available
 
-                {
+        if (this.goldPriceUseCase && this.calculateGoldPriceUseCase) {
 
-                    content:
-                        "",
+            const priceResult = await this.goldPriceUseCase.execute();
 
-                    toolCalls:
-
-                    [
-
-                        {
-
-                            id:
-                                `local-market-${Date.now()}`,
-
-                            name:
-                                "get_current_gold_price",
-
-                            arguments:
-                                {}
-
-                        }
-
-                    ]
-
-                },
-
-                {
-
-                    userId:
-                        request.userId,
-
-                    metadata:
-                        request.context
-
-                }
-
-            );
+            const goldPrice = priceResult?.price;
 
 
 
-        if (
-            !marketResult?.success
-        ) {
+            if (!goldPrice || goldPrice <= 0) {
+
+                return {
+
+                    handled: true,
+
+                    toolName: "calculate_gold_price",
+
+                    response: "قیمت فعلی طلا معتبر نیست."
+
+                };
+
+            }
+
+
+
+            const calcResult = await this.calculateGoldPriceUseCase.execute({
+
+                weight: calculation.weight,
+
+                goldPrice,
+
+                laborPercent: calculation.laborPercent,
+
+                profitPercent: calculation.profitPercent,
+
+                taxPercent: calculation.taxPercent,
+
+                discount: calculation.discount
+
+            });
+
+
+
+            console.log("CALC_RESULT", JSON.stringify(calcResult));
+
+
 
             return {
 
-                handled:
-                    true,
+                handled: true,
 
-                toolName:
-                    "calculate_gold_price",
+                toolName: "calculate_gold_price",
 
-                toolResult:
-                    marketResult,
+                toolResult: {
 
-                response:
-                    marketResult?.error ??
-                    "دریافت قیمت فعلی طلا با خطا مواجه شد."
+                    success: true,
+
+                    data: calcResult
+
+                },
+
+                response: this.buildResponse("calculate_gold_price", {
+
+                    success: true,
+
+                    data: calcResult
+
+                })
 
             };
 
@@ -289,44 +353,75 @@ export class AILocalToolRouter {
 
 
 
-        const marketData =
+        // Fallback: go through tool execution service
 
-            marketResult.data as
-                Record<string, unknown> |
-                undefined;
+        const marketResult =
 
+            await this.toolExecutionService.executeIfRequired(
 
-        const goldPrice =
-            marketData?.price;
+                {
 
+                    content: "",
 
+                    toolCalls: [{
 
-        if (
-            typeof goldPrice !== "number" ||
-            !Number.isFinite(goldPrice) ||
-            goldPrice <= 0
-        ) {
+                        id: `local-market-${Date.now()}`,
 
-            return {
+                        name: "get_current_gold_price",
 
-                handled:
-                    true,
+                        arguments: {}
 
-                toolName:
-                    "calculate_gold_price",
-
-                toolResult: {
-
-                    success:
-                        false,
-
-                    error:
-                        "قیمت فعلی طلا معتبر نیست."
+                    }]
 
                 },
 
-                response:
-                    "قیمت فعلی طلا معتبر نیست."
+                {
+
+                    userId: request.userId,
+
+                    metadata: request.context
+
+                }
+
+            );
+
+
+
+        if (!marketResult?.success) {
+
+            return {
+
+                handled: true,
+
+                toolName: "calculate_gold_price",
+
+                toolResult: marketResult,
+
+                response: marketResult?.error ?? "دریافت قیمت فعلی طلا با خطا مواجه شد."
+
+            };
+
+        }
+
+
+
+        const marketData = marketResult.data as Record<string, unknown> | undefined;
+
+        const goldPrice = marketData?.price;
+
+
+
+        if (typeof goldPrice !== "number" || !Number.isFinite(goldPrice) || goldPrice <= 0) {
+
+            return {
+
+                handled: true,
+
+                toolName: "calculate_gold_price",
+
+                toolResult: { success: false, error: "قیمت فعلی طلا معتبر نیست." },
+
+                response: "قیمت فعلی طلا معتبر نیست."
 
             };
 
@@ -340,56 +435,39 @@ export class AILocalToolRouter {
 
                 {
 
-                    content:
-                        "",
+                    content: "",
 
-                    toolCalls:
+                    toolCalls: [{
 
-                    [
+                        id: `local-calculation-${Date.now()}`,
 
-                        {
+                        name: "calculate_gold_price",
 
-                            id:
-                                `local-calculation-${Date.now()}`,
+                        arguments: {
 
-                            name:
-                                "calculate_gold_price",
+                            weight: calculation.weight,
 
-                            arguments:
-                            {
+                            goldPrice,
 
-                                weight:
-                                    calculation.weight,
+                            laborPercent: calculation.laborPercent,
 
-                                goldPrice,
+                            profitPercent: calculation.profitPercent,
 
-                                laborPercent:
-                                    calculation.laborPercent,
+                            taxPercent: calculation.taxPercent,
 
-                                profitPercent:
-                                    calculation.profitPercent,
-
-                                taxPercent:
-                                    calculation.taxPercent,
-
-                                discount:
-                                    calculation.discount
-
-                            }
+                            discount: calculation.discount
 
                         }
 
-                    ]
+                    }]
 
                 },
 
                 {
 
-                    userId:
-                        request.userId,
+                    userId: request.userId,
 
-                    metadata:
-                        request.context
+                    metadata: request.context
 
                 }
 
@@ -566,6 +644,127 @@ export class AILocalToolRouter {
 
 
 
+    private handleDateTimeRequest(
+
+        message:
+
+            string
+
+    ):
+
+        string | null {
+
+
+
+        // Only handle pure date/time questions, not market-related ones
+
+        const hasGoldDomain =
+
+            /(طلا|بازار|قیمت|حباب|انس|مثقال|خرید|فروش|تحلیل)/i.test(
+
+                message
+
+            );
+
+
+
+        if (hasGoldDomain) {
+
+            return null;
+
+        }
+
+
+
+        const isTimeRequest =
+
+            /(ساعت|الان چند|چه ساعتی| ساعت چنده)/i.test(
+
+                message
+
+            );
+
+
+
+        const isDateRequest =
+
+            /(تاریخ|چندم|چندمی|چه روزی|تقویم|کدوم روز| امروز چندمه|امروز چندمه)/i.test(
+
+                message
+
+            );
+
+
+
+        if (!isDateRequest && !isTimeRequest) {
+
+            return null;
+
+        }
+
+
+
+        const now = new Date();
+
+
+
+        const gregorian = new Date(
+
+            now.toLocaleString("en-US", {
+
+                timeZone: "Asia/Tehran"
+
+            })
+
+        );
+
+
+
+        const hours = gregorian.getHours();
+
+        const minutes = gregorian.getMinutes();
+
+        const timeStr = `${hours}:${minutes.toString().padStart(2, "0")}`;
+
+
+
+        if (isTimeRequest && isDateRequest) {
+
+            return `الان ساعت ${timeStr} به وقت تهران هست.`;
+
+        }
+
+
+
+        if (isTimeRequest) {
+
+            return `الان ساعت ${timeStr} به وقت تهران هست.`;
+
+        }
+
+
+
+        const monthNames = [
+
+            "ژانویه", "فوریه", "مارس", "آوریل",
+
+            "مه", "ژوئن", "ژوئیه", "اوت",
+
+            "سپتامبر", "اکتبر", "نوامبر", "دسامبر"
+
+        ];
+
+
+
+        return `امروز ${gregorian.getDate()} ${monthNames[gregorian.getMonth()]} ${gregorian.getFullYear()} هست.\nساعت: ${timeStr} به وقت تهران.`;
+
+    }
+
+
+
+
+
+
     private resolveTool(
 
         message:
@@ -574,18 +773,10 @@ export class AILocalToolRouter {
 
     ):
 
-        string | undefined {
-
-
-
-        if (
-
+        string | undefined {        if (
             this.isGoldBubbleRequest(
-
                 message
-
             )
-
         ) {
 
 
@@ -597,13 +788,9 @@ export class AILocalToolRouter {
 
 
         if (
-
             this.isCurrentGoldPriceRequest(
-
                 message
-
             )
-
         ) {
 
 
@@ -617,13 +804,9 @@ export class AILocalToolRouter {
 
 
         if (
-
             this.isCurrentMithqalPriceRequest(
-
                 message
-
             )
-
         ) {
 
 
@@ -690,27 +873,38 @@ export class AILocalToolRouter {
             profitPercent: number;
             taxPercent: number;
             discount?: number;
-        } | null {
+        } | null {        const hasCalculationIntent =
 
+            /(حساب|محاسبه|فاکتور|بگیرم|بخرم|بخر|بشه|باید بشه|چقدر|چنده|میشه|بشه|چقدره)/i.test(
 
-        const hasCalculationIntent =
-
-            /(حساب|محاسبه|فاکتور|بگیرم|بخرم|بخر|بشه|باید بشه)/i.test(
                 message
+
             );
+
 
 
         const hasLabor =
 
-            /(اجرت|کارمزد)/i.test(
+            /(اجرت|کارمزد|اجرت)/i.test(
+
                 message
-            );
+
+            );        // Also match simple patterns like "5 گرم طلا با اجرت 10 درصد" or "5 گرم اجرت 10"
+        const hasWeightAndLabor =
+            /\d+\s*گرم/.test(message) && 
+            (/\d+\s*(%|٪|درصد)/.test(message) || /اجرت\s*\d+/.test(message) || /کارمزد\s*\d+/.test(message));
 
 
-        if (
-            !hasCalculationIntent ||
-            !hasLabor
-        ) {
+
+        if (!hasCalculationIntent && !hasWeightAndLabor) {
+
+            return null;
+
+        }
+
+
+
+        if (!hasLabor && !hasWeightAndLabor) {
 
             return null;
 
@@ -723,25 +917,21 @@ export class AILocalToolRouter {
 
                 /(\d+(?:[.,]\d+)?)\s*(?:گرم|گرمی)/
 
-            );
-
-
+            );        // Match "اجرت 10" (without درصد) or "10 درصد"
         const laborMatch =
-
             message.match(
-
+                /(?:اجرت|کارمزد)\s*(\d+(?:[.,]\d+)?)/
+            ) || message.match(
                 /(\d+(?:[.,]\d+)?)\s*(?:درصد|٪|%)/
-
             );
+
 
 
         if (
             !weightMatch ||
             !laborMatch
         ) {
-
             return null;
-
         }
 
 
@@ -768,33 +958,23 @@ export class AILocalToolRouter {
 
             return null;
 
-        }
-
-
-        const profitMatch =
-
+        }        const profitMatch =
             message.match(
-
-                /(?:سود)\s*(?:با|برابر|به)?\s*(\d+(?:[.,]\d+)?)\s*(?:درصد|٪|%)/
-
+                /(?:سود)\s*(?:با|برابر|به)?\s*(\d+(?:[.,]\d+)?)\s*(?:درصد|٪|%)?/
             );
+
 
 
         const taxMatch =
-
             message.match(
-
-                /(?:مالیات)\s*(?:با|برابر|به)?\s*(\d+(?:[.,]\d+)?)\s*(?:درصد|٪|%)/
-
+                /(?:مالیات)\s*(?:با|برابر|به)?\s*(\d+(?:[.,]\d+)?)\s*(?:درصد|٪|%)?/
             );
 
 
+
         const discountMatch =
-
             message.match(
-
-                /(?:تخفیف)\s*(?:با|برابر|به)?\s*(\d+(?:[.,]\d+)?)\s*(?:درصد|٪|%)/
-
+                /(?:تخفیف)\s*(?:با|برابر|به)?\s*(\d+(?:[.,]\d+)?)\s*(?:درصد|٪|%)?/
             );
 
 
@@ -941,6 +1121,24 @@ export class AILocalToolRouter {
         };
 
 
+    }    private isOuncePriceRequest(
+        message:
+            string
+    ):
+        boolean {
+
+
+
+        const hasOunce =
+            /(انس|اونس|اونج|انس جهانی|انس طلا)/i.test(
+                message
+            );
+
+
+
+        return hasOunce;
+
+
     }
 
 
@@ -948,23 +1146,16 @@ export class AILocalToolRouter {
 
 
     private isCurrentGoldPriceRequest(
-
         message:
-
             string
-
     ):
-
         boolean {
 
 
 
         const hasGold =
-
             /(طلا|طلای|زر)/i.test(
-
                 message
-
             );
 
 
@@ -1212,67 +1403,76 @@ export class AILocalToolRouter {
 
                 typeof price ===
 
-                "number"
-
-            ) {
+                "number"            ) {
 
 
-                return (
 
-                    `قیمت فعلی طلای ۱۸ عیار: ` +
+                const lines = [
 
-                    `${this.formatNumber(price)} تومان`
+                    `💰 <b>قیمت لحظه‌ای طلا</b>`,
 
-                );
+                    "",
 
+                    `🟡 طلای ۱۸ عیار: ${this.formatNumber(price)} تومان`
+
+                ];
+
+
+
+                const ouncePrice = data?.ouncePrice;
+
+                if (typeof ouncePrice === "number" && ouncePrice > 0) {
+
+                    lines.push(`🌎 انس جهانی: ${this.formatNumber(ouncePrice)} دلار`);
+
+                }
+
+
+
+                const dollarPrice = data?.dollarPrice;
+
+                if (typeof dollarPrice === "number" && dollarPrice > 0) {
+
+                    lines.push(`💵 دلار: ${this.formatNumber(dollarPrice)} تومان`);
+
+                }
+
+
+
+                return lines.join("\n");
 
             }
 
-        }
-
-
-
-
-
-        if (
-
+        }        if (
             toolName ===
-
             "get_current_gold_mithqal_price"
-
         ) {
 
 
+
             const data =
-
                 result.data as
-
                     Record<string, unknown> |
-
                     undefined;
 
 
 
-            const price =
 
+            const price =
                 data?.mithqalPrice;
 
 
 
+
             if (
-
                 typeof price ===
-
                 "number"
-
             ) {
 
 
                 return (
-
                     `قیمت فعلی مثقال طلا: ` +
                     `${this.formatNumber(price)} تومان`
-
                 );
 
             }
@@ -1284,6 +1484,58 @@ export class AILocalToolRouter {
 
 
         if (
+            toolName ===
+            "get_current_ounce_price"
+        ) {
+
+
+
+            const data =
+                result.data as
+                    Record<string, unknown> |
+                    undefined;
+
+
+
+
+            const ouncePrice =
+                data?.ouncePrice ?? data?.price;
+
+
+
+
+            if (
+                typeof ouncePrice ===
+                "number" &&
+                ouncePrice > 0
+            ) {
+
+
+                const lines = [
+                    `🌎 انس جهانی: ${this.formatNumber(ouncePrice)} دلار`
+                ];
+
+
+
+                const dollarPrice = data?.dollarPrice;
+                if (typeof dollarPrice === "number" && dollarPrice > 0) {
+                    lines.push(`💵 دلار: ${this.formatNumber(dollarPrice)} تومان`);
+                }
+
+
+
+                const goldPrice = data?.price;
+                if (typeof goldPrice === "number" && goldPrice > 0) {
+                    lines.push(`🟡 طلای ۱۸ عیار: ${this.formatNumber(goldPrice)} تومان`);
+                }
+
+
+
+                return lines.join("\n");
+
+            }
+
+        }        if (
 
             toolName ===
 
@@ -1292,6 +1544,7 @@ export class AILocalToolRouter {
         ) {
 
 
+
             const data =
 
                 result.data as
@@ -1302,17 +1555,65 @@ export class AILocalToolRouter {
 
 
 
-            const total =
-                data?.total;
+            const total = data?.total;
+
+            const goldValue = data?.goldValue;
+
+            const laborAmount = data?.laborAmount;
+
+            const profitAmount = data?.profitAmount;
+
+            const taxAmount = data?.taxAmount;
+
+            const weight = data?.weight;
 
 
-            if (
-                typeof total === "number"
-            ) {
 
-                return (
-                    `قیمت نهایی: ${this.formatNumber(total)} تومان`
-                );
+            if (typeof total === "number") {
+
+                const lines: string[] = [];
+
+
+
+                if (typeof weight === "number") {
+
+                    lines.push(`⚖️ وزن: ${weight} گرم`);
+
+                }
+
+                if (typeof goldValue === "number") {
+
+                    lines.push(`🟡 ارزش طلا: ${this.formatNumber(goldValue)} تومان`);
+
+                }
+
+                if (typeof laborAmount === "number" && laborAmount > 0) {
+
+                    lines.push(`🛠 اجرت: ${this.formatNumber(laborAmount)} تومان`);
+
+                }
+
+                if (typeof profitAmount === "number" && profitAmount > 0) {
+
+                    lines.push(`💹 سود: ${this.formatNumber(profitAmount)} تومان`);
+
+                }
+
+                if (typeof taxAmount === "number" && taxAmount > 0) {
+
+                    lines.push(`🧾 مالیات: ${this.formatNumber(taxAmount)} تومان`);
+
+                }
+
+
+
+                lines.push("");
+
+                lines.push(`💰 قیمت نهایی: ${this.formatNumber(total)} تومان`);
+
+
+
+                return lines.join("\n");
 
             }
 

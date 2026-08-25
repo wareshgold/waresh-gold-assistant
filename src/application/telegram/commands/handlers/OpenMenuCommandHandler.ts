@@ -38,6 +38,14 @@ const MENU_COMMANDS: Record<
         menuId: "assistant",
         title: "🤖 منوی دستیار"
     },
+    "menu:strategy": {
+        menuId: "strategy",
+        title: "📈 منوی استراتژی"
+    },
+    "menu:alerts": {
+        menuId: "alerts",
+        title: "🔔 منوی اعلان‌ها"
+    },
     "menu:settings": {
         menuId: "settings",
         title: "⚙️ منوی تنظیمات"

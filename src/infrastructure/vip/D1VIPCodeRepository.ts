@@ -47,7 +47,7 @@ export class D1VIPCodeRepository implements VIPCodeRepository {
                     redeemed_by,
                     redeemed_at
                  FROM vip_codes
-                 WHERE code = ?
+                 WHERE LOWER(code) = LOWER(?)
                  LIMIT 1`
             )
             .bind(normalizedCode)
@@ -58,7 +58,7 @@ export class D1VIPCodeRepository implements VIPCodeRepository {
         }
 
         return VIPCode.create({
-            id: row.id,
+            id: row.id ?? row.code,
             code: row.code,
             feature: row.feature as VIPFeature,
             expiresAt: row.expires_at === null ? null : new Date(row.expires_at),

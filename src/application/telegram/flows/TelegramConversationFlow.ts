@@ -7,7 +7,10 @@ export interface TelegramConversationFlow {
 
     execute(
         userId: string,
-        message: string
+        message: string,
+        context?: {
+            userName?: string;
+        }
     ): Promise<{
         type: "text";
         content: string;

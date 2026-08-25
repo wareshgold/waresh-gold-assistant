@@ -10,6 +10,10 @@ import {
     StrategyASignalIdentity
 } from "../../domain/strategy-a/value-objects/StrategyASignalIdentity";
 
+import {
+    SignalStatus
+} from "../../domain/strategy-a/value-objects/SignalStatus";
+
 export class D1StrategyASignalRepository
     implements StrategyASignalRepository {
 
@@ -140,6 +144,7 @@ LIMIT 1
                 .prepare(
 `
 SELECT
+    id,
     symbol,
     timeframe,
     signal_type,
@@ -150,7 +155,8 @@ SELECT
     confidence,
     reason,
     strategy_version,
-    generated_at
+    generated_at,
+    status
 FROM strategy_a_signals
 WHERE symbol = ?
 ORDER BY generated_at DESC, id DESC
@@ -159,6 +165,7 @@ LIMIT 1
                 )
                 .bind(symbol)
                 .all<{
+                    id: number;
                     symbol: string;
                     timeframe: string;
                     signal_type: string;
@@ -170,6 +177,7 @@ LIMIT 1
                     reason: string;
                     strategy_version: string;
                     generated_at: number;
+                    status: string | null;
                 }>();
 
         const row = result.results?.[0];
@@ -189,7 +197,83 @@ LIMIT 1
             confidence: Number(row.confidence),
             reason: row.reason,
             generatedAt: new Date(Number(row.generated_at)),
-            strategyVersion: row.strategy_version
+            strategyVersion: row.strategy_version,
+            status: (row.status as SignalStatus) ?? "ACTIVE"
         });
+    }
+
+    async getActiveSignals(): Promise<StrategyASignal[]> {
+        const result =
+            await this.db
+                .prepare(
+`
+SELECT
+    id,
+    symbol,
+    timeframe,
+    signal_type,
+    entry_price,
+    stop_loss,
+    take_profit,
+    risk_reward,
+    confidence,
+    reason,
+    strategy_version,
+    generated_at,
+    status
+FROM strategy_a_signals
+WHERE signal_type IN ('BUY', 'SELL')
+  AND (status IS NULL OR status = 'ACTIVE')
+ORDER BY generated_at DESC
+`
+                )
+                .all<{
+                    id: number;
+                    symbol: string;
+                    timeframe: string;
+                    signal_type: string;
+                    entry_price: number;
+                    stop_loss: number;
+                    take_profit: number;
+                    risk_reward: number;
+                    confidence: number;
+                    reason: string;
+                    strategy_version: string;
+                    generated_at: number;
+                    status: string | null;
+                }>();
+
+        return (result.results ?? []).map(row =>
+            StrategyASignal.create({
+                symbol: row.symbol,
+                timeframe: row.timeframe,
+                signalType: row.signal_type as StrategyASignal["signalType"],
+                entryPrice: Number(row.entry_price),
+                stopLoss: Number(row.stop_loss),
+                takeProfit: Number(row.take_profit),
+                riskReward: Number(row.risk_reward),
+                confidence: Number(row.confidence),
+                reason: row.reason,
+                generatedAt: new Date(Number(row.generated_at)),
+                strategyVersion: row.strategy_version,
+                status: (row.status as SignalStatus) ?? "ACTIVE"
+            })
+        );
+    }
+
+    async updateStatus(
+        signalId: number,
+        status: SignalStatus
+    ): Promise<void> {
+        await this.db
+            .prepare(
+`
+UPDATE strategy_a_signals
+SET status = ?
+WHERE id = ?
+`
+            )
+            .bind(status, signalId)
+            .run();
     }
 }

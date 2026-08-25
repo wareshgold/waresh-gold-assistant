@@ -10,6 +10,10 @@ import {
     StrategyASignalIdentity
 } from "../../domain/strategy-a/value-objects/StrategyASignalIdentity";
 
+import {
+    SignalStatus
+} from "../../domain/strategy-a/value-objects/SignalStatus";
+
 export class MemoryStrategyASignalRepository
     implements StrategyASignalRepository {
 
@@ -18,6 +22,9 @@ export class MemoryStrategyASignalRepository
 
     private readonly fingerprints =
         new Set<string>();
+
+    private readonly allSignals: StrategyASignal[] = [];
+    private nextId = 1;
 
     async save(
         signal: StrategyASignal
@@ -34,6 +41,7 @@ export class MemoryStrategyASignalRepository
             signal.symbol,
             signal
         );
+        this.allSignals.push(signal);
 
         return true;
     }
@@ -61,5 +69,18 @@ export class MemoryStrategyASignalRepository
         symbol: string
     ): Promise<StrategyASignal | null> {
         return this.latestBySymbol.get(symbol) ?? null;
+    }
+
+    async getActiveSignals(): Promise<StrategyASignal[]> {
+        return this.allSignals.filter(
+            s => s.isActionable() && s.status === "ACTIVE"
+        );
+    }
+
+    async updateStatus(
+        signalId: number,
+        status: SignalStatus
+    ): Promise<void> {
+        // Memory implementation is simplified
     }
 }

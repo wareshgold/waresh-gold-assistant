@@ -40,6 +40,12 @@ import { StrategyAStrategyService } from "../../application/strategy/strategy-a/
 import { IngestOunceTickFromTextUseCase } from "../../application/strategy-a/IngestOunceTickFromTextUseCase";
 import { GoldPriceAlertService } from "../../application/gold-alert/GoldPriceAlertService";
 import { MarketReportService } from "../../application/market-report/MarketReportService";
+import { CalculateInvoiceUseCase } from "../../application/gold/CalculateInvoiceUseCase";
+import { BubbleAlertService } from "../../application/bubble-alert/BubbleAlertService";
+import { D1BubbleAlertRepository } from "../../infrastructure/bubble-alert/D1BubbleAlertRepository";
+import { D1GoldPriceAlertRepository } from "../../infrastructure/gold-alert/D1GoldPriceAlertRepository";
+import { PriceTargetAlertService } from "../../application/price-target-alert/PriceTargetAlertService";
+import { D1PriceTargetAlertRepository } from "../../infrastructure/price-target-alert/D1PriceTargetAlertRepository";
 
 interface Dependencies {
     getGoldPriceUseCase: any;
@@ -60,7 +66,10 @@ interface Dependencies {
     strategyService?: StrategyAStrategyService;
     ingestOunceTickFromTextUseCase?: IngestOunceTickFromTextUseCase;
     goldPriceAlertService?: GoldPriceAlertService;
+    bubbleAlertService?: any;
     marketReportService?: MarketReportService;
+    calculateInvoiceUseCase?: CalculateInvoiceUseCase;
+    priceTargetAlertService?: any;
 }
 
 export function createTelegramModule(env: AppEnv, dependencies: Dependencies) {
@@ -118,8 +127,11 @@ export function createTelegramModule(env: AppEnv, dependencies: Dependencies) {
         dependencies.vipAccessService,
         dependencies.strategyService,
         dependencies.goldPriceAlertService,
+        dependencies.bubbleAlertService,
         dependencies.marketReportService,
-        telegramNavigationService
+        telegramNavigationService,
+        dependencies.calculateInvoiceUseCase,
+        dependencies.priceTargetAlertService
     );
 
     const actionResolver = new CompositeTelegramActionResolver([
@@ -158,7 +170,10 @@ export function createTelegramModule(env: AppEnv, dependencies: Dependencies) {
         dependencies.sessionStore,
         dependencies.goldCalculationWorkflow,
         telegramNumberFormatter,
-        dependencies.goldPriceResolver
+        dependencies.goldPriceResolver,
+        dependencies.bubbleAlertService ?? new BubbleAlertService(new D1BubbleAlertRepository(env.waresh_gold_db)),
+        dependencies.goldPriceAlertService ?? new GoldPriceAlertService(new D1GoldPriceAlertRepository(env.waresh_gold_db)),
+        dependencies.priceTargetAlertService ?? new PriceTargetAlertService(new D1PriceTargetAlertRepository(env.waresh_gold_db))
     );
 
     const callbackProcessor = new TelegramCallbackProcessor(

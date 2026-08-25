@@ -9,17 +9,25 @@ export class MarketBubbleMessageFormatter {
     ) {}
 
     format(bubble: GoldBubbleResult): string {
-        const sign = bubble.bubbleAmount > 0 ? "🔴" : bubble.bubbleAmount < 0 ? "🟢" : "⚪";
+        const bubbleLabel = bubble.bubbleAmount > 0
+            ? "🔴 حباب مثبت (گران‌تر از ارزش ذاتی)"
+            : bubble.bubbleAmount < 0
+                ? "🟢 حباب منفی (ارزان‌تر از ارزش ذاتی)"
+                : "⚪ بدون حباب";
+
+        const amountSign = bubble.bubbleAmount > 0 ? "+" : "";
+        const percentSign = bubble.bubblePercentage > 0 ? "+" : "";
 
         return this.builder.build([
             "🫧 <b>حباب طلای ۱۸ عیار</b>",
             "",
             `قیمت بازار     ${this.numberFormatter.money(bubble.marketPrice)}`,
             `قیمت ذاتی      ${this.numberFormatter.money(bubble.intrinsicPrice)}`,
-            `حباب           ${sign} ${this.numberFormatter.money(bubble.bubbleAmount)}`,
-            `درصد حباب       ${this.numberFormatter.percent(bubble.bubblePercentage)}`,
             "",
-            "🔎 مثبت = قیمت بازار بالاتر از ارزش ذاتی"
+            `${bubbleLabel}`,
+            `مبلغ حباب      ${amountSign}${this.numberFormatter.money(bubble.bubbleAmount)} تومان`,
+            `درصد حباب       ${percentSign}${this.numberFormatter.percent(bubble.bubblePercentage)}`,
+            ""
         ]);
     }
 }

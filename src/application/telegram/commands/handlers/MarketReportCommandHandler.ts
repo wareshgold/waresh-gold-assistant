@@ -56,7 +56,7 @@ export class MarketReportCommandHandler implements TelegramCommandHandler {
                     `⏱ هر ${value} ساعت`,
                     `🕐 ${now}`,
                     "",
-                    "گزارش شامل قیمت طلا، دلار، اونس، تغییر بازار و حباب خواهد بود."
+                    "گزارش شامل قیمت طلا، دلار، انس، تغییر بازار و حباب خواهد بود."
                 ].join("\n")
             };
         }
@@ -76,7 +76,7 @@ export class MarketReportCommandHandler implements TelegramCommandHandler {
                 "",
                 "محتوای گزارش:",
                 "• طلای ۱۸ عیار",
-                "• دلار و اونس جهانی",
+                "• دلار و انس جهانی",
                 "• تغییر و روند بازار",
                 "• مقدار و درصد حباب",
                 "",
