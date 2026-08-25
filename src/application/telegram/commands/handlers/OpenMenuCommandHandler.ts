@@ -49,10 +49,6 @@ const MENU_COMMANDS: Record<
     "menu:settings": {
         menuId: "settings",
         title: "⚙️ منوی تنظیمات"
-    },
-    "menu:strategy": {
-        menuId: "strategy",
-        title: "📈 منوی استراتژی"
     }
 };
 
