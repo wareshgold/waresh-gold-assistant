@@ -166,3 +166,6 @@ dist
 !.env.example
 .wrangler/
 .freebuff/
+
+# Local backup folders
+*_backup/
