@@ -28,6 +28,10 @@ import {
 } from "../menu/TelegramSettingsMenu";
 
 
+import {
+    TelegramStrategyMenu,
+} from "../menu/TelegramStrategyMenu";
+
 
 
 export type TelegramNavigationMenuId =
@@ -40,8 +44,9 @@ export type TelegramNavigationMenuId =
 
     | "assistant"
 
-    | "settings";
+    | "settings"
 
+    | "strategy";
 
 
 
@@ -51,12 +56,14 @@ export class TelegramNavigationCatalog {
 
 
 
-
     private readonly menus:
 
         Record<
+
             TelegramNavigationMenuId,
+
             TelegramMenuItem[]
+
         > = {
 
 
@@ -85,8 +92,11 @@ export class TelegramNavigationCatalog {
                 TelegramSettingsMenu,
 
 
-        };
+            strategy:
 
+                TelegramStrategyMenu,
+
+        };
 
 
 
@@ -95,13 +105,17 @@ export class TelegramNavigationCatalog {
     get(
 
         menuId:
+
             TelegramNavigationMenuId
 
     ):
+
         TelegramMenuItem[] {
 
 
         return this.menus[menuId];
+
+
 
     }
 

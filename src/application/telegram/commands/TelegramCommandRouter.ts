@@ -54,13 +54,17 @@ export class TelegramCommandRouter {
             "🧮 ماشین حساب": "menu:calculate",
             "🧮 ماشین حساب طلا": "menu:calculate",
             "⚙️ تنظیمات": "menu:settings",
+            "⚙️ تنظیمات ربات": "settings:bot",
+            "📈 استراتژی": "menu:strategy",
+            "📈 استراتژی sp2l": "strategy:sp2l",
             "⬅️ بازگشت": "menu:main",
             "🏠 منوی اصلی": "menu:main",
             "🤖 دستیار هوشمند": "/ai",
             "🤖 دستیار ai": "/ai",
             "💰 قیمت لحظه‌ای": "/price",
             "🫧 حباب طلا": "/bubble",
-            "📊 تحلیل بازار": "/analytics"
+            "📊 تحلیل بازار": "/analytics",
+            "📊 منوی بازار": "menu:market"
         };
 
         if (exactAliases[normalized]) {
