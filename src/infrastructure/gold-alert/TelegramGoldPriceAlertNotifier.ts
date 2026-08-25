@@ -21,14 +21,18 @@ implements GoldPriceAlertNotifier {
         ouncePrice: number | null,
         updatedAt: Date
     ): Promise<void> {
+        const price = (value: number) =>
+            `<code>${formatPrice(value)}</code>`;
+
         await this.botClient.sendMessage({
             chatId: userId,
+            parseMode: "HTML",
             text: [
                 "🔔 اعلان قیمت طلا",
                 "",
-                `🟡 طلای ۱۸ عیار: ${formatPrice(gold18Price)} تومان`,
-                `💵 دلار: ${formatPrice(currencyPrice)} تومان`,
-                `🌎 اونس جهانی: ${ouncePrice === null ? "ناموجود" : `${formatPrice(ouncePrice)} دلار`}`,
+                `🟡 طلای ۱۸ عیار: ${price(gold18Price)} تومان`,
+                `💵 دلار: ${price(currencyPrice)} تومان`,
+                `🌎 اونس جهانی: ${ouncePrice === null ? "ناموجود" : `${price(ouncePrice)} دلار`}`,
                 "",
                 `🕒 بروزرسانی: ${updatedAt.toLocaleString("fa-IR", { timeZone: "Asia/Tehran" })}`
             ].join("\n")
