@@ -20,7 +20,7 @@ implements GoldPriceAlertNotifier {
         updatedAt: Date
     ): Promise<void> {
         const format = (value: number) =>
-            new Intl.NumberFormat("fa-IR")
+            new Intl.NumberFormat("en-US")
                 .format(Math.round(value));
 
         await this.botClient.sendMessage({

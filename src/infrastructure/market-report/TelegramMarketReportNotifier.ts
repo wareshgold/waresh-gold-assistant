@@ -6,7 +6,7 @@ export class TelegramMarketReportNotifier implements MarketReportNotifier {
 
     async send(userId: string, report: MarketReportData): Promise<void> {
         const format = (value: number) =>
-            new Intl.NumberFormat("fa-IR").format(Math.round(value));
+            new Intl.NumberFormat("en-US").format(Math.round(value));
 
         const trend = report.marketTrend === "UP"
             ? "📈 صعودی"

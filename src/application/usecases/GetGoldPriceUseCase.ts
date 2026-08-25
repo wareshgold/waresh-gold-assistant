@@ -147,18 +147,11 @@ export class GetGoldPriceUseCase {
 
         value: number
 
-    ): string {
-
-
-        return new Intl.NumberFormat(
-
-            "fa-IR"
-
+    ): string {return new Intl.NumberFormat(
+            "en-US"
         )
         .format(
-
             Math.round(value)
-
         );
 
 
