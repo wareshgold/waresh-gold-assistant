@@ -1,13 +1,11 @@
 import { MarketReportData, MarketReportNotifier } from "../../application/jobs/MarketReportSchedulerJob";
 import { TelegramBotClient } from "../telegram/TelegramBotClient";
+import { formatPrice, toPersianDigits } from "../../shared/utils/number";
 
 export class TelegramMarketReportNotifier implements MarketReportNotifier {
     constructor(private readonly botClient: TelegramBotClient) {}
 
     async send(userId: string, report: MarketReportData): Promise<void> {
-        const format = (value: number) =>
-            new Intl.NumberFormat("fa-IR").format(Math.round(value));
-
         const trend = report.marketTrend === "UP"
             ? "📈 صعودی"
             : report.marketTrend === "DOWN"
@@ -27,14 +25,14 @@ export class TelegramMarketReportNotifier implements MarketReportNotifier {
                 "📊 گزارش بازار طلا",
                 "━━━━━━━━━━━━━━",
                 "",
-                `🪙 طلای ۱۸ عیار: ${format(report.gold18Price)} تومان`,
-                `💵 دلار: ${format(report.currencyPrice)} تومان`,
-                `🌎 اونس جهانی: ${report.ouncePrice === null ? "ناموجود" : `${report.ouncePrice.toFixed(2)} دلار`}`,
+                `🪙 طلای ۱۸ عیار: ${formatPrice(report.gold18Price)} تومان`,
+                `💵 دلار: ${formatPrice(report.currencyPrice)} تومان`,
+                `🌎 اونس جهانی: ${report.ouncePrice === null ? "ناموجود" : `${toPersianDigits(report.ouncePrice.toFixed(2))} دلار`}`,
                 "",
                 `📈 تغییر بازار: ${change}`,
                 `🧭 روند بازار: ${trend}`,
-                `🫧 حباب طلا: ${bubbleSign}${format(report.bubbleAmount)} تومان`,
-                `📊 حباب: ${report.bubblePercentage.toFixed(2)}%`,
+                `🫧 حباب طلا: ${bubbleSign}${formatPrice(report.bubbleAmount)} تومان`,
+                `📊 حباب: ${toPersianDigits(report.bubblePercentage.toFixed(2))}%`,
                 "",
                 `🕒 بروزرسانی: ${report.updatedAt.toLocaleString("fa-IR", { timeZone: "Asia/Tehran" })}`
             ].join("\n")

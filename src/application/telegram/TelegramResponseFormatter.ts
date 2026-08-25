@@ -248,18 +248,9 @@ export class TelegramResponseFormatter {
 
         return value - 1;
 
-    }
+    }    private normalizeDigits(
 
-
-
-
-
-
-
-    private normalizeDigits(
-
-        value:
-            string
+        value: string
 
     ): string {
 
@@ -268,14 +259,17 @@ export class TelegramResponseFormatter {
             "۰۱۲۳۴۵۶۷۸۹";
 
 
+
         const englishDigits =
 
             "0123456789";
 
 
+
         let result =
 
             value;
+
 
 
         for (
@@ -307,11 +301,12 @@ export class TelegramResponseFormatter {
         }
 
 
+
         return result.replace(
 
-            /[٬,]/g,
+            /[٬]/g,
 
-            ""
+            ","
 
         );
 

@@ -26,13 +26,17 @@ from "./handlers/OpenCalculatorMenuCallbackHandler";
 import {
     OpenAssistantMenuCallbackHandler,
 }
-from "./handlers/OpenAssistantMenuCallbackHandler";
-
+from "./handlers/OpenAssistantMenuCallbackHandler";import {
+    OpenSettingsMenuCallbackHandler,
+} from "./handlers/OpenSettingsMenuCallbackHandler";
 
 import {
-    OpenSettingsMenuCallbackHandler,
-}
-from "./handlers/OpenSettingsMenuCallbackHandler";
+    OpenStrategyMenuCallbackHandler,
+} from "./handlers/OpenStrategyMenuCallbackHandler";
+
+import {
+    OpenAlertsMenuCallbackHandler,
+} from "./handlers/OpenAlertsMenuCallbackHandler";
 
 
 import {
@@ -142,6 +146,41 @@ import {
 }
 from "../../gold/pricing/GoldPriceResolver";
 
+import {
+    BubbleAlertService,
+}
+from "../../bubble-alert/BubbleAlertService";
+
+import {
+    GoldPriceAlertService,
+}
+from "../../gold-alert/GoldPriceAlertService";
+
+import {
+    PriceTargetAlertService,
+}
+from "../../price-target-alert/PriceTargetAlertService";
+
+import {
+    BubbleThresholdCallbackHandler,
+}
+from "./handlers/BubbleThresholdCallbackHandler";
+
+import {
+    AlertIntervalCallbackHandler,
+}
+from "./handlers/AlertIntervalCallbackHandler";
+
+import {
+    PriceTargetCallbackHandler,
+}
+from "./handlers/PriceTargetCallbackHandler";
+
+import {
+    AboutBotCallbackHandler,
+}
+from "./handlers/AboutBotCallbackHandler";
+
 
 
 export class TelegramCallbackHandlerFactory {
@@ -184,11 +223,20 @@ export class TelegramCallbackHandlerFactory {
 
 
         numberFormatter:
-            TelegramNumberFormatter,
+            TelegramNumberFormatter,        goldPriceResolver:
+            GoldPriceResolver,
 
 
-        goldPriceResolver:
-            GoldPriceResolver
+        bubbleAlertService:
+            BubbleAlertService,
+
+
+        alertService:
+            GoldPriceAlertService,
+
+        priceTargetAlertService:
+            PriceTargetAlertService
+
 
 
     ):
@@ -254,22 +302,26 @@ export class TelegramCallbackHandlerFactory {
 
                 telegramNavigationService
 
+            ),            new OpenAssistantMenuCallbackHandler(
+                telegramNavigationService
             ),
 
 
 
-            new OpenAssistantMenuCallbackHandler(
-
+            new OpenStrategyMenuCallbackHandler(
                 telegramNavigationService
+            ),
 
+
+
+            new OpenAlertsMenuCallbackHandler(
+                telegramNavigationService
             ),
 
 
 
             new OpenSettingsMenuCallbackHandler(
-
                 telegramNavigationService
-
             ),
 
 
@@ -316,19 +368,24 @@ export class TelegramCallbackHandlerFactory {
 
                 goldCalculationWorkflow
 
-            ),
-
-
-
-            new BackCalculationCallbackHandler(
-
+            ),            new BackCalculationCallbackHandler(
                 sessionStore,
-
                 goldCalculationWorkflow
-
             ),
 
+            new AboutBotCallbackHandler(),
 
+            new BubbleThresholdCallbackHandler(
+                bubbleAlertService
+            ),
+
+            new AlertIntervalCallbackHandler(
+                alertService
+            ),
+
+            new PriceTargetCallbackHandler(
+                priceTargetAlertService
+            ),
 
             ...actionHandlers
 

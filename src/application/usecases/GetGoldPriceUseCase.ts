@@ -7,6 +7,8 @@ from "../../domain/market/providers/MarketPriceProvider";
 import { GetCurrentMarketPriceUseCase }
 from "../market/GetCurrentMarketPriceUseCase";
 
+import { formatPrice } from "../../shared/utils/number";;
+
 
 
 export class GetGoldPriceUseCase {
@@ -137,31 +139,10 @@ export class GetGoldPriceUseCase {
 
     }
 
-
-
-
-
-
-
     private formatNumber(
-
         value: number
-
     ): string {
-
-
-        return new Intl.NumberFormat(
-
-            "fa-IR"
-
-        )
-        .format(
-
-            Math.round(value)
-
-        );
-
-
+        return formatPrice(value);
     }
 
 

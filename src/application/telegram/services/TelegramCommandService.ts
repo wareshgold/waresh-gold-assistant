@@ -115,10 +115,7 @@ implements TelegramCommandExecutor {
             normalizedMessage.text.trim();
 
         const normalizedText =
-            text.toLowerCase();
-
-
-        if (
+            text.toLowerCase();        if (
             normalizedText === "/cancel" ||
             normalizedText === "/reset" ||
             normalizedText === "cancel" ||
@@ -128,21 +125,23 @@ implements TelegramCommandExecutor {
         ) {
 
             if (this.conversationManager) {
-
                 await this.conversationManager.cancel(
                     normalizedMessage.userId
                 );
+            }
 
+            if (this.aiSessionManager) {
+                await this.aiSessionManager.stop(
+                    normalizedMessage.userId
+                );
             }
 
             return {
                 type:
                     "text",
-
                 content:
                     "جلسه فعلی لغو شد. از اینجا به بعد می‌تونی دستور یا سؤال جدیدت رو بفرستی."
             };
-
         }
 
 
@@ -155,13 +154,27 @@ implements TelegramCommandExecutor {
                 .find(
                     handler =>
                         handler.canHandle(resolvedCommand)
-                );
+                );        // Check if user text is an EXACT button label (reply keyboard click)
+        // vs natural language typed by user (should go to AI)
+        const isExactMenuButton = this.router.isExactAlias(text);
 
         const isReplyKeyboardNavigation =
             resolvedCommand !== normalizedText &&
-            Boolean(navigationHandler);
+            Boolean(navigationHandler) &&
+            isExactMenuButton;
 
-        if (isReplyKeyboardNavigation) {
+
+
+        const isMenuCommand = resolvedCommand.startsWith("menu:");        // IMPORTANT: Reply keyboard navigation and menu commands ALWAYS
+        // bypass AI session and conversation manager. This prevents
+        // getting stuck when user clicks menu buttons during AI chat.
+        if (isReplyKeyboardNavigation || isMenuCommand) {
+
+            if (this.conversationManager) {
+                await this.conversationManager.cancel(
+                    normalizedMessage.userId
+                );
+            }
 
             const context =
                 this.contextBuilder.build(
@@ -177,11 +190,43 @@ implements TelegramCommandExecutor {
             );
         }
 
-
+        // Check AI session for non-command, non-menu text messages
         if (
+            !text.startsWith("/") &&
+            this.aiSessionManager
+        ) {
+            const aiResponse =
+                await this.aiSessionManager.execute(
+                    normalizedMessage.userId,
+                    text
+                );
+
+            if (aiResponse) {
+                return aiResponse;
+            }
+        }
+
+
+        // Check active conversation (calculator workflow, etc.)
+        if (
+            !text.startsWith("/") &&
+            this.conversationManager
+        ) {
+            const activeConversation =
+                await this.conversationManager.execute(
+                    normalizedMessage.userId,
+                    text,
+                    {
+                        userName: normalizedMessage.firstName ?? normalizedMessage.username
+                    }
+                );
+
+            if (activeConversation) {
+                return activeConversation;
+            }
+        }        if (
             text.startsWith("/")
         ) {
-
             const context =
                 this.contextBuilder.build(
                     text,
@@ -195,52 +240,7 @@ implements TelegramCommandExecutor {
                 context
             );
 
-        }
-
-
-        if (
-            this.aiSessionManager
-        ) {
-
-            const aiResponse =
-                await this.aiSessionManager.execute(
-                    normalizedMessage.userId,
-                    text
-                );
-
-            if (
-                aiResponse
-            ) {
-
-                return aiResponse;
-
-            }
-
-        }
-
-
-        if (
-            this.conversationManager
-        ) {
-
-            const activeConversation =
-                await this.conversationManager.execute(
-                    normalizedMessage.userId,
-                    text
-                );
-
-            if (
-                activeConversation
-            ) {
-
-                return activeConversation;
-
-            }
-
-        }
-
-
-        const fallbackCommand =
+        }        const fallbackCommand =
             this.router.resolveCommand(text);
 
         const context =

@@ -26,17 +26,28 @@ import { SaveGoldCalculationHistoryUseCase } from "../application/gold/SaveGoldC
 import { GetGoldCalculationHistoryUseCase } from "../application/gold/GetGoldCalculationHistoryUseCase";
 import { EvaluateAndPublishStrategyASignalUseCase } from "../application/strategy/strategy-a/EvaluateAndPublishStrategyASignalUseCase";
 import { StrategyASignalSchedulerJob } from "../application/jobs/StrategyASignalSchedulerJob";
+import { SignalMonitorJob } from "../application/jobs/SignalMonitorJob";
+import { MonitorSignalLevelsUseCase } from "../application/strategy/strategy-a/MonitorSignalLevelsUseCase";
 import { TelegramStrategyASignalNotifier } from "../infrastructure/strategy-a/TelegramStrategyASignalNotifier";
+import { TelegramSignalLevelNotifier } from "../infrastructure/strategy-a/TelegramSignalLevelNotifier";
 import { StrategyASignalMessageFormatter } from "../application/telegram/presentation/StrategyASignalMessageFormatter";
 import { IngestOunceTickFromTextUseCase } from "../application/strategy-a/IngestOunceTickFromTextUseCase";
 import { D1GoldPriceAlertRepository } from "../infrastructure/gold-alert/D1GoldPriceAlertRepository";
 import { GoldPriceAlertService } from "../application/gold-alert/GoldPriceAlertService";
 import { GoldPriceAlertSchedulerJob } from "../application/jobs/GoldPriceAlertSchedulerJob";
+import { BubbleAlertService } from "../application/bubble-alert/BubbleAlertService";
+import { D1BubbleAlertRepository } from "../infrastructure/bubble-alert/D1BubbleAlertRepository";
+import { BubbleAlertSchedulerJob } from "../application/jobs/BubbleAlertSchedulerJob";
+import { TelegramBubbleAlertNotifier } from "../infrastructure/bubble-alert/TelegramBubbleAlertNotifier";
 import { TelegramGoldPriceAlertNotifier } from "../infrastructure/gold-alert/TelegramGoldPriceAlertNotifier";
 import { D1MarketReportPreferenceRepository } from "../infrastructure/market-report/D1MarketReportPreferenceRepository";
 import { MarketReportService } from "../application/market-report/MarketReportService";
 import { MarketReportSchedulerJob } from "../application/jobs/MarketReportSchedulerJob";
 import { TelegramMarketReportNotifier } from "../infrastructure/market-report/TelegramMarketReportNotifier";
+import { PriceTargetAlertService } from "../application/price-target-alert/PriceTargetAlertService";
+import { D1PriceTargetAlertRepository } from "../infrastructure/price-target-alert/D1PriceTargetAlertRepository";
+import { PriceTargetAlertSchedulerJob } from "../application/jobs/PriceTargetAlertSchedulerJob";
+import { TelegramPriceTargetAlertNotifier } from "../infrastructure/price-target-alert/TelegramPriceTargetAlertNotifier";
 
 export function createContainer(env: AppEnv) {
     const storage = createStorageModule(env);
@@ -80,7 +91,9 @@ export function createContainer(env: AppEnv) {
     const refreshMarketPriceJob = new RefreshMarketPriceJob(refreshMarketPriceUseCase);
 
     const goldPriceAlertService = new GoldPriceAlertService(new D1GoldPriceAlertRepository(env.waresh_gold_db));
+    const bubbleAlertService = new BubbleAlertService(new D1BubbleAlertRepository(env.waresh_gold_db));
     const marketReportService = new MarketReportService(new D1MarketReportPreferenceRepository(env.waresh_gold_db));
+    const priceTargetAlertService = new PriceTargetAlertService(new D1PriceTargetAlertRepository(env.waresh_gold_db));
 
     const telegram = createTelegramModule(env, {
         getGoldPriceUseCase,
@@ -101,7 +114,10 @@ export function createContainer(env: AppEnv) {
         strategyService: strategyA.strategyService,
         ingestOunceTickFromTextUseCase,
         goldPriceAlertService,
-        marketReportService
+        bubbleAlertService,
+        marketReportService,
+        calculateInvoiceUseCase: gold.calculateInvoiceUseCase,
+        priceTargetAlertService
     });
 
     const evaluateAndPublishStrategyASignalUseCase = new EvaluateAndPublishStrategyASignalUseCase(
@@ -110,6 +126,32 @@ export function createContainer(env: AppEnv) {
         new TelegramStrategyASignalNotifier(telegram.telegramBotClient, new StrategyASignalMessageFormatter())
     );
     const strategyASignalSchedulerJob = new StrategyASignalSchedulerJob(evaluateAndPublishStrategyASignalUseCase);
+
+    const signalLevelNotifier = new TelegramSignalLevelNotifier(telegram.telegramBotClient);
+    const monitorSignalLevelsUseCase = new MonitorSignalLevelsUseCase(
+        strategyA.signalRepository,
+        {
+            getCurrentPrice: async (symbol: string) => {
+                const price = await getCurrentGoldPriceUseCase.execute();
+                return price.price;
+            }
+        },
+        signalLevelNotifier,
+        async () => {
+            const vipUsers = await vip.vipAccessService.listActiveUsers("STRATEGY_A_SIGNALS" as any);
+            return vipUsers.map(u => u.telegramUserId);
+        },
+        24
+    );
+    const signalMonitorJob = new SignalMonitorJob(monitorSignalLevelsUseCase);
+
+    const bubbleAlertSchedulerJob = new BubbleAlertSchedulerJob(
+        bubbleAlertService,
+        market.cachedMarketProvider,
+        gold.goldBubbleCalculator,
+        new TelegramBubbleAlertNotifier(telegram.telegramBotClient)
+    );
+
     const goldPriceAlertSchedulerJob = new GoldPriceAlertSchedulerJob(
         goldPriceAlertService,
         market.cachedMarketProvider,
@@ -121,6 +163,12 @@ export function createContainer(env: AppEnv) {
         getGoldBubbleDataUseCase,
         getMarketAnalyticsUseCase,
         new TelegramMarketReportNotifier(telegram.telegramBotClient)
+    );
+
+    const priceTargetAlertSchedulerJob = new PriceTargetAlertSchedulerJob(
+        priceTargetAlertService,
+        getCurrentGoldPriceUseCase,
+        new TelegramPriceTargetAlertNotifier(telegram.telegramBotClient)
     );
 
     return {
@@ -150,8 +198,12 @@ export function createContainer(env: AppEnv) {
         ingestOunceTickFromTextUseCase,
         evaluateAndPublishStrategyASignalUseCase,
         strategyASignalSchedulerJob,
+        signalMonitorJob,
         goldPriceAlertService,
         goldPriceAlertSchedulerJob,
+        bubbleAlertSchedulerJob,
+        priceTargetAlertService,
+        priceTargetAlertSchedulerJob,
         marketReportService,
         marketReportSchedulerJob
     };

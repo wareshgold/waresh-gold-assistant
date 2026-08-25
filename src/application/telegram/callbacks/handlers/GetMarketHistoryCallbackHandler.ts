@@ -188,7 +188,7 @@ implements TelegramCallbackHandler {
 
                         `💵 دلار: ${this.numberFormatter.money(item.currencyPrice)}\n` +
 
-                        `🌎 اونس: ${
+                        `🌎 انس: ${
                             item.ouncePrice !== null
                                 ? this.numberFormatter.format(item.ouncePrice)
                                 : "نامشخص"

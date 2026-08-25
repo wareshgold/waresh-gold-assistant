@@ -210,6 +210,10 @@ AIService {
         toolRegistry,
         toolExecutionService,
         undefined,
-        dependencies.aiConversationMemory
+        dependencies.aiConversationMemory,
+        undefined,
+        undefined,
+        dependencies.getCurrentGoldPriceUseCase,
+        dependencies.calculateGoldPriceUseCase
     );
 }

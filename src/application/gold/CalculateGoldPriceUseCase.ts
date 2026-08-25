@@ -15,12 +15,19 @@ export interface CalculateGoldPriceInput {
 
   discount?: number;
 
-}
-
-
-export interface CalculateGoldPriceOutput {
+}export interface CalculateGoldPriceOutput {
 
   total: number;
+
+  goldValue: number;
+
+  laborAmount: number;
+
+  profitAmount: number;
+
+  taxAmount: number;
+
+  weight: number;
 
 }
 
@@ -29,29 +36,49 @@ export interface CalculateGoldPriceOutput {
 export class CalculateGoldPriceUseCase {
 
 
+
   constructor(
+
     private readonly engine: GoldRuleEngine
+
   ) {}
 
 
 
+
   execute(
+
     input: CalculateGoldPriceInput
+
   ): CalculateGoldPriceOutput {
 
 
+
     const result =
+
       this.engine.execute(input);
+
 
 
 
     return {
 
-      total:
-        result.finalPrice
+      total: result.finalPrice,
+
+      goldValue: result.goldValue,
+
+      laborAmount: result.labor,
+
+      profitAmount: result.profit,
+
+      taxAmount: result.tax,
+
+      weight: input.weight
 
     };
 
   }
+
+
 
 }

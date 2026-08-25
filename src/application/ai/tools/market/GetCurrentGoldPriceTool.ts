@@ -75,12 +75,7 @@ implements AITool {
 
             const result =
 
-                await this.useCase.execute();
-
-
-
-
-            return {
+                await this.useCase.execute();            return {
 
                 success:
 
@@ -95,9 +90,11 @@ implements AITool {
                         "CURRENT_GOLD_PRICE",
 
 
+
                     purity:
 
                         18,
+
 
 
                     price:
@@ -105,9 +102,29 @@ implements AITool {
                         result.price,
 
 
+
+                    ouncePrice:
+
+                        result.ouncePrice,
+
+
+
+                    dollarPrice:
+
+                        result.dollarPrice,
+
+
+
+                    mithqalPrice:
+
+                        result.mithqalPrice,
+
+
+
                     currency:
 
                         "TOMAN",
+
 
 
                     source:

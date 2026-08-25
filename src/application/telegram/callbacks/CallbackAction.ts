@@ -12,6 +12,10 @@ export enum CallbackNamespace {
 
     SETTINGS = "settings",
 
+    ALERTS = "alerts",
+
+    BUBBLE = "bubble",
+
     SYSTEM = "system",
 
 }

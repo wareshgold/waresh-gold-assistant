@@ -69,6 +69,21 @@ import {
 }
 from "../../gold/pricing/GoldPriceResolver";
 
+import {
+    BubbleAlertService,
+}
+from "../../bubble-alert/BubbleAlertService";
+
+import {
+    GoldPriceAlertService,
+}
+from "../../gold-alert/GoldPriceAlertService";
+
+import {
+    PriceTargetAlertService,
+}
+from "../../price-target-alert/PriceTargetAlertService";
+
 
 
 export class TelegramCallbackRegistry {
@@ -128,18 +143,23 @@ export class TelegramCallbackRegistry {
 
         numberFormatter:
 
-            TelegramNumberFormatter,
+            TelegramNumberFormatter,        goldPriceResolver:
+            GoldPriceResolver,
 
 
+        bubbleAlertService:
+            BubbleAlertService,
 
-        goldPriceResolver:
 
-            GoldPriceResolver
+        alertService:
+            GoldPriceAlertService,
+
+        priceTargetAlertService:
+            PriceTargetAlertService
 
 
 
     ):
-
     TelegramCallbackRouter {
 
 
@@ -187,7 +207,15 @@ export class TelegramCallbackRegistry {
 
 
 
-                goldPriceResolver
+                goldPriceResolver,
+
+
+                bubbleAlertService,
+
+
+                alertService,
+
+                priceTargetAlertService
 
 
 

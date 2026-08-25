@@ -4,11 +4,17 @@ export class AICasualMessageGuard {
     private readonly greetings = [
 
         "سلام",
+
         "سلام علی",
+
         "سلام خوبی",
+
         "خوبی",
+
         "چه خبر",
+
         "صبح بخیر",
+
         "عصر بخیر"
 
     ];
@@ -16,9 +22,15 @@ export class AICasualMessageGuard {
 
 
 
+
     handle(
-        message: string
+
+        message: string,
+
+        userName?: string
+
     ):
+
         string | null {
 
 
@@ -34,6 +46,7 @@ export class AICasualMessageGuard {
 
 
 
+
         if (
 
             this.greetings.includes(
@@ -44,32 +57,36 @@ export class AICasualMessageGuard {
 
         ) {
 
+            const name = userName ?? "دوست عزیز";
 
 
-            return `
+            return [
 
-سلام علی جان 👋
+                `سلام ${name} جان 👋`,
 
+                "",
 
-من دستیار هوشمند وارش گلد هستم.
+                "من دستیار هوشمند وارش گلد هستم.",
 
+                "",
 
-می‌تونم در زمینه:
+                "می‌تونم در زمینه:",
 
+                "",
 
-🟡 قیمت طلا
+                "🟡 قیمت طلا",
 
-🧮 محاسبات طلا
+                "🧮 محاسبات طلا",
 
-📊 تحلیل بازار
+                "📊 تحلیل بازار",
 
-🧾 فاکتور طلا
+                "🧾 فاکتور طلا",
 
+                "",
 
-کمکت کنم.
+                "کمکت کنم."
 
-`.trim();
-
+            ].join("\n");
 
         }
 
@@ -78,7 +95,6 @@ export class AICasualMessageGuard {
 
 
         return null;
-
 
     }
 

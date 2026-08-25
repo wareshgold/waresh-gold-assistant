@@ -5,11 +5,11 @@ import { NavigationAction } from "../navigation/NavigationAction";
 
 export const TelegramStrategyMenu: TelegramMenuItem[] = [
     {
-        id: "strategy.sp2l",
-        label: "📈 استراتژی SP2L",
+        id: "strategy.strategy-a",
+        label: "📊 سیگنال استراتژی A",
         action: {
             type: TelegramMenuActionType.CALLBACK,
-            value: NavigationAction.SP2L,
+            value: NavigationAction.STRATEGY_A,
         },
     },
     TelegramBackMenuItem,

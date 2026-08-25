@@ -27,26 +27,16 @@ export class TelegramConversationManager {
 
             TelegramConversationFlow[]
 
-    ) {}
-
-
-
-
-
-    async execute(
-
+    ) {}    async execute(
         userId: string,
-
-        message: string
-
+        message: string,
+        context?: {
+            userName?: string;
+        }
     ): Promise<{
-
         type: "text";
-
         content: string;
-
         metadata?: Record<string, unknown>;
-
     } | null> {
 
 
@@ -99,18 +89,10 @@ export class TelegramConversationManager {
             return null;
 
 
-        }
-
-
-
-
-
-        return flow.execute(
-
+        }        return flow.execute(
             userId,
-
-            message
-
+            message,
+            context
         );
 
 

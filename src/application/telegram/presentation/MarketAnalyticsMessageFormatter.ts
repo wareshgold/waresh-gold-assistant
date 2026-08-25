@@ -14,31 +14,41 @@ export class MarketAnalyticsMessageFormatter {
         const trend = analytics.getTrend();
         const range = analytics.getPriceRange();
 
+        const scoreLabel = this.translateScore(score.value);
+
         return this.builder.build([
-            "📊 <b>تحلیل کوتاه بازار</b>",
+            "📊 <b>تحلیل بازار</b>",
             "",
-            `امتیاز بازار     ${score.formatted}`,
-            `روند             ${trend.emoji} ${this.translateTrend(trend.type)}`,
-            `تغییر            ${change.formatted}`,
-            `نوسان            ${this.numberFormatter.percent(analytics.getVolatility())}`,
+            `وضعیت بازار:    ${score.formatted} (${scoreLabel})`,
+            `روند:            ${trend.emoji} ${this.translateTrend(trend.type)}`,
+            `تغییر:           ${change.formatted}`,
+            `نوسان:           ${this.numberFormatter.percent(analytics.getVolatility())}`,
             "",
-            `قیمت فعلی        ${this.numberFormatter.money(analytics.getCurrentPrice())}`,
-            `بازه بازار       ${this.numberFormatter.money(range.min)} تا ${this.numberFormatter.money(range.max)}`
+            `💰 قیمت فعلی:    ${this.numberFormatter.money(analytics.getCurrentPrice())}`,
+            `📈 بازه ۲۴ ساعت: ${this.numberFormatter.money(range.min)} تا ${this.numberFormatter.money(range.max)}`
         ]);
     }
 
     private translateTrend(trend: string): string {
         switch (trend) {
             case "UP":
-                return "صعودی";
+                return "صعودی 📈";
             case "DOWN":
-                return "نزولی";
+                return "نزولی 📉";
             case "STABLE":
-                return "متعادل";
+                return "متعادل ➡️";
             case "VOLATILE":
-                return "پرنوسان";
+                return "پرنوسان 🌊";
             default:
-                return "نامشخص";
+                return "نامشخص ❓";
         }
+    }
+
+    private translateScore(score: number): string {
+        if (score >= 80) return "عالی";
+        if (score >= 60) return "خوب";
+        if (score >= 40) return "متوسط";
+        if (score >= 20) return "ضعیف";
+        return "بحرانی";
     }
 }

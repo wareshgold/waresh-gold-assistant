@@ -1,9 +1,14 @@
+import { formatWithCommas } from "../../../shared/utils/number";
+
 export class TelegramNumberFormatter {
     format(value: number, maximumFractionDigits = 0): string {
-        return new Intl.NumberFormat("en-US", {
-            maximumFractionDigits,
-            minimumFractionDigits: 0
-        }).format(value);
+        if (maximumFractionDigits > 0) {
+            const fixed = value.toFixed(maximumFractionDigits);
+            const [intPart, decPart] = fixed.split(".");
+            const formatted = formatWithCommas(Number(intPart));
+            return `${formatted}.${decPart}`;
+        }
+        return formatWithCommas(Math.round(value));
     }
 
     formatCode(value: number): string {
