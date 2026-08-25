@@ -6,6 +6,18 @@ import {
     GoldPriceAlertNotifier
 } from "../../application/jobs/GoldPriceAlertSchedulerJob";
 
+function toPersianDigits(text: string): string {
+    return text.replace(/[0-9]/g, d =>
+        String.fromCharCode(0x06F0 + Number(d))
+    );
+}
+
+function formatPrice(value: number): string {
+    return toPersianDigits(
+        Math.round(value).toLocaleString("en-US")
+    );
+}
+
 export class TelegramGoldPriceAlertNotifier
 implements GoldPriceAlertNotifier {
     constructor(
@@ -19,18 +31,14 @@ implements GoldPriceAlertNotifier {
         ouncePrice: number | null,
         updatedAt: Date
     ): Promise<void> {
-        const format = (value: number) =>
-            new Intl.NumberFormat("fa-IR")
-                .format(Math.round(value));
-
         await this.botClient.sendMessage({
             chatId: userId,
             text: [
                 "🔔 اعلان قیمت طلا",
                 "",
-                `🟡 طلای ۱۸ عیار: ${format(gold18Price)} تومان`,
-                `💵 دلار: ${format(currencyPrice)} تومان`,
-                `🌎 اونس جهانی: ${ouncePrice === null ? "ناموجود" : `${format(ouncePrice)} دلار`}`,
+                `🟡 طلای ۱۸ عیار: ${formatPrice(gold18Price)} تومان`,
+                `💵 دلار: ${formatPrice(currencyPrice)} تومان`,
+                `🌎 اونس جهانی: ${ouncePrice === null ? "ناموجود" : `${formatPrice(ouncePrice)} دلار`}`,
                 "",
                 `🕒 بروزرسانی: ${updatedAt.toLocaleString("fa-IR", { timeZone: "Asia/Tehran" })}`
             ].join("\n")
