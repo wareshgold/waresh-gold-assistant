@@ -17,6 +17,44 @@ import {
 export class TelegramCommandRouter {
     private readonly handlers: TelegramCommandHandler[];
 
+    private readonly exactAliases: Record<string, string> = {
+        "🟡 بازار": "menu:market",
+        "🟡 بازار طلا": "menu:market",
+        "🟡 بازار و قیمت\u200cها": "menu:market",
+        "🔔 اعلان\u200cها": "menu:alerts",
+        "🧮 محاسبه": "menu:calculate",
+        "🧮 ماشین حساب": "menu:calculate",
+        "🧮 ماشین حساب طلا": "menu:calculate",
+        "🧮 محاسبه قیمت طلا": "/calc",
+        "⚙️ تنظیمات": "menu:settings",
+        "⬅️ بازگشت": "menu:main",
+        "🏠 منوی اصلی": "menu:main",
+        "🤖 دستیار هوشمند": "/ai",
+        "🤖 دستیار ai": "/ai",
+        "💰 قیمت لحظه\u200cای": "/price",
+        "🫧 حباب طلا": "/bubble",
+        "📈 تحلیل بازار": "/analytics",
+        "📊 تحلیل بازار": "/analytics",
+        "📊 نمودار قیمت": "/analytics",
+        "🔔 اعلان قیمت خودکار": "/alerts",
+        "🫧 هشدار حباب طلا": "/bubble-alert",
+        "🧾 محاسبه فاکتور": "/invoice",
+        "📐 حل فرمول": "/formula",
+        "📐 حل فرمول طلا": "/formula",
+        "📈 استراتژی": "menu:strategy",
+        "📌 قیمت لحظه\u200cای": "/price",
+        "📊 تحلیل و تغییرات بازار": "/analytics",
+        "🎯 هشدار رسیدن به قیمت": "/alerts",
+        "📋 هشدارهای من": "/my-alerts",
+        "📊 سیگنال استراتژی a": "/strategy-a",
+        "📜 تاریخچه قیمت": "/history",
+        "📜 تاریخچه محاسبات": "/calc-history",
+        "🔄 محاسبه معکوس طلا": "/reverse-labor",
+        "ℹ درباره ربات": "/about",
+        "درباره ربات": "/about",
+        "درباره": "/about"
+    };
+
     constructor(handlers: TelegramCommandHandler[]) {
         this.handlers = handlers;
     }
@@ -46,63 +84,38 @@ export class TelegramCommandRouter {
         return this.normalizeCommand(value);
     }
 
+    /**
+     * Check if text is an exact button label (reply keyboard click).
+     * Uses the same exactAliases map as resolveCommand.
+     */
+    isExactAlias(text: string): boolean {
+        if (text.trim().startsWith("/")) return true;
+        const normalized = this.normalizeCommand(text);
+        if (this.exactAliases[normalized]) return true;
+        // Fallback: variation selectors stripped
+        const strippedKey = Object.keys(this.exactAliases).find(
+            key => key.replace(/[\uFE0E\uFE0F]/g, "") === normalized
+        );
+        return !!strippedKey;
+    }
+
     private normalizeCommand(value: string): string {
         const normalized =
             KeyboardLayoutNormalizer.normalize(
                 value.trim().toLowerCase().replace(/\s+/g, " ")
             ).replace(/[\uFE0E\uFE0F]/g, "");
 
-        const exactAliases: Record<string, string> = {
-            "🟡 بازار": "menu:market",
-            "🟡 بازار طلا": "menu:market",
-            "🟡 بازار و قیمت‌ها": "menu:market",
-            "🔔 اعلان‌ها": "menu:alerts",
-            "🧮 محاسبه": "menu:calculate",
-            "🧮 ماشین حساب": "menu:calculate",
-            "🧮 ماشین حساب طلا": "menu:calculate",
-            "🧮 محاسبه قیمت طلا": "/calc",
-            "⚙️ تنظیمات": "menu:settings",
-            "⬅️ بازگشت": "menu:main",
-            "🏠 منوی اصلی": "menu:main",
-            "🤖 دستیار هوشمند": "/ai",
-            "🤖 دستیار ai": "/ai",
-            "💰 قیمت لحظه‌ای": "/price",
-            "🫧 حباب طلا": "/bubble",
-            "📈 تحلیل بازار": "/analytics",
-            "📊 تحلیل بازار": "/analytics",
-            "📊 نمودار قیمت": "/analytics",
-            "🔔 اعلان قیمت خودکار": "/alerts",
-            "🫧 هشدار حباب طلا": "/bubble-alert",
-            "🧾 محاسبه فاکتور": "/invoice",
-            "📐 حل فرمول": "/formula",
-            "📐 حل فرمول طلا": "/formula",
-            "📈 استراتژی": "menu:strategy",
-            "📌 قیمت لحظه‌ای": "/price",
-            "📊 تحلیل و تغییرات بازار": "/analytics",
-            "🎯 هشدار رسیدن به قیمت": "/alerts",
-            "📋 هشدارهای من": "/my-alerts",
-            "📊 سیگنال استراتژی a": "/strategy-a",
-            "📜 تاریخچه قیمت": "/history",
-            "📜 تاریخچه محاسبات": "/calc-history",
-            "🔄 محاسبه معکوس طلا": "/reverse-labor",
-            "ℹ درباره ربات": "/about",
-            "درباره ربات": "/about",
-            "درباره": "/about"
-        };
-
-        if (exactAliases[normalized]) {
-            return exactAliases[normalized];
+        if (this.exactAliases[normalized]) {
+            return this.exactAliases[normalized];
         }
 
         // Fallback: try matching with variation selectors stripped from keys
-        const strippedKey = Object.keys(exactAliases).find(
+        const strippedKey = Object.keys(this.exactAliases).find(
             key => key.replace(/[\uFE0E\uFE0F]/g, "") === normalized
         );
         if (strippedKey) {
-            return exactAliases[strippedKey];
+            return this.exactAliases[strippedKey];
         }
-
-
 
         if (!normalized.startsWith("/") && normalized.includes("بازار")) {
             return "menu:market";

@@ -154,11 +154,14 @@ implements TelegramCommandExecutor {
                 .find(
                     handler =>
                         handler.canHandle(resolvedCommand)
-                );        const isReplyKeyboardNavigation =
+                );        // Check if user text is an EXACT button label (reply keyboard click)
+        // vs natural language typed by user (should go to AI)
+        const isExactMenuButton = this.router.isExactAlias(text);
 
+        const isReplyKeyboardNavigation =
             resolvedCommand !== normalizedText &&
-
-            Boolean(navigationHandler);
+            Boolean(navigationHandler) &&
+            isExactMenuButton;
 
 
 
