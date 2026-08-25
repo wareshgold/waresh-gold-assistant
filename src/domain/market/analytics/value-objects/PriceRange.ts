@@ -46,15 +46,15 @@ export class PriceRange {
   }
 
   get formattedMin(): string {
-    return this._min.toLocaleString('fa-IR');
+    return this._min.toLocaleString('en-US');
   }
 
   get formattedMax(): string {
-    return this._max.toLocaleString('fa-IR');
+    return this._max.toLocaleString('en-US');
   }
 
   get formattedAverage(): string {
-    return this.average.toLocaleString('fa-IR');
+    return this.average.toLocaleString('en-US');
   }
 
   contains(price: number): boolean {

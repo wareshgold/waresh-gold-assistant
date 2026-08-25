@@ -7,6 +7,8 @@ from "../../domain/market/providers/MarketPriceProvider";
 import { GetCurrentMarketPriceUseCase }
 from "../market/GetCurrentMarketPriceUseCase";
 
+import { formatPrice } from "../../shared/utils/number";;
+
 
 
 export class GetGoldPriceUseCase {
@@ -135,14 +137,12 @@ export class GetGoldPriceUseCase {
         };
 
 
-    }    private formatNumber(
+    }
+
+    private formatNumber(
         value: number
     ): string {
-        return Math.round(value)
-            .toLocaleString("en-US")
-            .replace(/[0-9]/g, d =>
-                String.fromCharCode(0x06F0 + Number(d))
-            );
+        return formatPrice(value);
     }
 
 

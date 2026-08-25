@@ -1,17 +1,6 @@
 import { MarketReportData, MarketReportNotifier } from "../../application/jobs/MarketReportSchedulerJob";
 import { TelegramBotClient } from "../telegram/TelegramBotClient";
-
-function toPersianDigits(text: string): string {
-    return text.replace(/[0-9]/g, d =>
-        String.fromCharCode(0x06F0 + Number(d))
-    );
-}
-
-function formatPrice(value: number): string {
-    return toPersianDigits(
-        Math.round(value).toLocaleString("en-US")
-    );
-}
+import { formatPrice, toPersianDigits } from "../../shared/utils/number";
 
 export class TelegramMarketReportNotifier implements MarketReportNotifier {
     constructor(private readonly botClient: TelegramBotClient) {}

@@ -6,17 +6,7 @@ import {
     GoldPriceAlertNotifier
 } from "../../application/jobs/GoldPriceAlertSchedulerJob";
 
-function toPersianDigits(text: string): string {
-    return text.replace(/[0-9]/g, d =>
-        String.fromCharCode(0x06F0 + Number(d))
-    );
-}
-
-function formatPrice(value: number): string {
-    return toPersianDigits(
-        Math.round(value).toLocaleString("en-US")
-    );
-}
+import { formatPrice } from "../../shared/utils/number";
 
 export class TelegramGoldPriceAlertNotifier
 implements GoldPriceAlertNotifier {
