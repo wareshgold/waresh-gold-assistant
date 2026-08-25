@@ -135,33 +135,14 @@ export class GetGoldPriceUseCase {
         };
 
 
-    }
-
-
-
-
-
-
-
-    private formatNumber(
-
+    }    private formatNumber(
         value: number
-
     ): string {
-
-
-        return new Intl.NumberFormat(
-
-            "fa-IR"
-
-        )
-        .format(
-
-            Math.round(value)
-
-        );
-
-
+        return Math.round(value)
+            .toLocaleString("en-US")
+            .replace(/[0-9]/g, d =>
+                String.fromCharCode(0x06F0 + Number(d))
+            );
     }
 
 

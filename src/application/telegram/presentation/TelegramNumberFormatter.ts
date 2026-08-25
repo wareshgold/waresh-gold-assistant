@@ -1,9 +1,10 @@
 export class TelegramNumberFormatter {
     format(value: number, maximumFractionDigits = 0): string {
-        return new Intl.NumberFormat("en-US", {
-            maximumFractionDigits,
-            minimumFractionDigits: 0
-        }).format(value);
+        return Math.round(value)
+            .toLocaleString("en-US", {
+                maximumFractionDigits,
+                minimumFractionDigits: 0
+            });
     }
 
     formatCode(value: number): string {
