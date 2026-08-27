@@ -28,7 +28,7 @@ function candle(
         high,
         low,
         close,
-        timestamp: new Date(timestamp)
+        timestamp
     };
 }
 
@@ -42,13 +42,9 @@ describe("StrategyASignalEngine", () => {
             candle(100.2, 101, 100.1, 100.8, 2),
             candle(101.2, 102.3, 101.1, 102.2, 3),
             candle(102.5, 104, 102.4, 103.8, 4),
-            // Leg 1: correction down to a local low
             candle(103.7, 103.9, 101.8, 102, 5),
-            // Intervening retracement upward
             candle(102, 104.2, 101.9, 104, 6),
-            // Leg 2: completion is the entry trigger
             candle(104, 104.1, 101, 101.2, 7),
-            // Newest closed/live candle is not needed for entry
             candle(101.2, 102.8, 101.1, 102.6, 8)
         ];
 
