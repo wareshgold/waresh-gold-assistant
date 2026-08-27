@@ -85,9 +85,9 @@ describe("TwoLegDetector", () => {
             candle(105.5, 105.8, 101.5, 102, 4),
             // Retracement: upward counter-move
             candle(102, 103.8, 101.8, 103.5, 5),
-            // Leg 2: new low below leg 1
+            // Leg 2: new low below leg 1; close is the entry price
             candle(103.5, 103.8, 101, 101.2, 6),
-            // Confirmation candle belongs to LevelDetector
+            // Newest closed candle is not needed for entry
             candle(101.2, 102.8, 101.1, 102.6, 7)
         ];
 
@@ -101,7 +101,7 @@ describe("TwoLegDetector", () => {
         expect(twoLeg!.leg1.endIndex).toBe(3);
         expect(twoLeg!.leg2.endIndex).toBe(5);
         expect(twoLeg!.completionIndex).toBe(5);
-        expect(twoLeg!.completionPrice).toBe(101);
+        expect(twoLeg!.completionPrice).toBe(101.2);
         expect(twoLeg!.retracementPercent).toBeGreaterThan(20);
         expect(twoLeg!.retracementPercent).toBeLessThan(85);
     });
@@ -117,9 +117,9 @@ describe("TwoLegDetector", () => {
             candle(100.2, 104.5, 100, 104, 4),
             // Retracement: downward counter-move
             candle(104, 104.2, 102.8, 103, 5),
-            // Leg 2: new high above leg 1
+            // Leg 2: new high above leg 1; close is the entry price
             candle(103, 105, 102.8, 104.8, 6),
-            // Confirmation candle belongs to LevelDetector
+            // Newest closed candle is not needed for entry
             candle(104.8, 104.9, 102.5, 102.7, 7)
         ];
 
@@ -132,7 +132,7 @@ describe("TwoLegDetector", () => {
         expect(twoLeg).not.toBeNull();
         expect(twoLeg!.leg1.endIndex).toBe(3);
         expect(twoLeg!.leg2.endIndex).toBe(5);
-        expect(twoLeg!.completionPrice).toBe(105);
+        expect(twoLeg!.completionPrice).toBe(104.8);
         expect(twoLeg!.retracementPercent).toBeGreaterThan(20);
         expect(twoLeg!.retracementPercent).toBeLessThan(85);
     });
@@ -185,7 +185,7 @@ describe("TwoLegDetector", () => {
         expect(twoLeg).toBeNull();
     });
 
-    it("rejects a correction when no candle remains for confirmation", () => {
+    it("rejects a correction when no candle remains to complete the second leg", () => {
         const detector = new TwoLegDetector();
 
         const candles = [
@@ -193,8 +193,7 @@ describe("TwoLegDetector", () => {
             candle(102, 103.5, 101.5, 103.5, 2),
             candle(104, 106, 103.5, 106, 3),
             candle(105.5, 105.8, 101.5, 102, 4),
-            candle(102, 103.8, 101.8, 103.5, 5),
-            candle(103.5, 103.8, 101, 101.2, 6)
+            candle(102, 103.8, 101.8, 103.5, 5)
         ];
 
         const twoLeg = detector.detect(
