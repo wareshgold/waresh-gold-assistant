@@ -80,14 +80,13 @@ describe("StrategyASignalEngine", () => {
         expect(signal.signalType).toBe("HOLD");
     });
 
-    it("emits a confirmed BUY only after Spike + TwoLeg + separate confirmation candle", () => {
+    it("emits BUY immediately when the second leg completes", () => {
         const engine = new StrategyASignalEngine();
 
         const candles: StrategyACandle[] = [
             // Context before the spike
             candle(100, 101, 99.5, 100.8, 1),
-            // 3-candle bullish spike with mandatory P-Gaps.
-            // The first spike candle must also satisfy minBodyRatio.
+            // 3-candle bullish spike
             candle(100, 101, 99.9, 100.8, 2),
             candle(101.2, 102.3, 101.1, 102.2, 3),
             candle(102.5, 104, 102.4, 103.8, 4),
@@ -95,9 +94,9 @@ describe("StrategyASignalEngine", () => {
             candle(103.7, 103.9, 101.8, 102, 5),
             // Intervening retracement upward
             candle(102, 104.2, 101.9, 104, 6),
-            // Leg 2: new correction low
+            // Leg 2: completion is the entry trigger
             candle(104, 104.1, 101, 101.2, 7),
-            // Separate confirmation candle
+            // Newest closed/live candle is not needed for entry
             candle(101.2, 102.8, 101.1, 102.6, 8)
         ];
 
@@ -117,14 +116,14 @@ describe("StrategyASignalEngine", () => {
         );
 
         expect(signal.signalType).toBe("BUY");
-        expect(signal.entryPrice).toBe(102.6);
-        expect(signal.stopLoss).toBeLessThan(signal.entryPrice);
+        expect(signal.entryPrice).toBe(101.2);
+        expect(signal.stopLoss).toBe(signal.spikeData!.startPrice);
         expect(signal.takeProfit).toBeGreaterThan(signal.entryPrice);
         expect(signal.riskReward).toBe(1);
         expect(signal.spikeData).toBeDefined();
         expect(signal.twoLegData).toBeDefined();
         expect(signal.levelData).toBeDefined();
         expect(signal.levelData!.triggerCandleIndex).toBe(7);
-        expect(signal.generatedAt.getTime()).toBe(8);
+        expect(signal.generatedAt.getTime()).toBe(7);
     });
 });
