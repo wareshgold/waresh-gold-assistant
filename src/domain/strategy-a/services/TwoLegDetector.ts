@@ -56,16 +56,16 @@ export class TwoLegDetector {
     ): TwoLeg | null {
         let leg1End: number | null = null;
 
-        // Leg 1 begins immediately after the spike. The first candle
-        // may itself be the local low/high that terminates leg 1.
+        // Leg 1: first meaningful move down from the spike.
+        // Start at fromIndex so the first candle immediately after
+        // the spike can itself be the first correction swing low.
         for (let i = fromIndex; i < candles.length - 2; i++) {
             const previous = candles[i - 1];
             const current = candles[i];
             const next = candles[i + 1];
 
-            const previousLow = previous?.low ?? spike.endPrice;
             const localLow =
-                current.low < previousLow &&
+                current.low < previous.low &&
                 (next.high > current.high || next.close > current.close);
 
             if (localLow) {
@@ -85,7 +85,7 @@ export class TwoLegDetector {
             endPrice: candles[leg1End].low
         };
 
-        // A genuine two-leg correction requires a counter-move after leg 1.
+        // The candle immediately after leg 1 must actually retrace upward.
         let retracementIndex: number | null = null;
 
         for (let i = leg1End + 1; i < candles.length - 2; i++) {
@@ -102,6 +102,7 @@ export class TwoLegDetector {
             return null;
         }
 
+        // Leg 2: a second downward impulse after the retracement.
         let completionIndex: number | null = null;
 
         for (
@@ -137,16 +138,16 @@ export class TwoLegDetector {
     ): TwoLeg | null {
         let leg1End: number | null = null;
 
-        // Leg 1 begins immediately after the spike. The first candle
-        // may itself be the local high that terminates leg 1.
+        // Leg 1: first meaningful move up from the bearish spike.
+        // Start at fromIndex so the first candle immediately after
+        // the spike can itself be the first correction swing high.
         for (let i = fromIndex; i < candles.length - 2; i++) {
             const previous = candles[i - 1];
             const current = candles[i];
             const next = candles[i + 1];
 
-            const previousHigh = previous?.high ?? spike.endPrice;
             const localHigh =
-                current.high > previousHigh &&
+                current.high > previous.high &&
                 (next.low < current.low || next.close < current.close);
 
             if (localHigh) {
@@ -166,7 +167,7 @@ export class TwoLegDetector {
             endPrice: candles[leg1End].high
         };
 
-        // A genuine two-leg correction requires a counter-move after leg 1.
+        // The candle immediately after leg 1 must retrace downward.
         let retracementIndex: number | null = null;
 
         for (let i = leg1End + 1; i < candles.length - 2; i++) {
@@ -183,6 +184,7 @@ export class TwoLegDetector {
             return null;
         }
 
+        // Leg 2: a second upward impulse after the retracement.
         let completionIndex: number | null = null;
 
         for (
