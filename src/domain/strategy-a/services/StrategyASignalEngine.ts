@@ -33,52 +33,34 @@ import {
 export class StrategyASignalEngine {
 
     constructor(
-        private readonly spikeDetector =
-            new SpikeDetector(),
-        private readonly twoLegDetector =
-            new TwoLegDetector(),
-        private readonly levelDetector =
-            new LevelDetector(),
-        private readonly riskManager =
-            new StrategyARiskManager(),
-        private readonly validator =
-            new StrategyAValidator()
+        private readonly spikeDetector = new SpikeDetector(),
+        private readonly twoLegDetector = new TwoLegDetector(),
+        private readonly levelDetector = new LevelDetector(),
+        private readonly riskManager = new StrategyARiskManager(),
+        private readonly validator = new StrategyAValidator()
     ) {}
 
     evaluate(
         marketData: StrategyAMarketData,
         config: StrategyAConfiguration
     ): StrategyASignal {
-        const candles =
-            marketData.candles;
-
-        const timeframe =
-            marketData.timeframe;
+        const candles = marketData.candles;
+        const timeframe = marketData.timeframe;
 
         if (candles.length === 0) {
             return StrategyASignal.hold({
                 symbol: config.symbol,
                 timeframe,
                 strategyVersion: config.strategyVersion,
-                reason: "داده کندل وجود ندارد",
-                entryPrice: undefined
+                reason: "داده کندل وجود ندارد"
             });
         }
 
-        const lastCandle =
-            candles[candles.length - 1];
+        const lastCandle = candles[candles.length - 1];
+        const lastClose = lastCandle.close;
+        const generatedAt = new Date(lastCandle.timestamp);
 
-        const lastClose =
-            lastCandle.close;
-
-        const generatedAt =
-            new Date(lastCandle.timestamp);
-
-        const spike =
-            this.spikeDetector.detect(
-                candles,
-                config
-            );
+        const spike = this.spikeDetector.detect(candles, config);
 
         if (!spike) {
             return StrategyASignal.create({
@@ -96,12 +78,11 @@ export class StrategyASignalEngine {
             });
         }
 
-        const twoLeg =
-            this.twoLegDetector.detect(
-                candles,
-                spike,
-                config
-            );
+        const twoLeg = this.twoLegDetector.detect(
+            candles,
+            spike,
+            config
+        );
 
         if (!twoLeg) {
             return StrategyASignal.create({
@@ -120,12 +101,11 @@ export class StrategyASignalEngine {
             });
         }
 
-        const level =
-            this.levelDetector.detect(
-                candles,
-                spike,
-                twoLeg
-            );
+        const level = this.levelDetector.detect(
+            candles,
+            spike,
+            twoLeg
+        );
 
         if (!level) {
             return StrategyASignal.create({
@@ -145,20 +125,18 @@ export class StrategyASignalEngine {
             });
         }
 
-        const risk =
-            this.riskManager.buildPlan(
-                spike,
-                level,
-                config
-            );
+        const risk = this.riskManager.buildPlan(
+            spike,
+            level,
+            config
+        );
 
-        const validation =
-            this.validator.validate({
-                spike,
-                twoLeg,
-                level,
-                risk
-            });
+        const validation = this.validator.validate({
+            spike,
+            twoLeg,
+            level,
+            risk
+        });
 
         if (!validation.valid) {
             return StrategyASignal.create({
@@ -171,10 +149,15 @@ export class StrategyASignalEngine {
                 riskReward: risk.takeProfit.riskReward,
                 confidence: 0,
                 reason: validation.reason,
-                generatedAt,
-                strategyVersion: config.strategyVersion
+                generatedAt: new Date(candles[level.triggerCandleIndex].timestamp),
+                strategyVersion: config.strategyVersion,
+                spikeData: spike,
+                twoLegData: twoLeg,
+                levelData: level
             });
         }
+
+        const signalCandle = candles[level.triggerCandleIndex];
 
         return StrategyASignal.create({
             symbol: config.symbol,
@@ -186,8 +169,11 @@ export class StrategyASignalEngine {
             riskReward: risk.takeProfit.riskReward,
             confidence: validation.confidence,
             reason: validation.reason,
-            generatedAt,
-            strategyVersion: config.strategyVersion
+            generatedAt: new Date(signalCandle.timestamp),
+            strategyVersion: config.strategyVersion,
+            spikeData: spike,
+            twoLegData: twoLeg,
+            levelData: level
         });
     }
 }
