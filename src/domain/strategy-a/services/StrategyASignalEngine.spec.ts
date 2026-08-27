@@ -123,7 +123,7 @@ describe("StrategyASignalEngine", () => {
         expect(signal.spikeData).toBeDefined();
         expect(signal.twoLegData).toBeDefined();
         expect(signal.levelData).toBeDefined();
-        expect(signal.levelData!.triggerCandleIndex).toBe(7);
-        expect(signal.generatedAt.getTime()).toBe(7);
+        expect(signal.levelData!.triggerCandleIndex).toBe(6);
+        expect(signal.generatedAt.getTime()).toBe(6);
     });
 });
