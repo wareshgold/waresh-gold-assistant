@@ -86,17 +86,19 @@ describe("StrategyASignalEngine", () => {
         const candles: StrategyACandle[] = [
             // Context before the spike
             candle(100, 101, 99.5, 100.8, 1),
-            candle(101.2, 102.3, 101.1, 102.2, 2),
-            // 3-candle bullish spike with mandatory P-Gaps
-            candle(102.5, 104, 102.4, 103.8, 3),
+            // 3-candle bullish spike with mandatory P-Gaps.
+            // The first spike candle must also satisfy minBodyRatio.
+            candle(100, 101, 99.9, 100.8, 2),
+            candle(101.2, 102.3, 101.1, 102.2, 3),
+            candle(102.5, 104, 102.4, 103.8, 4),
             // Leg 1: correction down to a local low
-            candle(103.7, 103.9, 101.8, 102, 4),
+            candle(103.7, 103.9, 101.8, 102, 5),
             // Intervening retracement upward
-            candle(102, 104.2, 101.9, 104, 5),
+            candle(102, 104.2, 101.9, 104, 6),
             // Leg 2: new correction low
-            candle(104, 104.1, 101, 101.2, 6),
+            candle(104, 104.1, 101, 101.2, 7),
             // Separate confirmation candle
-            candle(101.2, 102.8, 101.1, 102.6, 7)
+            candle(101.2, 102.8, 101.1, 102.6, 8)
         ];
 
         const signal = engine.evaluate(
@@ -122,7 +124,7 @@ describe("StrategyASignalEngine", () => {
         expect(signal.spikeData).toBeDefined();
         expect(signal.twoLegData).toBeDefined();
         expect(signal.levelData).toBeDefined();
-        expect(signal.levelData!.triggerCandleIndex).toBe(6);
-        expect(signal.generatedAt.getTime()).toBe(7);
+        expect(signal.levelData!.triggerCandleIndex).toBe(7);
+        expect(signal.generatedAt.getTime()).toBe(8);
     });
 });
