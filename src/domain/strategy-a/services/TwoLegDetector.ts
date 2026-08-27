@@ -24,10 +24,10 @@ export class TwoLegDetector {
     ): TwoLeg | null {
         const fromIndex = spike.endIndex + 1;
 
-        // A valid setup needs: leg 1, an intervening retracement,
-        // leg 2 completion, and at least one candle after completion
-        // for LevelDetector to confirm the entry.
-        if (fromIndex < 0 || fromIndex >= candles.length - 3) {
+        // A valid setup needs two correction legs and their intervening
+        // counter-move. The second leg may complete on the newest closed
+        // candle because that completion itself is the entry trigger.
+        if (fromIndex < 0 || fromIndex >= candles.length - 2) {
             return null;
         }
 
@@ -56,9 +56,6 @@ export class TwoLegDetector {
     ): TwoLeg | null {
         let leg1End: number | null = null;
 
-        // Leg 1: first meaningful move down from the spike.
-        // Start at fromIndex so the first candle immediately after
-        // the spike can itself be the first correction swing low.
         for (let i = fromIndex; i < candles.length - 2; i++) {
             const previous = candles[i - 1];
             const current = candles[i];
@@ -85,10 +82,9 @@ export class TwoLegDetector {
             endPrice: candles[leg1End].low
         };
 
-        // The candle immediately after leg 1 must actually retrace upward.
         let retracementIndex: number | null = null;
 
-        for (let i = leg1End + 1; i < candles.length - 2; i++) {
+        for (let i = leg1End + 1; i < candles.length - 1; i++) {
             if (
                 candles[i].high > candles[leg1End].high ||
                 candles[i].close > candles[leg1End].close
@@ -102,14 +98,9 @@ export class TwoLegDetector {
             return null;
         }
 
-        // Leg 2: a second downward impulse after the retracement.
         let completionIndex: number | null = null;
 
-        for (
-            let i = retracementIndex + 1;
-            i < candles.length - 1;
-            i++
-        ) {
+        for (let i = retracementIndex + 1; i < candles.length; i++) {
             if (candles[i].low < candles[leg1End].low) {
                 completionIndex = i;
                 break;
@@ -138,9 +129,6 @@ export class TwoLegDetector {
     ): TwoLeg | null {
         let leg1End: number | null = null;
 
-        // Leg 1: first meaningful move up from the bearish spike.
-        // Start at fromIndex so the first candle immediately after
-        // the spike can itself be the first correction swing high.
         for (let i = fromIndex; i < candles.length - 2; i++) {
             const previous = candles[i - 1];
             const current = candles[i];
@@ -167,10 +155,9 @@ export class TwoLegDetector {
             endPrice: candles[leg1End].high
         };
 
-        // The candle immediately after leg 1 must retrace downward.
         let retracementIndex: number | null = null;
 
-        for (let i = leg1End + 1; i < candles.length - 2; i++) {
+        for (let i = leg1End + 1; i < candles.length - 1; i++) {
             if (
                 candles[i].low < candles[leg1End].low ||
                 candles[i].close < candles[leg1End].close
@@ -184,14 +171,9 @@ export class TwoLegDetector {
             return null;
         }
 
-        // Leg 2: a second upward impulse after the retracement.
         let completionIndex: number | null = null;
 
-        for (
-            let i = retracementIndex + 1;
-            i < candles.length - 1;
-            i++
-        ) {
+        for (let i = retracementIndex + 1; i < candles.length; i++) {
             if (candles[i].high > candles[leg1End].high) {
                 completionIndex = i;
                 break;
@@ -218,9 +200,7 @@ export class TwoLegDetector {
         leg2: SwingLeg,
         config: StrategyAConfiguration
     ): TwoLeg | null {
-        const spikeRange = Math.abs(
-            spike.endPrice - spike.startPrice
-        );
+        const spikeRange = Math.abs(spike.endPrice - spike.startPrice);
 
         if (spikeRange <= 0) {
             return null;
@@ -228,17 +208,15 @@ export class TwoLegDetector {
 
         const completionPrice = leg2.endPrice;
 
-        const retraced =
-            spike.direction === "BUY"
-                ? spike.endPrice - completionPrice
-                : completionPrice - spike.endPrice;
+        const retraced = spike.direction === "BUY"
+            ? spike.endPrice - completionPrice
+            : completionPrice - spike.endPrice;
 
         if (retraced <= 0) {
             return null;
         }
 
-        const retracementPercent =
-            (retraced / spikeRange) * 100;
+        const retracementPercent = (retraced / spikeRange) * 100;
 
         if (
             retracementPercent < config.minRetracementPercent ||
