@@ -24,28 +24,15 @@ export class TwoLegDetector {
     ): TwoLeg | null {
         const fromIndex = spike.endIndex + 1;
 
-        // A valid setup needs two correction legs and their intervening
-        // counter-move. The second leg may complete on the newest closed
-        // candle because that completion itself is the entry trigger.
         if (fromIndex < 0 || fromIndex >= candles.length - 2) {
             return null;
         }
 
         if (spike.direction === "BUY") {
-            return this.detectBullishCorrection(
-                candles,
-                spike,
-                fromIndex,
-                config
-            );
+            return this.detectBullishCorrection(candles, spike, fromIndex, config);
         }
 
-        return this.detectBearishCorrection(
-            candles,
-            spike,
-            fromIndex,
-            config
-        );
+        return this.detectBearishCorrection(candles, spike, fromIndex, config);
     }
 
     private detectBullishCorrection(
@@ -118,7 +105,13 @@ export class TwoLegDetector {
             endPrice: candles[completionIndex].low
         };
 
-        return this.buildTwoLeg(spike, leg1, leg2, config);
+        return this.buildTwoLeg(
+            spike,
+            leg1,
+            leg2,
+            candles[completionIndex].close,
+            config
+        );
     }
 
     private detectBearishCorrection(
@@ -191,13 +184,20 @@ export class TwoLegDetector {
             endPrice: candles[completionIndex].high
         };
 
-        return this.buildTwoLeg(spike, leg1, leg2, config);
+        return this.buildTwoLeg(
+            spike,
+            leg1,
+            leg2,
+            candles[completionIndex].close,
+            config
+        );
     }
 
     private buildTwoLeg(
         spike: Spike,
         leg1: SwingLeg,
         leg2: SwingLeg,
+        completionPrice: number,
         config: StrategyAConfiguration
     ): TwoLeg | null {
         const spikeRange = Math.abs(spike.endPrice - spike.startPrice);
@@ -205,8 +205,6 @@ export class TwoLegDetector {
         if (spikeRange <= 0) {
             return null;
         }
-
-        const completionPrice = leg2.endPrice;
 
         const retraced = spike.direction === "BUY"
             ? spike.endPrice - completionPrice
