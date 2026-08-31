@@ -671,12 +671,72 @@ export function createApp(
 
         }
 
+    );    // Strategy A diagnostic endpoint
+    app.get(
+        "/api/v1/strategy-a/status",
+        async(c) => {
+            try {
+                const db = (container as any).waresh_gold_db;
+                if (!db) {
+                    return c.json({ error: "D1 database not available" });
+                }
+
+                const sixHoursAgo = Date.now() - 6 * 60 * 60 * 1000;
+                const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+
+                // Count ticks
+                const ticks6h = await db.prepare(
+                    "SELECT COUNT(*) as count FROM ounce_ticks WHERE timestamp >= ?"
+                ).bind(sixHoursAgo).first();
+
+                const ticks24h = await db.prepare(
+                    "SELECT COUNT(*) as count FROM ounce_ticks WHERE timestamp >= ?"
+                ).bind(oneDayAgo).first();
+
+                const lastTick = await db.prepare(
+                    "SELECT price, direction, timestamp FROM ounce_ticks ORDER BY timestamp DESC LIMIT 1"
+                ).first();
+
+                // Count signals
+                const signals = await db.prepare(
+                    "SELECT COUNT(*) as count FROM strategy_a_signals"
+                ).first();
+
+                const lastSignal = await db.prepare(
+                    "SELECT signal_type, reason, entry_price, generated_at FROM strategy_a_signals ORDER BY generated_at DESC LIMIT 1"
+                ).first();
+
+                return c.json({
+                    ticks: {
+                        last6h: ticks6h?.count ?? 0,
+                        last24h: ticks24h?.count ?? 0,
+                        lastTick: lastTick ? {
+                            price: lastTick.price,
+                            direction: lastTick.direction,
+                            time: new Date(lastTick.timestamp).toISOString()
+                        } : null
+                    },
+                    signals: {
+                        total: signals?.count ?? 0,
+                        last: lastSignal ? {
+                            type: lastSignal.signal_type,
+                            reason: lastSignal.reason,
+                            entryPrice: lastSignal.entry_price,
+                            time: new Date(lastSignal.generated_at).toISOString()
+                        } : null
+                    },
+                    dataCollection: {
+                        hasEnoughData: (ticks6h?.count ?? 0) >= 12,
+                        status: (ticks6h?.count ?? 0) >= 12 ? "healthy" : "insufficient"
+                    }
+                });
+            } catch (error) {
+                return c.json({ error: String(error) }, 500);
+            }
+        }
     );
 
-
-
     app.post(
-
         "/telegram/webhook",
 
         async(c)=>{
