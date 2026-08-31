@@ -50,79 +50,62 @@ export default {
             return;
         }
 
-        const utcMinute = now.getUTCMinutes();
-
         ctx.waitUntil(
             (async () => {
-                // Every minute: collect price tick (lightweight, critical)
+                // 1. Collect latest price from source channel
                 try {
                     await currentContainer.collectOunceTickJob.execute();
                 } catch (error) {
                     console.error("Failed to collect ounce tick:", error);
                 }
 
-                // Spread heavier jobs across different ticks to stay under CPU limit
-                // Strategy A: every 5 min, staggered at m%5==1
-                if (utcMinute % 5 === 1) {
-                    try {
-                        await currentContainer.strategyASignalSchedulerJob.execute();
-                    } catch (error) {
-                        console.error("Failed to evaluate Strategy A signal:", error);
-                    }
+                // 2. Refresh cached market price
+                try {
+                    await currentContainer.refreshMarketPriceJob.execute();
+                } catch (error) {
+                    console.error("Failed to refresh market price:", error);
                 }
 
-                // Gold price alerts: every 5 min, staggered at m%5==2
-                if (utcMinute % 5 === 2) {
-                    try {
-                        await currentContainer.goldPriceAlertSchedulerJob.execute();
-                    } catch (error) {
-                        console.error("Failed to send gold price alerts:", error);
-                    }
+                // 3. Send user-configured gold price alerts
+                try {
+                    await currentContainer.goldPriceAlertSchedulerJob.execute();
+                } catch (error) {
+                    console.error("Failed to send gold price alerts:", error);
                 }
 
-                // Signal level monitoring: every 5 min, staggered at m%5==3
-                if (utcMinute % 5 === 3) {
-                    try {
-                        await currentContainer.signalMonitorJob.execute();
-                    } catch (error) {
-                        console.error("Failed to monitor signal levels:", error);
-                    }
+                // 4. Send market reports
+                try {
+                    await currentContainer.marketReportSchedulerJob.execute();
+                } catch (error) {
+                    console.error("Failed to send market reports:", error);
                 }
 
-                // Price target alerts: every 5 min, staggered at m%5==4
-                if (utcMinute % 5 === 4) {
-                    try {
-                        await currentContainer.priceTargetAlertSchedulerJob.execute();
-                    } catch (error) {
-                        console.error("Failed to check price target alerts:", error);
-                    }
+                // 5. Check bubble alerts
+                try {
+                    await currentContainer.bubbleAlertSchedulerJob.execute();
+                } catch (error) {
+                    console.error("Failed to send bubble alerts:", error);
                 }
 
-                // Market reports: every 10 min, staggered at m%10==5
-                if (utcMinute % 10 === 5) {
-                    try {
-                        await currentContainer.marketReportSchedulerJob.execute();
-                    } catch (error) {
-                        console.error("Failed to send market reports:", error);
-                    }
+                // 6. Check price target alerts
+                try {
+                    await currentContainer.priceTargetAlertSchedulerJob.execute();
+                } catch (error) {
+                    console.error("Failed to check price target alerts:", error);
                 }
 
-                // Bubble alerts: every 10 min, staggered at m%10==8
-                if (utcMinute % 10 === 8) {
-                    try {
-                        await currentContainer.bubbleAlertSchedulerJob.execute();
-                    } catch (error) {
-                        console.error("Failed to send bubble alerts:", error);
-                    }
+                // 7. Strategy A signal evaluation
+                try {
+                    await currentContainer.strategyASignalSchedulerJob.execute();
+                } catch (error) {
+                    console.error("Failed to evaluate Strategy A signal:", error);
                 }
 
-                // Refresh market price cache: every 30 min, staggered at m%30==15
-                if (utcMinute % 30 === 15) {
-                    try {
-                        await currentContainer.refreshMarketPriceJob.execute();
-                    } catch (error) {
-                        console.error("Failed to refresh market price:", error);
-                    }
+                // 8. Signal level monitoring
+                try {
+                    await currentContainer.signalMonitorJob.execute();
+                } catch (error) {
+                    console.error("Failed to monitor signal levels:", error);
                 }
             })()
         );
