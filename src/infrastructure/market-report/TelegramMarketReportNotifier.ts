@@ -1,6 +1,7 @@
 import { MarketReportData, MarketReportNotifier } from "../../application/jobs/MarketReportSchedulerJob";
 import { TelegramBotClient } from "../telegram/TelegramBotClient";
 import { formatPrice, formatWithCommas } from "../../shared/utils/number";
+import { TelegramFooter } from "../../application/telegram/presentation/TelegramFooter";
 
 export class TelegramMarketReportNotifier implements MarketReportNotifier {
     constructor(private readonly botClient: TelegramBotClient) {}
@@ -76,7 +77,9 @@ export class TelegramMarketReportNotifier implements MarketReportNotifier {
                 `مبلغ:`,
                 `${bubbleSign}${formatPrice(report.bubbleAmount)} تومان`,
                 ``,
-                `🕒 ${report.updatedAt.toLocaleString("fa-IR", { timeZone: "Asia/Tehran" })}`
+                `🕒 ${report.updatedAt.toLocaleString("fa-IR", { timeZone: "Asia/Tehran" })}`,
+                "",
+                TelegramFooter.FOOTER
             ].filter(Boolean).join("\n"),
             parseMode: "HTML"
         });

@@ -7,6 +7,7 @@ import {
 } from "../../application/jobs/GoldPriceAlertSchedulerJob";
 
 import { formatWithCommas } from "../../shared/utils/number";
+import { TelegramFooter } from "../../application/telegram/presentation/TelegramFooter";
 
 export class TelegramGoldPriceAlertNotifier
 implements GoldPriceAlertNotifier {
@@ -36,7 +37,9 @@ implements GoldPriceAlertNotifier {
                 "🌎 انس جهانی:",
                 `${ouncePrice === null ? "ناموجود" : `${formatWithCommas(ouncePrice, 2)} دلار`}`,
                 "",
-                `🕒 بروزرسانی: ${updatedAt.toLocaleString("fa-IR", { timeZone: "Asia/Tehran" })}`
+                `🕒 بروزرسانی: ${updatedAt.toLocaleString("fa-IR", { timeZone: "Asia/Tehran" })}`,
+                "",
+                TelegramFooter.FOOTER
             ].join("\n")
         });
     }

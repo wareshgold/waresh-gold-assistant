@@ -3,6 +3,7 @@ import { GoldBubbleResult } from "../../domain/market/services/GoldBubbleCalcula
 import { TelegramBotClient } from "../telegram/TelegramBotClient";
 import { TelegramNumberFormatter } from "../../application/telegram/presentation/TelegramNumberFormatter";
 import { formatWithCommas } from "../../shared/utils/number";
+import { TelegramFooter } from "../../application/telegram/presentation/TelegramFooter";
 
 export class TelegramBubbleAlertNotifier implements BubbleAlertNotifier {
     private readonly numberFormatter = new TelegramNumberFormatter();
@@ -39,7 +40,9 @@ export class TelegramBubbleAlertNotifier implements BubbleAlertNotifier {
             "",
             `💡 ${alertType === "POSITIVE"
                 ? "قیمت بازار بالاتر از ارزش ذاتی هست — احتیاط کنید!"
-                : "قیمت بازار پایین‌تر از ارزش ذاتی هست — فرصت خرید ممکن باشد."}`
+                : "قیمت بازار پایین‌تر از ارزش ذاتی هست — فرصت خرید ممکن باشد."}`,
+            "",
+            TelegramFooter.FOOTER
         ].join("\n");
 
         try {

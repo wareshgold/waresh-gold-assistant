@@ -1,5 +1,6 @@
 import { TelegramBotClient } from "../telegram/TelegramBotClient";
 import { TelegramNumberFormatter } from "../../application/telegram/presentation/TelegramNumberFormatter";
+import { TelegramFooter } from "../../application/telegram/presentation/TelegramFooter";
 
 export class TelegramPriceTargetAlertNotifier {
     private readonly numberFormatter = new TelegramNumberFormatter();
@@ -29,7 +30,9 @@ export class TelegramPriceTargetAlertNotifier {
             "",
             `📊 اختلاف: ${diff >= 0 ? "+" : ""}${this.numberFormatter.money(diff)} (${diff >= 0 ? "+" : ""}${this.numberFormatter.percentRtl(diffPercent)})`,
             "",
-            "🔔 این هشدار یک‌بار مصرف بود و حذف شد."
+            "🔔 این هشدار یک‌بار مصرف بود و حذف شد.",
+            "",
+            TelegramFooter.FOOTER
         ].join("\n");
 
         try {
