@@ -205,6 +205,7 @@ export function createContainer(env: AppEnv) {
         priceTargetAlertService,
         priceTargetAlertSchedulerJob,
         marketReportService,
-        marketReportSchedulerJob
+        marketReportSchedulerJob,
+        waresh_gold_db: env.waresh_gold_db
     };
 }
