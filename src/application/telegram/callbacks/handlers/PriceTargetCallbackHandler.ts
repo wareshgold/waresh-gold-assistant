@@ -94,7 +94,7 @@ export class PriceTargetCallbackHandler implements TelegramCallbackHandler {
 
         const alertList = alerts.map((alert: any, i: number) => {
             const dirLabel = alert.direction === "ABOVE" ? "⬆️ بالاتر از" : "⬇️ پایین‌تر از";
-            return `${i + 1}. ${dirLabel} ${this.numberFormatter.money(alert.targetPrice)} تومان`;
+            return `${i + 1}. ${dirLabel} ${this.numberFormatter.money(alert.targetPrice)}`;
         }).join("\n");
 
         const cancelButtons = alerts.map((alert: any) => ({

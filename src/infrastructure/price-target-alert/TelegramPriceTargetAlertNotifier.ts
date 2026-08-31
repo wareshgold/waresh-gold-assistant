@@ -17,17 +17,17 @@ export class TelegramPriceTargetAlertNotifier {
         const diff = direction === "ABOVE"
             ? currentPrice - targetPrice
             : targetPrice - currentPrice;
-        const diffPercent = ((diff / targetPrice) * 100).toFixed(2);
+        const diffPercent = (diff / targetPrice) * 100;
 
         const text = [
             `🎯 <b>هشدار رسیدن به قیمت!</b>`,
             "",
             dirLabel,
             "",
-            `${dirEmoji} قیمت هدف: ${this.numberFormatter.money(targetPrice)} تومان`,
-            `💰 قیمت فعلی: ${this.numberFormatter.money(currentPrice)} تومان`,
+            `${dirEmoji} قیمت هدف: ${this.numberFormatter.money(targetPrice)}`,
+            `💰 قیمت فعلی: ${this.numberFormatter.money(currentPrice)}`,
             "",
-            `📊 اختلاف: ${diff >= 0 ? "+" : ""}${this.numberFormatter.money(diff)} تومان (${diffPercent}٪)`,
+            `📊 اختلاف: ${diff >= 0 ? "+" : ""}${this.numberFormatter.money(diff)} (${diff >= 0 ? "+" : ""}${this.numberFormatter.percent(diffPercent)})`,
             "",
             "🔔 این هشدار یک‌بار مصرف بود و حذف شد."
         ].join("\n");

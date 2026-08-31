@@ -2,6 +2,7 @@ import { TelegramCommandContext } from "../TelegramCommandContext";
 import { TelegramCommandHandler } from "../TelegramCommandHandler";
 import { BubbleAlertService } from "../../../bubble-alert/BubbleAlertService";
 import { TelegramDateTimeFormatter } from "../../presentation/TelegramDateTimeFormatter";
+import { formatPrice } from "../../../../shared/utils/number";
 
 export class BubbleAlertCommandHandler implements TelegramCommandHandler {
     private readonly dateTimeFormatter = new TelegramDateTimeFormatter();
@@ -30,7 +31,7 @@ export class BubbleAlertCommandHandler implements TelegramCommandHandler {
         if (actionId === "alerts.bubble") {
             const current = await this.bubbleAlertService.get(userId);
             const currentText = current?.enabled
-                ? `فعال • آستانه ${current.thresholdPercent}%`
+                ? `فعال • آستانه ${formatPrice(current.thresholdPercent)}٪`
                 : "غیرفعال";
 
             return {
@@ -84,7 +85,7 @@ export class BubbleAlertCommandHandler implements TelegramCommandHandler {
                     content: [
                         "🫧 <b>هشدار حباب طلا فعال شد</b>",
                         "",
-                        `📊 آستانه: ${threshold}%`,
+                        `📊 آستانه: ${formatPrice(threshold)}٪`,
                         `🕐 ${now}`,
                         "",
                         "وقتی حباب طلا بیشتر از این مقدار بشه، بهتون اعلان میدیم."
@@ -96,7 +97,7 @@ export class BubbleAlertCommandHandler implements TelegramCommandHandler {
         // Default: show settings
         const current = await this.bubbleAlertService.get(userId);
         const currentText = current?.enabled
-            ? `فعال • آستانه ${current.thresholdPercent}%`
+            ? `فعال • آستانه ${formatPrice(current.thresholdPercent)}٪`
             : "غیرفعال";
 
         return {

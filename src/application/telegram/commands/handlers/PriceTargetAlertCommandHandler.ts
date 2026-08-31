@@ -100,7 +100,7 @@ export class PriceTargetAlertCommandHandler implements TelegramCommandHandler {
                     "✅ <b>هشدار ثبت شد!</b>",
                     "",
                     `📍 هشدار: قیمت طلا ${dirLabel}`,
-                    `💰 قیمت هدف: ${this.numberFormatter.money(targetPrice)} تومان`,
+                    `💰 قیمت هدف: ${this.numberFormatter.money(targetPrice)}`,
                     "",
                     "وقتی قیمت به هدف رسید، بهتون اعلان میدیم.",
                     "🔔 اعلان یک‌بار مصرفه — بعد از اعلان حذف میشه.",
@@ -142,7 +142,7 @@ export class PriceTargetAlertCommandHandler implements TelegramCommandHandler {
 
         const alertList = alerts.map((alert, i) => {
             const dirLabel = alert.direction === "ABOVE" ? "⬆️ بالاتر از" : "⬇️ پایین‌تر از";
-            return `${i + 1}. ${dirLabel} ${this.numberFormatter.money(alert.targetPrice)} تومان`;
+            return `${i + 1}. ${dirLabel} ${this.numberFormatter.money(alert.targetPrice)}`;
         }).join("\n");
 
         const cancelButtons = alerts.map(alert => ({

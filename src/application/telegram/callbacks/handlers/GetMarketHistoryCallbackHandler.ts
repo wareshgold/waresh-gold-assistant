@@ -190,7 +190,7 @@ implements TelegramCallbackHandler {
 
                         `🌎 انس: ${
                             item.ouncePrice !== null
-                                ? this.numberFormatter.format(item.ouncePrice)
+                                ? this.numberFormatter.format(item.ouncePrice, 2)
                                 : "نامشخص"
                         } دلار\n` +
 

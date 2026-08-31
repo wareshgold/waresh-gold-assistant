@@ -1,18 +1,19 @@
-import { formatWithCommas } from "../../../shared/utils/number";
+import { faNumber, formatGrouped } from "../../../shared/utils/number";
 
+/**
+ * Single authority for numeric rendering in Telegram outputs.
+ *
+ * Display text (money, weight, percent) uses Persian digits with
+ * ٬ / ٫ separators. Values wrapped in <code> stay in Latin digits
+ * with "," separator so users can copy them into calculators.
+ */
 export class TelegramNumberFormatter {
     format(value: number, maximumFractionDigits = 0): string {
-        if (maximumFractionDigits > 0) {
-            const fixed = value.toFixed(maximumFractionDigits);
-            const [intPart, decPart] = fixed.split(".");
-            const formatted = formatWithCommas(Number(intPart));
-            return `${formatted}.${decPart}`;
-        }
-        return formatWithCommas(Math.round(value));
+        return faNumber(value, maximumFractionDigits);
     }
 
     formatCode(value: number): string {
-        return `<code>${this.format(value)}</code>`;
+        return `<code>${formatGrouped(Math.round(value))}</code>`;
     }
 
     copyValue(value: number): string {
@@ -20,11 +21,11 @@ export class TelegramNumberFormatter {
     }
 
     money(value: number): string {
-        return `${this.formatCode(value)} تومان`;
+        return `${this.format(value)} تومان`;
     }
 
     compactMoney(value: number): string {
-        return `${this.formatCode(value)} تومان`;
+        return `${this.format(value)} تومان`;
     }
 
     weight(value: number): string {

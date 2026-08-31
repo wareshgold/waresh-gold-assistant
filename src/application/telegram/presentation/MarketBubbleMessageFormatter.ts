@@ -25,7 +25,7 @@ export class MarketBubbleMessageFormatter {
             `قیمت ذاتی      ${this.numberFormatter.money(bubble.intrinsicPrice)}`,
             "",
             `${bubbleLabel}`,
-            `مبلغ حباب      ${amountSign}${this.numberFormatter.money(bubble.bubbleAmount)} تومان`,
+            `مبلغ حباب      ${amountSign}${this.numberFormatter.money(bubble.bubbleAmount)}`,
             `درصد حباب       ${percentSign}${this.numberFormatter.percent(bubble.bubblePercentage)}`,
             ""
         ]);

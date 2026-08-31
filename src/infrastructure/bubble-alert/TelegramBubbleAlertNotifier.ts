@@ -2,6 +2,7 @@ import { BubbleAlertNotifier } from "../../application/jobs/BubbleAlertScheduler
 import { GoldBubbleResult } from "../../domain/market/services/GoldBubbleCalculator";
 import { TelegramBotClient } from "../telegram/TelegramBotClient";
 import { TelegramNumberFormatter } from "../../application/telegram/presentation/TelegramNumberFormatter";
+import { faNumber } from "../../shared/utils/number";
 
 export class TelegramBubbleAlertNotifier implements BubbleAlertNotifier {
     private readonly numberFormatter = new TelegramNumberFormatter();
@@ -24,7 +25,7 @@ export class TelegramBubbleAlertNotifier implements BubbleAlertNotifier {
             "",
             `⚠️ حباب طلا از آستانه رد شد!`,
             "",
-            `🫧 حباب: <b>${bubblePercent >= 0 ? "+" : ""}${bubblePercent.toFixed(2)}٪</b> (${label})`,
+            `🫧 حباب: <b>${bubblePercent >= 0 ? "+" : ""}${faNumber(bubblePercent, 2)}٪</b> (${label})`,
             `💰 قیمت بازار: ${this.numberFormatter.money(bubbleResult.marketPrice)}`,
             `💎 قیمت ذاتی: ${this.numberFormatter.money(bubbleResult.intrinsicPrice)}`,
             `📊 مبلغ حباب: ${this.numberFormatter.money(bubbleResult.bubbleAmount)}`,

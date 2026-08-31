@@ -189,10 +189,10 @@ implements TelegramCommandHandler {
                         `🌎 انس: ${
                             item.ouncePrice !== null
 
-                                ? this.numberFormatter.format(item.ouncePrice)
+                                ? this.numberFormatter.format(item.ouncePrice, 2)
 
                                 : "ناموجود"
-                        }`,
+                        } دلار`,
 
                         `🕒 ${item.capturedAt.toLocaleString("fa-IR")}`
 

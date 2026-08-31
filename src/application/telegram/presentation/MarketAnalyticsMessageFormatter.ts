@@ -15,13 +15,14 @@ export class MarketAnalyticsMessageFormatter {
         const range = analytics.getPriceRange();
 
         const scoreLabel = this.translateScore(score.value);
+        const changeSign = change.value >= 0 ? "+" : "-";
 
         return this.builder.build([
             "📊 <b>تحلیل بازار</b>",
             "",
-            `وضعیت بازار:    ${score.formatted} (${scoreLabel})`,
+            `وضعیت بازار:    ${score.emoji} ${this.numberFormatter.format(score.value)} از ۱۰۰ (${scoreLabel})`,
             `روند:            ${trend.emoji} ${this.translateTrend(trend.type)}`,
-            `تغییر:           ${change.formatted}`,
+            `تغییر:           ${changeSign}${this.numberFormatter.percent(Math.abs(change.value))}`,
             `نوسان:           ${this.numberFormatter.percent(analytics.getVolatility())}`,
             "",
             `💰 قیمت فعلی:    ${this.numberFormatter.money(analytics.getCurrentPrice())}`,
