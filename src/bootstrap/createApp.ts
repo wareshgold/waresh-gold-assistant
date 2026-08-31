@@ -736,6 +736,135 @@ export function createApp(
         }
     );
 
+    // Strategy A debug endpoint - shows last candles and rejection reasons
+    app.get(
+        "/api/v1/strategy-a/debug",
+        async(c) => {
+            try {
+                const db = (container as any).waresh_gold_db;
+                if (!db) {
+                    return c.json({ error: "D1 database not available" });
+                }
+
+                // Get last 30 ticks (enough for M5 candles)
+                const ticks = await db.prepare(
+                    "SELECT price, direction, timestamp FROM ounce_ticks ORDER BY timestamp DESC LIMIT 30"
+                ).all();
+
+                if (!ticks.results || ticks.results.length === 0) {
+                    return c.json({ error: "No ticks found" });
+                }
+
+                // Build candles (M5)
+                const bucketMs = 5 * 60 * 1000;
+                const buckets = new Map();
+                const sortedTicks = ticks.results.reverse().map((t: any) => ({
+                    price: Number(t.price),
+                    direction: t.direction,
+                    timestamp: Number(t.timestamp)
+                }));
+
+                for (const tick of sortedTicks) {
+                    const bucketStart = Math.floor(tick.timestamp / bucketMs) * bucketMs;
+                    if (!buckets.has(bucketStart)) buckets.set(bucketStart, []);
+                    buckets.get(bucketStart).push(tick);
+                }
+
+                const candles = [...buckets.entries()]
+                    .sort((a, b) => a[0] - b[0])
+                    .map(([ts, bucket]) => {
+                        const prices = bucket.map((t: any) => t.price);
+                        return {
+                            timestamp: new Date(ts).toISOString(),
+                            open: prices[0],
+                            high: Math.max(...prices),
+                            low: Math.min(...prices),
+                            close: prices[prices.length - 1],
+                            volume: prices.length
+                        };
+                    });
+
+                // Analyze last 5 candles for spike conditions
+                const last5 = candles.slice(-5);
+                const avgRange = last5.reduce((s, c) => s + (c.high - c.low), 0) / last5.length;
+
+                const analysis = last5.map((candle, i) => {
+                    const range = candle.high - candle.low;
+                    const body = Math.abs(candle.close - candle.open);
+                    const bodyRatio = range > 0 ? body / range : 0;
+                    const isBullish = candle.close > candle.open;
+                    const isStrong = bodyRatio >= 0.65;
+
+                    // Check gap with previous candle
+                    let gapInfo = "N/A (first candle)";
+                    if (i > 0) {
+                        const prev = last5[i - 1];
+                        const buyGap = candle.low - prev.high;
+                        const sellGap = prev.low - candle.high;
+                        gapInfo = `BUY gap: ${buyGap.toFixed(2)}, SELL gap: ${sellGap.toFixed(2)}`;
+                    }
+
+                    return {
+                        time: candle.timestamp,
+                        O: candle.open,
+                        H: candle.high,
+                        L: candle.low,
+                        C: candle.close,
+                        range: range.toFixed(2),
+                        body: body.toFixed(2),
+                        bodyRatio: (bodyRatio * 100).toFixed(1) + "%",
+                        direction: isBullish ? "BULL" : "BEAR",
+                        isStrong: isStrong ? "✅" : `❌ (${(bodyRatio * 100).toFixed(1)}% < 65%)`,
+                        gap: i > 0 ? gapInfo : "N/A"
+                    };
+                });
+
+                // Check why spike fails
+                const reasons = [];
+
+                // Check body ratio
+                const strongCandles = last5.filter(c => {
+                    const range = c.high - c.low;
+                    const body = Math.abs(c.close - c.open);
+                    return range > 0 && (body / range) >= 0.65;
+                });
+                if (strongCandles.length < 3) {
+                    reasons.push(`Only ${strongCandles.length}/5 candles have 65%+ body ratio`);
+                }
+
+                // Check gaps
+                let hasAnyGap = false;
+                for (let i = 1; i < last5.length; i++) {
+                    const prev = last5[i - 1];
+                    const curr = last5[i];
+                    if (curr.low > prev.high || curr.high < prev.low) {
+                        hasAnyGap = true;
+                        break;
+                    }
+                }
+                if (!hasAnyGap) {
+                    reasons.push("No P-Gap found between consecutive candles (all overlap)");
+                }
+
+                return c.json({
+                    candleCount: candles.length,
+                    avgRange: avgRange.toFixed(2),
+                    last5Candles: analysis,
+                    rejectionReasons: reasons,
+                    config: {
+                        minBodyRatio: "65%",
+                        minSpikeCandles: 3,
+                        minSpikeMovePercent: "0.12%",
+                        minGapRatio: "15% of avg range",
+                        pGapRequired: "YES (mandatory)"
+                    }
+                });
+            } catch (error) {
+                return c.json({ error: String(error) }, 500);
+            }
+        }
+    );
+
     app.post(
         "/telegram/webhook",
 
