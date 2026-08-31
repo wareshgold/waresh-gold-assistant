@@ -33,9 +33,10 @@ function candle(
 }
 
 describe("StrategyASignalEngine", () => {
-    it("emits BUY immediately when the second leg completes", () => {
+    it("returns HOLD when outside Opportunity Window", () => {
         const engine = new StrategyASignalEngine();
 
+        // Create candles that would normally trigger a signal
         const candles = [
             candle(99, 100, 98.8, 99.8, 0),
             candle(99.8, 100.4, 99.7, 100.2, 1),
@@ -63,15 +64,51 @@ describe("StrategyASignalEngine", () => {
             }
         );
 
-        expect(signal.signalType).toBe("BUY");
-        expect(signal.entryPrice).toBe(101.2);
-        expect(signal.stopLoss).toBe(signal.spikeData!.startPrice);
-        expect(signal.takeProfit).toBeGreaterThan(signal.entryPrice);
-        expect(signal.riskReward).toBe(1);
-        expect(signal.spikeData).toBeDefined();
-        expect(signal.twoLegData).toBeDefined();
-        expect(signal.levelData).toBeDefined();
-        expect(signal.levelData!.triggerCandleIndex).toBe(7);
-        expect(signal.generatedAt.getTime()).toBe(7);
+        // New engine requires Market Regime, Sweep, BOS, Displacement, FVG, Retest
+        // So simple spike + twoLeg is not enough anymore
+        expect(signal.signalType).toBe("HOLD");
+        expect(signal.reason).toContain("Opportunity Window");
+    });
+
+    it("returns HOLD when no candles provided", () => {
+        const engine = new StrategyASignalEngine();
+
+        const signal = engine.evaluate(
+            {
+                symbol: "XAUUSD",
+                timeframe: "M5",
+                fetchedAt: new Date(),
+                candles: []
+            },
+            DEFAULT_StrategyA_CONFIGURATION
+        );
+
+        expect(signal.signalType).toBe("HOLD");
+        expect(signal.reason).toContain("داده کندل وجود ندارد");
+    });
+
+    it("returns HOLD when spike not detected", () => {
+        const engine = new StrategyASignalEngine();
+
+        // Create flat candles with no spike
+        // Use PRE_NY_BUILD window: 16:30-17:30 Tehran = 13:00-14:00 UTC
+        // Last candle must be within the window, so start early enough
+        const baseTime = Date.UTC(2026, 7, 31, 13, 5, 0);  // 13:05 UTC = 16:35 Tehran
+        const candles = Array.from({ length: 10 }, (_, i) =>
+            candle(100, 100.5, 99.5, 100.2, baseTime + i * 300000)  // M5 intervals
+        );
+
+        const signal = engine.evaluate(
+            {
+                symbol: "XAUUSD",
+                timeframe: "M5",
+                fetchedAt: new Date(baseTime),
+                candles
+            },
+            DEFAULT_StrategyA_CONFIGURATION
+        );
+
+        expect(signal.signalType).toBe("HOLD");
+        expect(signal.reason).toContain("Spike");
     });
 });
