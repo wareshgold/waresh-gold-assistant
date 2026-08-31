@@ -138,7 +138,7 @@ export class GetGoldPriceUseCase {
     private formatOunce(
         value: number
     ): string {
-        return formatWithCommas(value);
+        return formatWithCommas(value, 2);
     }
 
 
