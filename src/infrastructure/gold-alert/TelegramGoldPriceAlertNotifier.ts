@@ -25,11 +25,16 @@ implements GoldPriceAlertNotifier {
             chatId: userId,
             parseMode: "HTML",
             text: [
-                "🔔 اعلان قیمت طلا",
+                "🔔 <b>اعلان قیمت طلا</b>",
                 "",
-                `🟡 طلای ۱۸ عیار: ${formatWithCommas(gold18Price)} تومان`,
-                `💵 دلار: ${formatWithCommas(currencyPrice)} تومان`,
-                `🌎 انس جهانی: ${ouncePrice === null ? "ناموجود" : `${formatWithCommas(ouncePrice, 2)} دلار`}`,
+                "🟡 طلای ۱۸ عیار:",
+                `${formatWithCommas(gold18Price)} تومان`,
+                "",
+                "💵 دلار:",
+                `${formatWithCommas(currencyPrice)} تومان`,
+                "",
+                "🌎 انس جهانی:",
+                `${ouncePrice === null ? "ناموجود" : `${formatWithCommas(ouncePrice, 2)} دلار`}`,
                 "",
                 `🕒 بروزرسانی: ${updatedAt.toLocaleString("fa-IR", { timeZone: "Asia/Tehran" })}`
             ].join("\n")
