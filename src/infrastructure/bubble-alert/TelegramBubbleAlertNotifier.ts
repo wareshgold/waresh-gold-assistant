@@ -25,7 +25,7 @@ export class TelegramBubbleAlertNotifier implements BubbleAlertNotifier {
             "",
             `⚠️ حباب طلا از آستانه رد شد!`,
             "",
-            `🫧 حباب: <b>${bubblePercent >= 0 ? "+" : ""}${formatWithCommas(bubblePercent)}٪</b> (${label})`,
+            `🫧 حباب: <b>${bubblePercent >= 0 ? "+" : ""}${formatWithCommas(bubblePercent, 2)}٪</b> (${label})`,
             `💰 قیمت بازار: ${this.numberFormatter.money(bubbleResult.marketPrice)}`,
             `💎 قیمت ذاتی: ${this.numberFormatter.money(bubbleResult.intrinsicPrice)}`,
             `📊 مبلغ حباب: ${this.numberFormatter.money(bubbleResult.bubbleAmount)}`,

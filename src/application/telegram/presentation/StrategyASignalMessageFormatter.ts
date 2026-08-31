@@ -21,7 +21,7 @@ export class StrategyASignalMessageFormatter {
                 `حد ضرر ${this.copyablePrice(signal.stopLoss)}`,
                 `هدف    ${this.copyablePrice(signal.takeProfit)}`,
                 "",
-                `ریسک به بازده: 1:${formatWithCommas(signal.riskReward)}`,
+                `ریسک به بازده: 1:${formatWithCommas(signal.riskReward, 1)}`,
                 `اطمینان: ${formatWithCommas(Math.round(signal.confidence * 100))}٪`,
             );
         } else {

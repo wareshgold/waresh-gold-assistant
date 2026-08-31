@@ -27,12 +27,12 @@ export class TelegramMarketReportNotifier implements MarketReportNotifier {
                 "",
                 `🪙 طلای ۱۸ عیار: ${formatPrice(report.gold18Price)} تومان`,
                 `💵 دلار: ${formatPrice(report.currencyPrice)} تومان`,
-                `🌎 انس جهانی: ${report.ouncePrice === null ? "ناموجود" : `${formatWithCommas(report.ouncePrice)} دلار`}`,
+                `🌎 انس جهانی: ${report.ouncePrice === null ? "ناموجود" : `${formatWithCommas(report.ouncePrice, 2)} دلار`}`,
                 "",
                 `📈 تغییر بازار: ${change}`,
                 `🧭 روند بازار: ${trend}`,
                 `🫧 حباب طلا: ${bubbleSign}${formatPrice(report.bubbleAmount)} تومان`,
-                `📊 حباب: ${formatWithCommas(report.bubblePercentage)}٪`,
+                `📊 حباب: ${formatWithCommas(report.bubblePercentage, 2)}٪`,
                 "",
                 `🕒 بروزرسانی: ${report.updatedAt.toLocaleString("fa-IR", { timeZone: "Asia/Tehran" })}`
             ].join("\n")

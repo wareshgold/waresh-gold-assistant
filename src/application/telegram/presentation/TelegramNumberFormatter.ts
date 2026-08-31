@@ -6,10 +6,7 @@ import { formatWithCommas, formatGrouped } from "../../../shared/utils/number";
  */
 export class TelegramNumberFormatter {
     format(value: number, maximumFractionDigits = 0): string {
-        if (maximumFractionDigits > 0) {
-            return formatWithCommas(parseFloat(value.toFixed(maximumFractionDigits)));
-        }
-        return formatWithCommas(value);
+        return formatWithCommas(value, maximumFractionDigits);
     }
 
     formatCode(value: number): string {

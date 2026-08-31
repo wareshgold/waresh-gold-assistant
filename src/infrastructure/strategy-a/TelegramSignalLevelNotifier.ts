@@ -113,7 +113,7 @@ export class TelegramSignalLevelNotifier
                 ? `هدف   <code>${formatGrouped(signal.takeProfit)}</code>`
                 : `حد ضرر <code>${formatGrouped(signal.stopLoss)}</code>`,
             "",
-            `${pnlIcon} سود/ضرر: <code>${pnlSign}${formatGrouped(pnlAbs, 2)}</code> (${pnlSign}${formatWithCommas(Math.abs(pnlPercent))}٪)`,
+            `${pnlIcon} سود/ضرر: <code>${pnlSign}${formatGrouped(pnlAbs, 2)}</code> (${pnlSign}${formatWithCommas(Math.abs(pnlPercent), 2)}٪)`,
             "",
             `🕐 ${now}`
         ].join("\n");

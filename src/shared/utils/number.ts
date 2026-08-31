@@ -9,19 +9,16 @@ export function roundMoney(
  * Works reliably in all runtimes (Node, CF Workers, browsers)
  * without depending on Intl.NumberFormat.
  */
-export function formatWithCommas(value: number): string {
-  const [intPart, decPart] = Math.abs(Math.round(value))
-    .toString()
-    .split('.');
+export function formatWithCommas(value: number, decimals = 0): string {
+  const fixed = value.toFixed(decimals);
+  const [intPart, decPart] = fixed.split('.');
 
   const withCommas = intPart
     .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-  const result = decPart
+  return decPart
     ? `${withCommas}.${decPart}`
     : withCommas;
-
-  return value < 0 ? `-${result}` : result;
 }
 
 /**
