@@ -71,7 +71,7 @@ export class TelegramResponseFormatter {
 
             text.replace(
 
-                /<\/?(?:b|strong|i|em|u|ins|s|strike|del|code|pre|blockquote)(?:\s[^>]*)?>/gi,
+                /<\/?(?:b|strong|i|em|u|ins|s|strike|del|code|pre|blockquote|a)(?:\s[^>]*)?>/gi,
 
                 match => {
 
