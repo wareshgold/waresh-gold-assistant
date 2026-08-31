@@ -36,6 +36,7 @@ export class TelegramCommandRouter {
         "📈 تحلیل بازار": "/analytics",
         "📊 تحلیل بازار": "/analytics",
         "📊 تحلیل و تغییرات بازار": "/reports",
+        "📊 گزارش بازار": "/reports",
         "📊 نمودار قیمت": "/analytics",
         "🔔 اعلان قیمت خودکار": "/alerts",
         "🫧 هشدار حباب طلا": "/bubble-alert",
