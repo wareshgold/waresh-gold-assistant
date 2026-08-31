@@ -7,7 +7,7 @@ from "../../domain/market/providers/MarketPriceProvider";
 import { GetCurrentMarketPriceUseCase }
 from "../market/GetCurrentMarketPriceUseCase";
 
-import { formatPrice } from "../../shared/utils/number";;
+import { faNumber, formatPrice } from "../../shared/utils/number";
 
 
 
@@ -29,8 +29,6 @@ export class GetGoldPriceUseCase {
 
 
 
-
-
     async execute():
 
         Promise<ApplicationResponse> {
@@ -40,12 +38,8 @@ export class GetGoldPriceUseCase {
         const price =
 
             "execute" in this.priceSource
-
                 ? await this.priceSource.execute()
-
                 : await this.priceSource.getCurrentPrice();
-
-
 
 
 
@@ -53,12 +47,9 @@ export class GetGoldPriceUseCase {
 
         return {
 
-
             type:
 
                 "text",
-
-
 
 
 
@@ -72,21 +63,21 @@ export class GetGoldPriceUseCase {
 
                     "💰 طلای ۱۸ عیار:",
 
-                    `${this.formatNumber(price.gold18Price)} تومان`,
+                    `${this.formatToman(price.gold18Price)} تومان`,
 
                     "",
 
                     "💵 دلار:",
 
-                    `${this.formatNumber(price.currencyPrice)} تومان`,
+                    `${this.formatToman(price.currencyPrice)} تومان`,
 
                     "",
 
-                    "🌎 اونس جهانی:",
+                    "🌎 انس جهانی:",
 
                     `${
                         price.ouncePrice !== null
-                            ? this.formatNumber(price.ouncePrice)
+                            ? this.formatOunce(price.ouncePrice)
                             : "ناموجود"
                     } دلار`,
 
@@ -109,7 +100,6 @@ export class GetGoldPriceUseCase {
 
 
             metadata: {
-
 
                 gold18Price:
 
@@ -139,10 +129,16 @@ export class GetGoldPriceUseCase {
 
     }
 
-    private formatNumber(
+    private formatToman(
         value: number
     ): string {
         return formatPrice(value);
+    }
+
+    private formatOunce(
+        value: number
+    ): string {
+        return faNumber(value, 2);
     }
 
 

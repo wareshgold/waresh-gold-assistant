@@ -22,6 +22,11 @@ import {
     CalculateGoldPriceUseCase
 } from "../../gold/CalculateGoldPriceUseCase";
 
+import {
+    faNumber,
+    formatWithCommas
+} from "../../../shared/utils/number";
+
 
 
 export interface AILocalToolRouteResult {
@@ -1770,24 +1775,7 @@ export class AILocalToolRouter {
 
 
 
-        return new Intl.NumberFormat(
-
-            "en-US",
-
-            {
-
-                maximumFractionDigits:
-
-                    2
-
-            }
-
-        ).format(
-
-            value
-
-        );
-
+        return formatWithCommas(value);
 
     }
 
