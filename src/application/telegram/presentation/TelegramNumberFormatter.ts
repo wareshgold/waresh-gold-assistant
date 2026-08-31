@@ -32,4 +32,8 @@ export class TelegramNumberFormatter {
     percent(value: number): string {
         return `${this.format(value, 2)}٪`;
     }
+
+    percentRtl(value: number): string {
+        return `${this.format(value, 2)}٪ \u200F`;
+    }
 }

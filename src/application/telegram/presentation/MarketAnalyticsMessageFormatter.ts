@@ -22,8 +22,8 @@ export class MarketAnalyticsMessageFormatter {
             "",
             `وضعیت بازار:    ${score.emoji} ${this.numberFormatter.format(score.value)} از ۱۰۰ (${scoreLabel})`,
             `روند:            ${trend.emoji} ${this.translateTrend(trend.type)}`,
-            `تغییر:           ${changeSign}${this.numberFormatter.percent(Math.abs(change.value))}`,
-            `نوسان:           ${this.numberFormatter.percent(analytics.getVolatility())}`,
+            `تغییر:           ${changeSign}${this.numberFormatter.percentRtl(Math.abs(change.value))}`,
+            `نوسان:           ${this.numberFormatter.percentRtl(analytics.getVolatility())}`,
             "",
             `💰 قیمت فعلی:    ${this.numberFormatter.money(analytics.getCurrentPrice())}`,
             `📈 بازه ۲۴ ساعت: ${this.numberFormatter.money(range.min)} تا ${this.numberFormatter.money(range.max)}`

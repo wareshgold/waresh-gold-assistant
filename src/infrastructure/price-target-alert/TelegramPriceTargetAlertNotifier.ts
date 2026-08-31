@@ -27,7 +27,7 @@ export class TelegramPriceTargetAlertNotifier {
             `${dirEmoji} قیمت هدف: ${this.numberFormatter.money(targetPrice)}`,
             `💰 قیمت فعلی: ${this.numberFormatter.money(currentPrice)}`,
             "",
-            `📊 اختلاف: ${diff >= 0 ? "+" : ""}${this.numberFormatter.money(diff)} (${diff >= 0 ? "+" : ""}${this.numberFormatter.percent(diffPercent)})`,
+            `📊 اختلاف: ${diff >= 0 ? "+" : ""}${this.numberFormatter.money(diff)} (${diff >= 0 ? "+" : ""}${this.numberFormatter.percentRtl(diffPercent)})`,
             "",
             "🔔 این هشدار یک‌بار مصرف بود و حذف شد."
         ].join("\n");

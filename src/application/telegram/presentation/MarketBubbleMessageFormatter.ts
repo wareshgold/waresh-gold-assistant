@@ -33,7 +33,7 @@ export class MarketBubbleMessageFormatter {
             `${amountSign}${this.numberFormatter.money(bubble.bubbleAmount)}`,
             "",
             "📈 درصد حباب:",
-            `${percentSign}${this.numberFormatter.percent(bubble.bubblePercentage)}`
+            `${percentSign}${this.numberFormatter.percentRtl(bubble.bubblePercentage)}`
         ]);
     }
 }
