@@ -190,24 +190,9 @@ implements TelegramCommandExecutor {
             );
         }
 
-        // Check AI session for non-command, non-menu text messages
-        if (
-            !text.startsWith("/") &&
-            this.aiSessionManager
-        ) {
-            const aiResponse =
-                await this.aiSessionManager.execute(
-                    normalizedMessage.userId,
-                    text
-                );
-
-            if (aiResponse) {
-                return aiResponse;
-            }
-        }
-
-
-        // Check active conversation (calculator workflow, etc.)
+        // Check active conversation FIRST (calculator workflow, price-target, etc.)
+        // This must come before AI session check, otherwise the AI intercepts
+        // numeric input that belongs to an active conversation.
         if (
             !text.startsWith("/") &&
             this.conversationManager
@@ -223,6 +208,22 @@ implements TelegramCommandExecutor {
 
             if (activeConversation) {
                 return activeConversation;
+            }
+        }
+
+        // Check AI session for non-command, non-menu text messages
+        if (
+            !text.startsWith("/") &&
+            this.aiSessionManager
+        ) {
+            const aiResponse =
+                await this.aiSessionManager.execute(
+                    normalizedMessage.userId,
+                    text
+                );
+
+            if (aiResponse) {
+                return aiResponse;
             }
         }        if (
             text.startsWith("/")
