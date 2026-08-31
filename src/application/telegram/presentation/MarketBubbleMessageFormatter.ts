@@ -21,12 +21,19 @@ export class MarketBubbleMessageFormatter {
         return this.builder.build([
             "🫧 <b>حباب طلای ۱۸ عیار</b>",
             "",
-            `💰 قیمت بازار: ${this.numberFormatter.money(bubble.marketPrice)} تومان`,
-            `💎 قیمت ذاتی: ${this.numberFormatter.money(bubble.intrinsicPrice)} تومان`,
+            "💰 قیمت بازار:",
+            `${this.numberFormatter.money(bubble.marketPrice)}`,
+            "",
+            "💎 قیمت ذاتی:",
+            `${this.numberFormatter.money(bubble.intrinsicPrice)}`,
             "",
             `${bubbleLabel}`,
-            `📊 مبلغ: ${amountSign}${this.numberFormatter.money(bubble.bubbleAmount)} تومان`,
-            `📈 درصد: ${percentSign}${this.numberFormatter.percent(bubble.bubblePercentage)}`
+            "",
+            "📊 مبلغ حباب:",
+            `${amountSign}${this.numberFormatter.money(bubble.bubbleAmount)}`,
+            "",
+            "📈 درصد حباب:",
+            `${percentSign}${this.numberFormatter.percent(bubble.bubblePercentage)}`
         ]);
     }
 }
