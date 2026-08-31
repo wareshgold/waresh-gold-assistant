@@ -215,7 +215,7 @@ implements TelegramCallbackHandler {
             type:
 
                 "document",            content:
-                "📊 نمودار قیمت طلای ۱۸ عیار\n\n🤖 <a href=\"https://t.me/wareshgold_bot\">ربات</a>  •  <a href=\"https://wareshgold.ir\">وب‌سایت</a>  •  <a href=\"https://t.me/wareshgold\">کانال</a>",
+                "📊 نمودار قیمت طلای ۱۸ عیار\n\n🤖 <a href=\"https://t.me/Wareshgoldbot\">ربات</a>  •  <a href=\"https://wareshgold.ir\">وب‌سایت</a>  •  <a href=\"https://t.me/wareshgold\">کانال</a>",
 
 
 
@@ -231,7 +231,7 @@ implements TelegramCallbackHandler {
                 fileName:
 
                     "gold-chart.svg",                    caption:
-                    "📊 نمودار قیمت طلای ۱۸ عیار\n🤖 <a href=\"https://t.me/wareshgold_bot\">ربات</a>  •  <a href=\"https://wareshgold.ir\">وب‌سایت</a>  •  <a href=\"https://t.me/wareshgold\">کانال</a>"
+                    "📊 نمودار قیمت طلای ۱۸ عیار\n🤖 <a href=\"https://t.me/Wareshgoldbot\">ربات</a>  •  <a href=\"https://wareshgold.ir\">وب‌سایت</a>  •  <a href=\"https://t.me/wareshgold\">کانال</a>"
 
 
             },

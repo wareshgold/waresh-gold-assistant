@@ -430,7 +430,7 @@ ${this.numberFormatter.money(
 
 ━━━━━━━━━━━━━━
 
-🤖 <a href="https://t.me/wareshgold_bot">ربات</a>  •  <a href="https://wareshgold.ir">وب‌سایت</a>  •  <a href="https://t.me/wareshgold">کانال</a>
+🤖 <a href="https://t.me/Wareshgoldbot">ربات</a>  •  <a href="https://wareshgold.ir">وب‌سایت</a>  •  <a href="https://t.me/wareshgold">کانال</a>
 
 `.trim()
 

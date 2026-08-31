@@ -33,7 +33,7 @@ export class AboutCommandHandler implements TelegramCommandHandler {
             "🤖 دستیار هوشمند هوش مصنوعی",
             "⭐ سیگنال استراتژی A (VIP)",
             "",
-            "bot: @wareshgold_bot",
+            "bot: @Wareshgoldbot",
             "web: wareshgold.ir",
             "",
             `🕐 ${now}`
