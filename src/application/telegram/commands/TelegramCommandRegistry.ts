@@ -114,7 +114,7 @@ export class TelegramCommandRegistry {
         }
 
         if (priceTargetAlertService) {
-            handlers.push(new PriceTargetAlertCommandHandler(priceTargetAlertService));
+            handlers.push(new PriceTargetAlertCommandHandler(priceTargetAlertService, sessionStore));
         }
 
         if (marketReportService) {
