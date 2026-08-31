@@ -1,5 +1,5 @@
 import { StrategyASignal } from "../../../domain/strategy-a/entities/StrategyASignal";
-import { faNumber, formatGrouped } from "../../../shared/utils/number";
+import { formatWithCommas, formatGrouped } from "../../../shared/utils/number";
 
 export class StrategyASignalMessageFormatter {
     format(signal: StrategyASignal): string {
@@ -21,8 +21,8 @@ export class StrategyASignalMessageFormatter {
                 `حد ضرر ${this.copyablePrice(signal.stopLoss)}`,
                 `هدف    ${this.copyablePrice(signal.takeProfit)}`,
                 "",
-                `ریسک به بازده: ۱:${faNumber(signal.riskReward, 2)}`,
-                `اطمینان: ${faNumber(Math.round(signal.confidence * 100))}٪`,
+                `ریسک به بازده: 1:${formatWithCommas(signal.riskReward)}`,
+                `اطمینان: ${formatWithCommas(Math.round(signal.confidence * 100))}٪`,
             );
         } else {
             lines.push(

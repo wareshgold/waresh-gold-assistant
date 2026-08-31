@@ -3,7 +3,7 @@ import {
 } from "../../../domain/sp2l/entities/SP2LSignal";
 
 import {
-    faNumber
+    formatWithCommas
 } from "../../../shared/utils/number";
 
 export class SP2LSignalMessageFormatter {
@@ -78,6 +78,6 @@ ${signal.reason}
         value:number
     ):string {
 
-        return faNumber(value, 2);
+        return formatWithCommas(value);
     }
 }

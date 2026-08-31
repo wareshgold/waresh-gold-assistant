@@ -6,7 +6,7 @@ import {
     GoldPriceAlertNotifier
 } from "../../application/jobs/GoldPriceAlertSchedulerJob";
 
-import { faNumber } from "../../shared/utils/number";
+import { formatWithCommas } from "../../shared/utils/number";
 
 export class TelegramGoldPriceAlertNotifier
 implements GoldPriceAlertNotifier {
@@ -27,9 +27,9 @@ implements GoldPriceAlertNotifier {
             text: [
                 "🔔 اعلان قیمت طلا",
                 "",
-                `🟡 طلای ۱۸ عیار: ${faNumber(gold18Price)} تومان`,
-                `💵 دلار: ${faNumber(currencyPrice)} تومان`,
-                `🌎 اونس جهانی: ${ouncePrice === null ? "ناموجود" : `${faNumber(ouncePrice, 2)} دلار`}`,
+                `🟡 طلای ۱۸ عیار: ${formatWithCommas(gold18Price)} تومان`,
+                `💵 دلار: ${formatWithCommas(currencyPrice)} تومان`,
+                `🌎 انس جهانی: ${ouncePrice === null ? "ناموجود" : `${formatWithCommas(ouncePrice)} دلار`}`,
                 "",
                 `🕒 بروزرسانی: ${updatedAt.toLocaleString("fa-IR", { timeZone: "Asia/Tehran" })}`
             ].join("\n")

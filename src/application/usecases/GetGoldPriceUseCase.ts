@@ -7,7 +7,7 @@ from "../../domain/market/providers/MarketPriceProvider";
 import { GetCurrentMarketPriceUseCase }
 from "../market/GetCurrentMarketPriceUseCase";
 
-import { faNumber, formatPrice } from "../../shared/utils/number";
+import { formatPrice, formatWithCommas } from "../../shared/utils/number";
 
 
 
@@ -138,7 +138,7 @@ export class GetGoldPriceUseCase {
     private formatOunce(
         value: number
     ): string {
-        return faNumber(value, 2);
+        return formatWithCommas(value);
     }
 
 

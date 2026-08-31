@@ -23,7 +23,6 @@ import {
 } from "../../gold/CalculateGoldPriceUseCase";
 
 import {
-    faNumber,
     formatWithCommas
 } from "../../../shared/utils/number";
 

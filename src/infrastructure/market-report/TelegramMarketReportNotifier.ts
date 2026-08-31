@@ -1,6 +1,6 @@
 import { MarketReportData, MarketReportNotifier } from "../../application/jobs/MarketReportSchedulerJob";
 import { TelegramBotClient } from "../telegram/TelegramBotClient";
-import { formatPrice, faNumber } from "../../shared/utils/number";
+import { formatPrice, formatWithCommas } from "../../shared/utils/number";
 
 export class TelegramMarketReportNotifier implements MarketReportNotifier {
     constructor(private readonly botClient: TelegramBotClient) {}
@@ -27,12 +27,12 @@ export class TelegramMarketReportNotifier implements MarketReportNotifier {
                 "",
                 `🪙 طلای ۱۸ عیار: ${formatPrice(report.gold18Price)} تومان`,
                 `💵 دلار: ${formatPrice(report.currencyPrice)} تومان`,
-                `🌎 اونس جهانی: ${report.ouncePrice === null ? "ناموجود" : `${faNumber(report.ouncePrice, 2)} دلار`}`,
+                `🌎 انس جهانی: ${report.ouncePrice === null ? "ناموجود" : `${formatWithCommas(report.ouncePrice)} دلار`}`,
                 "",
                 `📈 تغییر بازار: ${change}`,
                 `🧭 روند بازار: ${trend}`,
                 `🫧 حباب طلا: ${bubbleSign}${formatPrice(report.bubbleAmount)} تومان`,
-                `📊 حباب: ${faNumber(report.bubblePercentage, 2)}٪`,
+                `📊 حباب: ${formatWithCommas(report.bubblePercentage)}٪`,
                 "",
                 `🕒 بروزرسانی: ${report.updatedAt.toLocaleString("fa-IR", { timeZone: "Asia/Tehran" })}`
             ].join("\n")

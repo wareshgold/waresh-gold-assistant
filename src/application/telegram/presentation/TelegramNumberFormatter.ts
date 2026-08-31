@@ -1,15 +1,15 @@
-import { faNumber, formatGrouped } from "../../../shared/utils/number";
+import { formatWithCommas, formatGrouped } from "../../../shared/utils/number";
 
 /**
  * Single authority for numeric rendering in Telegram outputs.
- *
- * Display text (money, weight, percent) uses Persian digits with
- * ٬ / ٫ separators. Values wrapped in <code> stay in Latin digits
- * with "," separator so users can copy them into calculators.
+ * Uses English commas (en-US) for consistent display and copy behavior.
  */
 export class TelegramNumberFormatter {
     format(value: number, maximumFractionDigits = 0): string {
-        return faNumber(value, maximumFractionDigits);
+        if (maximumFractionDigits > 0) {
+            return formatWithCommas(parseFloat(value.toFixed(maximumFractionDigits)));
+        }
+        return formatWithCommas(value);
     }
 
     formatCode(value: number): string {

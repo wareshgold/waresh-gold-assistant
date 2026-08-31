@@ -15,7 +15,7 @@ import {
 } from "../../application/telegram/presentation/TelegramDateTimeFormatter";
 
 import {
-    faNumber,
+    formatWithCommas,
     formatGrouped
 } from "../../shared/utils/number";
 
@@ -113,7 +113,7 @@ export class TelegramSignalLevelNotifier
                 ? `هدف   <code>${formatGrouped(signal.takeProfit)}</code>`
                 : `حد ضرر <code>${formatGrouped(signal.stopLoss)}</code>`,
             "",
-            `${pnlIcon} سود/ضرر: <code>${pnlSign}${formatGrouped(pnlAbs, 2)}</code> (${pnlSign}${faNumber(Math.abs(pnlPercent), 2)}٪)`,
+            `${pnlIcon} سود/ضرر: <code>${pnlSign}${formatGrouped(pnlAbs, 2)}</code> (${pnlSign}${formatWithCommas(Math.abs(pnlPercent))}٪)`,
             "",
             `🕐 ${now}`
         ].join("\n");
