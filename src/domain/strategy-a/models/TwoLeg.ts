@@ -11,4 +11,5 @@ export interface TwoLeg {
     retracementPercent: number;
     completionPrice: number;
     completionIndex: number;
+    confirmationIndex: number;
 }
