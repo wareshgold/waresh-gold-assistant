@@ -1,4 +1,5 @@
 import { TelegramDateFormatter } from "./TelegramDateFormatter";
+import { TelegramFooter } from "./TelegramFooter";
 
 export class TelegramMessageBuilder {
     private readonly dateFormatter: TelegramDateFormatter;
@@ -19,7 +20,7 @@ export class TelegramMessageBuilder {
         return [
             ...cleanSections,
             "",
-            `🕐 ${timestamp}  •  Waresh Gold`
+            TelegramFooter.FOOTER_WITH_TIMESTAMP(timestamp)
         ].join("\n");
     }
 }

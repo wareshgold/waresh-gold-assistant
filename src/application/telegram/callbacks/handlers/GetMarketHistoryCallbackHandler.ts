@@ -31,13 +31,11 @@ from "../../presentation/TelegramDateFormatter";
 import {
     TelegramNavigationService
 }
-from "../../navigation/TelegramNavigationService";
-
-
-import {
+from "../../navigation/TelegramNavigationService";import {
     TelegramNumberFormatter
-}
-from "../../presentation/TelegramNumberFormatter";
+} from "../../presentation/TelegramNumberFormatter";
+
+import { TelegramFooter } from "../../presentation/TelegramFooter";
 
 
 
@@ -223,11 +221,8 @@ implements TelegramCallbackHandler {
             content:
 
 
-                "📜 تاریخچه قیمت بازار\n\n" +
-
-                lines.join("\n") +
-
-                "\n\n🟡 Waresh Gold",
+                "📜 تاریخچه قیمت بازار\n\n" +                lines.join("\n") +
+                TelegramFooter.FOOTER,
 
 
 

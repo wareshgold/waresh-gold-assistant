@@ -1,5 +1,6 @@
 import { CalculateGoldFormulaOutput } from "../../gold/CalculateGoldFormulaUseCase";
 import { TelegramNumberFormatter } from "./TelegramNumberFormatter";
+import { TelegramFooter } from "./TelegramFooter";
 
 export class GoldCalculationResultFormatter {
     constructor(private readonly formatter: TelegramNumberFormatter) {}
@@ -16,7 +17,7 @@ export class GoldCalculationResultFormatter {
             `💹 سود        ${this.formatter.money(result.profit)}`,
             `🧾 مالیات     ${this.formatter.money(result.tax)}`,
             "",
-            "🟡 Waresh Gold"
+            TelegramFooter.FOOTER
         ].join("\n");
     }
 }
