@@ -14,7 +14,6 @@ export class MarketAnalyticsMessageFormatter {
         const trend = analytics.getTrend();
         const range = analytics.getPriceRange();
 
-        const scoreLabel = this.translateScore(score.value);
         const changeSign = change.value >= 0 ? "+" : "-";
 
         return this.builder.build([
@@ -25,9 +24,6 @@ export class MarketAnalyticsMessageFormatter {
             "",
             "📈 بازه ۲۴ ساعت:",
             `${this.numberFormatter.format(range.min)} تا ${this.numberFormatter.format(range.max)} تومان`,
-            "",
-            `🟢 وضعیت بازار:`,
-            `${score.emoji} ${scoreLabel}`,
             "",
             "🧭 روند بازار:",
             `${trend.emoji} ${this.translateTrend(trend.type)}`,
@@ -55,11 +51,5 @@ export class MarketAnalyticsMessageFormatter {
         }
     }
 
-    private translateScore(score: number): string {
-        if (score >= 80) return "عالی";
-        if (score >= 60) return "خوب";
-        if (score >= 40) return "متوسط";
-        if (score >= 20) return "ضعیف";
-        return "بحرانی";
-    }
+
 }

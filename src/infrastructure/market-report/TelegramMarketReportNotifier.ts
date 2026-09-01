@@ -30,18 +30,6 @@ export class TelegramMarketReportNotifier implements MarketReportNotifier {
             bubbleStatus = "🟢 حباب عادی";
         }
 
-        // Determine market health
-        let marketHealth = "";
-        if (report.marketTrend === "UP") {
-            marketHealth = "🟢 بازار مثبت";
-        } else if (report.marketTrend === "DOWN") {
-            marketHealth = "🔴 بازار منفی";
-        } else if (report.marketTrend === "VOLATILE") {
-            marketHealth = "🟡 بازار پرنوسان";
-        } else {
-            marketHealth = "⚪ بازار باثبات";
-        }
-
         await this.botClient.sendMessage({
             chatId: userId,
             text: [
@@ -58,9 +46,6 @@ export class TelegramMarketReportNotifier implements MarketReportNotifier {
                 ``,
                 `📈 <b>وضعیت بازار</b>`,
                 ``,
-                `${marketHealth}`,
-                ``,
-                `روند:`,
                 `${trend}`,
                 ``,
                 `تغییر:`,
