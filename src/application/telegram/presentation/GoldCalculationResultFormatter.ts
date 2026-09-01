@@ -16,7 +16,6 @@ export class GoldCalculationResultFormatter {
             `🛠 اجرت       ${this.formatter.money(result.labor)}`,
             `💹 سود        ${this.formatter.money(result.profit)}`,
             `🧾 مالیات     ${this.formatter.money(result.tax)}`,
-            "",
             TelegramFooter.FOOTER
         ].join("\n");
     }

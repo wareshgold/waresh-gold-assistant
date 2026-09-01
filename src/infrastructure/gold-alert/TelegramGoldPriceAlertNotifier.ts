@@ -38,7 +38,6 @@ implements GoldPriceAlertNotifier {
                 `${ouncePrice === null ? "ناموجود" : `${formatWithCommas(ouncePrice, 2)} دلار`}`,
                 "",
                 `🕒 بروزرسانی: ${updatedAt.toLocaleString("fa-IR", { timeZone: "Asia/Tehran" })}`,
-                "",
                 TelegramFooter.FOOTER
             ].join("\n")
         });

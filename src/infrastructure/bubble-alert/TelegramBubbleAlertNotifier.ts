@@ -38,10 +38,9 @@ export class TelegramBubbleAlertNotifier implements BubbleAlertNotifier {
             "📊 مبلغ حباب:",
             this.numberFormatter.money(bubbleResult.bubbleAmount),
             "",
-            `💡 ${alertType === "POSITIVE"
+            `            💡 ${alertType === "POSITIVE"
                 ? "قیمت بازار بالاتر از ارزش ذاتی هست — احتیاط کنید!"
                 : "قیمت بازار پایین‌تر از ارزش ذاتی هست — فرصت خرید ممکن باشد."}`,
-            "",
             TelegramFooter.FOOTER
         ].join("\n");
 

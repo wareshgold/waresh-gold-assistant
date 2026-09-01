@@ -19,7 +19,6 @@ export class TelegramMessageBuilder {
 
         return [
             ...cleanSections,
-            "",
             TelegramFooter.FOOTER_WITH_TIMESTAMP(timestamp)
         ].join("\n");
     }

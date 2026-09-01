@@ -78,7 +78,6 @@ export class TelegramMarketReportNotifier implements MarketReportNotifier {
                 `${bubbleSign}${formatPrice(report.bubbleAmount)} تومان`,
                 ``,
                 `🕒 ${report.updatedAt.toLocaleString("fa-IR", { timeZone: "Asia/Tehran" })}`,
-                "",
                 TelegramFooter.FOOTER
             ].filter(Boolean).join("\n"),
             parseMode: "HTML"
