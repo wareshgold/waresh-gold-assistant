@@ -19,6 +19,7 @@
                 </div>
                 <nav class="nav">
                     <a href="#categories" class="nav-link">محصولات</a>
+                    <a href="#tools" class="nav-link">ابزار طلا</a>
                     <a href="#gifts" class="nav-link">هدیه</a>
                     <a href="https://t.me/Wareshgoldbot" class="nav-link nav-btn" target="_blank">🤖 ربات تلگرام</a>
                 </nav>
@@ -33,7 +34,7 @@
             <p class="hero-subtitle">محصولات دست‌ساز با طراحی مینیمال و کیفیت بالا</p>
             <div class="hero-actions">
                 <a href="#categories" class="btn btn-primary">مشاهده محصولات</a>
-                <a href="https://t.me/Wareshgoldbot" class="btn btn-secondary" target="_blank">شروع با ربات</a>
+                <a href="#tools" class="btn btn-secondary">قیمت و محاسبه طلا</a>
             </div>
         </div>
     </section>
@@ -51,6 +52,90 @@
                 <a href="#products" class="category-card" data-category="گردنبند" onclick="filterProducts('گردنبند')"><div class="category-icon">📿</div><h3 class="category-name">گردنبند</h3><p class="category-desc">گردنبند‌های خاص</p></a>
                 <a href="#products" class="category-card" data-category="دستبند" onclick="filterProducts('دستبند')"><div class="category-icon">⌚</div><h3 class="category-name">دستبند</h3><p class="category-desc">دستبند‌های مدرن</p></a>
                 <a href="#products" class="category-card" data-category="مردانه" onclick="filterProducts('مردانه')"><div class="category-icon">👔</div><h3 class="category-name">مردانه</h3><p class="category-desc">محصولات مردانه</p></a>
+            </div>
+        </div>
+    </section>
+
+    <section id="tools" class="section tools-section">
+        <div class="container">
+            <h2 class="section-title">🧮 ابزارهای هوشمند طلا</h2>
+            <p class="section-subtitle">قیمت لحظه‌ای، حباب بازار و محاسبه قیمت خرید — مستقیماً داخل سایت وارش گلد</p>
+
+            <div class="market-grid">
+                <div class="market-card">
+                    <div class="market-icon">🟡</div>
+                    <div>
+                        <div class="market-label">طلای ۱۸ عیار</div>
+                        <div class="market-value" id="gold18-price">در حال دریافت…</div>
+                    </div>
+                </div>
+                <div class="market-card">
+                    <div class="market-icon">💵</div>
+                    <div>
+                        <div class="market-label">دلار تهران</div>
+                        <div class="market-value" id="currency-price">در حال دریافت…</div>
+                    </div>
+                </div>
+                <div class="market-card">
+                    <div class="market-icon">🌎</div>
+                    <div>
+                        <div class="market-label">انس جهانی</div>
+                        <div class="market-value" id="ounce-price">در حال دریافت…</div>
+                    </div>
+                </div>
+                <div class="market-card market-card-bubble">
+                    <div class="market-icon">🫧</div>
+                    <div>
+                        <div class="market-label">حباب طلا</div>
+                        <div class="market-value" id="bubble-price">در حال دریافت…</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="calculator-card">
+                <div class="calculator-heading">
+                    <span class="calculator-icon">🧮</span>
+                    <div>
+                        <h3>محاسبه‌گر قیمت طلا</h3>
+                        <p>قیمت نهایی خرید را با فرمول طلافروشی محاسبه کن</p>
+                    </div>
+                </div>
+
+                <form id="gold-calculator-form" class="calculator-grid">
+                    <label>
+                        <span>وزن طلا (گرم) *</span>
+                        <input id="calc-weight" type="text" inputmode="decimal" placeholder="مثلاً 1.5" required>
+                    </label>
+                    <label>
+                        <span>قیمت هر گرم طلای ۱۸ عیار (تومان) *</span>
+                        <input id="calc-gold-price" type="text" inputmode="decimal" placeholder="قیمت لحظه‌ای" required>
+                    </label>
+                    <label>
+                        <span>اجرت (%) *</span>
+                        <input id="calc-labor" type="text" inputmode="decimal" placeholder="مثلاً 7" required>
+                    </label>
+                    <label>
+                        <span>سود (%) *</span>
+                        <input id="calc-profit" type="text" inputmode="decimal" placeholder="مثلاً 0" required>
+                    </label>
+                    <label>
+                        <span>مالیات (%) *</span>
+                        <input id="calc-tax" type="text" inputmode="decimal" placeholder="مثلاً 9" required>
+                    </label>
+                    <label>
+                        <span>تخفیف (%)</span>
+                        <input id="calc-discount" type="text" inputmode="decimal" placeholder="اختیاری">
+                    </label>
+                    <div class="calculator-actions">
+                        <button id="calc-submit" type="submit" class="btn btn-primary">محاسبه قیمت</button>
+                        <span id="calc-status" class="calculator-status"></span>
+                    </div>
+                </form>
+
+                <div id="calc-result" class="calculator-result" hidden>
+                    <span>قیمت نهایی</span>
+                    <strong id="calc-total"></strong>
+                </div>
             </div>
         </div>
     </section>
