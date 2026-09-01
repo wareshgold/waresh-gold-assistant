@@ -20,18 +20,14 @@ export class TelegramMarketReportNotifier implements MarketReportNotifier {
         const change = report.marketChange ?? "نامشخص";
         const bubbleSign = report.bubbleAmount > 0 ? "+" : "";
         
-        // Determine bubble status emoji
+        // Determine bubble status emoji (±3% = normal, beyond = abnormal)
         let bubbleStatus = "";
         if (report.bubblePercentage > 3) {
-            bubbleStatus = "🔴 حباب بالا";
-        } else if (report.bubblePercentage > 1) {
-            bubbleStatus = "🟡 حباب متوسط";
-        } else if (report.bubblePercentage > -1) {
-            bubbleStatus = "🟢 حباب عادی";
-        } else if (report.bubblePercentage > -3) {
-            bubbleStatus = "🟢 حباب منفی (ارزان)";
+            bubbleStatus = "🔴 حباب غیرعادی (گران‌تر از ذاتی)";
+        } else if (report.bubblePercentage < -3) {
+            bubbleStatus = "🔴 حباب غیرعادی (ارزان‌تر از ذاتی)";
         } else {
-            bubbleStatus = "🟢 حباب منفی (ارزان‌تر از ذاتی)";
+            bubbleStatus = "🟢 حباب عادی";
         }
 
         // Determine market health

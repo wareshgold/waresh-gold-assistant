@@ -28,7 +28,7 @@ export class TrendDirection {
     return new TrendDirection(TrendDirectionType.VOLATILE);
   }
 
-  static fromPercentageChange(percentage: number, volatilityThreshold: number = 2): TrendDirection {
+  static fromPercentageChange(percentage: number, volatilityThreshold: number = 0.5): TrendDirection {
     if (Math.abs(percentage) <= volatilityThreshold) {
       return TrendDirection.stable();
     }

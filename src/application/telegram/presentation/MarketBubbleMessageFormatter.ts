@@ -9,11 +9,12 @@ export class MarketBubbleMessageFormatter {
     ) {}
 
     format(bubble: GoldBubbleResult): string {
-        const bubbleLabel = bubble.bubbleAmount > 0
-            ? "🔴 حباب مثبت (گران‌تر از ارزش ذاتی)"
-            : bubble.bubbleAmount < 0
-                ? "🟢 حباب منفی (ارزان‌تر از ارزش ذاتی)"
-                : "⚪ بدون حباب";
+        // ±3% = normal, beyond = abnormal
+        const bubbleLabel = bubble.bubblePercentage > 3
+            ? "🔴 حباب غیرعادی (گران‌تر از ذاتی)"
+            : bubble.bubblePercentage < -3
+                ? "🔴 حباب غیرعادی (ارزان‌تر از ذاتی)"
+                : "🟢 حباب عادی";
 
         const amountSign = bubble.bubbleAmount > 0 ? "+" : "";
         const percentSign = bubble.bubblePercentage > 0 ? "+" : "";
