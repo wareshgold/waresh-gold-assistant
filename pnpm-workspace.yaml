@@ -4,6 +4,7 @@ packages:
 allowBuilds:
   esbuild: true
   sharp: true
+  unrs-resolver: true
   workerd: true
 minimumReleaseAgeExclude:
   - miniflare@4.20260714.0
