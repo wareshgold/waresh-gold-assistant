@@ -1,0 +1,3 @@
+/tools /#tools 302
+/tools/ /#tools 302
+/tools/* /#tools 302
