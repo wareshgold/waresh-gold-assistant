@@ -7,6 +7,14 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
+  "routes": [
+    {
+      "pattern": "wareshgold.ir/tools"
+    },
+    {
+      "pattern": "wareshgold.ir/tools/*"
+    }
+  ],
   "observability": {
     "enabled": true
   }
