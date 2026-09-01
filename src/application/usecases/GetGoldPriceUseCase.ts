@@ -8,6 +8,8 @@ import { GetCurrentMarketPriceUseCase }
 from "../market/GetCurrentMarketPriceUseCase";
 
 import { formatPrice, formatWithCommas } from "../../shared/utils/number";
+import { TelegramFooter } from "../telegram/presentation/TelegramFooter";
+import { TelegramDateFormatter } from "../telegram/presentation/TelegramDateFormatter";
 
 
 
@@ -81,17 +83,16 @@ export class GetGoldPriceUseCase {
                             : "ناموجود"
                     } دلار`,
 
-                    "",
-
-                    "🕒 بروزرسانی:",
-
+                    "",                    "🕒 بروزرسانی:",
                     price.updatedAt.toLocaleString(
                         "fa-IR",
                         {
                             timeZone:
                                 "Asia/Tehran"
                         }
-                    )
+                    ),
+                    "",
+                    TelegramFooter.FOOTER
 
                 ].join("\n"),
 
