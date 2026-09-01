@@ -9,8 +9,8 @@
   },
   "routes": [
     {
-      "pattern": "wareshgold.ir",
-      "custom_domain": true
+      "pattern": "wareshgold.ir/tools/*",
+      "custom_domain": false
     }
   ],
   "observability": {
