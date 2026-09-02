@@ -120,7 +120,7 @@ a {
 }
 
 .waresh-cinematic-scene {
-  min-height: 165svh;
+  min-height: 155svh;
   overflow: clip;
 }
 
@@ -150,22 +150,40 @@ a {
   pointer-events: none;
 }
 
+/* The hero is an opening scene, not a full extra page. */
 #top.waresh-cinematic-scene {
-  min-height: 180svh;
+  min-height: 128svh;
 }
 
 #top.waresh-cinematic-scene > .waresh-sticky-frame {
-  padding-block: 90px;
+  padding-block: 76px;
+}
+
+/* Keep the real Waresh mark visible inside the hero as well as in the header. */
+#top.waresh-cinematic-scene::before {
+  position: absolute;
+  top: 28px;
+  right: max(16px, calc((100% - 1180px) / 2));
+  z-index: 8;
+  width: 154px;
+  height: 58px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  background: rgba(20, 39, 31, 0.5) url("/waresh-gold-logo-white.jpg") center / contain no-repeat;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.18);
+  content: "";
+  backdrop-filter: blur(8px);
+  pointer-events: none;
 }
 
 #top .waresh-scene-image {
   transform:
-    translate3d(0, calc(var(--waresh-cinematic-progress) * -34px), 0)
-    scale(calc(1.03 + var(--waresh-cinematic-progress) * 0.045));
+    translate3d(0, calc(var(--waresh-cinematic-progress) * -26px), 0)
+    scale(calc(1.03 + var(--waresh-cinematic-progress) * 0.035));
 }
 
 #top .waresh-hero-copy {
-  transform: translate3d(0, calc(var(--waresh-cinematic-progress) * -24px), 0);
+  transform: translate3d(0, calc(var(--waresh-cinematic-progress) * -20px), 0);
 }
 
 #top .waresh-hero-copy .waresh-reveal.is-visible {
@@ -173,15 +191,15 @@ a {
 }
 
 #top .waresh-sticky-frame > .waresh-reveal:last-child {
-  transform: translate3d(0, calc(var(--waresh-cinematic-progress) * 18px), 0);
+  transform: translate3d(0, calc(var(--waresh-cinematic-progress) * 14px), 0);
 }
 
 #gifts.waresh-cinematic-scene {
-  min-height: 155svh;
+  min-height: 150svh;
 }
 
 #prices.waresh-cinematic-scene {
-  min-height: 160svh;
+  min-height: 155svh;
 }
 
 #prices.waresh-cinematic-scene > .waresh-sticky-frame {
@@ -373,11 +391,19 @@ a {
 
 @media (max-width: 767px) {
   .waresh-cinematic-scene {
-    min-height: 140svh;
+    min-height: 135svh;
   }
 
   #top.waresh-cinematic-scene {
-    min-height: 150svh;
+    min-height: 128svh;
+  }
+
+  #top.waresh-cinematic-scene::before {
+    top: 18px;
+    right: 16px;
+    width: 118px;
+    height: 48px;
+    border-radius: 14px;
   }
 
   #gifts.waresh-cinematic-scene,
