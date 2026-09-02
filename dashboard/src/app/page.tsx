@@ -1,5 +1,6 @@
 import { getGoldBubble, getMarketPrice, TELEGRAM_BOT_URL } from "@/lib/api";
 import GoldCalculator from "@/components/GoldCalculator";
+import MobileMenu from "@/components/MobileMenu";
 import ProductCatalog from "@/components/ProductCatalog";
 import ScrollExperience from "@/components/ScrollExperience";
 import { formatToman } from "@/data/products";
@@ -23,7 +24,7 @@ export default async function Home() {
         <header className="sticky top-0 z-50 border-b border-[#dedfd7]/80 bg-[#faf8f2]/90 backdrop-blur-xl"><div className="waresh-container flex h-[76px] items-center justify-between gap-5">
           <a href="#top" className="shrink-0" aria-label="وارش گلد"><img src="/waresh-gold-logo-green.png" alt="وارش گلد" className="h-12 w-auto object-contain" /></a>
           <nav className="hidden items-center gap-8 text-sm font-semibold text-[#62685e] lg:flex"><a className="waresh-link" href="#products">محصولات</a><a className="waresh-link" href="#gifts">هدیه</a><a className="waresh-link" href="#prices">قیمت امروز</a><a className="waresh-link" href="/tools">ابزار طلا</a><a className="waresh-link" href="/about">درباره وارش</a></nav>
-          <div className="flex items-center gap-2"><a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer" className="hidden rounded-full bg-[#b28b4c] px-5 py-2.5 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#9d773d] sm:inline-flex">گفتگو در تلگرام</a><a href="#products" className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#d8d2c7] bg-white/60 text-lg text-[#3d443b] transition hover:bg-white lg:hidden" aria-label="منوی سایت">☰</a></div>
+          <div className="flex items-center gap-2"><a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer" className="hidden rounded-full bg-[#b28b4c] px-5 py-2.5 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#9d773d] sm:inline-flex">گفتگو در تلگرام</a><MobileMenu /></div>
         </div></header>
 
         <section id="top" className="waresh-scroll-scene relative min-h-[620px] overflow-hidden bg-[#182b24] text-white sm:min-h-[660px]">
