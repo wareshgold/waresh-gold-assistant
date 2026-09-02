@@ -5,24 +5,17 @@ interface PriceCardProps {
   description?: string;
 }
 
-export default function PriceCard({
-  title,
-  value,
-  icon,
-  description,
-}: PriceCardProps) {
+export default function PriceCard({ title, value, icon, description }: PriceCardProps) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur transition hover:border-amber-400/40 hover:bg-white/[0.07]">
-      <div className="flex items-center justify-between gap-3">
+    <article className="group bg-[#fffdf9] p-7 transition hover:bg-[#fbf7ef] sm:p-8">
+      <div className="flex items-start justify-between gap-5">
         <div>
-          <p className="text-sm text-stone-400">{title}</p>
-          <p className="mt-3 text-2xl font-bold text-stone-50">{value}</p>
+          <p className="text-sm font-medium text-[#766f66]">{title}</p>
+          <p className="mt-4 text-2xl font-extrabold tracking-tight text-[#29251f] sm:text-3xl">{value}</p>
         </div>
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-amber-400/20 bg-amber-400/10 text-2xl">
-          {icon}
-        </div>
+        <span className="text-sm font-bold tracking-widest text-[#b08a45] transition group-hover:scale-105">{icon}</span>
       </div>
-      {description && <p className="mt-4 text-sm text-stone-500">{description}</p>}
-    </div>
+      {description && <p className="mt-5 text-xs text-[#9a9187]">{description}</p>}
+    </article>
   );
 }
