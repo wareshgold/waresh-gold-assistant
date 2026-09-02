@@ -155,7 +155,6 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
                     <span>سود {product.profitPercent}٪</span>
                     <span>تخفیف {formatToman(pricing.discountAmount)}</span>
                   </div>
-                  <p className="mt-3 text-[11px] font-semibold text-[#77786f]">{product.shippingNote}</p>
                 </div>
               </div>
             </article>
