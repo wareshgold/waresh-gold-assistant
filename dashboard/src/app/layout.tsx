@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import InstallPrompt from "@/components/InstallPrompt";
 import "./globals.css";
 import "./website-polish.css";
+import "./mobile-scale.css";
 
 export const metadata: Metadata = {
   title: "وارش گلد | فروشگاه طلا و جواهر",
