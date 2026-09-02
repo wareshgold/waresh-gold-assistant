@@ -8,7 +8,7 @@ export default function AboutPage() {
     <main className="min-h-screen overflow-hidden bg-[#f5f1e9] text-[#292b26]">
       <header className="border-b border-[#dedfd7] bg-[#faf8f2]/95">
         <div className="waresh-container flex h-20 items-center justify-between gap-5">
-          <a href="/" aria-label="بازگشت به خانه"><img src="/tools/waresh-gold-logo-green.png" alt="وارش گلد" className="h-12 w-auto" /></a>
+          <a href="/" aria-label="بازگشت به خانه"><img src="/waresh-gold-logo-green.png" alt="وارش گلد" className="h-12 w-auto" /></a>
           <nav className="flex items-center gap-6 text-sm font-semibold text-[#646a61]"><a href="/">فروشگاه</a><a href="/tools">ابزار طلا</a><a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer">تلگرام</a></nav>
         </div>
       </header>
