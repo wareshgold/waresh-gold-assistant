@@ -20,6 +20,7 @@ export type ProductPriceBand = (typeof priceBands)[number]["value"];
 
 type ProductCatalogProps = {
   initialPriceBand?: ProductPriceBand | "all";
+  liveGoldPrice?: number;
 };
 
 const giftPriceBands: Record<string, string> = {
@@ -28,7 +29,29 @@ const giftPriceBands: Record<string, string> = {
   "۲۰ تا ۳۰ میلیون": "20-30",
 };
 
-export default function ProductCatalog({ initialPriceBand = "all" }: ProductCatalogProps) {
+function calculateProductPrice(product: (typeof PRODUCTS)[number], liveGoldPrice: number) {
+  const goldValue = product.weight * liveGoldPrice;
+  const laborAmount = goldValue * (product.laborPercent / 100);
+  const subtotal = goldValue + laborAmount;
+  const profitAmount = subtotal * (product.profitPercent / 100);
+  const beforeDiscount = subtotal + profitAmount;
+
+  // Customer-facing prices are rounded down to the nearest 100,000 toman.
+  // The difference is treated as an explicit discount.
+  const finalPrice = Math.floor(beforeDiscount / 100_000) * 100_000;
+  const discountAmount = Math.max(0, beforeDiscount - finalPrice);
+
+  return {
+    goldValue,
+    laborAmount,
+    profitAmount,
+    beforeDiscount,
+    finalPrice,
+    discountAmount,
+  };
+}
+
+export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice }: ProductCatalogProps) {
   const [category, setCategory] = useState<ProductCategory | "all">("all");
   const [priceBand, setPriceBand] = useState<string>(initialPriceBand);
 
@@ -67,13 +90,18 @@ export default function ProductCatalog({ initialPriceBand = "all" }: ProductCata
   }, []);
 
   const products = useMemo(() => {
+    if (!liveGoldPrice || liveGoldPrice <= 0) return [];
+
     const band = priceBands.find((item) => item.value === priceBand);
-    return PRODUCTS.filter((product) => {
+    return PRODUCTS.map((product) => ({
+      product,
+      pricing: calculateProductPrice(product, liveGoldPrice),
+    })).filter(({ product, pricing }) => {
       const categoryMatch = category === "all" || product.category === category;
-      const priceMatch = !band || (product.price >= band.min && product.price <= band.max);
+      const priceMatch = !band || (pricing.finalPrice >= band.min && pricing.finalPrice <= band.max);
       return categoryMatch && priceMatch;
     });
-  }, [category, priceBand]);
+  }, [category, priceBand, liveGoldPrice]);
 
   const selectPriceBand = (value: string) => {
     setPriceBand(value);
@@ -101,10 +129,12 @@ export default function ProductCatalog({ initialPriceBand = "all" }: ProductCata
       </div>
 
       {products.length === 0 ? (
-        <div className="border border-dashed border-[#cfc8bb] bg-[#faf7f0] px-6 py-16 text-center text-[#77776f]">محصولی در این محدوده پیدا نشد.</div>
+        <div className="border border-dashed border-[#cfc8bb] bg-[#faf7f0] px-6 py-16 text-center text-[#77776f]">
+          {liveGoldPrice ? "محصولی در این محدوده پیدا نشد." : "قیمت لحظه‌ای طلا برای محاسبه محصولات در حال دریافت است…"}
+        </div>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {products.map((product) => (
+          {products.map(({ product, pricing }) => (
             <article key={product.id} className="group overflow-hidden rounded-[2rem] border border-[#e2ddd3] bg-[#fffdf8] shadow-[0_14px_45px_rgba(55,52,43,0.06)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(55,52,43,0.11)]">
               <div className="relative flex h-64 items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_50%_38%,#f3ead5_0%,#e8e3d8_48%,#d6ddd3_100%)]">
                 <div className="absolute inset-0 bg-[linear-gradient(145deg,rgba(255,255,255,0.5),transparent_45%,rgba(38,57,47,0.08))]" />
@@ -115,9 +145,17 @@ export default function ProductCatalog({ initialPriceBand = "all" }: ProductCata
                 <p className="text-xs font-semibold tracking-[0.12em] text-[#a17c45]">{product.category}</p>
                 <h3 className="mt-2 text-lg font-extrabold text-[#292c27]">{product.name}</h3>
                 <p className="mt-2 text-sm leading-7 text-[#7b7d76]">{product.description}</p>
-                <div className="mt-6 flex items-end justify-between gap-4 border-t border-[#ebe6dc] pt-5">
-                  <div><p className="text-xs text-[#96968d]">وزن</p><p className="mt-1 text-sm font-bold text-[#55584f]">{formatWeight(product.weight)}</p></div>
-                  <p className="text-lg font-extrabold text-[#9b753c]">{formatToman(product.price)}</p>
+                <div className="mt-6 border-t border-[#ebe6dc] pt-5">
+                  <div className="flex items-end justify-between gap-4">
+                    <div><p className="text-xs text-[#96968d]">وزن</p><p className="mt-1 text-sm font-bold text-[#55584f]">{formatWeight(product.weight)}</p></div>
+                    <p className="text-lg font-extrabold text-[#9b753c]">{formatToman(pricing.finalPrice)}</p>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#8b8b82]">
+                    <span>اجرت {product.laborPercent}٪</span>
+                    <span>سود {product.profitPercent}٪</span>
+                    <span>تخفیف {formatToman(pricing.discountAmount)}</span>
+                  </div>
+                  <p className="mt-3 text-[11px] font-semibold text-[#77786f]">{product.shippingNote}</p>
                 </div>
               </div>
             </article>
