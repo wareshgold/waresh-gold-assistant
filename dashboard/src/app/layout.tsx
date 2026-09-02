@@ -8,6 +8,11 @@ export const metadata: Metadata = {
   description:
     "فروشگاه وارش گلد؛ انتخاب طلا و جواهر، قیمت روز بازار و ابزارهای دقیق خرید طلا",
   manifest: "/manifest.webmanifest",
+  icons: {
+    icon: "/waresh-gold-logo-white.jpg",
+    shortcut: "/waresh-gold-logo-white.jpg",
+    apple: "/waresh-gold-logo-white.jpg",
+  },
   appleWebApp: {
     capable: true,
     title: "وارش گلد",
