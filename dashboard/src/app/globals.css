@@ -1,8 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Vazirmatn", ui-sans-serif, system-ui, "Segoe UI", Tahoma, Arial,
-    sans-serif;
+  --font-sans: "Vazirmatn", ui-sans-serif, system-ui, "Segoe UI", Tahoma, Arial, sans-serif;
 }
 
 :root {
@@ -22,9 +21,17 @@ html {
 
 body {
   margin: 0;
-  font-family: var(--font-sans);
+  font-family: "Vazirmatn", ui-sans-serif, system-ui, "Segoe UI", Tahoma, Arial, sans-serif;
   background: var(--waresh-cream);
   color: var(--waresh-ink);
+  font-feature-settings: "ss01" 1, "ss02" 1;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
 }
 
 ::selection {
