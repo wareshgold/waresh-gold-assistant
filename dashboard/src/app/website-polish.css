@@ -25,14 +25,14 @@
 }
 
 #products .grid > article > div:first-child {
-  height: 285px;
+  height: clamp(220px, 24vw, 285px);
   border-radius: 2.35rem 2.35rem 0 0;
   background: radial-gradient(circle at 50% 38%, #f6ecd7 0%, #e9e5dc 48%, #d5ddd3 100%);
 }
 
 #products .grid > article > div:first-child > div.relative {
-  width: 150px;
-  height: 150px;
+  width: clamp(118px, 11vw, 150px);
+  height: clamp(118px, 11vw, 150px);
   border-radius: 42% 58% 55% 45%;
   transform: rotate(-3deg);
   transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1), border-radius 700ms ease;
@@ -44,11 +44,11 @@
 }
 
 #products .grid > article > div:last-child {
-  padding: 1.65rem 1.65rem 1.75rem;
+  padding: clamp(1.15rem, 2vw, 1.65rem) clamp(1.15rem, 2vw, 1.65rem) clamp(1.25rem, 2vw, 1.75rem);
 }
 
 #products .grid > article h3 {
-  font-size: 1.12rem;
+  font-size: clamp(1.02rem, 1.2vw, 1.12rem);
 }
 
 #prices .grid.grid-cols-2 > div {
@@ -69,13 +69,90 @@
   50% { transform: translateX(50%) translateY(5px); opacity: 1; }
 }
 
+/* Optional PWA install prompt. It only appears when the browser says the site is installable. */
+.waresh-install-prompt {
+  position: fixed;
+  z-index: 100;
+  inset-inline: clamp(12px, 3vw, 28px);
+  bottom: max(14px, env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 620px;
+  margin-inline: auto;
+  padding: 14px 16px 14px 14px;
+  border: 1px solid rgba(216, 189, 126, 0.28);
+  border-radius: 22px;
+  background: rgba(38, 59, 49, 0.96);
+  color: #fff;
+  box-shadow: 0 20px 60px rgba(15, 25, 20, 0.28);
+  backdrop-filter: blur(18px);
+  animation: waresh-install-in 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.waresh-install-prompt__copy {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.waresh-install-prompt__copy strong {
+  font-size: 0.95rem;
+}
+
+.waresh-install-prompt__copy span {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.75rem;
+  line-height: 1.7;
+}
+
+.waresh-install-prompt__actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 7px;
+}
+
+.waresh-install-prompt__install {
+  min-width: 64px;
+  min-height: 42px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: #d8bd7e;
+  color: #263b31;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.waresh-install-prompt__dismiss {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  font: inherit;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@keyframes waresh-install-in {
+  from { transform: translateY(18px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
 @media (max-width: 640px) {
   html {
     scroll-padding-top: 72px;
   }
 
   .waresh-container {
-    width: min(100% - 24px, 1180px);
+    width: min(100% - clamp(16px, 6vw, 28px), 1180px);
   }
 
   /* Mobile is intentionally a calmer, native-feeling scroll experience. */
@@ -89,7 +166,7 @@
     position: relative;
     top: auto;
     min-height: auto;
-    width: min(100% - 24px, 1180px);
+    width: min(100% - clamp(16px, 6vw, 28px), 1180px);
     display: block;
   }
 
@@ -99,13 +176,13 @@
 
   /* Header */
   .waresh-site header > .waresh-container {
-    height: 64px;
-    gap: 12px;
+    height: clamp(60px, 15vw, 72px);
+    gap: clamp(10px, 3vw, 16px);
   }
 
   .waresh-site header img {
-    height: 40px;
-    max-width: 145px;
+    height: clamp(36px, 10vw, 46px);
+    max-width: min(42vw, 145px);
   }
 
   .waresh-site header .waresh-container > div:last-child > a {
@@ -122,9 +199,9 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 34px;
-    padding-top: 58px;
-    padding-bottom: 72px;
+    gap: clamp(26px, 7vw, 40px);
+    padding-top: clamp(42px, 11vw, 64px);
+    padding-bottom: clamp(54px, 14vw, 80px);
   }
 
   #top > .waresh-container > div:first-child {
@@ -132,8 +209,8 @@
   }
 
   #top h1 {
-    margin-top: 16px;
-    font-size: clamp(2.45rem, 11vw, 3.35rem);
+    margin-top: clamp(12px, 4vw, 20px);
+    font-size: clamp(2.25rem, 11vw, 3.35rem);
     line-height: 1.3;
   }
 
@@ -142,16 +219,16 @@
   }
 
   #top .waresh-container > div:first-child > div {
-    margin-top: 24px;
+    margin-top: clamp(20px, 6vw, 28px);
   }
 
   #top .waresh-container > div:first-child > div a {
     width: 100%;
-    min-height: 52px;
+    min-height: clamp(48px, 13vw, 54px);
   }
 
   #top .waresh-container > div:first-child > div:last-child {
-    margin-top: 22px;
+    margin-top: clamp(18px, 5vw, 24px);
     justify-content: space-between;
     gap: 10px 18px;
   }
@@ -162,11 +239,11 @@
 
   .waresh-hero-jewel {
     transform: none;
-    border-radius: 2rem;
+    border-radius: clamp(1.5rem, 7vw, 2.25rem);
   }
 
   .waresh-hero-jewel img {
-    height: 320px;
+    height: clamp(260px, 72vw, 380px);
   }
 
   .waresh-hero-jewel:hover,
@@ -180,12 +257,12 @@
 
   /* Product collection */
   #products {
-    padding-top: 68px;
-    padding-bottom: 76px;
+    padding-top: clamp(52px, 13vw, 76px);
+    padding-bottom: clamp(58px, 14vw, 82px);
   }
 
   #products .waresh-reveal.mb-12 {
-    margin-bottom: 32px;
+    margin-bottom: clamp(26px, 7vw, 36px);
   }
 
   #products .waresh-reveal.mb-12 > div:last-child {
@@ -203,17 +280,17 @@
   }
 
   #products .mb-10 {
-    margin-bottom: 28px;
-    gap: 14px;
-    padding-top: 14px;
-    padding-bottom: 14px;
+    margin-bottom: clamp(22px, 6vw, 30px);
+    gap: clamp(10px, 3vw, 16px);
+    padding-top: 12px;
+    padding-bottom: 12px;
   }
 
   #products .mb-10 > div:first-child {
     flex-wrap: nowrap;
     overflow-x: auto;
-    width: calc(100vw - 24px);
-    margin-inline: -6px;
+    width: calc(100vw - clamp(16px, 6vw, 28px));
+    margin-inline: calc(clamp(16px, 6vw, 28px) * -0.5);
     padding: 2px 6px 7px;
     scrollbar-width: none;
   }
@@ -236,12 +313,12 @@
   }
 
   #products .grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: clamp(14px, 4vw, 20px);
   }
 
   #products .grid > article {
-    border-radius: 1.55rem;
+    border-radius: clamp(1.25rem, 5vw, 1.7rem);
   }
 
   #products .grid > article:hover {
@@ -250,22 +327,22 @@
   }
 
   #products .grid > article > div:first-child {
-    height: 220px;
-    border-radius: 1.55rem 1.55rem 0 0;
+    height: clamp(190px, 54vw, 250px);
+    border-radius: clamp(1.25rem, 5vw, 1.7rem) clamp(1.25rem, 5vw, 1.7rem) 0 0;
   }
 
   #products .grid > article > div:first-child > div.relative {
-    width: 118px;
-    height: 118px;
-    font-size: 3.5rem;
+    width: clamp(100px, 29vw, 130px);
+    height: clamp(100px, 29vw, 130px);
+    font-size: clamp(3rem, 10vw, 3.8rem);
   }
 
   #products .grid > article > div:last-child {
-    padding: 20px;
+    padding: clamp(16px, 5vw, 22px);
   }
 
   #products .grid > article h3 {
-    font-size: 1.05rem;
+    font-size: clamp(1rem, 4.2vw, 1.08rem);
   }
 
   #products .grid > article p {
@@ -277,7 +354,7 @@
   }
 
   #products .grid > article > div:last-child > div:last-child > div:first-child > p {
-    font-size: 1.05rem;
+    font-size: clamp(0.96rem, 4vw, 1.08rem);
     white-space: nowrap;
   }
 
@@ -289,13 +366,13 @@
   #gifts > .waresh-container {
     min-height: 0 !important;
     grid-template-columns: 1fr;
-    gap: 34px;
-    padding-top: 72px;
-    padding-bottom: 72px;
+    gap: clamp(26px, 7vw, 40px);
+    padding-top: clamp(54px, 14vw, 80px);
+    padding-bottom: clamp(54px, 14vw, 80px);
   }
 
   #gifts h2 {
-    font-size: clamp(2.65rem, 12vw, 3.5rem);
+    font-size: clamp(2.35rem, 12vw, 3.5rem);
   }
 
   #gifts .waresh-container > div:last-child {
@@ -308,31 +385,31 @@
   }
 
   .waresh-gift-range {
-    min-height: 84px;
-    border-radius: 1.35rem;
-    padding: 17px;
+    min-height: clamp(78px, 20vw, 90px);
+    border-radius: clamp(1.15rem, 5vw, 1.45rem);
+    padding: clamp(15px, 4vw, 19px);
   }
 
   /* Live market */
   #prices {
-    padding-top: 72px;
-    padding-bottom: 72px;
+    padding-top: clamp(54px, 14vw, 80px);
+    padding-bottom: clamp(54px, 14vw, 80px);
   }
 
   #prices .grid {
     grid-template-columns: 1fr;
-    gap: 34px;
+    gap: clamp(26px, 7vw, 38px);
   }
 
   #prices .grid.grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    gap: clamp(8px, 2.5vw, 12px);
   }
 
   #prices .grid.grid-cols-2 > div {
     min-width: 0;
-    padding: 16px;
-    border-radius: 1.2rem;
+    padding: clamp(13px, 4vw, 18px);
+    border-radius: clamp(1rem, 4vw, 1.3rem);
   }
 
   #prices .grid.grid-cols-2 > div:hover {
@@ -342,7 +419,22 @@
 
   #prices .grid.grid-cols-2 > div p:last-child {
     overflow-wrap: anywhere;
-    font-size: 1rem;
+    font-size: clamp(0.88rem, 3.8vw, 1.05rem);
+  }
+
+  .waresh-install-prompt {
+    inset-inline: clamp(10px, 3.5vw, 18px);
+    gap: 10px;
+    padding: 12px 12px 12px 10px;
+    border-radius: 18px;
+  }
+
+  .waresh-install-prompt__copy strong {
+    font-size: clamp(0.82rem, 3.8vw, 0.95rem);
+  }
+
+  .waresh-install-prompt__copy span {
+    font-size: clamp(0.68rem, 3vw, 0.76rem);
   }
 
   /* Prevent accidental horizontal overflow from editorial decorations. */
@@ -356,7 +448,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .waresh-mobile-menu,
-  .waresh-scroll-marker {
+  .waresh-scroll-marker,
+  .waresh-install-prompt {
     animation: none;
   }
 
