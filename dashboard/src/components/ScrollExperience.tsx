@@ -16,7 +16,6 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
     const scenes = Array.from(document.querySelectorAll<HTMLElement>(".waresh-scroll-scene"));
     const parallaxItems = Array.from(document.querySelectorAll<HTMLElement>("[data-waresh-parallax]"));
 
-    // Keep the opening view compact and completely static.
     if (hero) hero.style.minHeight = "620px";
     if (heroContainer) {
       heroContainer.style.minHeight = "620px";
@@ -29,8 +28,6 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
     scenes.forEach((scene, index) => {
       if (!cinematicIndexes.has(index)) return;
 
-      // The gifts scene starts with an absolute background layer, so the sticky
-      // frame must be the actual editorial content container, not firstElementChild.
       const frame = scene.querySelector<HTMLElement>(":scope > .waresh-container");
       if (!frame) return;
 
@@ -47,12 +44,13 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
 
     const previousSnapType = root.style.scrollSnapType;
     const previousSnapPadding = root.style.scrollPaddingTop;
-    if (!reduceMotion) {
-      root.style.scrollSnapType = "y proximity";
+    if (!reduceMotion && cinematicScenes.length > 0) {
+      // Mandatory snap is intentional here: only the two cinematic scenes have
+      // snap alignment, so the rest of the shopping page keeps normal scrolling.
+      root.style.scrollSnapType = "y mandatory";
       root.style.scrollPaddingTop = "76px";
     }
 
-    // Hero stays untouched by reveal/parallax logic.
     const animatedReveals = reveals.filter((element) => !hero?.contains(element));
     const animatedParallaxItems = parallaxItems.filter((element) => !hero?.contains(element));
 
