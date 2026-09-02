@@ -22,6 +22,12 @@ type ProductCatalogProps = {
   initialPriceBand?: ProductPriceBand | "all";
 };
 
+const giftPriceBands: Record<string, string> = {
+  "۳ تا ۱۰ میلیون": "under-10",
+  "۱۰ تا ۲۰ میلیون": "10-20",
+  "۲۰ تا ۳۰ میلیون": "20-30",
+};
+
 export default function ProductCatalog({ initialPriceBand = "all" }: ProductCatalogProps) {
   const [category, setCategory] = useState<ProductCategory | "all">("all");
   const [priceBand, setPriceBand] = useState<string>(initialPriceBand);
@@ -32,9 +38,32 @@ export default function ProductCatalog({ initialPriceBand = "all" }: ProductCata
       setPriceBand(value);
     };
 
+    const handleGiftRangeClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      const link = target?.closest<HTMLAnchorElement>('a[href="#products"]');
+      if (!link) return;
+
+      const range = Object.keys(giftPriceBands).find((item) => link.textContent?.includes(item));
+      if (!range) return;
+
+      event.preventDefault();
+      const value = giftPriceBands[range];
+      setPriceBand(value);
+
+      const url = new URL(window.location.href);
+      url.searchParams.set("price", value);
+      window.history.replaceState(null, "", `${url.pathname}${url.search}#products`);
+      document.getElementById("products")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+
     syncFromUrl();
+    document.addEventListener("click", handleGiftRangeClick);
     window.addEventListener("popstate", syncFromUrl);
-    return () => window.removeEventListener("popstate", syncFromUrl);
+
+    return () => {
+      document.removeEventListener("click", handleGiftRangeClick);
+      window.removeEventListener("popstate", syncFromUrl);
+    };
   }, []);
 
   const products = useMemo(() => {
@@ -49,11 +78,8 @@ export default function ProductCatalog({ initialPriceBand = "all" }: ProductCata
   const selectPriceBand = (value: string) => {
     setPriceBand(value);
     const url = new URL(window.location.href);
-    if (value === "all") {
-      url.searchParams.delete("price");
-    } else {
-      url.searchParams.set("price", value);
-    }
+    if (value === "all") url.searchParams.delete("price");
+    else url.searchParams.set("price", value);
     window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
   };
 
