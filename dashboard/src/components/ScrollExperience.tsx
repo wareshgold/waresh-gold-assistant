@@ -10,17 +10,33 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
   useEffect(() => {
     const root = document.documentElement;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const hero = document.querySelector<HTMLElement>("#top");
     const reveals = Array.from(document.querySelectorAll<HTMLElement>(".waresh-reveal"));
     const scenes = Array.from(document.querySelectorAll<HTMLElement>(".waresh-scroll-scene"));
     const parallaxItems = Array.from(document.querySelectorAll<HTMLElement>("[data-waresh-parallax]"));
 
-    const cinematicIndexes = new Set([0, 2, 3]);
+    // The opening view should feel like a clean storefront, not an animation demo.
+    // Keep the hero compact and completely static; cinematic behavior starts later.
+    if (hero) {
+      hero.style.minHeight = "620px";
+      const heroContainer = hero.firstElementChild?.nextElementSibling?.nextElementSibling;
+      if (heroContainer instanceof HTMLElement) {
+        heroContainer.style.minHeight = "620px";
+        heroContainer.style.paddingBlock = "56px";
+      }
+    }
+
+    const cinematicIndexes = new Set([2, 3]);
     scenes.forEach((scene, index) => {
       if (!cinematicIndexes.has(index)) return;
       scene.classList.add("waresh-cinematic-scene");
       const frame = scene.firstElementChild;
       if (frame instanceof HTMLElement) frame.classList.add("waresh-sticky-frame");
     });
+
+    // Do not animate the opening scene. Later scenes can still use reveals/parallax.
+    const animatedReveals = reveals.filter((element) => !hero?.contains(element));
+    const animatedParallaxItems = parallaxItems.filter((element) => !hero?.contains(element));
 
     if (reduceMotion) {
       reveals.forEach((element) => element.classList.add("is-visible"));
@@ -30,6 +46,14 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
           const frame = scene.firstElementChild;
           if (frame instanceof HTMLElement) frame.classList.remove("waresh-sticky-frame");
         });
+        if (hero) {
+          hero.style.removeProperty("min-height");
+          const heroContainer = hero.firstElementChild?.nextElementSibling?.nextElementSibling;
+          if (heroContainer instanceof HTMLElement) {
+            heroContainer.style.removeProperty("min-height");
+            heroContainer.style.removeProperty("padding-block");
+          }
+        }
       };
     }
 
@@ -45,12 +69,14 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
       { rootMargin: "-8% 0px -8% 0px", threshold: 0.12 },
     );
 
-    reveals.forEach((element) => revealObserver.observe(element));
+    animatedReveals.forEach((element) => revealObserver.observe(element));
 
     const updateScroll = () => {
       const viewportCenter = window.innerHeight * 0.5;
 
       scenes.forEach((scene) => {
+        if (scene === hero) return;
+
         const rect = scene.getBoundingClientRect();
         const distance = (rect.top + rect.height * 0.5 - viewportCenter) / Math.max(window.innerHeight, 1);
         const progress = Math.max(-1, Math.min(1, distance));
@@ -63,7 +89,7 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
         }
       });
 
-      parallaxItems.forEach((element) => {
+      animatedParallaxItems.forEach((element) => {
         const rect = element.getBoundingClientRect();
         if (rect.bottom < -120 || rect.top > window.innerHeight + 120) return;
 
@@ -100,6 +126,14 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
         const frameElement = scene.firstElementChild;
         if (frameElement instanceof HTMLElement) frameElement.classList.remove("waresh-sticky-frame");
       });
+      if (hero) {
+        hero.style.removeProperty("min-height");
+        const heroContainer = hero.firstElementChild?.nextElementSibling?.nextElementSibling;
+        if (heroContainer instanceof HTMLElement) {
+          heroContainer.style.removeProperty("min-height");
+          heroContainer.style.removeProperty("padding-block");
+        }
+      }
     };
   }, []);
 
