@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import InstallPrompt from "@/components/InstallPrompt";
 import "./globals.css";
 import "./website-polish.css";
 
@@ -6,6 +7,19 @@ export const metadata: Metadata = {
   title: "وارش گلد | فروشگاه طلا و جواهر",
   description:
     "فروشگاه وارش گلد؛ انتخاب طلا و جواهر، قیمت روز بازار و ابزارهای دقیق خرید طلا",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "وارش گلد",
+    statusBarStyle: "default",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#263b31",
 };
 
 export default function RootLayout({
@@ -23,7 +37,10 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-full bg-[#f7f3ec] text-[#24211d]">{children}</body>
+      <body className="min-h-full bg-[#f7f3ec] text-[#24211d]">
+        {children}
+        <InstallPrompt />
+      </body>
     </html>
   );
 }
