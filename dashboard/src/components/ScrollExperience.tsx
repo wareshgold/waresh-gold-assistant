@@ -10,6 +10,7 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
   useEffect(() => {
     const root = document.documentElement;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isMobile = window.matchMedia("(max-width: 640px)").matches;
     const hero = document.querySelector<HTMLElement>("#top");
     const heroContainer = hero?.querySelector<HTMLElement>(".waresh-container");
     const reveals = Array.from(document.querySelectorAll<HTMLElement>(".waresh-reveal"));
@@ -22,31 +23,37 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
       heroContainer.style.paddingBlock = "56px";
     }
 
+    // Mobile intentionally uses native browser scrolling. The cinematic
+    // sticky/snap experience is only enabled above 640px so touch scrolling
+    // is never forced to snap between large sections.
     const cinematicIndexes = new Set([2, 3]);
     const cinematicScenes: Array<{ scene: HTMLElement; frame: HTMLElement }> = [];
 
-    scenes.forEach((scene, index) => {
-      if (!cinematicIndexes.has(index)) return;
+    if (!isMobile) {
+      scenes.forEach((scene, index) => {
+        if (!cinematicIndexes.has(index)) return;
 
-      const frame = scene.querySelector<HTMLElement>(":scope > .waresh-container");
-      if (!frame) return;
+        const frame = scene.querySelector<HTMLElement>(":scope > .waresh-container");
+        if (!frame) return;
 
-      scene.classList.add("waresh-cinematic-scene");
-      scene.style.scrollSnapAlign = "start";
-      scene.style.scrollSnapStop = "always";
-      frame.classList.add("waresh-sticky-frame");
-      frame.style.transition = "transform 520ms cubic-bezier(0.22, 1, 0.36, 1), opacity 520ms ease";
-      frame.style.transform = "scale(0.985)";
-      frame.style.opacity = "0.94";
+        scene.classList.add("waresh-cinematic-scene");
+        scene.style.scrollSnapAlign = "start";
+        scene.style.scrollSnapStop = "always";
+        frame.classList.add("waresh-sticky-frame");
+        frame.style.transition =
+          "transform 520ms cubic-bezier(0.22, 1, 0.36, 1), opacity 520ms ease";
+        frame.style.transform = "scale(0.985)";
+        frame.style.opacity = "0.94";
 
-      cinematicScenes.push({ scene, frame });
-    });
+        cinematicScenes.push({ scene, frame });
+      });
+    }
 
     const previousSnapType = root.style.scrollSnapType;
     const previousSnapPadding = root.style.scrollPaddingTop;
-    if (!reduceMotion && cinematicScenes.length > 0) {
-      // Mandatory snap is intentional here: only the two cinematic scenes have
-      // snap alignment, so the rest of the shopping page keeps normal scrolling.
+
+    // Mandatory document-level snap is a desktop-only enhancement.
+    if (!reduceMotion && !isMobile && cinematicScenes.length > 0) {
       root.style.scrollSnapType = "y mandatory";
       root.style.scrollPaddingTop = "76px";
     }
@@ -120,7 +127,9 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
         if (scene === hero) return;
 
         const rect = scene.getBoundingClientRect();
-        const distance = (rect.top + rect.height * 0.5 - viewportCenter) / Math.max(window.innerHeight, 1);
+        const distance =
+          (rect.top + rect.height * 0.5 - viewportCenter) /
+          Math.max(window.innerHeight, 1);
         const progress = Math.max(-1, Math.min(1, distance));
         scene.style.setProperty("--waresh-scene-progress", progress.toFixed(3));
 
