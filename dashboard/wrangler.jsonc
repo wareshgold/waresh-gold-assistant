@@ -8,12 +8,8 @@
     "binding": "ASSETS"
   },
   "routes": [
-    {
-      "pattern": "wareshgold.ir/tools"
-    },
-    {
-      "pattern": "wareshgold.ir/tools/*"
-    }
+    "wareshgold.ir/tools",
+    "wareshgold.ir/tools/*"
   ],
   "observability": {
     "enabled": true
