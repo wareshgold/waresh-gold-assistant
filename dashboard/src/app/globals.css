@@ -89,23 +89,132 @@ a {
   filter: saturate(1.05);
 }
 
+/* Atmospheric rain: irregular drops at three depths instead of repeating stripes. */
 .waresh-rain {
-  background-image:
-    linear-gradient(112deg, transparent 0 47%, rgba(225, 236, 226, 0.7) 48%, transparent 49%),
-    linear-gradient(112deg, transparent 0 68%, rgba(225, 236, 226, 0.35) 69%, transparent 70%),
-    linear-gradient(112deg, transparent 0 22%, rgba(225, 236, 226, 0.3) 23%, transparent 24%);
-  background-size: 190px 260px, 270px 340px, 330px 420px;
-  animation: waresh-rain-drift 15s linear infinite;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.78;
+}
+
+.waresh-rain::before,
+.waresh-rain::after {
+  position: absolute;
+  inset: -20% -10%;
+  content: "";
+  pointer-events: none;
+  background-repeat: no-repeat;
+}
+
+.waresh-rain::before {
+  width: 2px;
+  height: 82px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, transparent, rgba(232, 241, 234, 0.76), transparent);
+  box-shadow:
+    42px 120px rgba(232, 241, 234, 0.42),
+    118px 38px rgba(232, 241, 234, 0.28),
+    196px 238px rgba(232, 241, 234, 0.5),
+    276px 94px rgba(232, 241, 234, 0.34),
+    354px 310px rgba(232, 241, 234, 0.58),
+    438px 168px rgba(232, 241, 234, 0.32),
+    522px 28px rgba(232, 241, 234, 0.46),
+    604px 254px rgba(232, 241, 234, 0.28),
+    688px 132px rgba(232, 241, 234, 0.55),
+    774px 350px rgba(232, 241, 234, 0.36),
+    858px 72px rgba(232, 241, 234, 0.48),
+    942px 282px rgba(232, 241, 234, 0.3),
+    1026px 146px rgba(232, 241, 234, 0.52),
+    1110px 392px rgba(232, 241, 234, 0.34),
+    1194px 212px rgba(232, 241, 234, 0.46),
+    1278px 56px rgba(232, 241, 234, 0.3),
+    1362px 326px rgba(232, 241, 234, 0.5),
+    1446px 178px rgba(232, 241, 234, 0.35),
+    1530px 410px rgba(232, 241, 234, 0.44),
+    1614px 102px rgba(232, 241, 234, 0.3),
+    1698px 264px rgba(232, 241, 234, 0.52);
+  opacity: 0.46;
+  transform: rotate(9deg) scale(1.1);
+  animation: waresh-rain-near 2.7s linear infinite;
+}
+
+.waresh-rain::after {
+  width: 1px;
+  height: 54px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, transparent, rgba(215, 231, 219, 0.55), transparent);
+  box-shadow:
+    15px 54px rgba(215, 231, 219, 0.28),
+    76px 284px rgba(215, 231, 219, 0.4),
+    154px 162px rgba(215, 231, 219, 0.24),
+    232px 346px rgba(215, 231, 219, 0.32),
+    318px 82px rgba(215, 231, 219, 0.38),
+    404px 226px rgba(215, 231, 219, 0.25),
+    486px 398px rgba(215, 231, 219, 0.36),
+    568px 116px rgba(215, 231, 219, 0.28),
+    652px 304px rgba(215, 231, 219, 0.42),
+    736px 44px rgba(215, 231, 219, 0.25),
+    824px 196px rgba(215, 231, 219, 0.36),
+    906px 366px rgba(215, 231, 219, 0.27),
+    990px 126px rgba(215, 231, 219, 0.4),
+    1072px 286px rgba(215, 231, 219, 0.25),
+    1158px 18px rgba(215, 231, 219, 0.35),
+    1242px 344px rgba(215, 231, 219, 0.28),
+    1328px 154px rgba(215, 231, 219, 0.38),
+    1410px 416px rgba(215, 231, 219, 0.26),
+    1496px 244px rgba(215, 231, 219, 0.34),
+    1582px 70px rgba(215, 231, 219, 0.24);
+  opacity: 0.32;
+  transform: rotate(9deg) scale(1.08);
+  animation: waresh-rain-far 4.8s linear infinite;
+}
+
+@keyframes waresh-rain-near {
+  from { transform: translate3d(-24px, -180px, 0) rotate(9deg) scale(1.1); }
+  to { transform: translate3d(42px, 720px, 0) rotate(9deg) scale(1.1); }
+}
+
+@keyframes waresh-rain-far {
+  from { transform: translate3d(20px, -260px, 0) rotate(9deg) scale(1.08); }
+  to { transform: translate3d(-10px, 680px, 0) rotate(9deg) scale(1.08); }
+}
+
+.waresh-mist {
+  background:
+    radial-gradient(ellipse at 18% 100%, rgba(214, 227, 217, 0.16), transparent 52%),
+    radial-gradient(ellipse at 65% 100%, rgba(231, 237, 229, 0.12), transparent 46%);
+  filter: blur(24px);
+  opacity: 0.75;
+  animation: waresh-mist-drift 12s ease-in-out infinite alternate;
   pointer-events: none;
 }
 
-@keyframes waresh-rain-drift {
-  from {
-    background-position: 0 -260px, 30px -340px, -40px -420px;
-  }
-  to {
-    background-position: 120px 260px, 170px 340px, 90px 420px;
-  }
+@keyframes waresh-mist-drift {
+  from { transform: translate3d(-2%, 3%, 0) scale(1.03); }
+  to { transform: translate3d(2%, -1%, 0) scale(1.08); }
+}
+
+.waresh-hero-jewel {
+  transform: rotate(1.2deg);
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 700ms ease;
+}
+
+.waresh-hero-jewel img {
+  transform: scale(1.035);
+  transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1), filter 900ms ease;
+  filter: saturate(0.86) contrast(1.04);
+}
+
+.waresh-hero-jewel:hover {
+  transform: rotate(0deg) translateY(-5px);
+}
+
+.waresh-hero-jewel:hover img {
+  transform: scale(1.075);
+  filter: saturate(0.96) contrast(1.06);
+}
+
+.waresh-gift-range {
+  min-height: 92px;
 }
 
 /* Scroll experience: editorial reveals, depth and cinematic sticky scenes. */
@@ -148,50 +257,6 @@ a {
   content: "";
   transform: translateX(-50%) scale(calc(0.7 + var(--waresh-cinematic-progress) * 0.7));
   pointer-events: none;
-}
-
-/* The hero is an opening scene, not a full extra page. */
-#top.waresh-cinematic-scene {
-  min-height: 128svh;
-}
-
-#top.waresh-cinematic-scene > .waresh-sticky-frame {
-  padding-block: 76px;
-}
-
-/* Keep the real Waresh mark visible inside the hero as well as in the header. */
-#top.waresh-cinematic-scene::before {
-  position: absolute;
-  top: 28px;
-  right: max(16px, calc((100% - 1180px) / 2));
-  z-index: 8;
-  width: 154px;
-  height: 58px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 18px;
-  background: rgba(20, 39, 31, 0.5) url("/waresh-gold-logo-white.jpg") center / contain no-repeat;
-  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.18);
-  content: "";
-  backdrop-filter: blur(8px);
-  pointer-events: none;
-}
-
-#top .waresh-scene-image {
-  transform:
-    translate3d(0, calc(var(--waresh-cinematic-progress) * -26px), 0)
-    scale(calc(1.03 + var(--waresh-cinematic-progress) * 0.035));
-}
-
-#top .waresh-hero-copy {
-  transform: translate3d(0, calc(var(--waresh-cinematic-progress) * -20px), 0);
-}
-
-#top .waresh-hero-copy .waresh-reveal.is-visible {
-  transform: translate3d(0, calc(var(--waresh-cinematic-progress) * -4px), 0) scale(1);
-}
-
-#top .waresh-sticky-frame > .waresh-reveal:last-child {
-  transform: translate3d(0, calc(var(--waresh-cinematic-progress) * 14px), 0);
 }
 
 #gifts.waresh-cinematic-scene {
@@ -250,8 +315,7 @@ a {
 }
 
 .waresh-hero-copy {
-  transform: translate3d(0, calc(var(--waresh-scene-progress, 0) * -12px), 0);
-  transition: transform 180ms linear;
+  transform: none;
 }
 
 .waresh-scroll-marker {
@@ -394,18 +458,6 @@ a {
     min-height: 135svh;
   }
 
-  #top.waresh-cinematic-scene {
-    min-height: 128svh;
-  }
-
-  #top.waresh-cinematic-scene::before {
-    top: 18px;
-    right: 16px;
-    width: 118px;
-    height: 48px;
-    border-radius: 14px;
-  }
-
   #gifts.waresh-cinematic-scene,
   #prices.waresh-cinematic-scene {
     min-height: 135svh;
@@ -414,6 +466,10 @@ a {
   .waresh-cinematic-scene > .waresh-sticky-frame {
     min-height: 100svh;
   }
+
+  .waresh-gift-range {
+    min-height: auto;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -421,7 +477,9 @@ a {
     scroll-behavior: auto;
   }
 
-  .waresh-rain,
+  .waresh-rain::before,
+  .waresh-rain::after,
+  .waresh-mist,
   .waresh-story::before,
   .waresh-story-main-image img {
     animation: none;
@@ -444,7 +502,9 @@ a {
   .waresh-reveal,
   .waresh-parallax,
   .waresh-scene-image,
-  .waresh-hero-copy {
+  .waresh-hero-copy,
+  .waresh-hero-jewel,
+  .waresh-hero-jewel img {
     transition: none;
     transform: none;
   }
