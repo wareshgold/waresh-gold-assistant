@@ -14,9 +14,23 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
     const scenes = Array.from(document.querySelectorAll<HTMLElement>(".waresh-scroll-scene"));
     const parallaxItems = Array.from(document.querySelectorAll<HTMLElement>("[data-waresh-parallax]"));
 
+    const cinematicIndexes = new Set([0, 2, 3]);
+    scenes.forEach((scene, index) => {
+      if (!cinematicIndexes.has(index)) return;
+      scene.classList.add("waresh-cinematic-scene");
+      const frame = scene.firstElementChild;
+      if (frame instanceof HTMLElement) frame.classList.add("waresh-sticky-frame");
+    });
+
     if (reduceMotion) {
       reveals.forEach((element) => element.classList.add("is-visible"));
-      return;
+      return () => {
+        scenes.forEach((scene) => {
+          scene.classList.remove("waresh-cinematic-scene");
+          const frame = scene.firstElementChild;
+          if (frame instanceof HTMLElement) frame.classList.remove("waresh-sticky-frame");
+        });
+      };
     }
 
     const revealObserver = new IntersectionObserver(
@@ -41,6 +55,12 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
         const distance = (rect.top + rect.height * 0.5 - viewportCenter) / Math.max(window.innerHeight, 1);
         const progress = Math.max(-1, Math.min(1, distance));
         scene.style.setProperty("--waresh-scene-progress", progress.toFixed(3));
+
+        if (scene.classList.contains("waresh-cinematic-scene")) {
+          const travel = Math.max(scene.offsetHeight - window.innerHeight, 1);
+          const sceneProgress = Math.max(0, Math.min(1, -rect.top / travel));
+          scene.style.setProperty("--waresh-cinematic-progress", sceneProgress.toFixed(3));
+        }
       });
 
       parallaxItems.forEach((element) => {
@@ -74,6 +94,12 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
       window.removeEventListener("resize", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
       root.style.removeProperty("--waresh-scroll-progress");
+      scenes.forEach((scene) => {
+        scene.style.removeProperty("--waresh-cinematic-progress");
+        scene.classList.remove("waresh-cinematic-scene");
+        const frameElement = scene.firstElementChild;
+        if (frameElement instanceof HTMLElement) frameElement.classList.remove("waresh-sticky-frame");
+      });
     };
   }, []);
 
