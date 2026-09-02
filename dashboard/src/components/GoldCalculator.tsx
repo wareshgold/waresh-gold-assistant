@@ -32,9 +32,9 @@ function parseNumber(value: string): number | null {
 function Field({ label, value, onChange, placeholder, required, hint }: FieldProps) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-sm font-medium text-stone-300">
+      <span className="mb-2 block text-sm font-medium text-[#5f584f]">
         {label}
-        {required && <span className="text-amber-400"> *</span>}
+        {required && <span className="text-[#a27b3e]"> *</span>}
       </span>
       <input
         type="text"
@@ -43,18 +43,16 @@ function Field({ label, value, onChange, placeholder, required, hint }: FieldPro
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-xl border border-white/10 bg-stone-900/70 px-4 py-2.5 text-left text-stone-100 placeholder:text-stone-600 outline-none transition focus:border-amber-400/60 focus:ring-2 focus:ring-amber-400/20"
+        className="w-full border border-[#ded5c9] bg-[#fffdf9] px-4 py-3 text-left text-[#302b25] placeholder:text-[#b0a79d] outline-none transition focus:border-[#b08a45] focus:ring-2 focus:ring-[#b08a45]/10"
       />
-      {hint && <span className="mt-1 block text-xs text-stone-500">{hint}</span>}
+      {hint && <span className="mt-2 block text-xs text-[#8b8379]">{hint}</span>}
     </label>
   );
 }
 
 export default function GoldCalculator({ liveGoldPrice }: GoldCalculatorProps) {
   const [weight, setWeight] = useState("");
-  const [goldPrice, setGoldPrice] = useState(
-    liveGoldPrice ? String(liveGoldPrice) : ""
-  );
+  const [goldPrice, setGoldPrice] = useState(liveGoldPrice ? String(liveGoldPrice) : "");
   const [labor, setLabor] = useState("");
   const [profit, setProfit] = useState("");
   const [tax, setTax] = useState("");
@@ -79,25 +77,20 @@ export default function GoldCalculator({ liveGoldPrice }: GoldCalculatorProps) {
     const discountNum = parseNumber(discount);
 
     if (
-      weightNum === null ||
-      weightNum <= 0 ||
-      goldPriceNum === null ||
-      goldPriceNum <= 0 ||
-      laborNum === null ||
-      laborNum < 0 ||
-      profitNum === null ||
-      profitNum < 0 ||
-      taxNum === null ||
-      taxNum < 0 ||
+      weightNum === null || weightNum <= 0 ||
+      goldPriceNum === null || goldPriceNum <= 0 ||
+      laborNum === null || laborNum < 0 ||
+      profitNum === null || profitNum < 0 ||
+      taxNum === null || taxNum < 0 ||
       (discountNum !== null && discountNum < 0)
     ) {
-      setError("لطفاً مقادیر معتبر وارد کنید: وزن و قیمت بیشتر از صفر، درصدها از صفر کمتر نباشند.");
+      setError("لطفاً وزن و قیمت را بیشتر از صفر و درصدها را صفر یا بیشتر وارد کنید.");
       return;
     }
 
     setLoading(true);
     try {
-      const response = await fetch("/api/calc", {
+      const response = await fetch("/tools/api/calc", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -111,12 +104,10 @@ export default function GoldCalculator({ liveGoldPrice }: GoldCalculatorProps) {
       });
 
       const data = (await response.json()) as { total?: number; error?: string };
-
       if (!response.ok || typeof data.total !== "number") {
         setError(data.error ?? "خطا در محاسبه. دوباره تلاش کنید.");
         return;
       }
-
       setTotal(data.total);
     } catch {
       setError("اتصال برقرار نشد. دوباره تلاش کنید.");
@@ -126,66 +117,38 @@ export default function GoldCalculator({ liveGoldPrice }: GoldCalculatorProps) {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur"
-    >
-      <div className="flex items-center gap-3">
-        <span className="text-2xl">🧮</span>
-        <h2 className="text-2xl font-bold text-stone-50">محاسبه‌گر قیمت طلا</h2>
+    <form onSubmit={handleSubmit} className="border border-[#e1d8cc] bg-[#f7f2e9] p-7 sm:p-9">
+      <div className="flex items-end justify-between gap-4 border-b border-[#e1d8cc] pb-6">
+        <div>
+          <p className="text-xs font-semibold tracking-[0.14em] text-[#a08350]">CALCULATOR</p>
+          <h3 className="mt-2 text-2xl font-extrabold text-[#29251f]">محاسبه‌گر قیمت طلا</h3>
+        </div>
+        <span className="text-sm font-bold text-[#a08350]">۱۸K</span>
       </div>
-      <p className="mt-2 text-sm text-stone-400">
-        قیمت نهایی خرید را دقیق و با فرمول طلافروشی محاسبه کن
-      </p>
 
-      <div className="mt-6 grid gap-5 sm:grid-cols-2">
-        <Field
-          label="وزن طلا (گرم)"
-          value={weight}
-          onChange={setWeight}
-          placeholder="مثلاً 1.5"
-          required
-        />
+      <div className="mt-7 grid gap-5 sm:grid-cols-2">
+        <Field label="وزن طلا (گرم)" value={weight} onChange={setWeight} placeholder="مثلاً 1.5" required />
         <Field
           label="قیمت هر گرم طلای ۱۸ عیار (تومان)"
           value={goldPrice}
           onChange={setGoldPrice}
-          placeholder="مثلاً 18306478"
+          placeholder="مثلاً 22276000"
           required
-          hint={
-            liveGoldPrice
-              ? `قیمت لحظه‌ای فعلی: ${formatToman(liveGoldPrice)} تومان`
-              : undefined
-          }
+          hint={liveGoldPrice ? `قیمت لحظه‌ای: ${formatToman(liveGoldPrice)} تومان` : undefined}
         />
-        <Field
-          label="اجرت (%)"
-          value={labor}
-          onChange={setLabor}
-          placeholder="مثلاً 7"
-          required
-        />
-        <Field label="سود (%)" value={profit} onChange={setProfit} placeholder="مثلاً 0" />
-        <Field label="مالیات (%)" value={tax} onChange={setTax} placeholder="مثلاً 9" />
-        <Field
-          label="تخفیف (%)"
-          value={discount}
-          onChange={setDiscount}
-          placeholder="اختیاری"
-        />
+        <Field label="اجرت (%)" value={labor} onChange={setLabor} placeholder="مثلاً 7" required />
+        <Field label="سود (%)" value={profit} onChange={setProfit} placeholder="مثلاً 0" required />
+        <Field label="مالیات (%)" value={tax} onChange={setTax} placeholder="مثلاً 9" required />
+        <Field label="تخفیف (%)" value={discount} onChange={setDiscount} placeholder="اختیاری" />
       </div>
 
-      {error && (
-        <p className="mt-5 rounded-xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm text-red-300">
-          {error}
-        </p>
-      )}
+      {error && <p className="mt-5 border border-[#c98c7b]/30 bg-[#f7e9e5] px-4 py-3 text-sm text-[#8f4f3f]">{error}</p>}
 
       {total !== null && (
-        <div className="mt-5 rounded-2xl border border-amber-400/30 bg-amber-400/10 p-5">
-          <p className="text-sm text-amber-200/80">قیمت نهایی</p>
-          <p className="mt-1 text-3xl font-extrabold text-amber-300">
-            {formatToman(total)} <span className="text-xl">تومان</span>
+        <div className="mt-5 border border-[#d6c19b] bg-[#eee1c9] p-6">
+          <p className="text-sm text-[#80683e]">قیمت نهایی</p>
+          <p className="mt-2 text-3xl font-extrabold text-[#30291f]">
+            {formatToman(total)} <span className="text-lg">تومان</span>
           </p>
         </div>
       )}
@@ -193,9 +156,9 @@ export default function GoldCalculator({ liveGoldPrice }: GoldCalculatorProps) {
       <button
         type="submit"
         disabled={loading}
-        className="mt-6 w-full rounded-xl bg-gradient-to-l from-amber-400 to-amber-500 px-6 py-3 text-base font-bold text-stone-950 transition hover:from-amber-300 hover:to-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-6 w-full bg-[#302b25] px-6 py-4 text-base font-bold text-white transition hover:bg-[#1f1b17] disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {loading ? "در حال محاسبه…" : "محاسبه قیمت"}
+        {loading ? "در حال محاسبه…" : "محاسبه قیمت نهایی"}
       </button>
     </form>
   );
