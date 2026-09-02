@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./website-polish.css";
 
 export const metadata: Metadata = {
-  title: "وارش گلد | ابزار هوشمند بازار طلا",
+  title: "وارش گلد | فروشگاه طلا و جواهر",
   description:
-    "قیمت لحظه‌ای طلا، محاسبه‌گر حرفه‌ای، تحلیل حباب و دستیار هوشمند وارش گلد",
+    "فروشگاه وارش گلد؛ انتخاب طلا و جواهر، قیمت روز بازار و ابزارهای دقیق خرید طلا",
 };
 
 export default function RootLayout({
