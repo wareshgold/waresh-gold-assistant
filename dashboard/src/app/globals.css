@@ -6,17 +6,20 @@
 
 :root {
   color-scheme: light;
-  --waresh-cream: #f7f3ec;
-  --waresh-paper: #fffdf9;
-  --waresh-ink: #24211d;
-  --waresh-muted: #766f66;
-  --waresh-line: #e8e0d4;
-  --waresh-gold: #b08a45;
-  --waresh-gold-dark: #87672e;
+  --waresh-cream: #f5f1e9;
+  --waresh-paper: #f8f7f2;
+  --waresh-ink: #24251f;
+  --waresh-muted: #70766d;
+  --waresh-line: #dfe1d7;
+  --waresh-gold: #b28b4c;
+  --waresh-gold-dark: #8f6d37;
+  --waresh-forest: #24372e;
+  --waresh-moss: #6b7d62;
 }
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 90px;
 }
 
 body {
@@ -25,6 +28,7 @@ body {
   background: var(--waresh-cream);
   color: var(--waresh-ink);
   font-feature-settings: "ss01" 1, "ss02" 1;
+  -webkit-font-smoothing: antialiased;
 }
 
 button,
@@ -35,8 +39,8 @@ select {
 }
 
 ::selection {
-  background: #d8bd82;
-  color: #241f18;
+  background: #d6c08d;
+  color: #23372d;
 }
 
 a {
@@ -53,11 +57,142 @@ a {
   text-transform: uppercase;
 }
 
-.waresh-gold-text {
-  color: var(--waresh-gold-dark);
+.waresh-link {
+  position: relative;
+  transition: color 220ms ease;
 }
 
-.waresh-rule {
+.waresh-link::after {
+  position: absolute;
+  right: 0;
+  bottom: -8px;
+  width: 0;
   height: 1px;
-  background: var(--waresh-line);
+  background: currentColor;
+  content: "";
+  transition: width 260ms ease;
+}
+
+.waresh-link:hover::after {
+  width: 100%;
+}
+
+.waresh-gold-button {
+  background: linear-gradient(135deg, #b28b4c, #987238);
+  box-shadow: 0 12px 30px rgba(112, 82, 34, 0.16);
+  transition: transform 220ms ease, box-shadow 220ms ease, filter 220ms ease;
+}
+
+.waresh-gold-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(112, 82, 34, 0.23);
+  filter: saturate(1.05);
+}
+
+.waresh-rain {
+  background-image:
+    linear-gradient(112deg, transparent 0 47%, rgba(225, 236, 226, 0.7) 48%, transparent 49%),
+    linear-gradient(112deg, transparent 0 68%, rgba(225, 236, 226, 0.35) 69%, transparent 70%),
+    linear-gradient(112deg, transparent 0 22%, rgba(225, 236, 226, 0.3) 23%, transparent 24%);
+  background-size: 190px 260px, 270px 340px, 330px 420px;
+  animation: waresh-rain-drift 15s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes waresh-rain-drift {
+  from {
+    background-position: 0 -260px, 30px -340px, -40px -420px;
+  }
+  to {
+    background-position: 120px 260px, 170px 340px, 90px 420px;
+  }
+}
+
+.waresh-story,
+.waresh-calculator-section {
+  isolation: isolate;
+}
+
+.waresh-story::before {
+  position: absolute;
+  top: 8%;
+  right: -180px;
+  width: 420px;
+  height: 420px;
+  border: 1px solid rgba(107, 125, 98, 0.14);
+  border-radius: 50%;
+  content: "";
+  animation: waresh-breathe 9s ease-in-out infinite;
+}
+
+.waresh-story::after {
+  position: absolute;
+  right: -70px;
+  bottom: 7%;
+  width: 180px;
+  height: 180px;
+  border: 1px solid rgba(178, 139, 76, 0.18);
+  border-radius: 46% 54% 60% 40%;
+  content: "";
+  transform: rotate(25deg);
+}
+
+@keyframes waresh-breathe {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.7; }
+  50% { transform: translateY(18px) scale(1.04); opacity: 1; }
+}
+
+.waresh-price-feature {
+  position: relative;
+  overflow: hidden;
+}
+
+.waresh-price-feature::after {
+  position: absolute;
+  left: -90px;
+  bottom: -120px;
+  width: 300px;
+  height: 300px;
+  border: 1px solid rgba(215, 193, 141, 0.18);
+  border-radius: 50%;
+  content: "";
+}
+
+.waresh-tool-row {
+  position: relative;
+  transition: padding-inline 220ms ease, background-color 220ms ease;
+}
+
+.waresh-tool-row:hover {
+  padding-inline: 10px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.waresh-bubble-wrap > * {
+  border-radius: 2rem;
+}
+
+.waresh-calculator-frame {
+  backdrop-filter: blur(12px);
+}
+
+.waresh-site section {
+  scroll-margin-top: 90px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .waresh-rain,
+  .waresh-story::before {
+    animation: none;
+  }
+
+  .waresh-gold-button,
+  .waresh-tool-row,
+  .waresh-link::after {
+    transition: none;
+  }
 }
