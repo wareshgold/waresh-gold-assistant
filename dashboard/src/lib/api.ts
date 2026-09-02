@@ -8,7 +8,7 @@ export const API_BASE_URL =
   "https://waresh-gold-assistant.wareshgold.workers.dev";
 
 export const TELEGRAM_BOT_URL =
-  process.env.NEXT_PUBLIC_TELEGRAM_URL ?? "https://t.me/wareshgold";
+  process.env.NEXT_PUBLIC_TELEGRAM_URL ?? "https://t.me/Wareshgoldbot";
 
 export async function getMarketPrice(): Promise<MarketPrice> {
   const response = await fetch(`${API_BASE_URL}/market/gold-price`, {
