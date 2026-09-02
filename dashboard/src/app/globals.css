@@ -156,7 +156,7 @@ a {
 }
 
 .waresh-scene-image {
-  transform: translate3d(0, calc(var(--waresh-scene-progress, 0) * -18px), 0) scale(calc(1.02 + abs(var(--waresh-scene-progress, 0)) * 0.012));
+  transform: translate3d(0, calc(var(--waresh-scene-progress, 0) * -18px), 0) scale(1.02);
   transition: transform 180ms linear;
   will-change: transform;
 }
