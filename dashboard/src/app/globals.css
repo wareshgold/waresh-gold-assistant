@@ -108,6 +108,92 @@ a {
   }
 }
 
+/* Scroll experience: reveal, scene depth and restrained parallax. */
+.waresh-scroll-experience {
+  overflow: clip;
+}
+
+.waresh-scroll-scene {
+  position: relative;
+  --waresh-scene-progress: 0;
+}
+
+.waresh-reveal {
+  opacity: 0;
+  transform: translate3d(0, 34px, 0) scale(0.985);
+  transition:
+    opacity 850ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1000ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.waresh-reveal[data-reveal="left"] {
+  transform: translate3d(48px, 20px, 0) scale(0.985);
+}
+
+.waresh-reveal[data-reveal="right"] {
+  transform: translate3d(-48px, 20px, 0) scale(0.985);
+}
+
+.waresh-reveal[data-reveal="up"] {
+  transform: translate3d(0, 46px, 0) scale(0.985);
+}
+
+.waresh-reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+.waresh-reveal[data-delay="1"] { transition-delay: 90ms; }
+.waresh-reveal[data-delay="2"] { transition-delay: 170ms; }
+.waresh-reveal[data-delay="3"] { transition-delay: 250ms; }
+.waresh-reveal[data-delay="4"] { transition-delay: 330ms; }
+
+.waresh-parallax {
+  transform: translate3d(0, var(--waresh-parallax-y, 0px), 0);
+  transition: transform 180ms linear;
+  will-change: transform;
+}
+
+.waresh-scene-image {
+  transform: translate3d(0, calc(var(--waresh-scene-progress, 0) * -18px), 0) scale(calc(1.02 + abs(var(--waresh-scene-progress, 0)) * 0.012));
+  transition: transform 180ms linear;
+  will-change: transform;
+}
+
+.waresh-hero-copy {
+  transform: translate3d(0, calc(var(--waresh-scene-progress, 0) * -12px), 0);
+  transition: transform 180ms linear;
+}
+
+.waresh-scroll-marker {
+  position: absolute;
+  right: 50%;
+  bottom: 28px;
+  z-index: 10;
+  display: flex;
+  width: 1px;
+  height: 54px;
+  transform: translateX(50%);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.waresh-scroll-marker::after {
+  width: 100%;
+  height: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  content: "";
+  animation: waresh-scroll-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes waresh-scroll-pulse {
+  0% { transform: translateY(-110%); opacity: 0; }
+  30% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { transform: translateY(220%); opacity: 0; }
+}
+
 .waresh-story,
 .waresh-calculator-section {
   isolation: isolate;
@@ -230,7 +316,20 @@ a {
   .waresh-tool-row,
   .waresh-link::after,
   .waresh-story-main-image,
-  .waresh-story-detail {
+  .waresh-story-detail,
+  .waresh-reveal,
+  .waresh-parallax,
+  .waresh-scene-image,
+  .waresh-hero-copy {
     transition: none;
+    transform: none;
+  }
+
+  .waresh-reveal {
+    opacity: 1;
+  }
+
+  .waresh-scroll-marker {
+    display: none;
   }
 }
