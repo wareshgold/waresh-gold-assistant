@@ -90,15 +90,16 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
   }, []);
 
   const products = useMemo(() => {
-    if (!liveGoldPrice || liveGoldPrice <= 0) return [];
-
     const band = priceBands.find((item) => item.value === priceBand);
+
     return PRODUCTS.map((product) => ({
       product,
-      pricing: calculateProductPrice(product, liveGoldPrice),
+      pricing: liveGoldPrice && liveGoldPrice > 0
+        ? calculateProductPrice(product, liveGoldPrice)
+        : null,
     })).filter(({ product, pricing }) => {
       const categoryMatch = category === "all" || product.category === category;
-      const priceMatch = !band || (pricing.finalPrice >= band.min && pricing.finalPrice <= band.max);
+      const priceMatch = !band || !pricing || (pricing.finalPrice >= band.min && pricing.finalPrice <= band.max);
       return categoryMatch && priceMatch;
     });
   }, [category, priceBand, liveGoldPrice]);
@@ -130,7 +131,7 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
 
       {products.length === 0 ? (
         <div className="border border-dashed border-[#cfc8bb] bg-[#faf7f0] px-6 py-16 text-center text-[#77776f]">
-          {liveGoldPrice ? "محصولی در این محدوده پیدا نشد." : "قیمت لحظه‌ای طلا برای محاسبه محصولات در حال دریافت است…"}
+          محصولی در این محدوده پیدا نشد.
         </div>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
@@ -148,13 +149,19 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
                 <div className="mt-6 border-t border-[#ebe6dc] pt-5">
                   <div className="flex items-end justify-between gap-4">
                     <div><p className="text-xs text-[#96968d]">وزن</p><p className="mt-1 text-sm font-bold text-[#55584f]">{formatWeight(product.weight)}</p></div>
-                    <p className="text-lg font-extrabold text-[#9b753c]">{formatToman(pricing.finalPrice)}</p>
+                    {pricing ? (
+                      <p className="text-lg font-extrabold text-[#9b753c]">{formatToman(pricing.finalPrice)}</p>
+                    ) : (
+                      <p className="text-sm font-bold text-[#9b753c]">قیمت در حال دریافت…</p>
+                    )}
                   </div>
-                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#8b8b82]">
-                    <span>اجرت {product.laborPercent}٪</span>
-                    <span>سود {product.profitPercent}٪</span>
-                    <span>تخفیف {formatToman(pricing.discountAmount)}</span>
-                  </div>
+                  {pricing && (
+                    <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#8b8b82]">
+                      <span>اجرت {product.laborPercent}٪</span>
+                      <span>سود {product.profitPercent}٪</span>
+                      <span>تخفیف {formatToman(pricing.discountAmount)}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </article>
