@@ -108,7 +108,7 @@ a {
   }
 }
 
-/* Scroll experience: reveal, scene depth and restrained parallax. */
+/* Scroll experience: editorial reveals, depth and cinematic sticky scenes. */
 .waresh-scroll-experience {
   overflow: clip;
 }
@@ -116,6 +116,76 @@ a {
 .waresh-scroll-scene {
   position: relative;
   --waresh-scene-progress: 0;
+  --waresh-cinematic-progress: 0;
+}
+
+.waresh-cinematic-scene {
+  min-height: 165svh;
+  overflow: clip;
+}
+
+.waresh-cinematic-scene > .waresh-sticky-frame {
+  position: sticky;
+  top: 0;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+}
+
+.waresh-cinematic-scene > .waresh-sticky-frame.waresh-container {
+  width: min(1180px, calc(100% - 32px));
+}
+
+.waresh-cinematic-scene::after {
+  position: absolute;
+  left: 50%;
+  bottom: 8svh;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: calc(0.12 + var(--waresh-cinematic-progress) * 0.18);
+  content: "";
+  transform: translateX(-50%) scale(calc(0.7 + var(--waresh-cinematic-progress) * 0.7));
+  pointer-events: none;
+}
+
+#top.waresh-cinematic-scene {
+  min-height: 180svh;
+}
+
+#top.waresh-cinematic-scene > .waresh-sticky-frame {
+  padding-block: 90px;
+}
+
+#top .waresh-scene-image {
+  transform:
+    translate3d(0, calc(var(--waresh-cinematic-progress) * -34px), 0)
+    scale(calc(1.03 + var(--waresh-cinematic-progress) * 0.045));
+}
+
+#top .waresh-hero-copy {
+  transform: translate3d(0, calc(var(--waresh-cinematic-progress) * -24px), 0);
+}
+
+#top .waresh-hero-copy .waresh-reveal.is-visible {
+  transform: translate3d(0, calc(var(--waresh-cinematic-progress) * -4px), 0) scale(1);
+}
+
+#top .waresh-sticky-frame > .waresh-reveal:last-child {
+  transform: translate3d(0, calc(var(--waresh-cinematic-progress) * 18px), 0);
+}
+
+#gifts.waresh-cinematic-scene {
+  min-height: 155svh;
+}
+
+#prices.waresh-cinematic-scene {
+  min-height: 160svh;
+}
+
+#prices.waresh-cinematic-scene > .waresh-sticky-frame {
+  align-items: center;
 }
 
 .waresh-reveal {
@@ -301,6 +371,25 @@ a {
   scroll-margin-top: 90px;
 }
 
+@media (max-width: 767px) {
+  .waresh-cinematic-scene {
+    min-height: 140svh;
+  }
+
+  #top.waresh-cinematic-scene {
+    min-height: 150svh;
+  }
+
+  #gifts.waresh-cinematic-scene,
+  #prices.waresh-cinematic-scene {
+    min-height: 135svh;
+  }
+
+  .waresh-cinematic-scene > .waresh-sticky-frame {
+    min-height: 100svh;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -310,6 +399,15 @@ a {
   .waresh-story::before,
   .waresh-story-main-image img {
     animation: none;
+  }
+
+  .waresh-cinematic-scene,
+  .waresh-cinematic-scene > .waresh-sticky-frame {
+    min-height: auto;
+  }
+
+  .waresh-cinematic-scene > .waresh-sticky-frame {
+    position: static;
   }
 
   .waresh-gold-button,
