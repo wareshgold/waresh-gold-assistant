@@ -8,7 +8,10 @@
     "binding": "ASSETS"
   },
   "routes": [
-    "wareshgold.ir/*"
+    {
+      "pattern": "wareshgold.ir",
+      "custom_domain": true
+    }
   ],
   "observability": {
     "enabled": true
