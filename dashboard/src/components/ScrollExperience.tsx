@@ -11,19 +11,17 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
     const root = document.documentElement;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const hero = document.querySelector<HTMLElement>("#top");
+    const heroContainer = hero?.querySelector<HTMLElement>(".waresh-container");
     const reveals = Array.from(document.querySelectorAll<HTMLElement>(".waresh-reveal"));
     const scenes = Array.from(document.querySelectorAll<HTMLElement>(".waresh-scroll-scene"));
     const parallaxItems = Array.from(document.querySelectorAll<HTMLElement>("[data-waresh-parallax]"));
 
     // The opening view should feel like a clean storefront, not an animation demo.
     // Keep the hero compact and completely static; cinematic behavior starts later.
-    if (hero) {
-      hero.style.minHeight = "620px";
-      const heroContainer = hero.firstElementChild?.nextElementSibling?.nextElementSibling;
-      if (heroContainer instanceof HTMLElement) {
-        heroContainer.style.minHeight = "620px";
-        heroContainer.style.paddingBlock = "56px";
-      }
+    if (hero) hero.style.minHeight = "620px";
+    if (heroContainer) {
+      heroContainer.style.minHeight = "620px";
+      heroContainer.style.paddingBlock = "56px";
     }
 
     const cinematicIndexes = new Set([2, 3]);
@@ -46,13 +44,10 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
           const frame = scene.firstElementChild;
           if (frame instanceof HTMLElement) frame.classList.remove("waresh-sticky-frame");
         });
-        if (hero) {
-          hero.style.removeProperty("min-height");
-          const heroContainer = hero.firstElementChild?.nextElementSibling?.nextElementSibling;
-          if (heroContainer instanceof HTMLElement) {
-            heroContainer.style.removeProperty("min-height");
-            heroContainer.style.removeProperty("padding-block");
-          }
+        if (hero) hero.style.removeProperty("min-height");
+        if (heroContainer) {
+          heroContainer.style.removeProperty("min-height");
+          heroContainer.style.removeProperty("padding-block");
         }
       };
     }
@@ -126,13 +121,10 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
         const frameElement = scene.firstElementChild;
         if (frameElement instanceof HTMLElement) frameElement.classList.remove("waresh-sticky-frame");
       });
-      if (hero) {
-        hero.style.removeProperty("min-height");
-        const heroContainer = hero.firstElementChild?.nextElementSibling?.nextElementSibling;
-        if (heroContainer instanceof HTMLElement) {
-          heroContainer.style.removeProperty("min-height");
-          heroContainer.style.removeProperty("padding-block");
-        }
+      if (hero) hero.style.removeProperty("min-height");
+      if (heroContainer) {
+        heroContainer.style.removeProperty("min-height");
+        heroContainer.style.removeProperty("padding-block");
       }
     };
   }, []);
