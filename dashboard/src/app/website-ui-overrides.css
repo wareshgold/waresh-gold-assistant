@@ -136,22 +136,44 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover {
   box-shadow: 0 18px 42px rgba(48, 60, 51, 0.09);
 }
 
-/* Rain refinement: tiny, sparse droplets that read as atmosphere rather than an effect. */
-.waresh-rain {
-  opacity: 0.18 !important;
+/* Hero rain: visible, sparse and atmospheric — above the background layers, below the content. */
+#top .waresh-rain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  opacity: 0.52 !important;
   mix-blend-mode: screen;
 }
 
-.waresh-rain::before {
-  width: 1px !important;
-  height: 34px !important;
-  opacity: 0.42 !important;
+#top .waresh-rain::before,
+#top .waresh-rain::after {
+  inset: auto;
+  top: -120px;
+  left: 0;
+  right: auto;
+  bottom: auto;
 }
 
-.waresh-rain::after {
+#top .waresh-rain::before {
   width: 1px !important;
-  height: 22px !important;
-  opacity: 0.26 !important;
+  height: 42px !important;
+  opacity: 0.78 !important;
+}
+
+#top .waresh-rain::after {
+  width: 1px !important;
+  height: 28px !important;
+  opacity: 0.5 !important;
+}
+
+#top .waresh-container {
+  position: relative;
+  z-index: 2;
+}
+
+#top .waresh-scroll-marker {
+  z-index: 3;
 }
 
 @media (max-width: 640px) {
@@ -200,16 +222,16 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover {
     height: 260px;
   }
 
-  .waresh-rain {
-    opacity: 0.12 !important;
+  #top .waresh-rain {
+    opacity: 0.42 !important;
   }
 
-  .waresh-rain::before {
-    height: 28px !important;
+  #top .waresh-rain::before {
+    height: 34px !important;
   }
 
-  .waresh-rain::after {
-    height: 18px !important;
+  #top .waresh-rain::after {
+    height: 23px !important;
   }
 }
 
