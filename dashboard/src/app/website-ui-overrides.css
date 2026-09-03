@@ -1,101 +1,92 @@
 /* Final visual overrides for the public Waresh Gold storefront. */
 
-/* Shared header: one calm light lockup across Home, Tools and About. */
-header[class*="sticky"][class*="top-0"][class*="z-50"] {
-  background: rgba(250, 248, 242, 0.96) !important;
-  border-color: rgba(222, 223, 215, 0.9) !important;
-  box-shadow: 0 10px 35px rgba(45, 54, 47, 0.08);
-}
+/* Keep sticky positioning attached to the viewport: overflow-x:hidden on the main wrapper
+   can create an unintended scroll container and break position:sticky in Chromium. */
+.waresh-site { overflow-x:clip !important; overflow-y:visible !important; }
 
-header[class*="sticky"][class*="top-0"][class*="z-50"] > div { min-height: 80px; }
+/* Shared header. */
+header[class*="sticky"][class*="top-0"][class*="z-50"] {
+  background:rgba(250,248,242,.96) !important;
+  border-color:rgba(222,223,215,.9) !important;
+  box-shadow:0 10px 35px rgba(45,54,47,.08);
+}
+header[class*="sticky"][class*="top-0"][class*="z-50"] > div { min-height:80px; }
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] {
-  display: inline-flex; align-items: center; justify-content: center; width: 154px; height: 64px;
-  padding: 7px 14px; border-radius: 14px; background: rgba(255,255,255,.72);
-  box-shadow: 0 10px 28px rgba(38,59,49,.08); transition: transform 220ms ease, box-shadow 220ms ease;
+  display:inline-flex;align-items:center;justify-content:center;width:154px;height:64px;padding:7px 14px;
+  border-radius:14px;background:rgba(255,255,255,.72);box-shadow:0 10px 28px rgba(38,59,49,.08);
 }
-header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"]:hover,
-header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]:hover { transform: translateY(-1px); box-shadow: 0 14px 34px rgba(38,59,49,.13); }
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"] img,
-header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] img { display:block; width:100%; height:100%; object-fit:contain; border-radius:0; }
+header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] img { width:100%;height:100%;object-fit:contain; }
 header[class*="sticky"][class*="top-0"][class*="z-50"] nav,
 header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link { color:#62685e; }
 header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { color:#9b753c; }
 
-@media (max-width: 1023px) {
-  header[class*="sticky"][class*="top-0"][class*="z-50"] button[aria-label="باز کردن منوی سایت"] { border-color:#d8d2c7; background:rgba(255,255,255,.65); color:#334238; }
-  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],
-  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] { width:132px; height:56px; padding:6px 11px; border-radius:12px; }
-}
-
+/* Product catalog. */
 #products article { box-shadow:0 18px 55px rgba(55,52,43,.07); }
 #products article:hover { box-shadow:0 28px 70px rgba(55,52,43,.13); }
 #products article > div:first-child { height:280px; }
-#products article > div:first-child > div.relative { width:118px; height:118px; font-size:3.6rem; }
-#products article h3 { letter-spacing:-.02em; }
-#products article > div:last-child > p { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; min-height:56px; }
-#products article .text-lg.font-extrabold { font-size:1.2rem; letter-spacing:-.02em; }
-#products article .text-\[11px\] span { border-radius:999px; background:#f3eee4; padding:5px 9px; font-weight:700; }
-.waresh-hero-jewel img { transform:scale(1.015); transition:transform 900ms cubic-bezier(.22,1,.36,1); }
-.waresh-hero-jewel:hover img { transform:scale(1.045); }
-#products .grid > article > div:first-child { background-size:115% 115%; transition:background-size 900ms cubic-bezier(.22,1,.36,1); }
-#products .grid > article:hover > div:first-child { background-size:122% 122%; }
-#products .grid > article > div:last-child { position:relative; }
-#products .grid > article .text-lg.font-extrabold { white-space:nowrap; }
-#products .mb-10 { border-color:rgba(201,195,183,.72); background:rgba(250,248,242,.42); }
-#products .mb-10 select { min-height:44px; border-radius:999px; cursor:pointer; }
+#products article > div:first-child > div.relative { width:118px;height:118px;font-size:3.6rem; }
+#products article > div:last-child > p { display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;min-height:56px; }
+#products article .text-lg.font-extrabold { font-size:1.2rem;letter-spacing:-.02em;white-space:nowrap; }
+#products .mb-10 { border-color:rgba(201,195,183,.72);background:rgba(250,248,242,.42); }
+#products .mb-10 select { min-height:44px;border-radius:999px;cursor:pointer; }
 #products .mb-10 button { min-height:42px; }
-#prices .grid.grid-cols-2 > div { transition:transform 250ms ease, box-shadow 250ms ease; }
-#prices .grid.grid-cols-2 > div:hover { transform:translateY(-2px); box-shadow:0 18px 42px rgba(48,60,51,.09); }
+#prices .grid.grid-cols-2 > div { transition:transform 250ms ease,box-shadow 250ms ease; }
+#prices .grid.grid-cols-2 > div:hover { transform:translateY(-2px);box-shadow:0 18px 42px rgba(48,60,51,.09); }
 
+/* Desktop cinematic Gift: short viewport frame over a tall scrolling track. */
 @media (min-width:641px) {
-  .waresh-cinematic-scene { position:relative; min-height:180vh !important; overflow:clip !important; }
+  .waresh-cinematic-scene { position:relative;min-height:150vh !important;overflow:visible !important; }
   .waresh-cinematic-scene > .waresh-sticky-frame,
   .waresh-cinematic-scene > .waresh-sticky-frame.waresh-container {
-    position:sticky; top:76px; z-index:2; width:min(100% - 40px,1180px); min-height:0 !important;
-    height:max(620px,calc(100vh - 76px));
+    position:sticky;top:76px;z-index:2;width:min(100% - 40px,1180px);min-height:0 !important;
+    height:auto !important;min-height:calc(100vh - 96px) !important;display:flex;align-items:center;
   }
-  #gifts.waresh-cinematic-scene > div:first-child { position:absolute; inset:0; z-index:0; }
-  #prices.waresh-cinematic-scene { background:#e9eee7; }
-
-  /* Gift photography is a compact right-side panel, not a full-height 180vh background. */
   #gifts.waresh-cinematic-scene > div:first-child {
-    top:34px; right:0; bottom:auto; left:auto;
-    width:min(38vw,520px); height:calc(100vh - 110px);
-    border-radius:2.5rem 0 0 2.5rem; overflow:hidden;
-    box-shadow:0 35px 90px rgba(8,24,18,.20);
+    position:absolute;top:36px;right:0;bottom:auto;left:auto;width:min(34vw,470px);
+    height:min(650px,calc(100vh - 120px));z-index:0;border-radius:2rem 0 0 2rem;overflow:hidden;
+    box-shadow:0 30px 75px rgba(8,24,18,.17);
   }
-  #gifts.waresh-cinematic-scene > div:first-child > img { opacity:.68; object-position:center; }
+  #gifts.waresh-cinematic-scene > div:first-child > img { opacity:.60;object-position:center; }
   #gifts.waresh-cinematic-scene > div:first-child > div:first-of-type {
-    background:linear-gradient(90deg,rgba(18,37,29,.96) 0%,rgba(22,43,34,.62) 45%,rgba(12,25,20,.16) 100%);
+    background:linear-gradient(90deg,rgba(18,37,29,.97) 0%,rgba(22,43,34,.72) 42%,rgba(12,25,20,.18) 100%);
   }
   #gifts.waresh-cinematic-scene > .waresh-sticky-frame { z-index:3; }
+
+  /* Market is deliberately NOT cinematic; it should finish as soon as the calculator ends. */
+  #prices { min-height:auto !important; }
+  #prices > .waresh-container { padding-block:0 !important; }
+  #prices form { padding:28px !important; }
+  #prices form > div:first-child { padding-bottom:18px; }
+  #prices form > .mt-7 { margin-top:18px;gap:14px; }
+  #prices form > .mt-6 { margin-top:18px; }
 }
 
-#top .waresh-rain { position:absolute; inset:0; z-index:1; overflow:hidden; opacity:.52 !important; mix-blend-mode:screen; }
-#top .waresh-rain::before,#top .waresh-rain::after { inset:auto; top:-120px; left:0; right:auto; bottom:auto; }
-#top .waresh-rain::before { width:1px !important; height:42px !important; opacity:.78 !important; }
-#top .waresh-rain::after { width:1px !important; height:28px !important; opacity:.5 !important; }
-#top .waresh-container { position:relative; z-index:2; }
+#top .waresh-rain { position:absolute;inset:0;z-index:1;overflow:hidden;opacity:.52 !important;mix-blend-mode:screen; }
+#top .waresh-container { position:relative;z-index:2; }
 #top .waresh-scroll-marker { z-index:3; }
+
+@media (max-width:1023px) {
+  header[class*="sticky"][class*="top-0"][class*="z-50"] button[aria-label="باز کردن منوی سایت"] { border-color:#d8d2c7;background:rgba(255,255,255,.65);color:#334238; }
+  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],
+  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] { width:132px;height:56px;padding:6px 11px;border-radius:12px; }
+}
 
 @media (max-width:640px) {
   .waresh-site > div:first-child { min-height:30px; }
-  .waresh-site > div:first-child .waresh-container { min-height:30px; font-size:10px; }
-  .waresh-hero-jewel img { transform:none; }
-  .waresh-hero-jewel:hover img { transform:scale(1.015); }
+  .waresh-site > div:first-child .waresh-container { min-height:30px;font-size:10px; }
   #products .mb-10 { padding-block:14px; }
-  #products .mb-10 > div:first-child { flex-wrap:nowrap; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; }
+  #products .mb-10 > div:first-child { flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px;scrollbar-width:none; }
   #products .mb-10 > div:first-child::-webkit-scrollbar { display:none; }
   #products .mb-10 > div:first-child button { flex:0 0 auto; }
   #products .mb-10 select { width:100%; }
   #products .grid > article > div:first-child { height:260px; }
   #gifts > div:first-child > img { opacity:.58; }
-  #top .waresh-rain { opacity:.42 !important; }
-  #top .waresh-rain::before { height:34px !important; }
-  #top .waresh-rain::after { height:23px !important; }
+  #prices { padding-block:48px !important; }
+  #prices form { padding:20px !important; }
 }
 
 @media (prefers-reduced-motion:reduce) {
-  .waresh-hero-jewel img,#products .grid > article > div:first-child,#prices .grid.grid-cols-2 > div,.waresh-rain::before,.waresh-rain::after { transition:none !important; animation:none !important; }
+  .waresh-hero-jewel img,#products .grid > article > div:first-child,#prices .grid.grid-cols-2 > div,.waresh-rain::before,.waresh-rain::after { transition:none !important;animation:none !important; }
 }
