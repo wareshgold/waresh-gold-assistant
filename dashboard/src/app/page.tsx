@@ -29,23 +29,30 @@ export default async function Home() {
 
         <section id="top" className="waresh-scroll-scene relative min-h-[620px] overflow-hidden bg-[#182b24] text-white sm:min-h-[660px]">
           <img src={forestImage} alt="" className="absolute inset-0 h-full w-full object-cover object-center opacity-70" aria-hidden="true" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(11,24,19,0.94)_0%,rgba(18,40,31,0.72)_40%,rgba(18,39,31,0.38)_72%,rgba(10,22,18,0.58)_100%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_45%,rgba(214,188,123,0.18),transparent_24%),radial-gradient(circle_at_25%_15%,rgba(205,224,211,0.1),transparent_30%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(11,24,19,0.95)_0%,rgba(18,40,31,0.76)_42%,rgba(18,39,31,0.4)_74%,rgba(10,22,18,0.62)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_45%,rgba(214,188,123,0.2),transparent_24%),radial-gradient(circle_at_25%_15%,rgba(205,224,211,0.1),transparent_30%)]" />
           <div className="waresh-mist absolute inset-x-0 bottom-0 h-[48%]" aria-hidden="true" />
           <div className="waresh-rain absolute inset-0 opacity-80" aria-hidden="true" />
           <div className="waresh-container relative grid min-h-[620px] items-center gap-12 py-14 sm:min-h-[660px] sm:py-16 lg:grid-cols-[1.05fr_0.95fr]">
             <div className="max-w-2xl">
-              <p className="text-xs font-bold tracking-[0.24em] text-[#d7bf8b]">WARESH GOLD · JEWELRY</p>
-              <h1 className="mt-5 max-w-3xl text-5xl font-extrabold leading-[1.28] tracking-tight sm:text-7xl">طلایی که<br /><span className="text-[#d8bd7e]">در خاطره می‌ماند.</span></h1>
-              <p className="mt-6 max-w-xl text-base leading-9 text-[#d9e0da] sm:text-lg">انتخابی از طلا و جواهرات ظریف، کم‌اجرت و ماندگار؛ با قیمت بازار و ابزارهای دقیق وارش گلد.</p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row"><a href="#products" className="inline-flex items-center justify-center rounded-full bg-[#b28b4c] px-7 py-4 font-bold text-white shadow-[0_18px_45px_rgba(0,0,0,0.22)] transition hover:-translate-y-0.5 hover:bg-[#9d773d]">مشاهده محصولات</a><a href="#prices" className="inline-flex items-center justify-center rounded-full border border-white/25 bg-white/10 px-7 py-4 font-bold text-white backdrop-blur-sm transition hover:bg-white/15">قیمت امروز</a></div>
-              <div className="mt-9 flex flex-wrap gap-x-8 gap-y-3 text-xs text-[#c7d0c8]"><span>محصولات منتخب</span><span>قیمت شفاف</span><span>محاسبه دقیق</span></div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#d8bd7e]/30 bg-black/15 px-4 py-2 text-[11px] font-bold text-[#dbc58d] backdrop-blur-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#d8bd7e]" aria-hidden="true" />
+                قیمت روز بازار · انتخاب آگاهانه
+              </div>
+              <h1 className="mt-6 max-w-3xl text-5xl font-extrabold leading-[1.24] tracking-tight sm:text-7xl">طلا را فقط<br /><span className="text-[#d8bd7e]">برای امروز نخر.</span></h1>
+              <p className="mt-6 max-w-xl text-base leading-9 text-[#d9e0da] sm:text-lg">مدل‌های ظریف و کم‌اجرت، قیمت شفاف و محاسبه دقیق؛ تا انتخاب طلا از یک خرید، به یک انتخاب مطمئن تبدیل شود.</p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row"><a href="#products" className="inline-flex items-center justify-center rounded-full bg-[#b28b4c] px-7 py-4 font-bold text-white shadow-[0_18px_45px_rgba(0,0,0,0.22)] transition hover:-translate-y-0.5 hover:bg-[#9d773d]">انتخاب طلا</a><a href="#prices" className="inline-flex items-center justify-center rounded-full border border-white/25 bg-white/10 px-7 py-4 font-bold text-white backdrop-blur-sm transition hover:bg-white/15">قیمت امروز</a></div>
+              <div className="mt-9 flex flex-wrap gap-x-8 gap-y-3 text-xs text-[#c7d0c8]"><span>کم‌اجرت</span><span>قیمت شفاف</span><span>محاسبه دقیق</span></div>
             </div>
             <div className="relative mx-auto w-full max-w-[470px] lg:justify-self-end">
               <div className="waresh-hero-jewel relative overflow-hidden rounded-[2.8rem] shadow-[0_45px_110px_rgba(0,0,0,0.38)]">
                 <img src={jewelryImage} alt="نمونه‌ای از طلا و جواهرات وارش" className="h-[430px] w-full object-cover sm:h-[500px]" />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,24,18,0.02)_30%,rgba(10,24,18,0.78)_100%)]" />
-                <div className="absolute inset-x-7 bottom-7"><p className="text-[10px] font-bold tracking-[0.22em] text-[#dbc58d]">SELECTED GOLD</p><p className="mt-2 text-2xl font-extrabold">زیبایی، بدون هیاهو.</p></div>
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,24,18,0.02)_28%,rgba(10,24,18,0.82)_100%)]" />
+                <div className="absolute left-5 top-5 rounded-2xl border border-white/15 bg-[#172a22]/75 px-4 py-3 shadow-xl backdrop-blur-md">
+                  <p className="text-[10px] font-bold tracking-[0.16em] text-[#cdb477]">طلای ۱۸ عیار</p>
+                  <p className="mt-1 text-sm font-extrabold text-white">{market ? formatToman(market.gold18Price) : "قیمت بازار"}</p>
+                </div>
+                <div className="absolute inset-x-7 bottom-7"><p className="text-[10px] font-bold tracking-[0.2em] text-[#dbc58d]">انتخاب‌های وارش</p><p className="mt-2 text-2xl font-extrabold">زیبایی، بدون هیاهو.</p></div>
               </div>
               <div className="absolute -bottom-5 -left-5 hidden rounded-full border border-white/15 bg-[#21372c]/90 px-5 py-3 text-xs font-bold text-[#d8c08c] shadow-xl backdrop-blur-md sm:block">از بارانِ گیلان تا طلای ماندگار</div>
             </div>
