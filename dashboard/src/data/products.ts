@@ -25,8 +25,7 @@ export interface Product {
 
 const SHIPPING_NOTE = "هزینه ارسال به عهده مشتری می‌باشد.";
 
-// Visual-only sample imagery. These are free-to-use Pexels photos selected
-// to keep the demo catalog in one coherent warm, editorial jewelry style.
+// Visual-only sample imagery selected to keep the demo catalog in one coherent jewelry style.
 const IMAGE = {
   ringSimple: "https://images.pexels.com/photos/10581426/pexels-photo-10581426.jpeg?auto=compress&cs=tinysrgb&w=900",
   ringStone: "https://images.pexels.com/photos/12168877/pexels-photo-12168877.jpeg?auto=compress&cs=tinysrgb&w=900",
@@ -48,6 +47,10 @@ const IMAGE = {
   necklaceLifestyle: "https://images.pexels.com/photos/5386593/pexels-photo-5386593.jpeg?auto=compress&cs=tinysrgb&w=900",
   menChain: "https://images.pexels.com/photos/25724264/pexels-photo-25724264.jpeg?auto=compress&cs=tinysrgb&w=900",
   menRing: "https://images.pexels.com/photos/9120161/pexels-photo-9120161.jpeg?auto=compress&cs=tinysrgb&w=900",
+  leatherGoldBlack: "https://www.orogoldgallery.com/wp-content/uploads/2022/06/NEW-20.jpg",
+  leatherGoldBrown: "https://www.technolife.com/image/color_image_TLP-65738_f62e4b24_1d6fc40e-eeb0-4a53-ab14-559dd38804f7.png",
+  leatherGoldMinimal: "https://www.technolife.com/image/color_image_TLP-299286_1cb8beeb-124b-4dbe-8a29-d47c1d8f5ff1.png",
+  leatherGoldSlim: "https://www.gallerymoneh.com/wp-content/uploads/2025/08/slimy-design-men-gold-bracelet-01.jpg",
 } as const;
 
 export const PRODUCTS: Product[] = [
@@ -69,6 +72,10 @@ export const PRODUCTS: Product[] = [
   { id: 16, name: "دستبند النگویی", category: "دستبند", weight: 8.2, laborPercent: 7, profitPercent: 7, taxPercent: 0, icon: "◎", image: IMAGE.braceletSoft, description: "دستبند النگویی شیک", shippingNote: SHIPPING_NOTE },
   { id: 17, name: "انگشتر مردانه ساده", category: "مردانه", weight: 5.8, laborPercent: 5, profitPercent: 7, taxPercent: 0, icon: "◉", image: IMAGE.ringMinimal, description: "انگشتر مردانه ساده و شیک", shippingNote: SHIPPING_NOTE },
   { id: 18, name: "زنجیر مردانه", category: "مردانه", weight: 12.5, laborPercent: 10, profitPercent: 7, taxPercent: 0, icon: "⌁", image: IMAGE.menChain, description: "زنجیر مردانه ضخیم", shippingNote: SHIPPING_NOTE },
+  { id: 19, name: "دستبند چرم مشکی مخصوص هدیه", category: "کم-اجرت", subcategory: "دستبند", weight: 0.24, laborPercent: 2, profitPercent: 7, taxPercent: 0, icon: "◍", image: IMAGE.leatherGoldBlack, description: "دستبند چرم مشکی با قطعه طلای ظریف؛ انتخابی سبک برای هدیه", shippingNote: SHIPPING_NOTE },
+  { id: 20, name: "دستبند چرم قهوه‌ای مخصوص هدیه", category: "کم-اجرت", subcategory: "دستبند", weight: 0.28, laborPercent: 2, profitPercent: 7, taxPercent: 0, icon: "◍", image: IMAGE.leatherGoldBrown, description: "ترکیب چرم قهوه‌ای و طلای ظریف با ظاهر مردانه و مینیمال", shippingNote: SHIPPING_NOTE },
+  { id: 21, name: "دستبند چرم مینیمال مخصوص هدیه", category: "کم-اجرت", subcategory: "دستبند", weight: 0.32, laborPercent: 3, profitPercent: 7, taxPercent: 0, icon: "◍", image: IMAGE.leatherGoldMinimal, description: "دستبند چرم و طلا با طراحی ساده برای استفاده روزمره", shippingNote: SHIPPING_NOTE },
+  { id: 22, name: "دستبند چرم باریک مخصوص هدیه", category: "کم-اجرت", subcategory: "دستبند", weight: 0.35, laborPercent: 3, profitPercent: 7, taxPercent: 0, icon: "◍", image: IMAGE.leatherGoldSlim, description: "مدل باریک و سبک چرم و طلا برای یک هدیه جمع‌وجور", shippingNote: SHIPPING_NOTE },
 ];
 
 export const PRODUCT_CATEGORIES: Array<{ value: ProductCategory; label: string }> = [
