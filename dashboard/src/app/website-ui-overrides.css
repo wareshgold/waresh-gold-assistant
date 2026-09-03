@@ -7,328 +7,95 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] {
   box-shadow: 0 10px 35px rgba(45, 54, 47, 0.08);
 }
 
-header[class*="sticky"][class*="top-0"][class*="z-50"] > div {
-  min-height: 80px;
-}
-
+header[class*="sticky"][class*="top-0"][class*="z-50"] > div { min-height: 80px; }
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 154px;
-  height: 64px;
-  padding: 7px 14px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.72);
-  box-shadow: 0 10px 28px rgba(38, 59, 49, 0.08);
-  transition: transform 220ms ease, box-shadow 220ms ease;
+  display: inline-flex; align-items: center; justify-content: center; width: 154px; height: 64px;
+  padding: 7px 14px; border-radius: 14px; background: rgba(255,255,255,.72);
+  box-shadow: 0 10px 28px rgba(38,59,49,.08); transition: transform 220ms ease, box-shadow 220ms ease;
 }
-
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"]:hover,
-header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 14px 34px rgba(38, 59, 49, 0.13);
-}
-
+header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]:hover { transform: translateY(-1px); box-shadow: 0 14px 34px rgba(38,59,49,.13); }
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"] img,
-header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 0;
-}
+header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] img { display:block; width:100%; height:100%; object-fit:contain; border-radius:0; }
+header[class*="sticky"][class*="top-0"][class*="z-50"] nav,
+header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link { color:#62685e; }
+header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { color:#9b753c; }
 
-header[class*="sticky"][class*="top-0"][class*="z-50"] nav {
-  color: #62685e;
-}
-
-header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link {
-  color: #62685e;
-}
-
-header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover {
-  color: #9b753c;
-}
-
-/* Mobile trigger stays aligned with the light header. */
 @media (max-width: 1023px) {
-  header[class*="sticky"][class*="top-0"][class*="z-50"] button[aria-label="باز کردن منوی سایت"] {
-    border-color: #d8d2c7;
-    background: rgba(255, 255, 255, 0.65);
-    color: #334238;
-  }
-
+  header[class*="sticky"][class*="top-0"][class*="z-50"] button[aria-label="باز کردن منوی سایت"] { border-color:#d8d2c7; background:rgba(255,255,255,.65); color:#334238; }
   header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],
-  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] {
-    width: 132px;
-    height: 56px;
-    padding: 6px 11px;
-    border-radius: 12px;
-  }
+  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] { width:132px; height:56px; padding:6px 11px; border-radius:12px; }
 }
 
-/* Product cards: tighter hierarchy, cleaner descriptions, stronger pricing. */
-#products article {
-  box-shadow: 0 18px 55px rgba(55, 52, 43, 0.07);
-}
+#products article { box-shadow:0 18px 55px rgba(55,52,43,.07); }
+#products article:hover { box-shadow:0 28px 70px rgba(55,52,43,.13); }
+#products article > div:first-child { height:280px; }
+#products article > div:first-child > div.relative { width:118px; height:118px; font-size:3.6rem; }
+#products article h3 { letter-spacing:-.02em; }
+#products article > div:last-child > p { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; min-height:56px; }
+#products article .text-lg.font-extrabold { font-size:1.2rem; letter-spacing:-.02em; }
+#products article .text-\[11px\] span { border-radius:999px; background:#f3eee4; padding:5px 9px; font-weight:700; }
+.waresh-hero-jewel img { transform:scale(1.015); transition:transform 900ms cubic-bezier(.22,1,.36,1); }
+.waresh-hero-jewel:hover img { transform:scale(1.045); }
+#products .grid > article > div:first-child { background-size:115% 115%; transition:background-size 900ms cubic-bezier(.22,1,.36,1); }
+#products .grid > article:hover > div:first-child { background-size:122% 122%; }
+#products .grid > article > div:last-child { position:relative; }
+#products .grid > article .text-lg.font-extrabold { white-space:nowrap; }
+#products .mb-10 { border-color:rgba(201,195,183,.72); background:rgba(250,248,242,.42); }
+#products .mb-10 select { min-height:44px; border-radius:999px; cursor:pointer; }
+#products .mb-10 button { min-height:42px; }
+#prices .grid.grid-cols-2 > div { transition:transform 250ms ease, box-shadow 250ms ease; }
+#prices .grid.grid-cols-2 > div:hover { transform:translateY(-2px); box-shadow:0 18px 42px rgba(48,60,51,.09); }
 
-#products article:hover {
-  box-shadow: 0 28px 70px rgba(55, 52, 43, 0.13);
-}
-
-#products article > div:first-child {
-  height: 280px;
-}
-
-#products article > div:first-child > div.relative {
-  width: 118px;
-  height: 118px;
-  font-size: 3.6rem;
-}
-
-#products article h3 {
-  letter-spacing: -0.02em;
-}
-
-#products article > div:last-child > p {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-  min-height: 56px;
-}
-
-#products article .text-lg.font-extrabold {
-  font-size: 1.2rem;
-  letter-spacing: -0.02em;
-}
-
-#products article .text-\[11px\] span {
-  border-radius: 999px;
-  background: #f3eee4;
-  padding: 5px 9px;
-  font-weight: 700;
-}
-
-/* Premium motion: subtle enough to stay fast and calm. */
-.waresh-hero-jewel img {
-  transform: scale(1.015);
-  transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.waresh-hero-jewel:hover img {
-  transform: scale(1.045);
-}
-
-#products .grid > article > div:first-child {
-  background-size: 115% 115%;
-  transition: background-size 900ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-#products .grid > article:hover > div:first-child {
-  background-size: 122% 122%;
-}
-
-#products .grid > article > div:last-child {
-  position: relative;
-}
-
-#products .grid > article .text-lg.font-extrabold {
-  white-space: nowrap;
-}
-
-/* Make the filter controls feel like one intentional control bar. */
-#products .mb-10 {
-  border-color: rgba(201, 195, 183, 0.72);
-  background: rgba(250, 248, 242, 0.42);
-}
-
-#products .mb-10 select {
-  min-height: 44px;
-  border-radius: 999px;
-  cursor: pointer;
-}
-
-#products .mb-10 button {
-  min-height: 42px;
-}
-
-/* Market cards: stronger number hierarchy without making the section noisy. */
-#prices .grid.grid-cols-2 > div {
-  transition: transform 250ms ease, box-shadow 250ms ease;
-}
-
-#prices .grid.grid-cols-2 > div:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 18px 42px rgba(48, 60, 51, 0.09);
-}
-
-/* Desktop cinematic sections: a tall track + sticky viewport, like the Webflow reference. */
-@media (min-width: 641px) {
-  .waresh-cinematic-scene {
-    position: relative;
-    min-height: 180vh !important;
-    overflow: clip !important;
-  }
-
+@media (min-width:641px) {
+  .waresh-cinematic-scene { position:relative; min-height:180vh !important; overflow:clip !important; }
   .waresh-cinematic-scene > .waresh-sticky-frame,
   .waresh-cinematic-scene > .waresh-sticky-frame.waresh-container {
-    position: sticky;
-    top: 76px;
-    z-index: 2;
-    width: min(100% - 40px, 1180px);
-    min-height: 0 !important;
-    height: max(620px, calc(100vh - 76px));
+    position:sticky; top:76px; z-index:2; width:min(100% - 40px,1180px); min-height:0 !important;
+    height:max(620px,calc(100vh - 76px));
   }
+  #gifts.waresh-cinematic-scene > div:first-child { position:absolute; inset:0; z-index:0; }
+  #prices.waresh-cinematic-scene { background:#e9eee7; }
 
-  /* Keep the section artwork attached to the viewport while the track scrolls. */
+  /* Gift photography is a compact right-side panel, not a full-height 180vh background. */
   #gifts.waresh-cinematic-scene > div:first-child {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
+    top:34px; right:0; bottom:auto; left:auto;
+    width:min(38vw,520px); height:calc(100vh - 110px);
+    border-radius:2.5rem 0 0 2.5rem; overflow:hidden;
+    box-shadow:0 35px 90px rgba(8,24,18,.20);
   }
-
-  #prices.waresh-cinematic-scene {
-    background: #e9eee7;
-  }
-}
-
-/* Gift scene: keep the beautiful photography, but turn it into a restrained art panel. */
-@media (min-width: 641px) {
-  #gifts.waresh-cinematic-scene > div:first-child {
-    inset: 34px 0 34px auto;
-    width: min(45vw, 620px);
-    border-radius: 3rem 0 0 3rem;
-    overflow: hidden;
-    box-shadow: 0 35px 90px rgba(8, 24, 18, 0.22);
-  }
-
-  #gifts.waresh-cinematic-scene > div:first-child > img {
-    opacity: 0.68;
-    object-position: center;
-  }
-
+  #gifts.waresh-cinematic-scene > div:first-child > img { opacity:.68; object-position:center; }
   #gifts.waresh-cinematic-scene > div:first-child > div:first-of-type {
-    background: linear-gradient(90deg, rgba(18, 37, 29, 0.96) 0%, rgba(22, 43, 34, 0.62) 45%, rgba(12, 25, 20, 0.16) 100%);
+    background:linear-gradient(90deg,rgba(18,37,29,.96) 0%,rgba(22,43,34,.62) 45%,rgba(12,25,20,.16) 100%);
   }
-
-  #gifts.waresh-cinematic-scene > .waresh-sticky-frame {
-    z-index: 3;
-  }
+  #gifts.waresh-cinematic-scene > .waresh-sticky-frame { z-index:3; }
 }
 
-/* Hero rain: visible, sparse and atmospheric — above the background layers, below the content. */
-#top .waresh-rain {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  overflow: hidden;
-  opacity: 0.52 !important;
-  mix-blend-mode: screen;
+#top .waresh-rain { position:absolute; inset:0; z-index:1; overflow:hidden; opacity:.52 !important; mix-blend-mode:screen; }
+#top .waresh-rain::before,#top .waresh-rain::after { inset:auto; top:-120px; left:0; right:auto; bottom:auto; }
+#top .waresh-rain::before { width:1px !important; height:42px !important; opacity:.78 !important; }
+#top .waresh-rain::after { width:1px !important; height:28px !important; opacity:.5 !important; }
+#top .waresh-container { position:relative; z-index:2; }
+#top .waresh-scroll-marker { z-index:3; }
+
+@media (max-width:640px) {
+  .waresh-site > div:first-child { min-height:30px; }
+  .waresh-site > div:first-child .waresh-container { min-height:30px; font-size:10px; }
+  .waresh-hero-jewel img { transform:none; }
+  .waresh-hero-jewel:hover img { transform:scale(1.015); }
+  #products .mb-10 { padding-block:14px; }
+  #products .mb-10 > div:first-child { flex-wrap:nowrap; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; }
+  #products .mb-10 > div:first-child::-webkit-scrollbar { display:none; }
+  #products .mb-10 > div:first-child button { flex:0 0 auto; }
+  #products .mb-10 select { width:100%; }
+  #products .grid > article > div:first-child { height:260px; }
+  #gifts > div:first-child > img { opacity:.58; }
+  #top .waresh-rain { opacity:.42 !important; }
+  #top .waresh-rain::before { height:34px !important; }
+  #top .waresh-rain::after { height:23px !important; }
 }
 
-#top .waresh-rain::before,
-#top .waresh-rain::after {
-  inset: auto;
-  top: -120px;
-  left: 0;
-  right: auto;
-  bottom: auto;
-}
-
-#top .waresh-rain::before {
-  width: 1px !important;
-  height: 42px !important;
-  opacity: 0.78 !important;
-}
-
-#top .waresh-rain::after {
-  width: 1px !important;
-  height: 28px !important;
-  opacity: 0.5 !important;
-}
-
-#top .waresh-container {
-  position: relative;
-  z-index: 2;
-}
-
-#top .waresh-scroll-marker {
-  z-index: 3;
-}
-
-@media (max-width: 640px) {
-  .waresh-site > div:first-child {
-    min-height: 30px;
-  }
-
-  .waresh-site > div:first-child .waresh-container {
-    min-height: 30px;
-    font-size: 10px;
-  }
-
-  .waresh-hero-jewel img {
-    transform: none;
-  }
-
-  .waresh-hero-jewel:hover img {
-    transform: scale(1.015);
-  }
-
-  #products .mb-10 {
-    padding-block: 14px;
-  }
-
-  #products .mb-10 > div:first-child {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: 2px;
-    scrollbar-width: none;
-  }
-
-  #products .mb-10 > div:first-child::-webkit-scrollbar {
-    display: none;
-  }
-
-  #products .mb-10 > div:first-child button {
-    flex: 0 0 auto;
-  }
-
-  #products .mb-10 select {
-    width: 100%;
-  }
-
-  #products .grid > article > div:first-child {
-    height: 260px;
-  }
-
-  /* Mobile keeps the photograph atmospheric rather than turning it into a huge fixed panel. */
-  #gifts > div:first-child > img {
-    opacity: 0.58;
-  }
-
-  #top .waresh-rain {
-    opacity: 0.42 !important;
-  }
-
-  #top .waresh-rain::before {
-    height: 34px !important;
-  }
-
-  #top .waresh-rain::after {
-    height: 23px !important;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .waresh-hero-jewel img,
-  #products .grid > article > div:first-child,
-  #prices .grid.grid-cols-2 > div,
-  .waresh-rain::before,
-  .waresh-rain::after {
-    transition: none !important;
-    animation: none !important;
-  }
+@media (prefers-reduced-motion:reduce) {
+  .waresh-hero-jewel img,#products .grid > article > div:first-child,#prices .grid.grid-cols-2 > div,.waresh-rain::before,.waresh-rain::after { transition:none !important; animation:none !important; }
 }

@@ -50,7 +50,7 @@ const IMAGE = {
   leatherGoldBlack: "https://www.orogoldgallery.com/wp-content/uploads/2022/06/NEW-20.jpg",
   leatherGoldBrown: "https://www.technolife.com/image/color_image_TLP-65738_f62e4b24_1d6fc40e-eeb0-4a53-ab14-559dd38804f7.png",
   leatherGoldMinimal: "https://www.technolife.com/image/color_image_TLP-299286_1cb8beeb-124b-4dbe-8a29-d47c1d8f5ff1.png",
-  leatherGoldSlim: "https://www.gallerymoneh.com/wp-content/uploads/2025/08/slimy-design-men-gold-bracelet-01.jpg",
+  leatherGoldSlim: "https://elegatto.com/cdn/shop/files/Rectangle_53_1000x_355e4fe1-16db-4e2b-881d-8fe4afe35868_1000x.webp?v=1648101710",
 } as const;
 
 export const PRODUCTS: Product[] = [
