@@ -42,12 +42,24 @@ export class GoldFormulaCalculator {
       mode: input.taxMode ?? TaxMode.SEPARATE,
     });
 
+    const subtotal = goldValue + labor + profit + tax;
+    const discountPercent = input.discount ?? 0;
+
+    if (discountPercent < 0 || discountPercent > 100) {
+      throw new Error("Invalid discount percentage");
+    }
+
+    // The public calculator exposes تخفیف (%) so discount is interpreted as
+    // a percentage of the complete subtotal (gold + labor + profit + tax).
+    // FinalPriceRule receives the calculated monetary discount amount.
+    const discountAmount = subtotal * (discountPercent / 100);
+
     const finalPrice = this.finalPriceRule.calculate({
       goldValue,
       labor,
       profit,
       tax,
-      discount: input.discount ?? 0,
+      discount: discountAmount,
     });
 
     return {
