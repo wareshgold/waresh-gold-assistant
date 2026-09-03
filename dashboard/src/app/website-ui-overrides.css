@@ -1,42 +1,42 @@
 /* Final visual overrides for the public Waresh Gold storefront. */
 
-/* Header: pair the white brand mark with a deep forest navigation bar. */
+/* Header: return to the light brand surface so the green mark feels integrated. */
 header[class*="sticky"][class*="top-0"][class*="z-50"] {
-  background: rgba(24, 43, 36, 0.96) !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
-  box-shadow: 0 10px 35px rgba(9, 20, 15, 0.12);
+  background: rgba(250, 248, 242, 0.96) !important;
+  border-color: rgba(222, 223, 215, 0.9) !important;
+  box-shadow: 0 10px 35px rgba(45, 54, 47, 0.08);
 }
 
 header[class*="sticky"][class*="top-0"][class*="z-50"] > div {
-  min-height: 76px;
+  min-height: 80px;
 }
 
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"] img {
-  content: url("/waresh-gold-logo-white.jpg");
-  height: 50px;
+  content: url("/waresh-gold-logo-green.png");
+  height: 58px;
   width: auto;
   object-fit: contain;
   border-radius: 0;
 }
 
 header[class*="sticky"][class*="top-0"][class*="z-50"] nav {
-  color: rgba(255, 255, 255, 0.78);
+  color: #62685e;
 }
 
 header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link {
-  color: rgba(255, 255, 255, 0.78);
+  color: #62685e;
 }
 
 header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover {
-  color: #d8bd7e;
+  color: #9b753c;
 }
 
-/* Keep the mobile trigger readable on the dark header. */
+/* Mobile trigger stays aligned with the light header. */
 @media (max-width: 1023px) {
   header[class*="sticky"][class*="top-0"][class*="z-50"] button[aria-label="باز کردن منوی سایت"] {
-    border-color: rgba(255, 255, 255, 0.22);
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+    border-color: #d8d2c7;
+    background: rgba(255, 255, 255, 0.65);
+    color: #334238;
   }
 }
 
