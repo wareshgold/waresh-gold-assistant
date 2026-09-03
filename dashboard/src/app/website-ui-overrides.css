@@ -21,8 +21,7 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] nav,
 header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link { color:#62685e; }
 header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { color:#9b753c; }
 
-/* Product catalog. Keep the catalog itself visible on desktop; the previous
-   reveal wrapper could remain hidden when the cinematic observer was active. */
+/* Product catalog. */
 #products .waresh-reveal { opacity:1 !important;transform:none !important; }
 #products article { box-shadow:0 18px 55px rgba(55,52,43,.07); }
 #products article:hover { box-shadow:0 28px 70px rgba(55,52,43,.13); }
@@ -36,42 +35,28 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
 #prices .grid.grid-cols-2 > div { transition:transform 250ms ease,box-shadow 250ms ease; }
 #prices .grid.grid-cols-2 > div:hover { transform:translateY(-2px);box-shadow:0 18px 42px rgba(48,60,51,.09); }
 
-/* Desktop cinematic Gift: one compact green scene. The photograph stays
-   inside the green Gift section instead of becoming a detached side panel. */
+/* Desktop: natural document scrolling. Gift is a normal section with a full-bleed
+   photograph; no sticky track, no snap, and no independent scrolling frame. */
 @media (min-width:641px) {
-  .waresh-cinematic-scene { position:relative;min-height:124vh !important;overflow:visible !important; }
-  .waresh-cinematic-scene > .waresh-sticky-frame,
-  .waresh-cinematic-scene > .waresh-sticky-frame.waresh-container {
-    position:sticky;top:76px;z-index:2;width:min(100% - 40px,1180px);min-height:0 !important;
-    height:auto !important;min-height:calc(100vh - 96px) !important;display:flex;align-items:center;
-  }
-
-  /* Gift's background remains the full green scene and follows its section. */
-  #gifts.waresh-cinematic-scene > div:first-child {
+  #gifts { min-height:0 !important; }
+  #gifts > div:first-child {
     position:absolute;inset:0;z-index:0;overflow:hidden;border-radius:0;box-shadow:none;
   }
-  #gifts.waresh-cinematic-scene > div:first-child > img {
-    opacity:.48;object-position:center 48%;
-  }
-  #gifts.waresh-cinematic-scene > div:first-child > div:first-of-type {
+  #gifts > div:first-child > img { opacity:.48;object-position:center 48%; }
+  #gifts > div:first-child > div:first-of-type {
     background:linear-gradient(90deg,rgba(18,37,29,.97) 0%,rgba(22,43,34,.86) 42%,rgba(18,35,28,.62) 70%,rgba(12,25,20,.78) 100%);
   }
-  #gifts.waresh-cinematic-scene > .waresh-sticky-frame { z-index:3; }
+  #gifts > .waresh-container { min-height:620px !important;padding-block:72px !important; }
+  #gifts .waresh-gift-range { min-height:78px; }
 
-  /* Make the Gift content itself compact rather than adding another tall card. */
-  #gifts.waresh-cinematic-scene > .waresh-sticky-frame {
-    min-height:calc(100vh - 132px) !important;
-    padding-block:40px !important;
-  }
-  #gifts.waresh-cinematic-scene .waresh-gift-range { min-height:78px; }
-
-  /* Market is a normal section, not a cinematic scene. */
+  /* Market stays a regular section and ends as soon as its content ends. */
   #prices { min-height:auto !important;padding-block:64px !important; }
   #prices > .waresh-container { padding-block:0 !important; }
   #prices form { padding:28px !important; }
   #prices form > div:first-child { padding-bottom:18px; }
   #prices form > .mt-7 { margin-top:18px;gap:14px; }
   #prices form > .mt-6 { margin-top:18px; }
+  #prices .lg\:sticky { position:static !important; }
 }
 
 #top .waresh-rain { position:absolute;inset:0;z-index:1;overflow:hidden;opacity:.52 !important;mix-blend-mode:screen; }
