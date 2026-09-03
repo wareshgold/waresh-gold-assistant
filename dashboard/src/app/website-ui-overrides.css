@@ -1,7 +1,6 @@
 /* Final visual overrides for the public Waresh Gold storefront. */
 
-/* Keep sticky positioning attached to the viewport: overflow-x:hidden on the main wrapper
-   can create an unintended scroll container and break position:sticky in Chromium. */
+/* Keep sticky positioning attached to the viewport. */
 .waresh-site { overflow-x:clip !important; overflow-y:visible !important; }
 
 /* Shared header. */
@@ -22,7 +21,9 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] nav,
 header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link { color:#62685e; }
 header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { color:#9b753c; }
 
-/* Product catalog. */
+/* Product catalog. Keep the catalog itself visible on desktop; the previous
+   reveal wrapper could remain hidden when the cinematic observer was active. */
+#products .waresh-reveal { opacity:1 !important;transform:none !important; }
 #products article { box-shadow:0 18px 55px rgba(55,52,43,.07); }
 #products article:hover { box-shadow:0 28px 70px rgba(55,52,43,.13); }
 #products article > div:first-child { height:280px; }
@@ -35,27 +36,37 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
 #prices .grid.grid-cols-2 > div { transition:transform 250ms ease,box-shadow 250ms ease; }
 #prices .grid.grid-cols-2 > div:hover { transform:translateY(-2px);box-shadow:0 18px 42px rgba(48,60,51,.09); }
 
-/* Desktop cinematic Gift: short viewport frame over a tall scrolling track. */
+/* Desktop cinematic Gift: one compact green scene. The photograph stays
+   inside the green Gift section instead of becoming a detached side panel. */
 @media (min-width:641px) {
-  .waresh-cinematic-scene { position:relative;min-height:150vh !important;overflow:visible !important; }
+  .waresh-cinematic-scene { position:relative;min-height:124vh !important;overflow:visible !important; }
   .waresh-cinematic-scene > .waresh-sticky-frame,
   .waresh-cinematic-scene > .waresh-sticky-frame.waresh-container {
     position:sticky;top:76px;z-index:2;width:min(100% - 40px,1180px);min-height:0 !important;
     height:auto !important;min-height:calc(100vh - 96px) !important;display:flex;align-items:center;
   }
+
+  /* Gift's background remains the full green scene and follows its section. */
   #gifts.waresh-cinematic-scene > div:first-child {
-    position:absolute;top:36px;right:0;bottom:auto;left:auto;width:min(34vw,470px);
-    height:min(650px,calc(100vh - 120px));z-index:0;border-radius:2rem 0 0 2rem;overflow:hidden;
-    box-shadow:0 30px 75px rgba(8,24,18,.17);
+    position:absolute;inset:0;z-index:0;overflow:hidden;border-radius:0;box-shadow:none;
   }
-  #gifts.waresh-cinematic-scene > div:first-child > img { opacity:.60;object-position:center; }
+  #gifts.waresh-cinematic-scene > div:first-child > img {
+    opacity:.48;object-position:center 48%;
+  }
   #gifts.waresh-cinematic-scene > div:first-child > div:first-of-type {
-    background:linear-gradient(90deg,rgba(18,37,29,.97) 0%,rgba(22,43,34,.72) 42%,rgba(12,25,20,.18) 100%);
+    background:linear-gradient(90deg,rgba(18,37,29,.97) 0%,rgba(22,43,34,.86) 42%,rgba(18,35,28,.62) 70%,rgba(12,25,20,.78) 100%);
   }
   #gifts.waresh-cinematic-scene > .waresh-sticky-frame { z-index:3; }
 
-  /* Market is deliberately NOT cinematic; it should finish as soon as the calculator ends. */
-  #prices { min-height:auto !important; }
+  /* Make the Gift content itself compact rather than adding another tall card. */
+  #gifts.waresh-cinematic-scene > .waresh-sticky-frame {
+    min-height:calc(100vh - 132px) !important;
+    padding-block:40px !important;
+  }
+  #gifts.waresh-cinematic-scene .waresh-gift-range { min-height:78px; }
+
+  /* Market is a normal section, not a cinematic scene. */
+  #prices { min-height:auto !important;padding-block:64px !important; }
   #prices > .waresh-container { padding-block:0 !important; }
   #prices form { padding:28px !important; }
   #prices form > div:first-child { padding-bottom:18px; }
