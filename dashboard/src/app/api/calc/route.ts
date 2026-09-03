@@ -27,6 +27,26 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return NextResponse.json(
+      { error: "درخواست نامعتبر است." },
+      { status: 400 }
+    );
+  }
+
+  const input = body as Record<string, unknown>;
+
+  // Optional percentages are normalized here so the Website API remains
+  // compatible with the core calculator contract even when the upstream
+  // Worker has not yet been updated to accept omitted fields.
+  const normalizedBody = {
+    ...input,
+    laborPercent: input.laborPercent ?? 0,
+    profitPercent: input.profitPercent ?? 0,
+    taxPercent: input.taxPercent ?? 0,
+    discount: input.discount ?? 0,
+  };
+
   try {
     const response = await fetch(
       `${API_BASE_URL}/api/v1/calculate/gold-price`,
@@ -35,7 +55,7 @@ export async function POST(request: NextRequest) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify(normalizedBody),
         signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
       }
     );
