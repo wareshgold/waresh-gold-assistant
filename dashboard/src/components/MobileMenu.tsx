@@ -5,9 +5,9 @@ import { createPortal } from "react-dom";
 import { TELEGRAM_BOT_URL } from "@/lib/api";
 
 const links = [
-  ["محصولات", "#products"],
-  ["هدیه", "#gifts"],
-  ["قیمت امروز", "#prices"],
+  ["محصولات", "/#products"],
+  ["هدیه", "/#gifts"],
+  ["قیمت امروز", "/#prices"],
   ["ابزار طلا", "/tools"],
   ["درباره وارش", "/about"],
 ] as const;
@@ -38,7 +38,9 @@ export default function MobileMenu() {
       />
       <aside className="waresh-mobile-menu absolute inset-y-0 right-0 z-10 flex w-[min(88vw,390px)] flex-col bg-[#faf8f2] px-7 pb-8 pt-6 shadow-[-30px_0_90px_rgba(16,30,24,0.2)]">
         <div className="flex items-center justify-between border-b border-[#e0ddd4] pb-5">
-          <img src="/waresh-gold-logo-green.png" alt="وارش گلد" className="h-11 w-auto" />
+          <a href="/" onClick={() => setOpen(false)} aria-label="صفحه اصلی وارش گلد">
+            <img src="/waresh-gold-logo-green.png" alt="وارش گلد" className="h-11 w-auto" />
+          </a>
           <button
             type="button"
             onClick={() => setOpen(false)}
