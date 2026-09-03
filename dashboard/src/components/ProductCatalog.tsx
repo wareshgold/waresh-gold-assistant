@@ -112,59 +112,62 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
 
   return (
     <div>
-      <div className="mb-5 flex flex-col gap-4 border-y border-[#dcd8cd] py-5 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-wrap gap-2" aria-label="دسته‌بندی محصولات">
-          <button type="button" onClick={() => setCategory("all")} className={`rounded-full px-4 py-2 text-sm font-bold transition ${category === "all" ? "bg-[#25392f] text-white" : "bg-white/70 text-[#686c64] hover:bg-white"}`}>همه</button>
-          {PRODUCT_CATEGORIES.map((item) => (
-            <button key={item.value} type="button" onClick={() => setCategory(item.value)} className={`rounded-full px-4 py-2 text-sm font-bold transition ${category === item.value ? "bg-[#25392f] text-white" : "bg-white/70 text-[#686c64] hover:bg-white"}`}>
-              {item.label}
-            </button>
-          ))}
-        </div>
-        <div className="flex items-center gap-3">
-          <select value={priceBand} onChange={(event) => selectPriceBand(event.target.value)} className="min-w-48 border border-[#d8d1c5] bg-[#fffdf8] px-4 py-2.5 text-sm font-semibold text-[#4f514a] outline-none focus:border-[#a47d3f]" aria-label="فیلتر بازه قیمت">
-            <option value="all">بازه قیمت</option>
-            {priceBands.map((band) => <option key={band.value} value={band.value}>{band.label}</option>)}
-          </select>
-          {activeFilterCount > 0 && (
-            <button type="button" onClick={clearFilters} className="whitespace-nowrap text-xs font-bold text-[#92713e] transition hover:text-[#6e522b]">
-              پاک کردن فیلترها
-            </button>
-          )}
+      <div className="mb-5 rounded-[1.75rem] border border-[#dcd8cd] bg-[#faf8f2]/70 p-4 sm:p-5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex min-w-0 flex-wrap gap-2" aria-label="دسته‌بندی محصولات">
+            <button type="button" onClick={() => setCategory("all")} className={`min-h-11 rounded-full px-4 py-2 text-sm font-bold transition ${category === "all" ? "bg-[#25392f] text-white" : "bg-white/80 text-[#686c64] hover:bg-white"}`}>همه</button>
+            {PRODUCT_CATEGORIES.map((item) => (
+              <button key={item.value} type="button" onClick={() => setCategory(item.value)} className={`min-h-11 rounded-full px-4 py-2 text-sm font-bold transition ${category === item.value ? "bg-[#25392f] text-white" : "bg-white/80 text-[#686c64] hover:bg-white"}`}>
+                {item.label}
+              </button>
+            ))}
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <label className="sr-only" htmlFor="product-price-band">فیلتر بازه قیمت</label>
+            <select id="product-price-band" value={priceBand} onChange={(event) => selectPriceBand(event.target.value)} className="min-h-11 w-full min-w-0 rounded-full border border-[#d8d1c5] bg-[#fffdf8] px-4 py-2.5 text-sm font-semibold text-[#4f514a] outline-none transition focus:border-[#a47d3f] sm:w-52" aria-label="فیلتر بازه قیمت">
+              <option value="all">بازه قیمت</option>
+              {priceBands.map((band) => <option key={band.value} value={band.value}>{band.label}</option>)}
+            </select>
+            {activeFilterCount > 0 && (
+              <button type="button" onClick={clearFilters} className="min-h-11 whitespace-nowrap rounded-full px-3 text-xs font-bold text-[#92713e] transition hover:bg-[#f2eadb] hover:text-[#6e522b]">
+                پاک کردن فیلترها
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="mb-7 flex flex-wrap items-center justify-between gap-3 text-xs text-[#878981]">
+      <div className="mb-7 flex flex-wrap items-center justify-between gap-3 px-1 text-xs text-[#878981]">
         <p>{products.length} محصول قابل انتخاب</p>
-        {activeFilterCount > 0 && <p className="font-semibold text-[#92713e]">{activeFilterCount} فیلتر فعال</p>}
+        {activeFilterCount > 0 && <p className="rounded-full bg-[#f2eadb] px-3 py-1.5 font-semibold text-[#92713e]">{activeFilterCount} فیلتر فعال</p>}
       </div>
 
       {products.length === 0 ? (
-        <div className="border border-dashed border-[#cfc8bb] bg-[#faf7f0] px-6 py-16 text-center text-[#77776f]">
+        <div className="rounded-[1.75rem] border border-dashed border-[#cfc8bb] bg-[#faf7f0] px-6 py-16 text-center text-[#77776f]">
           <p className="font-bold text-[#5d6159]">محصولی در این محدوده پیدا نشد.</p>
-          <button type="button" onClick={clearFilters} className="mt-4 rounded-full bg-[#263b31] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#1c2e26]">نمایش همه محصولات</button>
+          <button type="button" onClick={clearFilters} className="mt-4 min-h-11 rounded-full bg-[#263b31] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#1c2e26]">نمایش همه محصولات</button>
         </div>
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {products.map(({ product, pricing }) => (
             <article key={product.id} className="group overflow-hidden rounded-[2rem] border border-[#e2ddd3] bg-[#fffdf8] shadow-[0_14px_45px_rgba(55,52,43,0.06)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(55,52,43,0.11)]">
-              <div className="relative h-64 overflow-hidden bg-[#eee8dc]">
+              <div className="relative h-56 overflow-hidden bg-[#eee8dc] sm:h-64">
                 <img src={product.image} alt={product.name} loading="lazy" className="h-full w-full object-cover object-center transition duration-700 ease-out group-hover:scale-[1.045]" />
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,30,24,0.02)_45%,rgba(20,30,24,0.18)_100%)]" />
-                <span className="absolute right-5 top-5 rounded-full border border-white/70 bg-white/70 px-3 py-1 text-[11px] font-bold text-[#746a5d] shadow-sm backdrop-blur">{product.subcategory ?? product.category}</span>
+                <span className="absolute right-4 top-4 rounded-full border border-white/70 bg-white/70 px-3 py-1.5 text-[11px] font-bold text-[#746a5d] shadow-sm backdrop-blur sm:right-5 sm:top-5">{product.subcategory ?? product.category}</span>
               </div>
-              <div className="p-6">
+              <div className="p-5 sm:p-6">
                 <p className="text-xs font-semibold tracking-[0.12em] text-[#a17c45]">{product.category}</p>
                 <h3 className="mt-2 text-lg font-extrabold text-[#292c27]">{product.name}</h3>
                 <p className="mt-2 text-sm leading-7 text-[#7b7d76]">{product.description}</p>
-                <div className="mt-6 border-t border-[#ebe6dc] pt-5">
+                <div className="mt-5 border-t border-[#ebe6dc] pt-4 sm:mt-6 sm:pt-5">
                   <div className="flex items-end justify-between gap-4">
                     <div><p className="text-xs text-[#96968d]">وزن</p><p className="mt-1 text-sm font-bold text-[#55584f]">{formatWeight(product.weight)}</p></div>
-                    {pricing ? <p className="text-lg font-extrabold text-[#9b753c]">{formatToman(pricing.finalPrice)}</p> : <p className="text-sm font-bold text-[#9b753c]">قیمت در حال دریافت…</p>}
+                    {pricing ? <p className="text-base font-extrabold text-[#9b753c] sm:text-lg">{formatToman(pricing.finalPrice)}</p> : <p className="text-sm font-bold text-[#9b753c]">قیمت در حال دریافت…</p>}
                   </div>
                   {pricing && <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#8b8b82]"><span>اجرت کل {pricing.totalLaborPercent}٪</span><span>تخفیف {formatToman(pricing.discountAmount)}</span></div>}
                 </div>
-                <a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer" className="mt-5 flex w-full items-center justify-center rounded-full border border-[#d9c69f] bg-[#fbf6ea] px-4 py-3 text-sm font-bold text-[#7e6030] transition hover:-translate-y-0.5 hover:bg-[#f5ecd9]">
+                <a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer" className="mt-5 flex min-h-11 w-full items-center justify-center rounded-full border border-[#d9c69f] bg-[#fbf6ea] px-4 py-3 text-sm font-bold text-[#7e6030] transition hover:-translate-y-0.5 hover:bg-[#f5ecd9]">
                   مشاوره و سفارش
                 </a>
               </div>
