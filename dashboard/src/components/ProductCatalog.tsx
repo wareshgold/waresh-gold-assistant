@@ -8,6 +8,7 @@ import {
   PRODUCT_CATEGORIES,
   type ProductCategory,
 } from "@/data/products";
+import { TELEGRAM_BOT_URL } from "@/lib/api";
 
 const priceBands = [
   { value: "under-10", label: "تا ۱۰ میلیون", min: 0, max: 10_000_000 },
@@ -36,21 +37,11 @@ function calculateProductPrice(product: (typeof PRODUCTS)[number], liveGoldPrice
   const profitAmount = subtotal * (product.profitPercent / 100);
   const beforeDiscount = subtotal + profitAmount;
 
-  // Customer-facing prices are rounded down to the nearest 100,000 toman.
-  // The difference is treated as an explicit discount.
   const finalPrice = Math.floor(beforeDiscount / 100_000) * 100_000;
   const discountAmount = Math.max(0, beforeDiscount - finalPrice);
+  const totalLaborPercent = product.laborPercent + product.profitPercent + product.taxPercent;
 
-  // Product cards intentionally expose one combined customer-facing percentage.
-  const totalLaborPercent =
-    product.laborPercent + product.profitPercent + product.taxPercent;
-
-  return {
-    goldValue,
-    finalPrice,
-    discountAmount,
-    totalLaborPercent,
-  };
+  return { goldValue, finalPrice, discountAmount, totalLaborPercent };
 }
 
 export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice }: ProductCatalogProps) {
@@ -96,9 +87,7 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
 
     return PRODUCTS.map((product) => ({
       product,
-      pricing: liveGoldPrice && liveGoldPrice > 0
-        ? calculateProductPrice(product, liveGoldPrice)
-        : null,
+      pricing: liveGoldPrice && liveGoldPrice > 0 ? calculateProductPrice(product, liveGoldPrice) : null,
     })).filter(({ product, pricing }) => {
       const categoryMatch = category === "all" || product.category === category;
       const priceMatch = !band || !pricing || (pricing.finalPrice >= band.min && pricing.finalPrice <= band.max);
@@ -114,10 +103,17 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
     window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
   };
 
+  const clearFilters = () => {
+    setCategory("all");
+    selectPriceBand("all");
+  };
+
+  const activeFilterCount = (category !== "all" ? 1 : 0) + (priceBand !== "all" ? 1 : 0);
+
   return (
     <div>
-      <div className="mb-10 flex flex-col gap-5 border-y border-[#dcd8cd] py-5 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-wrap gap-2">
+      <div className="mb-5 flex flex-col gap-4 border-y border-[#dcd8cd] py-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-wrap gap-2" aria-label="دسته‌بندی محصولات">
           <button type="button" onClick={() => setCategory("all")} className={`rounded-full px-4 py-2 text-sm font-bold transition ${category === "all" ? "bg-[#25392f] text-white" : "bg-white/70 text-[#686c64] hover:bg-white"}`}>همه</button>
           {PRODUCT_CATEGORIES.map((item) => (
             <button key={item.value} type="button" onClick={() => setCategory(item.value)} className={`rounded-full px-4 py-2 text-sm font-bold transition ${category === item.value ? "bg-[#25392f] text-white" : "bg-white/70 text-[#686c64] hover:bg-white"}`}>
@@ -125,27 +121,35 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
             </button>
           ))}
         </div>
-        <select value={priceBand} onChange={(event) => selectPriceBand(event.target.value)} className="min-w-48 border border-[#d8d1c5] bg-[#fffdf8] px-4 py-2.5 text-sm font-semibold text-[#4f514a] outline-none focus:border-[#a47d3f]" aria-label="فیلتر بازه قیمت">
-          <option value="all">بازه قیمت</option>
-          {priceBands.map((band) => <option key={band.value} value={band.value}>{band.label}</option>)}
-        </select>
+        <div className="flex items-center gap-3">
+          <select value={priceBand} onChange={(event) => selectPriceBand(event.target.value)} className="min-w-48 border border-[#d8d1c5] bg-[#fffdf8] px-4 py-2.5 text-sm font-semibold text-[#4f514a] outline-none focus:border-[#a47d3f]" aria-label="فیلتر بازه قیمت">
+            <option value="all">بازه قیمت</option>
+            {priceBands.map((band) => <option key={band.value} value={band.value}>{band.label}</option>)}
+          </select>
+          {activeFilterCount > 0 && (
+            <button type="button" onClick={clearFilters} className="whitespace-nowrap text-xs font-bold text-[#92713e] transition hover:text-[#6e522b]">
+              پاک کردن فیلترها
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="mb-7 flex flex-wrap items-center justify-between gap-3 text-xs text-[#878981]">
+        <p>{products.length} محصول قابل انتخاب</p>
+        {activeFilterCount > 0 && <p className="font-semibold text-[#92713e]">{activeFilterCount} فیلتر فعال</p>}
       </div>
 
       {products.length === 0 ? (
         <div className="border border-dashed border-[#cfc8bb] bg-[#faf7f0] px-6 py-16 text-center text-[#77776f]">
-          محصولی در این محدوده پیدا نشد.
+          <p className="font-bold text-[#5d6159]">محصولی در این محدوده پیدا نشد.</p>
+          <button type="button" onClick={clearFilters} className="mt-4 rounded-full bg-[#263b31] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#1c2e26]">نمایش همه محصولات</button>
         </div>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {products.map(({ product, pricing }) => (
             <article key={product.id} className="group overflow-hidden rounded-[2rem] border border-[#e2ddd3] bg-[#fffdf8] shadow-[0_14px_45px_rgba(55,52,43,0.06)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(55,52,43,0.11)]">
               <div className="relative h-64 overflow-hidden bg-[#eee8dc]">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  loading="lazy"
-                  className="h-full w-full object-cover object-center transition duration-700 ease-out group-hover:scale-[1.045]"
-                />
+                <img src={product.image} alt={product.name} loading="lazy" className="h-full w-full object-cover object-center transition duration-700 ease-out group-hover:scale-[1.045]" />
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,30,24,0.02)_45%,rgba(20,30,24,0.18)_100%)]" />
                 <span className="absolute right-5 top-5 rounded-full border border-white/70 bg-white/70 px-3 py-1 text-[11px] font-bold text-[#746a5d] shadow-sm backdrop-blur">{product.subcategory ?? product.category}</span>
               </div>
@@ -156,19 +160,13 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
                 <div className="mt-6 border-t border-[#ebe6dc] pt-5">
                   <div className="flex items-end justify-between gap-4">
                     <div><p className="text-xs text-[#96968d]">وزن</p><p className="mt-1 text-sm font-bold text-[#55584f]">{formatWeight(product.weight)}</p></div>
-                    {pricing ? (
-                      <p className="text-lg font-extrabold text-[#9b753c]">{formatToman(pricing.finalPrice)}</p>
-                    ) : (
-                      <p className="text-sm font-bold text-[#9b753c]">قیمت در حال دریافت…</p>
-                    )}
+                    {pricing ? <p className="text-lg font-extrabold text-[#9b753c]">{formatToman(pricing.finalPrice)}</p> : <p className="text-sm font-bold text-[#9b753c]">قیمت در حال دریافت…</p>}
                   </div>
-                  {pricing && (
-                    <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#8b8b82]">
-                      <span>اجرت کل {pricing.totalLaborPercent}٪</span>
-                      <span>تخفیف {formatToman(pricing.discountAmount)}</span>
-                    </div>
-                  )}
+                  {pricing && <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#8b8b82]"><span>اجرت کل {pricing.totalLaborPercent}٪</span><span>تخفیف {formatToman(pricing.discountAmount)}</span></div>}
                 </div>
+                <a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer" className="mt-5 flex w-full items-center justify-center rounded-full border border-[#d9c69f] bg-[#fbf6ea] px-4 py-3 text-sm font-bold text-[#7e6030] transition hover:-translate-y-0.5 hover:bg-[#f5ecd9]">
+                  مشاوره و سفارش
+                </a>
               </div>
             </article>
           ))}
