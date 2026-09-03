@@ -165,6 +165,60 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover {
   box-shadow: 0 18px 42px rgba(48, 60, 51, 0.09);
 }
 
+/* Desktop cinematic sections: a tall track + sticky viewport, like the Webflow reference. */
+@media (min-width: 641px) {
+  .waresh-cinematic-scene {
+    position: relative;
+    min-height: 180vh !important;
+    overflow: clip !important;
+  }
+
+  .waresh-cinematic-scene > .waresh-sticky-frame,
+  .waresh-cinematic-scene > .waresh-sticky-frame.waresh-container {
+    position: sticky;
+    top: 76px;
+    z-index: 2;
+    width: min(100% - 40px, 1180px);
+    min-height: 0 !important;
+    height: max(620px, calc(100vh - 76px));
+  }
+
+  /* Keep the section artwork attached to the viewport while the track scrolls. */
+  #gifts.waresh-cinematic-scene > div:first-child {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  #prices.waresh-cinematic-scene {
+    background: #e9eee7;
+  }
+}
+
+/* Gift scene: keep the beautiful photography, but turn it into a restrained art panel. */
+@media (min-width: 641px) {
+  #gifts.waresh-cinematic-scene > div:first-child {
+    inset: 34px 0 34px auto;
+    width: min(45vw, 620px);
+    border-radius: 3rem 0 0 3rem;
+    overflow: hidden;
+    box-shadow: 0 35px 90px rgba(8, 24, 18, 0.22);
+  }
+
+  #gifts.waresh-cinematic-scene > div:first-child > img {
+    opacity: 0.68;
+    object-position: center;
+  }
+
+  #gifts.waresh-cinematic-scene > div:first-child > div:first-of-type {
+    background: linear-gradient(90deg, rgba(18, 37, 29, 0.96) 0%, rgba(22, 43, 34, 0.62) 45%, rgba(12, 25, 20, 0.16) 100%);
+  }
+
+  #gifts.waresh-cinematic-scene > .waresh-sticky-frame {
+    z-index: 3;
+  }
+}
+
 /* Hero rain: visible, sparse and atmospheric — above the background layers, below the content. */
 #top .waresh-rain {
   position: absolute;
@@ -248,6 +302,11 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover {
 
   #products .grid > article > div:first-child {
     height: 260px;
+  }
+
+  /* Mobile keeps the photograph atmospheric rather than turning it into a huge fixed panel. */
+  #gifts > div:first-child > img {
+    opacity: 0.58;
   }
 
   #top .waresh-rain {
