@@ -42,6 +42,8 @@ function Field({ label, value, onChange, placeholder, required, hint }: FieldPro
         dir="ltr"
         value={value}
         placeholder={placeholder}
+        required={required}
+        aria-required={required}
         onChange={(e) => onChange(e.target.value)}
         className="min-h-12 w-full rounded-xl border border-[#ded5c9] bg-[#fffdf9] px-4 py-3 text-left text-[#302b25] placeholder:text-[#b0a79d] outline-none transition focus:border-[#b08a45] focus:ring-2 focus:ring-[#b08a45]/10"
       />
@@ -166,10 +168,10 @@ export default function GoldCalculator({ liveGoldPrice }: GoldCalculatorProps) {
             </button>
           )}
         </div>
-        <Field label="اجرت (%) — اختیاری" value={labor} onChange={setLabor} placeholder="مثلاً 7" />
-        <Field label="سود (%) — اختیاری" value={profit} onChange={setProfit} placeholder="مثلاً 0" />
-        <Field label="مالیات (%) — اختیاری" value={tax} onChange={setTax} placeholder="مثلاً 9" />
-        <Field label="تخفیف (%) — اختیاری" value={discount} onChange={setDiscount} placeholder="مثلاً 5" />
+        <Field label="اجرت (%)" value={labor} onChange={setLabor} placeholder="مثلاً 7" hint="اختیاری" />
+        <Field label="سود (%)" value={profit} onChange={setProfit} placeholder="مثلاً 0" hint="اختیاری" />
+        <Field label="مالیات (%)" value={tax} onChange={setTax} placeholder="مثلاً 9" hint="اختیاری" />
+        <Field label="تخفیف (%)" value={discount} onChange={setDiscount} placeholder="مثلاً 5" hint="اختیاری" />
       </div>
 
       {error && (
