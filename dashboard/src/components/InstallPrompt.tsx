@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+const DISMISS_KEY = "waresh-gold-install-prompt-dismissed";
+
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
@@ -12,6 +14,8 @@ export default function InstallPrompt() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    if (window.localStorage.getItem(DISMISS_KEY) === "1") return;
+
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
       setInstallEvent(event as BeforeInstallPromptEvent);
@@ -40,9 +44,15 @@ export default function InstallPrompt() {
     setInstallEvent(null);
     setVisible(false);
 
-    if (choice.outcome === "accepted") {
-      return;
+    if (choice.outcome === "dismissed") {
+      window.localStorage.setItem(DISMISS_KEY, "1");
     }
+  };
+
+  const dismiss = () => {
+    window.localStorage.setItem(DISMISS_KEY, "1");
+    setVisible(false);
+    setInstallEvent(null);
   };
 
   return (
@@ -57,7 +67,7 @@ export default function InstallPrompt() {
         </button>
         <button
           type="button"
-          onClick={() => setVisible(false)}
+          onClick={dismiss}
           className="waresh-install-prompt__dismiss"
           aria-label="بستن"
         >
