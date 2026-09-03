@@ -41,24 +41,12 @@ export default function MobileMenu() {
           <a href="/" onClick={() => setOpen(false)} aria-label="صفحه اصلی وارش گلد">
             <img src="/waresh-gold-logo-green.png" alt="وارش گلد" className="h-11 w-auto" />
           </a>
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d8d2c7] text-xl text-[#39453d]"
-            aria-label="بستن منو"
-          >
-            ×
-          </button>
+          <button type="button" onClick={() => setOpen(false)} className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d8d2c7] text-xl text-[#39453d]" aria-label="بستن منو">×</button>
         </div>
 
         <nav className="flex flex-1 flex-col justify-center gap-2" aria-label="منوی موبایل">
           {links.map(([label, href], index) => (
-            <a
-              key={href}
-              href={href}
-              onClick={() => setOpen(false)}
-              className="group flex items-center justify-between border-b border-[#e7e3d9] py-4 text-2xl font-extrabold text-[#29332d] transition hover:text-[#987238]"
-            >
+            <a key={href} href={href} onClick={() => setOpen(false)} className="group flex items-center justify-between border-b border-[#e7e3d9] py-4 text-2xl font-extrabold text-[#29332d] transition hover:text-[#987238]">
               <span>{label}</span>
               <span className="text-sm font-normal text-[#b28b4c] opacity-0 transition group-hover:opacity-100">0{index + 1}</span>
             </a>
@@ -67,15 +55,7 @@ export default function MobileMenu() {
 
         <div className="border-t border-[#e0ddd4] pt-6">
           <p className="text-xs font-bold tracking-[0.18em] text-[#a17c45]">WARESH GOLD</p>
-          <a
-            href={TELEGRAM_BOT_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => setOpen(false)}
-            className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-[#263b31] px-6 py-4 text-sm font-bold text-white transition hover:bg-[#1c2e26]"
-          >
-            گفتگو و مشاوره در تلگرام
-          </a>
+          <a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-[#263b31] px-6 py-4 text-sm font-bold text-white transition hover:bg-[#1c2e26]">گفتگو و مشاوره در تلگرام</a>
         </div>
       </aside>
     </div>
@@ -83,18 +63,8 @@ export default function MobileMenu() {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#d8d2c7] bg-white/65 text-[#334238] transition hover:bg-white lg:hidden"
-        aria-label="باز کردن منوی سایت"
-        aria-expanded={open}
-      >
-        <span className="flex w-5 flex-col gap-1.5" aria-hidden="true">
-          <span className="h-px w-full bg-current" />
-          <span className="h-px w-3/4 bg-current" />
-          <span className="h-px w-full bg-current" />
-        </span>
+      <button type="button" onClick={() => setOpen(true)} className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#d8d2c7] bg-white/65 text-[#334238] transition hover:bg-white lg:hidden" aria-label="باز کردن منوی سایت" aria-expanded={open}>
+        <span className="flex w-5 flex-col gap-1.5" aria-hidden="true"><span className="h-px w-full bg-current" /><span className="h-px w-3/4 bg-current" /><span className="h-px w-full bg-current" /></span>
       </button>
       {typeof document !== "undefined" && menu ? createPortal(menu, document.body) : null}
     </>
