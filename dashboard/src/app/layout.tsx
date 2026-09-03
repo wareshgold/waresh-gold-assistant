@@ -4,6 +4,7 @@ import "./globals.css";
 import "./website-polish.css";
 import "./mobile-scale.css";
 import "./homepage-polish.css";
+import "./website-ui-overrides.css";
 
 export const metadata: Metadata = {
   title: "وارش گلد | فروشگاه طلا و جواهر",
