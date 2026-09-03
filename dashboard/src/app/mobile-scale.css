@@ -3,6 +3,7 @@
 @media (max-width: 640px) {
   html {
     font-size: 16px;
+    scroll-padding-top: 92px;
   }
 
   body {
@@ -12,6 +13,11 @@
 
   .waresh-site {
     font-size: 1rem;
+  }
+
+  /* Keep sticky-header navigation targets visible after anchor jumps. */
+  .waresh-site section[id] {
+    scroll-margin-top: 92px;
   }
 
   /* Header */
