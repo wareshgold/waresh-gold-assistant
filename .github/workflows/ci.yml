@@ -44,5 +44,11 @@ jobs:
       - name: Tests
         run: pnpm exec vitest run
 
+      - name: Website lint
+        run: pnpm --dir dashboard run lint
+
       - name: Website build
         run: pnpm --dir dashboard run build
+
+      - name: Cloudflare runtime build
+        run: pnpm --dir dashboard run cf:build
