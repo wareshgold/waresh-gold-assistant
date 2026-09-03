@@ -1,6 +1,6 @@
 /* Final visual overrides for the public Waresh Gold storefront. */
 
-/* Header: return to the light brand surface so the green mark feels integrated. */
+/* Header: keep the current light background, but use the white brand mark. */
 header[class*="sticky"][class*="top-0"][class*="z-50"] {
   background: rgba(250, 248, 242, 0.96) !important;
   border-color: rgba(222, 223, 215, 0.9) !important;
@@ -12,7 +12,7 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] > div {
 }
 
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"] img {
-  content: url("/waresh-gold-logo-green.png");
+  content: url("/waresh-gold-logo-white.jpg");
   height: 58px;
   width: auto;
   object-fit: contain;
