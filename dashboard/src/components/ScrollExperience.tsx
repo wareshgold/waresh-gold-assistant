@@ -24,9 +24,10 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
     }
 
     // Mobile intentionally uses native browser scrolling. The cinematic
-    // sticky/snap experience is only enabled above 640px so touch scrolling
-    // is never forced to snap between large sections.
-    const cinematicIndexes = new Set([2, 3]);
+    // sticky experience is only enabled above 640px.
+    // Scene indexes: 0 hero, 1 products, 2 gifts, 3 market, ...
+    // Only Gift needs the long sticky track.
+    const cinematicIndexes = new Set([2]);
     const cinematicScenes: Array<{ scene: HTMLElement; frame: HTMLElement }> = [];
 
     if (!isMobile) {
@@ -52,9 +53,10 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
     const previousSnapType = root.style.scrollSnapType;
     const previousSnapPadding = root.style.scrollPaddingTop;
 
-    // Mandatory document-level snap is a desktop-only enhancement.
+    // Use proximity instead of mandatory snapping so the page still feels
+    // natural while the Gift scene gets its Webflow-style sticky behavior.
     if (!reduceMotion && !isMobile && cinematicScenes.length > 0) {
-      root.style.scrollSnapType = "y mandatory";
+      root.style.scrollSnapType = "y proximity";
       root.style.scrollPaddingTop = "76px";
     }
 
