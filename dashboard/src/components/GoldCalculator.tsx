@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface GoldCalculatorProps {
   liveGoldPrice?: number;
@@ -60,12 +60,6 @@ export default function GoldCalculator({ liveGoldPrice }: GoldCalculatorProps) {
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (liveGoldPrice && !goldPrice) {
-      setGoldPrice(String(liveGoldPrice));
-    }
-  }, [liveGoldPrice, goldPrice]);
 
   const formatToman = (value: number) =>
     new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 0 }).format(value);
