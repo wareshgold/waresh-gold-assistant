@@ -1,6 +1,9 @@
 name: Deploy Website
 
 on:
+  push:
+    branches:
+      - feature/website-v2
   workflow_dispatch:
 
 permissions:
