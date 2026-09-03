@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { TELEGRAM_BOT_URL } from "@/lib/api";
@@ -38,18 +40,18 @@ export default function MobileMenu() {
       />
       <aside className="waresh-mobile-menu absolute inset-y-0 right-0 z-10 flex w-[min(88vw,390px)] flex-col bg-[#faf8f2] px-7 pb-8 pt-6 shadow-[-30px_0_90px_rgba(16,30,24,0.2)]">
         <div className="flex items-center justify-between border-b border-[#e0ddd4] pb-5">
-          <a href="/" onClick={() => setOpen(false)} aria-label="صفحه اصلی وارش گلد">
-            <img src="/waresh-gold-logo-green.png" alt="وارش گلد" className="h-11 w-auto" />
-          </a>
+          <Link href="/" onClick={() => setOpen(false)} aria-label="صفحه اصلی وارش گلد">
+            <Image src="/waresh-gold-logo-green.png" alt="وارش گلد" width={165} height={44} className="h-11 w-auto" />
+          </Link>
           <button type="button" onClick={() => setOpen(false)} className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d8d2c7] text-xl text-[#39453d]" aria-label="بستن منو">×</button>
         </div>
 
         <nav className="flex flex-1 flex-col justify-center gap-2" aria-label="منوی موبایل">
           {links.map(([label, href], index) => (
-            <a key={href} href={href} onClick={() => setOpen(false)} className="group flex items-center justify-between border-b border-[#e7e3d9] py-4 text-2xl font-extrabold text-[#29332d] transition hover:text-[#987238]">
+            <Link key={href} href={href} onClick={() => setOpen(false)} className="group flex items-center justify-between border-b border-[#e7e3d9] py-4 text-2xl font-extrabold text-[#29332d] transition hover:text-[#987238]">
               <span>{label}</span>
               <span className="text-sm font-normal text-[#b28b4c] opacity-0 transition group-hover:opacity-100">0{index + 1}</span>
-            </a>
+            </Link>
           ))}
         </nav>
 
