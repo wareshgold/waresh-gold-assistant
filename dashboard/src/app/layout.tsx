@@ -6,15 +6,17 @@ import "./mobile-scale.css";
 import "./homepage-polish.css";
 import "./website-ui-overrides.css";
 
+const primaryLogo = "/waresh-gold-logo-green.png";
+
 export const metadata: Metadata = {
   title: "وارش گلد | فروشگاه طلا و جواهر",
   description:
     "فروشگاه وارش گلد؛ انتخاب طلا و جواهر، قیمت روز بازار و ابزارهای دقیق خرید طلا",
   manifest: "/manifest.webmanifest",
   icons: {
-    icon: "/waresh-gold-logo-white.jpg",
-    shortcut: "/waresh-gold-logo-white.jpg",
-    apple: "/waresh-gold-logo-white.jpg",
+    icon: primaryLogo,
+    shortcut: primaryLogo,
+    apple: primaryLogo,
   },
   appleWebApp: {
     capable: true,
