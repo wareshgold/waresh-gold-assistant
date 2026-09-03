@@ -44,14 +44,14 @@ export default function MobileMenu() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[100] lg:hidden">
+        <div className="fixed inset-0 z-[100] isolate overflow-hidden bg-[#faf8f2] lg:hidden">
           <button
             type="button"
-            className="absolute inset-0 bg-[#14251e]/65 backdrop-blur-sm"
+            className="absolute inset-0 z-0 bg-[#14251e]/65 backdrop-blur-sm"
             onClick={() => setOpen(false)}
             aria-label="بستن منو"
           />
-          <aside className="waresh-mobile-menu absolute inset-y-0 right-0 flex w-[min(88vw,390px)] flex-col bg-[#faf8f2] px-7 pb-8 pt-6 shadow-[-30px_0_90px_rgba(16,30,24,0.2)]">
+          <aside className="waresh-mobile-menu absolute inset-y-0 right-0 z-10 flex w-[min(88vw,390px)] flex-col bg-[#faf8f2] px-7 pb-8 pt-6 shadow-[-30px_0_90px_rgba(16,30,24,0.2)] [backface-visibility:hidden]">
             <div className="flex items-center justify-between border-b border-[#e0ddd4] pb-5">
               <img src="/waresh-gold-logo-green.png" alt="وارش گلد" className="h-11 w-auto" />
               <button
