@@ -1,6 +1,6 @@
 /* Final visual overrides for the public Waresh Gold storefront. */
 
-/* Header: keep the light surface, but give the white logo a deliberate brand lockup. */
+/* Shared header: one calm light lockup across Home, Tools and About. */
 header[class*="sticky"][class*="top-0"][class*="z-50"] {
   background: rgba(250, 248, 242, 0.96) !important;
   border-color: rgba(222, 223, 215, 0.9) !important;
@@ -11,7 +11,8 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] > div {
   min-height: 80px;
 }
 
-header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"] {
+header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],
+header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -19,18 +20,19 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گ
   height: 64px;
   padding: 7px 14px;
   border-radius: 14px;
-  background: #263b31;
-  box-shadow: 0 10px 28px rgba(38, 59, 49, 0.14);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 10px 28px rgba(38, 59, 49, 0.08);
   transition: transform 220ms ease, box-shadow 220ms ease;
 }
 
-header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"]:hover {
+header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"]:hover,
+header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]:hover {
   transform: translateY(-1px);
-  box-shadow: 0 14px 34px rgba(38, 59, 49, 0.18);
+  box-shadow: 0 14px 34px rgba(38, 59, 49, 0.13);
 }
 
-header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"] img {
-  content: url("/waresh-gold-logo-white.jpg");
+header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"] img,
+header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] img {
   display: block;
   width: 100%;
   height: 100%;
@@ -58,7 +60,8 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover {
     color: #334238;
   }
 
-  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"] {
+  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],
+  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] {
     width: 132px;
     height: 56px;
     padding: 6px 11px;
@@ -203,7 +206,6 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover {
 }
 
 @media (max-width: 640px) {
-  /* The thin utility strip is useful on desktop but adds clutter above the mobile header. */
   .waresh-site > div:first-child {
     min-height: 30px;
   }
