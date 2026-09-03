@@ -88,12 +88,12 @@ export default function GoldCalculator({ liveGoldPrice }: GoldCalculatorProps) {
     if (
       weightNum === null || weightNum <= 0 ||
       goldPriceNum === null || goldPriceNum <= 0 ||
-      laborNum === null || laborNum < 0 ||
-      profitNum === null || profitNum < 0 ||
-      taxNum === null || taxNum < 0 ||
+      (laborNum !== null && laborNum < 0) ||
+      (profitNum !== null && profitNum < 0) ||
+      (taxNum !== null && taxNum < 0) ||
       (discountNum !== null && discountNum < 0)
     ) {
-      setError("لطفاً وزن و قیمت را بیشتر از صفر و درصدها را صفر یا بیشتر وارد کنید.");
+      setError("وزن و قیمت هر گرم را وارد کنید؛ سایر درصدها اختیاری هستند.");
       return;
     }
 
@@ -105,9 +105,9 @@ export default function GoldCalculator({ liveGoldPrice }: GoldCalculatorProps) {
         body: JSON.stringify({
           weight: weightNum,
           goldPrice: goldPriceNum,
-          laborPercent: laborNum,
-          profitPercent: profitNum,
-          taxPercent: taxNum,
+          ...(laborNum !== null ? { laborPercent: laborNum } : {}),
+          ...(profitNum !== null ? { profitPercent: profitNum } : {}),
+          ...(taxNum !== null ? { taxPercent: taxNum } : {}),
           ...(discountNum !== null ? { discount: discountNum } : {}),
         }),
       });
@@ -131,7 +131,7 @@ export default function GoldCalculator({ liveGoldPrice }: GoldCalculatorProps) {
         <div>
           <p className="text-xs font-semibold tracking-[0.14em] text-[#a08350]">CALCULATOR</p>
           <h3 className="mt-2 text-2xl font-extrabold text-[#29251f]">محاسبه‌گر قیمت طلا</h3>
-          <p className="mt-2 text-xs leading-6 text-[#81796f]">برای محاسبه دقیق، درصدهای اجرت، سود و مالیات را مطابق فاکتور وارد کن.</p>
+          <p className="mt-2 text-xs leading-6 text-[#81796f]">وزن و قیمت هر گرم را وارد کن؛ اجرت، سود، مالیات و تخفیف در صورت نیاز قابل ورود هستند.</p>
         </div>
         <span className="self-start rounded-full bg-[#eee1c9] px-3 py-1 text-sm font-bold text-[#8a6b38] sm:self-auto">۱۸K</span>
       </div>
@@ -142,10 +142,10 @@ export default function GoldCalculator({ liveGoldPrice }: GoldCalculatorProps) {
           <Field label="قیمت هر گرم طلای ۱۸ عیار (تومان)" value={goldPrice} onChange={setGoldPrice} placeholder="مثلاً 22276000" required hint={liveGoldPrice ? `قیمت لحظه‌ای: ${formatToman(liveGoldPrice)} تومان` : undefined} />
           {liveGoldPrice && <button type="button" onClick={useLivePrice} className="mt-2 text-xs font-bold text-[#987238] transition hover:text-[#6f5229]">استفاده از قیمت لحظه‌ای</button>}
         </div>
-        <Field label="اجرت (%)" value={labor} onChange={setLabor} placeholder="مثلاً 7" required />
-        <Field label="سود (%)" value={profit} onChange={setProfit} placeholder="مثلاً 0" required />
-        <Field label="مالیات (%)" value={tax} onChange={setTax} placeholder="مثلاً 9" required />
-        <Field label="تخفیف (%)" value={discount} onChange={setDiscount} placeholder="اختیاری" />
+        <Field label="اجرت (%) — اختیاری" value={labor} onChange={setLabor} placeholder="مثلاً 7" />
+        <Field label="سود (%) — اختیاری" value={profit} onChange={setProfit} placeholder="مثلاً 0" />
+        <Field label="مالیات (%) — اختیاری" value={tax} onChange={setTax} placeholder="مثلاً 9" />
+        <Field label="تخفیف (%) — اختیاری" value={discount} onChange={setDiscount} placeholder="مثلاً 5" />
       </div>
 
       {error && <p role="alert" className="mt-5 border border-[#c98c7b]/30 bg-[#f7e9e5] px-4 py-3 text-sm text-[#8f4f3f]">{error}</p>}
