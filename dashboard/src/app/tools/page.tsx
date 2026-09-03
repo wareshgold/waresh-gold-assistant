@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getGoldBubble, getMarketPrice } from "@/lib/api";
+import { getGoldBubble, getMarketPrice, TELEGRAM_BOT_URL } from "@/lib/api";
 import MarketStatus from "@/components/MarketStatus";
 import GoldBubbleCard from "@/components/GoldBubbleCard";
 import GoldCalculator from "@/components/GoldCalculator";
@@ -36,7 +36,7 @@ export default async function ToolsPage() {
             <Link className="waresh-link" href="/about">درباره وارش</Link>
           </nav>
           <div className="flex items-center gap-2">
-            <a href={"https://t.me/Wareshgoldbot"} target="_blank" rel="noopener noreferrer" className="hidden min-h-11 items-center rounded-full bg-[#b28b4c] px-5 py-2.5 text-xs font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#9d773d] sm:inline-flex">گفتگو در تلگرام</a>
+            <a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer" className="hidden min-h-11 items-center rounded-full bg-[#b28b4c] px-5 py-2.5 text-xs font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#9d773d] sm:inline-flex">گفتگو در تلگرام</a>
             <MobileMenu />
           </div>
         </div>
@@ -76,7 +76,7 @@ export default async function ToolsPage() {
 
       {bubble && <section id="bubble" className="scroll-mt-32 bg-[#f5f1e9] py-20 sm:py-32"><div className="waresh-container"><div className="mb-8 max-w-2xl sm:mb-10"><p className="text-xs font-bold tracking-[0.2em] text-[#9b7b48]">MARKET / BUBBLE</p><h2 className="mt-4 text-3xl font-extrabold sm:text-5xl">تحلیل حباب طلا</h2><p className="mt-3 text-sm leading-7 text-[#70776e] sm:mt-4 sm:text-base sm:leading-8">فاصله قیمت بازار با ارزش ذاتی را ببین.</p></div><div className="rounded-[2rem] bg-[#e8eee6] p-2 sm:rounded-[2.75rem] sm:p-5"><GoldBubbleCard marketPrice={bubble.marketPrice} intrinsicPrice={bubble.intrinsicPrice} bubbleAmount={bubble.bubbleAmount} bubblePercentage={bubble.bubblePercentage} /></div></div></section>}
 
-      <footer className="bg-[#1f2d26] py-10 text-white sm:py-12"><div className="waresh-container flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between"><div><Image src="/waresh-gold-logo-white.jpg" alt="وارش گلد" width={180} height={44} className="h-10 w-auto object-contain sm:h-11" /><p className="mt-3 max-w-sm text-xs leading-6 text-white/45">فروشگاه طلا و ابزارهای دقیق وارش؛ ریشه شمالی، نگاه رو به آینده.</p></div><div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-white/65"><Link href="/">فروشگاه</Link><Link href="/tools">ابزار طلا</Link><Link href="/about">درباره وارش</Link><a href={"https://t.me/Wareshgoldbot"} target="_blank" rel="noopener noreferrer">تلگرام</a></div></div></footer>
+      <footer className="bg-[#1f2d26] py-10 text-white sm:py-12"><div className="waresh-container flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between"><div><Image src="/waresh-gold-logo-white.jpg" alt="وارش گلد" width={180} height={44} className="h-10 w-auto object-contain sm:h-11" /><p className="mt-3 max-w-sm text-xs leading-6 text-white/45">فروشگاه طلا و ابزارهای دقیق وارش؛ ریشه شمالی، نگاه رو به آینده.</p></div><div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-white/65"><Link href="/">فروشگاه</Link><Link href="/tools">ابزار طلا</Link><Link href="/about">درباره وارش</Link><a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer">تلگرام</a></div></div></footer>
     </main>
   );
 }
