@@ -59,48 +59,17 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
   #prices .lg\\:sticky { position:static !important; }
 }
 
-/* Rain overlay: explicit full-size layers so the effect is visible on every
-   viewport, including mobile Safari/Chrome, without affecting page scrolling. */
+/* Keep the original atmospheric rain from globals.css. It is intentionally not
+   reimplemented here: the original irregular drop pattern is subtler and avoids
+   the obvious full-screen stripe/loop effect. */
 #top .waresh-rain {
-  position:absolute;
-  inset:0;
   z-index:1;
-  overflow:hidden;
   pointer-events:none;
-  opacity:.72 !important;
-  mix-blend-mode:screen;
+  opacity:.78;
 }
 #top .waresh-rain::before,
 #top .waresh-rain::after {
-  position:absolute;
-  inset:-25% -15%;
-  width:130%;
-  height:150%;
-  content:"";
   pointer-events:none;
-  background-repeat:repeat;
-  transform:rotate(9deg) translate3d(0,-18%,0);
-  will-change:transform;
-}
-#top .waresh-rain::before {
-  background-image:repeating-linear-gradient(104deg,transparent 0 74px,rgba(232,241,234,.58) 75px,rgba(232,241,234,.58) 77px,transparent 78px 168px);
-  background-size:220px 260px;
-  opacity:.62;
-  animation:waresh-rain-near 2.4s linear infinite;
-}
-#top .waresh-rain::after {
-  background-image:repeating-linear-gradient(104deg,transparent 0 112px,rgba(215,231,219,.34) 113px,rgba(215,231,219,.34) 114px,transparent 115px 240px);
-  background-size:300px 340px;
-  opacity:.46;
-  animation:waresh-rain-far 4.2s linear infinite;
-}
-@keyframes waresh-rain-near {
-  from { transform:rotate(9deg) translate3d(-30px,-42%,0); }
-  to { transform:rotate(9deg) translate3d(36px,42%,0); }
-}
-@keyframes waresh-rain-far {
-  from { transform:rotate(9deg) translate3d(20px,-46%,0); }
-  to { transform:rotate(9deg) translate3d(-12px,46%,0); }
 }
 
 #top .waresh-container { position:relative;z-index:2; }
@@ -125,8 +94,6 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
   #prices { padding-block:48px !important; }
   #prices form { padding:20px !important; }
   #top .waresh-rain { opacity:.78 !important; }
-  #top .waresh-rain::before { opacity:.72; }
-  #top .waresh-rain::after { opacity:.52; }
 }
 
 @media (prefers-reduced-motion:reduce) {
