@@ -1,4 +1,5 @@
 import { TELEGRAM_BOT_URL } from "@/lib/api";
+import MobileMenu from "@/components/MobileMenu";
 
 const rainImage = "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&w=1600&q=85";
 const forestImage = "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1600&q=85";
@@ -6,10 +7,14 @@ const forestImage = "https://images.unsplash.com/photo-1441974231531-c6227db76b6
 export default function AboutPage() {
   return (
     <main className="min-h-screen overflow-hidden bg-[#f5f1e9] text-[#292b26]">
-      <header className="border-b border-[#dedfd7] bg-[#faf8f2]/95">
-        <div className="waresh-container flex h-20 items-center justify-between gap-5">
+      <header className="sticky top-0 z-50 border-b border-[#dedfd7]/80 bg-[#faf8f2]/95 backdrop-blur-xl">
+        <div className="waresh-container flex h-[76px] items-center justify-between gap-5">
           <a href="/" aria-label="بازگشت به خانه"><img src="/waresh-gold-logo-green.png" alt="وارش گلد" className="h-12 w-auto" /></a>
-          <nav className="flex items-center gap-6 text-sm font-semibold text-[#646a61]"><a href="/">فروشگاه</a><a href="/tools">ابزار طلا</a><a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer">تلگرام</a></nav>
+          <nav className="hidden items-center gap-6 text-sm font-semibold text-[#646a61] lg:flex"><a className="waresh-link" href="/">فروشگاه</a><a className="waresh-link" href="/tools">ابزار طلا</a><a className="waresh-link" href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer">تلگرام</a></nav>
+          <div className="flex items-center gap-2">
+            <a href="/#products" className="hidden rounded-full bg-[#263b31] px-4 py-2.5 text-xs font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#1c2e26] sm:inline-flex">مشاهده محصولات</a>
+            <MobileMenu />
+          </div>
         </div>
       </header>
 
