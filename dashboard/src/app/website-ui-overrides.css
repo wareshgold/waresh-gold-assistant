@@ -82,3 +82,111 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover {
   padding: 5px 9px;
   font-weight: 700;
 }
+
+/* Premium motion: subtle enough to stay fast and calm. */
+.waresh-hero-jewel img {
+  transform: scale(1.015);
+  transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.waresh-hero-jewel:hover img {
+  transform: scale(1.045);
+}
+
+#products .grid > article > div:first-child {
+  background-size: 115% 115%;
+  transition: background-size 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#products .grid > article:hover > div:first-child {
+  background-size: 122% 122%;
+}
+
+#products .grid > article > div:last-child {
+  position: relative;
+}
+
+#products .grid > article .text-lg.font-extrabold {
+  white-space: nowrap;
+}
+
+/* Make the filter controls feel like one intentional control bar. */
+#products .mb-10 {
+  border-color: rgba(201, 195, 183, 0.72);
+  background: rgba(250, 248, 242, 0.42);
+}
+
+#products .mb-10 select {
+  min-height: 44px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+#products .mb-10 button {
+  min-height: 42px;
+}
+
+/* Market cards: stronger number hierarchy without making the section noisy. */
+#prices .grid.grid-cols-2 > div {
+  transition: transform 250ms ease, box-shadow 250ms ease;
+}
+
+#prices .grid.grid-cols-2 > div:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 42px rgba(48, 60, 51, 0.09);
+}
+
+@media (max-width: 640px) {
+  /* The thin utility strip is useful on desktop but adds clutter above the mobile header. */
+  .waresh-site > div:first-child {
+    min-height: 30px;
+  }
+
+  .waresh-site > div:first-child .waresh-container {
+    min-height: 30px;
+    font-size: 10px;
+  }
+
+  .waresh-hero-jewel img {
+    transform: none;
+  }
+
+  .waresh-hero-jewel:hover img {
+    transform: scale(1.015);
+  }
+
+  #products .mb-10 {
+    padding-block: 14px;
+  }
+
+  #products .mb-10 > div:first-child {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  #products .mb-10 > div:first-child::-webkit-scrollbar {
+    display: none;
+  }
+
+  #products .mb-10 > div:first-child button {
+    flex: 0 0 auto;
+  }
+
+  #products .mb-10 select {
+    width: 100%;
+  }
+
+  #products .grid > article > div:first-child {
+    height: 260px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .waresh-hero-jewel img,
+  #products .grid > article > div:first-child,
+  #prices .grid.grid-cols-2 > div {
+    transition: none !important;
+  }
+}
