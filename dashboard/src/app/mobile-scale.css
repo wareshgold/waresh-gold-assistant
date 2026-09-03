@@ -64,6 +64,13 @@
     line-height: 2;
   }
 
+  /* Product collection must remain visible on touch devices. */
+  #products .waresh-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
   /* Product filters */
   #products .mb-10 > div:first-child button,
   #products .mb-10 select {
