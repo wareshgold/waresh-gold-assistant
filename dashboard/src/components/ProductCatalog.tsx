@@ -139,10 +139,15 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {products.map(({ product, pricing }) => (
             <article key={product.id} className="group overflow-hidden rounded-[2rem] border border-[#e2ddd3] bg-[#fffdf8] shadow-[0_14px_45px_rgba(55,52,43,0.06)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(55,52,43,0.11)]">
-              <div className="relative flex h-64 items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_50%_38%,#f3ead5_0%,#e8e3d8_48%,#d6ddd3_100%)]">
-                <div className="absolute inset-0 bg-[linear-gradient(145deg,rgba(255,255,255,0.5),transparent_45%,rgba(38,57,47,0.08))]" />
-                <div className="relative flex h-36 w-36 items-center justify-center rounded-full border border-[#b28b4c]/35 bg-[#f8f3e7]/70 text-7xl text-[#a47d3f] shadow-[0_20px_50px_rgba(80,68,43,0.12)] transition duration-700 group-hover:scale-105 group-hover:rotate-3">{product.icon}</div>
-                <span className="absolute right-5 top-5 rounded-full border border-white/70 bg-white/65 px-3 py-1 text-[11px] font-bold text-[#746a5d] backdrop-blur">{product.subcategory ?? product.category}</span>
+              <div className="relative h-64 overflow-hidden bg-[#eee8dc]">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  loading="lazy"
+                  className="h-full w-full object-cover object-center transition duration-700 ease-out group-hover:scale-[1.045]"
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,30,24,0.02)_45%,rgba(20,30,24,0.18)_100%)]" />
+                <span className="absolute right-5 top-5 rounded-full border border-white/70 bg-white/70 px-3 py-1 text-[11px] font-bold text-[#746a5d] shadow-sm backdrop-blur">{product.subcategory ?? product.category}</span>
               </div>
               <div className="p-6">
                 <p className="text-xs font-semibold tracking-[0.12em] text-[#a17c45]">{product.category}</p>
