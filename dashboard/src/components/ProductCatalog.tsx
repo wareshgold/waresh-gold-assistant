@@ -41,18 +41,15 @@ function calculateProductPrice(product: (typeof PRODUCTS)[number], liveGoldPrice
   const finalPrice = Math.floor(beforeDiscount / 100_000) * 100_000;
   const discountAmount = Math.max(0, beforeDiscount - finalPrice);
 
-  // Customer-facing catalog keeps all price additions under one label.
-  // This is the effective total markup over the gold value, so labor + profit
-  // (and tax, when present in the pricing model) are not shown separately.
-  const totalMarkupPercent = goldValue > 0
-    ? ((beforeDiscount - goldValue) / goldValue) * 100
-    : 0;
+  // Product cards intentionally expose one combined customer-facing percentage.
+  const totalLaborPercent =
+    product.laborPercent + product.profitPercent + product.taxPercent;
 
   return {
     goldValue,
     finalPrice,
     discountAmount,
-    totalMarkupPercent,
+    totalLaborPercent,
   };
 }
 
@@ -162,7 +159,7 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
                   </div>
                   {pricing && (
                     <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#8b8b82]">
-                      <span>اجرت کل {pricing.totalMarkupPercent.toFixed(1)}٪</span>
+                      <span>اجرت کل {pricing.totalLaborPercent}٪</span>
                       <span>تخفیف {formatToman(pricing.discountAmount)}</span>
                     </div>
                   )}
