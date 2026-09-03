@@ -51,9 +51,9 @@ const IMAGE = {
 } as const;
 
 export const PRODUCTS: Product[] = [
-  { id: 1, name: "انگشتر ساده کم اجرت", category: "کم-اجرت", subcategory: "انگشتر", weight: 1.2, laborPercent: 3, profitPercent: 7, taxPercent: 0, icon: "◌", image: IMAGE.ringSimple, description: "انگشتر ساده با اجرت پایین", shippingNote: SHIPPING_NOTE },
-  { id: 2, name: "گوشواره میخی کم اجرت", category: "کم-اجرت", subcategory: "گوشواره", weight: 0.8, laborPercent: 4, profitPercent: 7, taxPercent: 0, icon: "◐", image: IMAGE.earringsHoop, description: "گوشواره میخی ساده و ظریف", shippingNote: SHIPPING_NOTE },
-  { id: 3, name: "پلاک کوچک کم اجرت", category: "کم-اجرت", subcategory: "آویز", weight: 0.5, laborPercent: 5, profitPercent: 7, taxPercent: 0, icon: "✦", image: IMAGE.pendantSet, description: "پلاک کوچک مناسب هدیه", shippingNote: SHIPPING_NOTE },
+  { id: 1, name: "انگشتر ساده مخصوص هدیه", category: "کم-اجرت", subcategory: "انگشتر", weight: 1.2, laborPercent: 3, profitPercent: 7, taxPercent: 0, icon: "◌", image: IMAGE.ringSimple, description: "انگشتر ساده و ظریف، انتخابی مناسب برای هدیه", shippingNote: SHIPPING_NOTE },
+  { id: 2, name: "گوشواره میخی مخصوص هدیه", category: "کم-اجرت", subcategory: "گوشواره", weight: 0.8, laborPercent: 4, profitPercent: 7, taxPercent: 0, icon: "◐", image: IMAGE.earringsHoop, description: "گوشواره میخی ساده و ظریف، مناسب هدیه", shippingNote: SHIPPING_NOTE },
+  { id: 3, name: "پلاک کوچک مخصوص هدیه", category: "کم-اجرت", subcategory: "آویز", weight: 0.5, laborPercent: 5, profitPercent: 7, taxPercent: 0, icon: "✦", image: IMAGE.pendantSet, description: "پلاک کوچک و ظریف، انتخابی مناسب برای هدیه", shippingNote: SHIPPING_NOTE },
   { id: 4, name: "انگشتر نگین‌دار", category: "انگشتر", weight: 2.5, laborPercent: 6, profitPercent: 7, taxPercent: 0, icon: "◈", image: IMAGE.ringStone, description: "انگشتر با نگین درخشان", shippingNote: SHIPPING_NOTE },
   { id: 5, name: "انگشتر حلقه‌ای", category: "انگشتر", weight: 1.8, laborPercent: 5, profitPercent: 7, taxPercent: 0, icon: "○", image: IMAGE.ringPebbles, description: "انگشتر حلقه‌ای مینیمال", shippingNote: SHIPPING_NOTE },
   { id: 6, name: "انگشتر مردانه", category: "مردانه", weight: 4.2, laborPercent: 7, profitPercent: 7, taxPercent: 0, icon: "◉", image: IMAGE.menRing, description: "انگشتر مردانه شیک", shippingNote: SHIPPING_NOTE },
@@ -72,7 +72,7 @@ export const PRODUCTS: Product[] = [
 ];
 
 export const PRODUCT_CATEGORIES: Array<{ value: ProductCategory; label: string }> = [
-  { value: "کم-اجرت", label: "کم اجرت" },
+  { value: "کم-اجرت", label: "مخصوص هدیه" },
   { value: "انگشتر", label: "انگشتر" },
   { value: "آویز", label: "آویز" },
   { value: "النگو", label: "النگو" },
