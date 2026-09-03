@@ -20,6 +20,11 @@
     scroll-margin-top: 92px;
   }
 
+  /* Keep secondary sticky navigation directly beneath the compact mobile header. */
+  .waresh-site nav.sticky.top-\[76px\] {
+    top: 68px;
+  }
+
   /* Header */
   .waresh-site header .waresh-container {
     min-height: 68px;
