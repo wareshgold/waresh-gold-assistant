@@ -17,10 +17,8 @@ const priceBands = [
   { value: "over-30", label: "بیشتر از ۳۰ میلیون", min: 30_000_000, max: Number.POSITIVE_INFINITY },
 ] as const;
 
-export type ProductPriceBand = (typeof priceBands)[number]["value"];
-
 type ProductCatalogProps = {
-  initialPriceBand?: ProductPriceBand | "all";
+  initialPriceBand?: (typeof priceBands)[number]["value"] | "all";
   liveGoldPrice?: number;
 };
 
@@ -152,7 +150,7 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
           {products.map(({ product, pricing }) => (
             <article key={product.id} className="group overflow-hidden rounded-[2rem] border border-[#e2ddd3] bg-[#fffdf8] shadow-[0_14px_45px_rgba(55,52,43,0.06)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(55,52,43,0.11)]">
               <div className="relative h-56 overflow-hidden bg-[#eee8dc] sm:h-64">
-                <img src={product.image} alt={product.name} loading="lazy" className="h-full w-full object-cover object-center transition duration-700 ease-out group-hover:scale-[1.045]" />
+                <img src={product.image} alt={product.name} loading="lazy" referrerPolicy="no-referrer" className="h-full w-full object-cover object-center transition duration-700 ease-out group-hover:scale-[1.045]" />
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,30,24,0.02)_45%,rgba(20,30,24,0.18)_100%)]" />
                 <span className="absolute right-4 top-4 rounded-full border border-white/70 bg-white/70 px-3 py-1.5 text-[11px] font-bold text-[#746a5d] shadow-sm backdrop-blur sm:right-5 sm:top-5">{product.subcategory ?? product.category}</span>
               </div>
