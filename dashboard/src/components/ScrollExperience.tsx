@@ -2,9 +2,7 @@
 
 import { useEffect, type ReactNode } from "react";
 
-type ScrollExperienceProps = {
-  children: ReactNode;
-};
+type ScrollExperienceProps = { children: ReactNode };
 
 export default function ScrollExperience({ children }: ScrollExperienceProps) {
   useEffect(() => {
@@ -23,42 +21,30 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
       heroContainer.style.paddingBlock = "56px";
     }
 
-    // Mobile intentionally uses native browser scrolling. The cinematic
-    // sticky experience is only enabled above 640px.
-    // Scene indexes: 0 hero, 1 products, 2 gifts, 3 market, ...
-    // Only Gift needs the long sticky track.
     const cinematicIndexes = new Set([2]);
     const cinematicScenes: Array<{ scene: HTMLElement; frame: HTMLElement }> = [];
 
     if (!isMobile) {
       scenes.forEach((scene, index) => {
         if (!cinematicIndexes.has(index)) return;
-
         const frame = scene.querySelector<HTMLElement>(":scope > .waresh-container");
         if (!frame) return;
 
         scene.classList.add("waresh-cinematic-scene");
-        scene.style.scrollSnapAlign = "start";
-        scene.style.scrollSnapStop = "always";
+        scene.style.scrollSnapAlign = "none";
+        scene.style.scrollSnapStop = "normal";
         frame.classList.add("waresh-sticky-frame");
-        frame.style.transition =
-          "transform 520ms cubic-bezier(0.22, 1, 0.36, 1), opacity 520ms ease";
+        frame.style.transition = "transform 520ms cubic-bezier(0.22, 1, 0.36, 1), opacity 520ms ease";
         frame.style.transform = "scale(0.985)";
         frame.style.opacity = "0.94";
-
         cinematicScenes.push({ scene, frame });
       });
     }
 
     const previousSnapType = root.style.scrollSnapType;
     const previousSnapPadding = root.style.scrollPaddingTop;
-
-    // Use proximity instead of mandatory snapping so the page still feels
-    // natural while the Gift scene gets its Webflow-style sticky behavior.
-    if (!reduceMotion && !isMobile && cinematicScenes.length > 0) {
-      root.style.scrollSnapType = "y proximity";
-      root.style.scrollPaddingTop = "76px";
-    }
+    root.style.scrollSnapType = "none";
+    root.style.scrollPaddingTop = "76px";
 
     const animatedReveals = reveals.filter((element) => !hero?.contains(element));
     const animatedParallaxItems = parallaxItems.filter((element) => !hero?.contains(element));
@@ -66,86 +52,59 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
     if (reduceMotion) {
       reveals.forEach((element) => element.classList.add("is-visible"));
       return () => {
-        cinematicScenes.forEach(({ scene, frame }) => {
-          scene.classList.remove("waresh-cinematic-scene", "is-focused");
-          scene.style.removeProperty("scroll-snap-align");
-          scene.style.removeProperty("scroll-snap-stop");
-          frame.classList.remove("waresh-sticky-frame");
-          frame.style.removeProperty("transition");
-          frame.style.removeProperty("transform");
-          frame.style.removeProperty("opacity");
-        });
         root.style.scrollSnapType = previousSnapType;
         root.style.scrollPaddingTop = previousSnapPadding;
-        if (hero) hero.style.removeProperty("min-height");
-        if (heroContainer) {
-          heroContainer.style.removeProperty("min-height");
-          heroContainer.style.removeProperty("padding-block");
-        }
       };
     }
 
-    const revealObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            revealObserver.unobserve(entry.target);
-          }
-        });
-      },
-      { rootMargin: "-8% 0px -8% 0px", threshold: 0.12 },
-    );
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: "-8% 0px -8% 0px", threshold: 0.12 });
 
     animatedReveals.forEach((element) => revealObserver.observe(element));
 
-    const sceneObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const scene = entry.target as HTMLElement;
-          const item = cinematicScenes.find(({ scene: candidate }) => candidate === scene);
-          if (!item) return;
+    const sceneObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        const scene = entry.target as HTMLElement;
+        const item = cinematicScenes.find(({ scene: candidate }) => candidate === scene);
+        if (!item) return;
 
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.45) {
-            scene.classList.add("is-focused");
-            item.frame.style.transform = "scale(1)";
-            item.frame.style.opacity = "1";
-          } else {
-            scene.classList.remove("is-focused");
-            item.frame.style.transform = "scale(0.985)";
-            item.frame.style.opacity = "0.94";
-          }
-        });
-      },
-      { threshold: [0.2, 0.45, 0.7] },
-    );
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.45) {
+          scene.classList.add("is-focused");
+          item.frame.style.transform = "scale(1)";
+          item.frame.style.opacity = "1";
+        } else {
+          scene.classList.remove("is-focused");
+          item.frame.style.transform = "scale(0.985)";
+          item.frame.style.opacity = "0.94";
+        }
+      });
+    }, { threshold: [0.2, 0.45, 0.7] });
 
     cinematicScenes.forEach(({ scene }) => sceneObserver.observe(scene));
 
     const updateScroll = () => {
       const viewportCenter = window.innerHeight * 0.5;
-
       scenes.forEach((scene) => {
         if (scene === hero) return;
-
         const rect = scene.getBoundingClientRect();
-        const distance =
-          (rect.top + rect.height * 0.5 - viewportCenter) /
-          Math.max(window.innerHeight, 1);
-        const progress = Math.max(-1, Math.min(1, distance));
-        scene.style.setProperty("--waresh-scene-progress", progress.toFixed(3));
+        const distance = (rect.top + rect.height * 0.5 - viewportCenter) / Math.max(window.innerHeight, 1);
+        scene.style.setProperty("--waresh-scene-progress", Math.max(-1, Math.min(1, distance)).toFixed(3));
 
         if (scene.classList.contains("waresh-cinematic-scene")) {
           const travel = Math.max(scene.offsetHeight - window.innerHeight, 1);
-          const sceneProgress = Math.max(0, Math.min(1, -rect.top / travel));
-          scene.style.setProperty("--waresh-cinematic-progress", sceneProgress.toFixed(3));
+          scene.style.setProperty("--waresh-cinematic-progress", Math.max(0, Math.min(1, -rect.top / travel)).toFixed(3));
         }
       });
 
       animatedParallaxItems.forEach((element) => {
         const rect = element.getBoundingClientRect();
         if (rect.bottom < -120 || rect.top > window.innerHeight + 120) return;
-
         const center = rect.top + rect.height * 0.5;
         const progress = (center - viewportCenter) / Math.max(window.innerHeight, 1);
         const strength = Number(element.dataset.wareshParallax ?? 14);
@@ -173,10 +132,8 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       if (frameId) window.cancelAnimationFrame(frameId);
-
       root.style.scrollSnapType = previousSnapType;
       root.style.scrollPaddingTop = previousSnapPadding;
-
       cinematicScenes.forEach(({ scene, frame }) => {
         scene.style.removeProperty("--waresh-cinematic-progress");
         scene.classList.remove("waresh-cinematic-scene", "is-focused");
@@ -187,7 +144,6 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
         frame.style.removeProperty("transform");
         frame.style.removeProperty("opacity");
       });
-
       if (hero) hero.style.removeProperty("min-height");
       if (heroContainer) {
         heroContainer.style.removeProperty("min-height");
