@@ -3,6 +3,7 @@ import InstallPrompt from "@/components/InstallPrompt";
 import "./globals.css";
 import "./website-polish.css";
 import "./mobile-scale.css";
+import "./homepage-polish.css";
 
 export const metadata: Metadata = {
   title: "وارش گلد | فروشگاه طلا و جواهر",
