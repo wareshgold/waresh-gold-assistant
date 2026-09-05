@@ -20,7 +20,7 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگش�
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"]::after,
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]::after {
   content:"وارش گلد";
-  position:absolute;z-index:10;right:6.5%;top:50%;transform:translateY(-52%);direction:rtl;white-space:nowrap;color:#174F3C !important;font-family:"Vazirmatn",Tahoma,Arial,sans-serif !important;font-size:22.1px !important;font-weight:500 !important;line-height:1;letter-spacing:0;opacity:1 !important;visibility:visible !important;pointer-events:none;text-shadow:0 0 1px rgba(23,79,60,.08);
+  position:absolute;z-index:10;right:6.5%;top:50%;transform:translateY(-52%);direction:rtl;white-space:nowrap;color:#174F3C !important;font-family:"Vazirmatn",Tahoma,Arial,sans-serif !important;font-size:19.5px !important;font-weight:500 !important;line-height:1;letter-spacing:0;opacity:1 !important;visibility:visible !important;pointer-events:none;text-shadow:0 0 1px rgba(23,79,60,.08);
 }
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"] img,
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] img { width:100%;height:100%;object-fit:contain;opacity:0; }
@@ -59,8 +59,8 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] > div > div:last-child > 
 @keyframes waresh-rain-near { from { background-position:0 -180px; } to { background-position:55px 520px; } }
 @keyframes waresh-rain-far { from { background-position:0 -260px; } to { background-position:-42px 430px; } }
 
-/* Footer logo: force the green Waresh Gold logo asset. */
-footer img[alt="وارش گلد"] { content:url('/waresh-gold-logo-green.png') !important;height:110px !important;width:auto !important;max-width:300px;object-fit:contain;object-position:left center; }
+/* Footer logo: keep the green Waresh Gold logo visually centered. */
+footer img[alt="وارش گلد"] { content:url('/waresh-gold-logo-green.png') !important;height:110px !important;width:auto !important;max-width:300px;object-fit:contain;object-position:center center;display:block;margin-inline:auto; }
 
 /* Dedicated inner-page heroes: keep the dark green identity, but never let mobile text sit in near-black contrast. */
 .waresh-tools-hero,
@@ -121,7 +121,7 @@ footer img[alt="وارش گلد"] { content:url('/waresh-gold-logo-green.png') !
   #gifts .waresh-gift-range { min-height:70px; }
   #prices { padding-block:48px !important; }
   #prices form { padding:20px !important; }
-  footer img[alt="وارش گلد"] { height:92px !important;max-width:250px; }
+  footer img[alt="وارش گلد"] { height:92px !important;max-width:250px;object-position:center center;margin-inline:auto; }
   .waresh-mobile-menu a[aria-label="صفحه اصلی وارش گلد"] { width:190px;height:48px; }
   .waresh-tools-hero h1,
   .waresh-about-hero h1 { font-size:clamp(2.2rem,11vw,3.15rem) !important;line-height:1.42 !important; }
