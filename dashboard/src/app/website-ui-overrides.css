@@ -60,6 +60,33 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
 /* Gift is intentionally compact and part of the normal document flow. */
 #gifts > .waresh-container { min-height:0 !important; }
 
+/* Atmospheric rain: deliberately sits above the dark hero overlays so it
+   cannot disappear behind the cinematic gradient. The content remains above it. */
+#top .waresh-rain {
+  z-index:2 !important;
+  display:block;
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  opacity:1 !important;
+  isolation:isolate;
+  mix-blend-mode:screen;
+}
+#top .waresh-rain::before,
+#top .waresh-rain::after {
+  z-index:1;
+  display:block;
+  position:absolute;
+  pointer-events:none;
+  will-change:transform;
+}
+#top .waresh-rain::before { opacity:.62; }
+#top .waresh-rain::after { opacity:.46; }
+
+#top .waresh-container { position:relative;z-index:3; }
+#top .waresh-scroll-marker { z-index:4; }
+
 @media (min-width:641px) {
   #gifts { min-height:0 !important; }
   #gifts > div:first-child {
@@ -84,25 +111,6 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
   #prices form > .mt-6 { margin-top:18px; }
   #prices .lg\:sticky { position:static !important; }
 }
-
-/* Atmospheric rain: keep the original irregular drops visible without the
-   aggressive full-screen stripe treatment. */
-#top .waresh-rain {
-  z-index:1;
-  display:block;
-  pointer-events:none;
-  opacity:.92 !important;
-  isolation:isolate;
-}
-#top .waresh-rain::before,
-#top .waresh-rain::after {
-  z-index:1;
-  display:block;
-  pointer-events:none;
-}
-
-#top .waresh-container { position:relative;z-index:2; }
-#top .waresh-scroll-marker { z-index:3; }
 
 @media (max-width:1023px) {
   header[class*="sticky"][class*="top-0"][class*="z-50"] button[aria-label="باز کردن منوی سایت"] { border-color:#d8d2c7;background:rgba(255,255,255,.65);color:#334238; }
@@ -131,7 +139,7 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
   #gifts .waresh-gift-range { min-height:70px; }
   #prices { padding-block:48px !important; }
   #prices form { padding:20px !important; }
-  #top .waresh-rain { opacity:.92 !important; }
+  #top .waresh-rain { opacity:1 !important; }
 }
 
 @media (prefers-reduced-motion:reduce) {
