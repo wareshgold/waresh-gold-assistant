@@ -8,20 +8,11 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] {
   border-color:rgba(222,223,215,.9) !important;
   box-shadow:0 10px 35px rgba(45,54,47,.08);
 }
-header[class*="sticky"][class*="top-0"][class*="z-50"] > div {
-  min-height:76px;
-  height:76px;
-  gap:clamp(16px,2.5vw,32px);
-}
+header[class*="sticky"][class*="top-0"][class*="z-50"] > div { min-height:76px;height:76px;gap:clamp(16px,2.5vw,32px); }
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],
-header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] {
-  display:inline-flex;align-items:center;justify-content:center;position:relative;width:218px;height:57px;padding:0;border:0;border-radius:0;background:transparent url('/waresh-gold-header-lockup.svg') center/contain no-repeat !important;box-shadow:none !important;
-}
+header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] { display:inline-flex;align-items:center;justify-content:center;position:relative;width:218px;height:57px;padding:0;border:0;border-radius:0;background:transparent url('/waresh-gold-header-lockup.svg') center/contain no-repeat !important;box-shadow:none !important; }
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"]::after,
-header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]::after {
-  content:"وارش گلد";
-  position:absolute;z-index:10;right:6.5%;top:50%;transform:translateY(-52%);direction:rtl;white-space:nowrap;color:#174F3C !important;font-family:"Vazirmatn",Tahoma,Arial,sans-serif !important;font-size:19.5px !important;font-weight:500 !important;line-height:1;letter-spacing:0;opacity:1 !important;visibility:visible !important;pointer-events:none;text-shadow:0 0 1px rgba(23,79,60,.08);
-}
+header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]::after { content:"وارش گلد";position:absolute;z-index:10;right:6.5%;top:50%;transform:translateY(-52%);direction:rtl;white-space:nowrap;color:#174F3C !important;font-family:"Vazirmatn",Tahoma,Arial,sans-serif !important;font-size:19.5px !important;font-weight:500 !important;line-height:1;letter-spacing:0;opacity:1 !important;visibility:visible !important;pointer-events:none;text-shadow:0 0 1px rgba(23,79,60,.08); }
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"] img,
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] img { width:100%;height:100%;object-fit:contain;opacity:0; }
 header[class*="sticky"][class*="top-0"][class*="z-50"] nav { flex:0 1 auto; }
@@ -46,53 +37,35 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] > div > div:last-child > 
 #prices .grid.grid-cols-2 > div { transition:transform 250ms ease,box-shadow 250ms ease; }
 #prices .grid.grid-cols-2 > div:hover { transform:translateY(-2px);box-shadow:0 18px 42px rgba(48,60,51,.09); }
 #top .mt-9 > span:first-child { font-size:0; }
-#top .mt-9 > span:first-child::after { content:"محصولات منتخب"; font-size:.75rem; }
+#top .mt-9 > span:first-child::after { content:"محصولات منتخب";font-size:.75rem; }
 #gifts > .waresh-container { min-height:0 !important; }
 
 /* Hero photography: cinematic misty forest + understated fine-jewelry detail. */
 #top > img:first-child { opacity:0 !important; }
-#top::before {
-  content:"";
-  position:absolute;
-  inset:0;
-  z-index:0;
-  pointer-events:none;
-  background-image:url("https://images.unsplash.com/photo-1764111812995-b73ff58fc7d7?auto=format&fit=crop&fm=jpg&q=82&w=2400");
-  background-size:cover;
-  background-position:center;
-  background-repeat:no-repeat;
-}
-#top .waresh-hero-jewel > img {
-  content:url("https://images.unsplash.com/photo-1786052352796-04a29e4634e4?auto=format&fit=crop&fm=jpg&q=82&w=2400") !important;
-  object-position:center center;
-}
+#top::before { content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background-image:url("https://images.unsplash.com/photo-1764111812995-b73ff58fc7d7?auto=format&fit=crop&fm=jpg&q=82&w=2400");background-size:cover;background-position:center;background-repeat:no-repeat; }
+#top .waresh-hero-jewel > img { content:url("https://images.unsplash.com/photo-1786052352796-04a29e4634e4?auto=format&fit=crop&fm=jpg&q=82&w=2400") !important;object-position:center center; }
 
-/* Rain stays layered, but each moving layer travels exactly one full tile before looping. */
-#top .waresh-rain { z-index:2 !important;display:block;position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:.81 !important;isolation:isolate;mix-blend-mode:screen;background-image:radial-gradient(ellipse 1.2px 30px at 18px 34px,rgba(235,244,237,.72) 0 35%,transparent 70%),radial-gradient(ellipse 1px 22px at 64px 118px,rgba(220,236,224,.58) 0 35%,transparent 70%),radial-gradient(ellipse 1.4px 36px at 112px 62px,rgba(235,244,237,.62) 0 35%,transparent 70%);background-size:180px 180px,220px 210px,280px 260px;background-position:0 0,40px 30px,90px -40px;animation:none !important;will-change:auto; }
+/* Rain: animated layered fields with exact tile travel for a clean, repeatable loop. */
+#top .waresh-rain { z-index:2 !important;display:block;position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:.81 !important;isolation:isolate;mix-blend-mode:screen;background-image:radial-gradient(ellipse 1.2px 30px at 18px 34px,rgba(235,244,237,.72) 0 35%,transparent 70%),radial-gradient(ellipse 1px 22px at 64px 118px,rgba(220,236,224,.58) 0 35%,transparent 70%),radial-gradient(ellipse 1.4px 36px at 112px 62px,rgba(235,244,237,.62) 0 35%,transparent 70%);background-size:180px 180px,220px 210px,280px 260px;background-position:0 0,40px 30px,90px -40px;animation:waresh-rain-field 3.8s linear infinite !important;will-change:background-position; }
 #top .waresh-rain::before,#top .waresh-rain::after { z-index:1;display:block;position:absolute;inset:-30%;content:"";pointer-events:none;will-change:background-position;background-repeat:repeat; }
 #top .waresh-rain::before { opacity:.62;transform:rotate(9deg) scale(1.1);background-image:repeating-linear-gradient(102deg,transparent 0 74px,rgba(235,244,237,.24) 75px 76px,transparent 77px 138px);background-size:138px 138px;background-position:0 0;animation:waresh-rain-near 2.7s linear infinite !important; }
 #top .waresh-rain::after { opacity:.46;transform:rotate(9deg) scale(1.08);background-image:repeating-linear-gradient(102deg,transparent 0 102px,rgba(220,236,224,.18) 103px 104px,transparent 105px 190px);background-size:190px 190px;background-position:0 0;animation:waresh-rain-far 4.8s linear infinite !important; }
 #top .waresh-container { position:relative;z-index:3; }
 #top .waresh-scroll-marker { z-index:4; }
+@keyframes waresh-rain-field { from { background-position:0 -180px,40px -210px,90px -260px; } to { background-position:0 0,40px 0,90px 0; } }
 @keyframes waresh-rain-near { from { background-position:0 0; } to { background-position:0 138px; } }
 @keyframes waresh-rain-far { from { background-position:0 0; } to { background-position:0 190px; } }
 
 /* Gift section: use a meaningful jewelry-gifting photograph instead of a flat green field. */
-#gifts > div:first-child > img {
-  content:url("https://images.unsplash.com/photo-1601482438721-562070de7a69?auto=format&fit=crop&fm=jpg&q=82&w=2200") !important;
-  object-position:center center;
-}
+#gifts > div:first-child > img { content:url("https://images.unsplash.com/photo-1601482438721-562070de7a69?auto=format&fit=crop&fm=jpg&q=82&w=2200") !important;object-position:center center; }
 
 /* Footer logo: keep the green Waresh Gold logo visually centered. */
 footer img[alt="وارش گلد"] { content:url('/waresh-gold-logo-green.png') !important;height:110px !important;width:auto !important;max-width:300px;object-fit:contain;object-position:center center;display:block;margin-inline:auto; }
 
 /* Dedicated inner-page heroes: keep the dark green identity, but never let mobile text sit in near-black contrast. */
-.waresh-tools-hero,
-.waresh-about-hero { isolation:isolate; }
-.waresh-tools-hero::after,
-.waresh-about-hero::after { content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,rgba(24,48,38,.42) 0%,rgba(29,53,43,.18) 52%,rgba(18,37,29,.38) 100%);pointer-events:none; }
-.waresh-tools-hero > .waresh-container,
-.waresh-about-hero > .waresh-container { z-index:2; }
+.waresh-tools-hero,.waresh-about-hero { isolation:isolate; }
+.waresh-tools-hero::after,.waresh-about-hero::after { content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,rgba(24,48,38,.42) 0%,rgba(29,53,43,.18) 52%,rgba(18,37,29,.38) 100%);pointer-events:none; }
+.waresh-tools-hero > .waresh-container,.waresh-about-hero > .waresh-container { z-index:2; }
 
 @media (min-width:641px) {
   #gifts { min-height:0 !important; }
@@ -110,26 +83,16 @@ footer img[alt="وارش گلد"] { content:url('/waresh-gold-logo-green.png') !
   #prices .lg\\:sticky { position:static !important; }
 }
 @media (max-width:1023px) {
-  header[class*="sticky"][class*="top-0"][class*="z-50"] > div {
-    min-height:72px;
-    height:72px;
-    gap:14px;
-  }
+  header[class*="sticky"][class*="top-0"][class*="z-50"] > div { min-height:72px;height:72px;gap:14px; }
   header[class*="sticky"][class*="top-0"][class*="z-50"] button[aria-label="باز کردن منوی سایت"] { border-color:#d8d2c7;background:rgba(255,255,255,.65);color:#334238; }
   header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] { width:178px;height:49px;padding:0;border-radius:0;background-color:transparent !important;box-shadow:none !important; }
   header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"]::after,header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]::after { right:6.5%;font-size:18px !important;z-index:10; }
   header[class*="sticky"][class*="top-0"][class*="z-50"] > div > div:last-child { gap:0; }
-
-  .waresh-tools-hero,
-  .waresh-about-hero { padding-top:4rem !important;padding-bottom:4.25rem !important;background:#2c493b !important; }
-  .waresh-tools-hero > div.absolute,
-  .waresh-about-hero > div.absolute { opacity:.28 !important; }
-  .waresh-tools-hero::after,
-  .waresh-about-hero::after { background:linear-gradient(180deg,rgba(47,76,62,.12) 0%,rgba(39,66,54,.02) 48%,rgba(27,49,40,.22) 100%); }
-  .waresh-tools-hero h1,
-  .waresh-about-hero h1 { text-shadow:0 2px 16px rgba(10,24,18,.24); }
-  .waresh-tools-hero p,
-  .waresh-about-hero p { text-shadow:0 1px 10px rgba(10,24,18,.18); }
+  .waresh-tools-hero,.waresh-about-hero { padding-top:4rem !important;padding-bottom:4.25rem !important;background:#2c493b !important; }
+  .waresh-tools-hero > div.absolute,.waresh-about-hero > div.absolute { opacity:.28 !important; }
+  .waresh-tools-hero::after,.waresh-about-hero::after { background:linear-gradient(180deg,rgba(47,76,62,.12) 0%,rgba(39,66,54,.02) 48%,rgba(27,49,40,.22) 100%); }
+  .waresh-tools-hero h1,.waresh-about-hero h1 { text-shadow:0 2px 16px rgba(10,24,18,.24); }
+  .waresh-tools-hero p,.waresh-about-hero p { text-shadow:0 1px 10px rgba(10,24,18,.18); }
 }
 @media (max-width:640px) {
   .waresh-site > div:first-child { min-height:30px; }
@@ -148,9 +111,7 @@ footer img[alt="وارش گلد"] { content:url('/waresh-gold-logo-green.png') !
   #prices form { padding:20px !important; }
   footer img[alt="وارش گلد"] { height:92px !important;max-width:250px;object-position:center center;margin-inline:auto; }
   .waresh-mobile-menu a[aria-label="صفحه اصلی وارش گلد"] { width:190px;height:48px; }
-  .waresh-tools-hero h1,
-  .waresh-about-hero h1 { font-size:clamp(2.2rem,11vw,3.15rem) !important;line-height:1.42 !important; }
-  .waresh-tools-hero > .waresh-container,
-  .waresh-about-hero > .waresh-container { max-width:100%; }
+  .waresh-tools-hero h1,.waresh-about-hero h1 { font-size:clamp(2.2rem,11vw,3.15rem) !important;line-height:1.42 !important; }
+  .waresh-tools-hero > .waresh-container,.waresh-about-hero > .waresh-container { max-width:100%; }
 }
 @media (prefers-reduced-motion:reduce) { .waresh-hero-jewel img,#products .grid > article > div:first-child,#prices .grid.grid-cols-2 > div { transition:none !important;animation:none !important; } }
