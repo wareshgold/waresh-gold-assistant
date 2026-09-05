@@ -102,7 +102,7 @@ footer img[alt="وارش گلد"] { height:110px !important;width:auto !importan
   header[class*="sticky"][class*="top-0"][class*="z-50"] button[aria-label="باز کردن منوی سایت"] { border-color:#d8d2c7;background:rgba(255,255,255,.65);color:#334238; }
   header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] { width:191px;height:53px;padding:0;border-radius:0;background-color:transparent !important;box-shadow:none !important; }
   header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"]::after,
-  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]::after { right:6.5%;font-size:23px !important;z-index:10; }
+  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]::after { right:6.5%;font-size:20.7px !important;z-index:10; }
 }
 
 @media (max-width:640px) {
