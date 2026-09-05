@@ -17,30 +17,33 @@
   direction: rtl;
   text-align: right;
   opacity: 1;
-  animation: waresh-hero-slogan 150s ease-in-out infinite;
+  transform: translate3d(0, 0, 0);
+  filter: blur(0);
+  will-change: opacity, transform, filter;
+  animation: waresh-hero-slogan 150s linear infinite;
 }
 
 @keyframes waresh-hero-slogan {
-  0% { content: "زیبایی، وقتی ماندگار می‌شود که ارزشمند باشد."; opacity: 1; }
-  18% { opacity: 1; }
-  19.5% { opacity: 0; }
-  20% { content: "طلا، انتخابی برای امروز و ارزشی برای فردا."; opacity: 0; }
-  21.5% { opacity: 1; }
-  38% { opacity: 1; }
-  39.5% { opacity: 0; }
-  40% { content: "ظرافتی که دیده می‌شود، ارزشی که می‌ماند."; opacity: 0; }
-  41.5% { opacity: 1; }
-  58% { opacity: 1; }
-  59.5% { opacity: 0; }
-  60% { content: "برای لحظه‌هایی که ارزش ماندن دارند."; opacity: 0; }
-  61.5% { opacity: 1; }
-  78% { opacity: 1; }
-  79.5% { opacity: 0; }
-  80% { content: "وارش گلد؛ جایی میان زیبایی و ارزش."; opacity: 0; }
-  81.5% { opacity: 1; }
-  98% { opacity: 1; }
-  99.5% { opacity: 0; }
-  100% { content: "زیبایی، وقتی ماندگار می‌شود که ارزشمند باشد."; opacity: 0; }
+  0% { content: "زیبایی، وقتی ماندگار می‌شود که ارزشمند باشد."; opacity: 1; transform: translate3d(0, 0, 0); filter: blur(0); }
+  18% { opacity: 1; transform: translate3d(0, 0, 0); filter: blur(0); }
+  19.2% { opacity: 0; transform: translate3d(0, -7px, 0); filter: blur(2px); }
+  20% { content: "طلا، انتخابی برای امروز و ارزشی برای فردا."; opacity: 0; transform: translate3d(0, 7px, 0); filter: blur(2px); }
+  21.2% { opacity: 1; transform: translate3d(0, 0, 0); filter: blur(0); }
+  38% { opacity: 1; transform: translate3d(0, 0, 0); filter: blur(0); }
+  39.2% { opacity: 0; transform: translate3d(0, -7px, 0); filter: blur(2px); }
+  40% { content: "ظرافتی که دیده می‌شود، ارزشی که می‌ماند."; opacity: 0; transform: translate3d(0, 7px, 0); filter: blur(2px); }
+  41.2% { opacity: 1; transform: translate3d(0, 0, 0); filter: blur(0); }
+  58% { opacity: 1; transform: translate3d(0, 0, 0); filter: blur(0); }
+  59.2% { opacity: 0; transform: translate3d(0, -7px, 0); filter: blur(2px); }
+  60% { content: "برای لحظه‌هایی که ارزش ماندن دارند."; opacity: 0; transform: translate3d(0, 7px, 0); filter: blur(2px); }
+  61.2% { opacity: 1; transform: translate3d(0, 0, 0); filter: blur(0); }
+  78% { opacity: 1; transform: translate3d(0, 0, 0); filter: blur(0); }
+  79.2% { opacity: 0; transform: translate3d(0, -7px, 0); filter: blur(2px); }
+  80% { content: "وارش گلد؛ جایی میان زیبایی و ارزش."; opacity: 0; transform: translate3d(0, 7px, 0); filter: blur(2px); }
+  81.2% { opacity: 1; transform: translate3d(0, 0, 0); filter: blur(0); }
+  98% { opacity: 1; transform: translate3d(0, 0, 0); filter: blur(0); }
+  99.2% { opacity: 0; transform: translate3d(0, -7px, 0); filter: blur(2px); }
+  100% { content: "زیبایی، وقتی ماندگار می‌شود که ارزشمند باشد."; opacity: 0; transform: translate3d(0, 7px, 0); filter: blur(2px); }
 }
 
 @media (max-width: 640px) {
@@ -80,7 +83,8 @@
 @media (prefers-reduced-motion: reduce) {
   #top .waresh-rain,
   #top .waresh-rain::before,
-  #top .waresh-rain::after {
+  #top .waresh-rain::after,
+  #top > .waresh-container > div:first-child > h1::after {
     animation: none !important;
   }
 }
