@@ -85,22 +85,37 @@
 
 @media (max-width: 640px) {
   #top .waresh-rain {
-    animation: waresh-rain-field 1.62s linear infinite !important;
+    animation: waresh-rain-field-mobile 1.62s linear infinite !important;
     animation-play-state: running !important;
     transform: translate3d(0, 0, 0);
     will-change: background-position, transform;
   }
 
   #top .waresh-rain::before {
-    animation: waresh-rain-near 1.215s linear infinite !important;
+    animation: waresh-rain-near-mobile 1.215s linear infinite !important;
     animation-play-state: running !important;
-    will-change: background-position, transform;
+    will-change: transform;
   }
 
   #top .waresh-rain::after {
-    animation: waresh-rain-far 2.16s linear infinite !important;
+    animation: waresh-rain-far-mobile 2.16s linear infinite !important;
     animation-play-state: running !important;
-    will-change: background-position, transform;
+    will-change: transform;
+  }
+
+  @keyframes waresh-rain-field-mobile {
+    from { background-position: 0 -180px, 40px -210px, 90px -260px; }
+    to { background-position: 0 0, 40px 0, 90px 0; }
+  }
+
+  @keyframes waresh-rain-near-mobile {
+    from { transform: rotate(9deg) scale(1.1) translate3d(0, -138px, 0); }
+    to { transform: rotate(9deg) scale(1.1) translate3d(0, 138px, 0); }
+  }
+
+  @keyframes waresh-rain-far-mobile {
+    from { transform: rotate(9deg) scale(1.08) translate3d(0, -190px, 0); }
+    to { transform: rotate(9deg) scale(1.08) translate3d(0, 190px, 0); }
   }
 }
 
