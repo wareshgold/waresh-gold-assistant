@@ -107,8 +107,8 @@ footer::after {
   }
 
   footer img[alt="وارش گلد"] {
-    width: min(300px, 72vw) !important;
-    height: 92px !important;
+    width: min(450px, 108vw) !important;
+    height: 138px !important;
     max-width: none !important;
     transform: scale(1.02);
   }
