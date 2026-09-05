@@ -5,6 +5,7 @@ import "./website-polish.css";
 import "./mobile-scale.css";
 import "./homepage-polish.css";
 import "./website-ui-overrides.css";
+import "./footer-branding.css";
 
 const primaryLogo = "/waresh-gold-logo-green.png";
 const browserIcon = "/waresh-gold-logo-white.jpg";
