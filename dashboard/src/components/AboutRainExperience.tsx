@@ -1,20 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 const DROP_COUNT = 46;
 
 export default function AboutRainExperience() {
-  const rootRef = useRef<HTMLDivElement | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const [soundEnabled, setSoundEnabled] = useState(false);
 
   useEffect(() => {
-    const root = rootRef.current;
+    const root = document.querySelector<HTMLElement>(".waresh-about-rain-layer");
     if (!root) return;
 
     const drops = Array.from(root.querySelectorAll<HTMLElement>(".waresh-about-rain-drop"));
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     drops.forEach((drop, index) => {
       const x = ((index * 47) % 101) + (index % 5) * 0.7;
@@ -30,7 +28,6 @@ export default function AboutRainExperience() {
       drop.style.setProperty("--waresh-rain-drift", `${drift}px`);
       drop.style.setProperty("--waresh-rain-duration", `${duration}s`);
       drop.style.setProperty("--waresh-rain-delay", `${delay}s`);
-      drop.style.animationPlayState = reducedMotion ? "paused" : "running";
     });
 
     return () => {
@@ -42,38 +39,31 @@ export default function AboutRainExperience() {
 
   useEffect(() => {
     return () => {
-      const audio = audioRef.current;
       if (audio) {
         audio.pause();
         audio.currentTime = 0;
       }
-      audioRef.current = null;
     };
-  }, []);
+  }, [audio]);
 
   const toggleSound = async () => {
-    const audio = audioRef.current;
-
     if (soundEnabled) {
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+      audio?.pause();
+      if (audio) audio.currentTime = 0;
       setSoundEnabled(false);
       return;
     }
 
     // Real recorded ambience is intentionally used here instead of generated
-    // Web Audio noise. The file can be replaced by the final approved recording
-    // without changing this component.
+    // Web Audio noise. The approved recording should live at this public path.
     const nextAudio = audio ?? new Audio("/rain-forest.mp3");
     nextAudio.loop = true;
     nextAudio.preload = "auto";
     nextAudio.volume = 0.16;
-    audioRef.current = nextAudio;
 
     try {
       await nextAudio.play();
+      if (!audio) setAudio(nextAudio);
       setSoundEnabled(true);
     } catch {
       setSoundEnabled(false);
@@ -81,7 +71,7 @@ export default function AboutRainExperience() {
   };
 
   return (
-    <div ref={rootRef} className="waresh-about-rain-layer" aria-hidden="false">
+    <div className="waresh-about-rain-layer" aria-hidden="false">
       <style>{`
         .waresh-about-rain-layer {
           position: absolute;
@@ -153,13 +143,6 @@ export default function AboutRainExperience() {
             min-height: 38px;
             padding-inline: 12px;
             font-size: 10px;
-          }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .waresh-about-rain-drop {
-            animation: none;
-            transform: translate3d(var(--waresh-rain-drift, 0px), 18vh, 0) rotate(16deg);
           }
         }
       `}</style>
