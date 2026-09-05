@@ -9,6 +9,7 @@ import "./footer-branding.css";
 import "./hero-slogans.css";
 import "./header-navigation-polish.css";
 import "./market-calculator-polish.css";
+import "./gift-footer-polish.css";
 
 const primaryLogo = "/waresh-gold-logo-green.png";
 const browserIcon = "/waresh-gold-logo-white.jpg";
