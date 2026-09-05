@@ -49,10 +49,8 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] > div > div:last-child > 
 #top .mt-9 > span:first-child::after { content:"محصولات منتخب"; font-size:.75rem; }
 #gifts > .waresh-container { min-height:0 !important; }
 
-/* Hero photography: cinematic misty forest + premium gold product image. */
-#top > img:first-child {
-  opacity:0 !important;
-}
+/* Hero photography: cinematic misty forest + understated fine-jewelry detail. */
+#top > img:first-child { opacity:0 !important; }
 #top::before {
   content:"";
   position:absolute;
@@ -65,19 +63,25 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] > div > div:last-child > 
   background-repeat:no-repeat;
 }
 #top .waresh-hero-jewel > img {
-  content:url("https://images.unsplash.com/photo-1677466891887-9cf7762d64cc?auto=format&fit=crop&fm=jpg&q=82&w=1800") !important;
+  content:url("https://images.unsplash.com/photo-1786052352796-04a29e4634e4?auto=format&fit=crop&fm=jpg&q=82&w=2400") !important;
   object-position:center center;
 }
 
-#top .waresh-rain { z-index:2 !important;display:block;position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:.81 !important;isolation:isolate;mix-blend-mode:screen;background-image:radial-gradient(ellipse 1.2px 30px at 18px 34px,rgba(235,244,237,.72) 0 35%,transparent 70%),radial-gradient(ellipse 1px 22px at 64px 118px,rgba(220,236,224,.58) 0 35%,transparent 70%),radial-gradient(ellipse 1.4px 36px at 112px 62px,rgba(235,244,237,.62) 0 35%,transparent 70%);background-size:180px 180px,220px 210px,280px 260px;background-position:0 0,40px 30px,90px -40px;animation:waresh-rain-field 3.8s linear infinite !important;will-change:background-position; }
-#top .waresh-rain::before,#top .waresh-rain::after { z-index:1;display:block;position:absolute;inset:-30%;content:"";pointer-events:none;will-change:transform;background-repeat:repeat; }
-#top .waresh-rain::before { opacity:.62;transform:rotate(9deg) scale(1.1);background-image:repeating-linear-gradient(102deg,transparent 0 74px,rgba(235,244,237,.24) 75px 76px,transparent 77px 138px);background-size:138px 138px;animation:waresh-rain-near 2.7s linear infinite !important; }
-#top .waresh-rain::after { opacity:.46;transform:rotate(9deg) scale(1.08);background-image:repeating-linear-gradient(102deg,transparent 0 102px,rgba(220,236,224,.18) 103px 104px,transparent 105px 190px);background-size:190px 190px;animation:waresh-rain-far 4.8s linear infinite !important; }
+/* Rain stays layered, but each moving layer travels exactly one full tile before looping. */
+#top .waresh-rain { z-index:2 !important;display:block;position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:.81 !important;isolation:isolate;mix-blend-mode:screen;background-image:radial-gradient(ellipse 1.2px 30px at 18px 34px,rgba(235,244,237,.72) 0 35%,transparent 70%),radial-gradient(ellipse 1px 22px at 64px 118px,rgba(220,236,224,.58) 0 35%,transparent 70%),radial-gradient(ellipse 1.4px 36px at 112px 62px,rgba(235,244,237,.62) 0 35%,transparent 70%);background-size:180px 180px,220px 210px,280px 260px;background-position:0 0,40px 30px,90px -40px;animation:none !important;will-change:auto; }
+#top .waresh-rain::before,#top .waresh-rain::after { z-index:1;display:block;position:absolute;inset:-30%;content:"";pointer-events:none;will-change:background-position;background-repeat:repeat; }
+#top .waresh-rain::before { opacity:.62;transform:rotate(9deg) scale(1.1);background-image:repeating-linear-gradient(102deg,transparent 0 74px,rgba(235,244,237,.24) 75px 76px,transparent 77px 138px);background-size:138px 138px;background-position:0 0;animation:waresh-rain-near 2.7s linear infinite !important; }
+#top .waresh-rain::after { opacity:.46;transform:rotate(9deg) scale(1.08);background-image:repeating-linear-gradient(102deg,transparent 0 102px,rgba(220,236,224,.18) 103px 104px,transparent 105px 190px);background-size:190px 190px;background-position:0 0;animation:waresh-rain-far 4.8s linear infinite !important; }
 #top .waresh-container { position:relative;z-index:3; }
 #top .waresh-scroll-marker { z-index:4; }
-@keyframes waresh-rain-field { from { background-position:0 -220px,40px -180px,90px -300px; } to { background-position:52px 760px,6px 700px,128px 660px; } }
-@keyframes waresh-rain-near { from { background-position:0 -180px; } to { background-position:55px 520px; } }
-@keyframes waresh-rain-far { from { background-position:0 -260px; } to { background-position:-42px 430px; } }
+@keyframes waresh-rain-near { from { background-position:0 0; } to { background-position:0 138px; } }
+@keyframes waresh-rain-far { from { background-position:0 0; } to { background-position:0 190px; } }
+
+/* Gift section: use a meaningful jewelry-gifting photograph instead of a flat green field. */
+#gifts > div:first-child > img {
+  content:url("https://images.unsplash.com/photo-1601482438721-562070de7a69?auto=format&fit=crop&fm=jpg&q=82&w=2200") !important;
+  object-position:center center;
+}
 
 /* Footer logo: keep the green Waresh Gold logo visually centered. */
 footer img[alt="وارش گلد"] { content:url('/waresh-gold-logo-green.png') !important;height:110px !important;width:auto !important;max-width:300px;object-fit:contain;object-position:center center;display:block;margin-inline:auto; }
@@ -94,7 +98,7 @@ footer img[alt="وارش گلد"] { content:url('/waresh-gold-logo-green.png') !
   #gifts { min-height:0 !important; }
   #gifts > div:first-child { position:absolute;inset:0;z-index:0;overflow:hidden;border-radius:0;box-shadow:none; }
   #gifts > div:first-child > img { opacity:.48;object-position:center 48%; }
-  #gifts > div:first-child > div:first-of-type { background:linear-gradient(90deg,rgba(18,37,29,.97) 0%,rgba(22,43,34,.86) 42%,rgba(18,35,28,.62) 70%,rgba(12,25,20,.78) 100%); }
+  #gifts > div:first-child > div:first-of-type { background:linear-gradient(90deg,rgba(28,24,22,.96) 0%,rgba(35,30,27,.86) 42%,rgba(25,22,20,.58) 70%,rgba(14,13,12,.78) 100%); }
   #gifts > .waresh-container { min-height:520px !important;padding-block:56px !important; }
   #gifts .waresh-gift-range { min-height:72px; }
   #prices { min-height:auto !important;padding-block:64px !important; }
@@ -136,7 +140,8 @@ footer img[alt="وارش گلد"] { content:url('/waresh-gold-logo-green.png') !
   #products .mb-10 > div:first-child button { flex:0 0 auto; }
   #products .mb-10 select { width:100%; }
   #products .grid > article > div:first-child { height:260px; }
-  #gifts > div:first-child > img { opacity:.58; }
+  #gifts > div:first-child > img { opacity:.58;object-position:center 48%; }
+  #gifts > div:first-child > div:first-of-type { background:linear-gradient(180deg,rgba(28,24,22,.9) 0%,rgba(25,22,20,.7) 58%,rgba(14,13,12,.84) 100%); }
   #gifts > .waresh-container { min-height:0 !important;padding-block:56px !important; }
   #gifts .waresh-gift-range { min-height:70px; }
   #prices { padding-block:48px !important; }
