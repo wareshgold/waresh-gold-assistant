@@ -62,6 +62,14 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] > div > div:last-child > 
 /* Footer logo: force the green Waresh Gold logo asset. */
 footer img[alt="وارش گلد"] { content:url('/waresh-gold-logo-green.png') !important;height:110px !important;width:auto !important;max-width:300px;object-fit:contain;object-position:left center; }
 
+/* Dedicated inner-page heroes: keep the dark green identity, but never let mobile text sit in near-black contrast. */
+.waresh-tools-hero,
+.waresh-about-hero { isolation:isolate; }
+.waresh-tools-hero::after,
+.waresh-about-hero::after { content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,rgba(24,48,38,.42) 0%,rgba(29,53,43,.18) 52%,rgba(18,37,29,.38) 100%);pointer-events:none; }
+.waresh-tools-hero > .waresh-container,
+.waresh-about-hero > .waresh-container { z-index:2; }
+
 @media (min-width:641px) {
   #gifts { min-height:0 !important; }
   #gifts > div:first-child { position:absolute;inset:0;z-index:0;overflow:hidden;border-radius:0;box-shadow:none; }
@@ -87,6 +95,17 @@ footer img[alt="وارش گلد"] { content:url('/waresh-gold-logo-green.png') !
   header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] { width:178px;height:49px;padding:0;border-radius:0;background-color:transparent !important;box-shadow:none !important; }
   header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"]::after,header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]::after { right:6.5%;font-size:18px !important;z-index:10; }
   header[class*="sticky"][class*="top-0"][class*="z-50"] > div > div:last-child { gap:0; }
+
+  .waresh-tools-hero,
+  .waresh-about-hero { padding-top:4rem !important;padding-bottom:4.25rem !important;background:#2c493b !important; }
+  .waresh-tools-hero > div.absolute,
+  .waresh-about-hero > div.absolute { opacity:.28 !important; }
+  .waresh-tools-hero::after,
+  .waresh-about-hero::after { background:linear-gradient(180deg,rgba(47,76,62,.12) 0%,rgba(39,66,54,.02) 48%,rgba(27,49,40,.22) 100%); }
+  .waresh-tools-hero h1,
+  .waresh-about-hero h1 { text-shadow:0 2px 16px rgba(10,24,18,.24); }
+  .waresh-tools-hero p,
+  .waresh-about-hero p { text-shadow:0 1px 10px rgba(10,24,18,.18); }
 }
 @media (max-width:640px) {
   .waresh-site > div:first-child { min-height:30px; }
@@ -104,5 +123,9 @@ footer img[alt="وارش گلد"] { content:url('/waresh-gold-logo-green.png') !
   #prices form { padding:20px !important; }
   footer img[alt="وارش گلد"] { height:92px !important;max-width:250px; }
   .waresh-mobile-menu a[aria-label="صفحه اصلی وارش گلد"] { width:190px;height:48px; }
+  .waresh-tools-hero h1,
+  .waresh-about-hero h1 { font-size:clamp(2.2rem,11vw,3.15rem) !important;line-height:1.42 !important; }
+  .waresh-tools-hero > .waresh-container,
+  .waresh-about-hero > .waresh-container { max-width:100%; }
 }
 @media (prefers-reduced-motion:reduce) { .waresh-hero-jewel img,#products .grid > article > div:first-child,#prices .grid.grid-cols-2 > div { transition:none !important;animation:none !important; } }
