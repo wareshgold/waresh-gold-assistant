@@ -4,6 +4,19 @@ import { useEffect, useState } from "react";
 
 const DROP_COUNT = 46;
 
+function createRainAudio(): HTMLAudioElement {
+  const rainAudio = new Audio("/rain-forest.mp3");
+  rainAudio.loop = true;
+  rainAudio.preload = "auto";
+  rainAudio.volume = 0.16;
+  return rainAudio;
+}
+
+function stopRainAudio(rainAudio: HTMLAudioElement): void {
+  rainAudio.pause();
+  rainAudio.currentTime = 0;
+}
+
 export default function AboutRainExperience() {
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const [soundEnabled, setSoundEnabled] = useState(false);
@@ -39,27 +52,20 @@ export default function AboutRainExperience() {
 
   useEffect(() => {
     return () => {
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+      if (audio) stopRainAudio(audio);
     };
   }, [audio]);
 
   const toggleSound = async () => {
     if (soundEnabled) {
-      audio?.pause();
-      if (audio) audio.currentTime = 0;
+      if (audio) stopRainAudio(audio);
       setSoundEnabled(false);
       return;
     }
 
     // Real recorded ambience is intentionally used here instead of generated
     // Web Audio noise. The approved recording should live at this public path.
-    const nextAudio = audio ?? new Audio("/rain-forest.mp3");
-    nextAudio.loop = true;
-    nextAudio.preload = "auto";
-    nextAudio.volume = 0.16;
+    const nextAudio = audio ?? createRainAudio();
 
     try {
       await nextAudio.play();
