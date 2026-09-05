@@ -19,8 +19,8 @@
 
   .waresh-site footer img[alt="وارش گلد"] {
     order: -1;
-    width: min(380px, 34vw) !important;
-    height: 148px !important;
+    width: min(494px, 44.2vw) !important;
+    height: 192px !important;
     max-width: none !important;
     margin: 0 auto !important;
     object-fit: contain !important;
