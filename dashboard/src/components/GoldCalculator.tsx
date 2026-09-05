@@ -149,7 +149,7 @@ export default function GoldCalculator({ liveGoldPrice }: GoldCalculatorProps) {
           <p className="text-xs font-semibold tracking-[0.14em] text-[#a08350]">CALCULATOR</p>
           <h3 className="mt-2 text-2xl font-extrabold text-[#29251f]">محاسبه‌گر قیمت طلا</h3>
           <p className="mt-2 max-w-xl text-xs leading-6 text-[#81796f]">
-            برای شروع فقط وزن و قیمت هر گرم را وارد کن. هزینه‌های ساخت و فروش را در بخش تنظیمات اضافه کن.
+            برای شروع فقط وزن و قیمت هر گرم را وارد کن. اجرت، سود، مالیات و تخفیف در صورت نیاز قابل اضافه کردن هستند.
           </p>
         </div>
         <span className="self-start rounded-full bg-[#eee1c9] px-3 py-1 text-sm font-bold text-[#8a6b38] sm:self-auto">۱۸K</span>
@@ -158,8 +158,8 @@ export default function GoldCalculator({ liveGoldPrice }: GoldCalculatorProps) {
       <div className="mt-7 rounded-2xl border border-[#e4dacb] bg-[#fffaf2]/70 p-4 sm:p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-xs font-semibold text-[#8b8379]">ورودی‌های اصلی</p>
-            <p className="mt-1 text-sm text-[#655e55]">وزن و قیمت هر گرم، پایه محاسبه هستند.</p>
+            <p className="text-xs font-semibold text-[#8b8379]">مشخصات طلا</p>
+            <p className="mt-1 text-sm text-[#655e55]">وزن و قیمت هر گرم را برای شروع محاسبه وارد کن.</p>
           </div>
           {liveGoldPrice ? (
             <div className="flex flex-wrap items-center gap-2">
@@ -196,8 +196,8 @@ export default function GoldCalculator({ liveGoldPrice }: GoldCalculatorProps) {
 
       <div className="mt-5 rounded-2xl border border-[#e4dacb] bg-[#fbf7f0] p-4 sm:p-5">
         <div>
-          <p className="text-xs font-semibold text-[#8b8379]">هزینه‌های تکمیلی</p>
-          <p className="mt-1 text-sm text-[#655e55]">اختیاری — اگر در فاکتور داری، درصدها را وارد کن.</p>
+          <p className="text-xs font-semibold text-[#8b8379]">جزئیات فاکتور</p>
+          <p className="mt-1 text-sm text-[#655e55]">اگر اجرت، سود، مالیات یا تخفیف داری، درصدها را وارد کن.</p>
         </div>
 
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
