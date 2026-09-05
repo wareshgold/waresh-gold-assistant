@@ -102,8 +102,8 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
   const products = useMemo(() => {
     const band = priceBands.find((item) => item.value === priceBand);
     const hasPricing = liveGoldPrice !== undefined && liveGoldPrice > 0;
-    const pricingMatchesCurrentGoldPrice = pricing?.goldPrice === liveGoldPrice;
-    const currentPricing = pricingMatchesCurrentGoldPrice ? pricing.products : {};
+    const currentPricing: Record<number, ProductPricing> =
+      pricing && pricing.goldPrice === liveGoldPrice ? pricing.products : {};
 
     return PRODUCTS.map((product) => ({
       product,
