@@ -79,7 +79,7 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
 @keyframes waresh-rain-near { from { background-position:0 -180px; } to { background-position:55px 520px; } }
 @keyframes waresh-rain-far { from { background-position:0 -260px; } to { background-position:-42px 430px; } }
 
-/* Footer logo: make the brand mark a prominent closing element. */
+/* Footer logo: use the green Waresh Gold brand logo. */
 footer img[alt="وارش گلد"] { height:110px !important;width:auto !important;max-width:300px;object-fit:contain;object-position:left center; }
 
 @media (min-width:641px) {
