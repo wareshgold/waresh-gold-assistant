@@ -73,23 +73,47 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
   background-size:180px 180px,220px 210px,280px 260px;
   background-position:0 0,40px 30px,90px -40px;
   animation:waresh-rain-field 3.8s linear infinite;
+  will-change:background-position;
 }
 #top .waresh-rain::before,
 #top .waresh-rain::after {
   z-index:1;
   display:block;
   position:absolute;
+  inset:-30%;
+  content:"";
   pointer-events:none;
   will-change:transform;
+  background-repeat:repeat;
 }
-#top .waresh-rain::before { opacity:.62;transform:rotate(9deg) scale(1.1);animation:waresh-rain-near 2.7s linear infinite; }
-#top .waresh-rain::after { opacity:.46;transform:rotate(9deg) scale(1.08);animation:waresh-rain-far 4.8s linear infinite; }
+#top .waresh-rain::before {
+  opacity:.62;
+  transform:rotate(9deg) scale(1.1);
+  background-image:repeating-linear-gradient(102deg,transparent 0 74px,rgba(235,244,237,.24) 75px 76px,transparent 77px 138px);
+  background-size:138px 138px;
+  animation:waresh-rain-near 2.7s linear infinite;
+}
+#top .waresh-rain::after {
+  opacity:.46;
+  transform:rotate(9deg) scale(1.08);
+  background-image:repeating-linear-gradient(102deg,transparent 0 102px,rgba(220,236,224,.18) 103px 104px,transparent 105px 190px);
+  background-size:190px 190px;
+  animation:waresh-rain-far 4.8s linear infinite;
+}
 #top .waresh-container { position:relative;z-index:3; }
 #top .waresh-scroll-marker { z-index:4; }
 
 @keyframes waresh-rain-field {
   from { background-position:0 -220px,40px -180px,90px -300px; }
   to { background-position:52px 760px,6px 700px,128px 660px; }
+}
+@keyframes waresh-rain-near {
+  from { background-position:0 -180px; }
+  to { background-position:55px 520px; }
+}
+@keyframes waresh-rain-far {
+  from { background-position:0 -260px; }
+  to { background-position:-42px 430px; }
 }
 
 @media (min-width:641px) {
@@ -128,7 +152,42 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
   #gifts .waresh-gift-range { min-height:70px; }
   #prices { padding-block:48px !important; }
   #prices form { padding:20px !important; }
-  #top .waresh-rain { opacity:.81 !important; }
+  #top .waresh-rain {
+    opacity:.81 !important;
+    mix-blend-mode:screen;
+    background-image:repeating-linear-gradient(102deg,transparent 0 42px,rgba(235,244,237,.26) 43px 45px,transparent 46px 92px);
+    background-size:92px 92px;
+    background-position:0 -140px;
+    animation:waresh-rain-mobile 3.6s linear infinite !important;
+    will-change:background-position;
+  }
+  #top .waresh-rain::before {
+    inset:-40%;
+    opacity:.55;
+    background-image:repeating-linear-gradient(102deg,transparent 0 58px,rgba(235,244,237,.19) 59px 60px,transparent 61px 112px);
+    background-size:112px 112px;
+    animation:waresh-rain-mobile-near 2.6s linear infinite !important;
+  }
+  #top .waresh-rain::after {
+    inset:-40%;
+    opacity:.34;
+    background-image:repeating-linear-gradient(102deg,transparent 0 84px,rgba(220,236,224,.15) 85px 86px,transparent 87px 160px);
+    background-size:160px 160px;
+    animation:waresh-rain-mobile-far 4.5s linear infinite !important;
+  }
+}
+
+@keyframes waresh-rain-mobile {
+  from { background-position:0 -140px; }
+  to { background-position:48px 620px; }
+}
+@keyframes waresh-rain-mobile-near {
+  from { transform:rotate(9deg) scale(1.1) translate3d(0,-160px,0); }
+  to { transform:rotate(9deg) scale(1.1) translate3d(44px,520px,0); }
+}
+@keyframes waresh-rain-mobile-far {
+  from { transform:rotate(9deg) scale(1.08) translate3d(0,-220px,0); }
+  to { transform:rotate(9deg) scale(1.08) translate3d(-36px,430px,0); }
 }
 
 @media (prefers-reduced-motion:reduce) {
