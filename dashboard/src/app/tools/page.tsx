@@ -42,7 +42,7 @@ export default async function ToolsPage() {
         </div>
       </header>
 
-      <section className="relative overflow-hidden bg-[#23372d] py-16 text-white sm:py-28">
+      <section className="waresh-tools-hero relative overflow-hidden bg-[#23372d] py-16 text-white sm:py-28">
         <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "url(https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1800&q=85)", backgroundSize: "cover", backgroundPosition: "center" }} aria-hidden="true" />
         <div className="waresh-container relative">
           <p className="text-xs font-bold tracking-[0.24em] text-[#d7bf8b]">WARESH GOLD TOOLS</p>
