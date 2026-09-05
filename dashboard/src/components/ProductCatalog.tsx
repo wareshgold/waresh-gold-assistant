@@ -151,10 +151,10 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
               <div className="relative h-56 overflow-hidden bg-[#eee8dc] sm:h-64">
                 <img src={product.image} alt={product.name} loading="lazy" referrerPolicy="no-referrer" className="h-full w-full object-cover object-center transition duration-700 ease-out group-hover:scale-[1.045]" />
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,30,24,0.02)_45%,rgba(20,30,24,0.18)_100%)]" />
-                <span className="absolute right-4 top-4 rounded-full border border-white/70 bg-white/70 px-3 py-1.5 text-[11px] font-bold text-[#746a5d] shadow-sm backdrop-blur sm:right-5 sm:top-5">{product.subcategory ?? (product.category === "کم-اجرت" ? "اقتصادی" : product.category)}</span>
+                <span className="absolute right-4 top-4 rounded-full border border-white/70 bg-white/70 px-3 py-1.5 text-[11px] font-bold text-[#746a5d] shadow-sm backdrop-blur sm:right-5 sm:top-5">{product.subcategory ?? product.category}</span>
               </div>
               <div className="p-5 sm:p-6">
-                <p className="text-xs font-semibold tracking-[0.12em] text-[#a17c45]">{product.category === "کم-اجرت" ? "اقتصادی" : product.category}</p>
+                <p className="text-xs font-semibold tracking-[0.12em] text-[#a17c45]">{product.category}</p>
                 <h3 className="mt-2 text-lg font-extrabold text-[#292c27]">{product.name}</h3>
                 <p className="mt-2 text-sm leading-7 text-[#7b7d76]">{product.description}</p>
                 <div className="mt-5 border-t border-[#ebe6dc] pt-4 sm:mt-6 sm:pt-5">
