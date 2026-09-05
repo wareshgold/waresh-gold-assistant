@@ -37,7 +37,7 @@ const giftPriceBands: Record<string, string> = {
   "۲۰ تا ۳۰ میلیون": "20-30",
 };
 
-const PRICE_DISPLAY_STEP = 10_000;
+const PRICE_DISPLAY_STEP = 100_000;
 
 function getRoundedDisplayPrice(price: number): number {
   return Math.floor(price / PRICE_DISPLAY_STEP) * PRICE_DISPLAY_STEP;
