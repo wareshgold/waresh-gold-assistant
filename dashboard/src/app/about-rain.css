@@ -1,0 +1,94 @@
+.waresh-about-rain-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.waresh-about-rain-drop {
+  position: absolute;
+  top: -18vh;
+  width: 1px;
+  height: 78px;
+  border-radius: 999px;
+  background: linear-gradient(to bottom, transparent, rgba(232, 242, 235, 0.62));
+  transform: rotate(16deg);
+  will-change: transform;
+  animation: waresh-about-rain-fall var(--waresh-rain-speed, 2.6s) linear infinite;
+}
+
+.waresh-about-rain-vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(19, 42, 32, 0.08), rgba(19, 42, 32, 0.18)),
+    radial-gradient(circle at 50% 40%, transparent 30%, rgba(8, 25, 18, 0.2) 100%);
+}
+
+.waresh-about-sound-control {
+  pointer-events: auto;
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 42px;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(19, 39, 31, 0.54);
+  color: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-size: 0.72rem;
+  font-weight: 700;
+  transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease;
+}
+
+.waresh-about-sound-control:hover {
+  transform: translateY(-1px);
+  background: rgba(19, 39, 31, 0.72);
+  border-color: rgba(216, 189, 126, 0.5);
+}
+
+.waresh-about-sound-control:focus-visible {
+  outline: 2px solid #d8bd7e;
+  outline-offset: 3px;
+}
+
+@keyframes waresh-about-rain-fall {
+  from {
+    transform: translate3d(var(--waresh-rain-drift, 0px), -18vh, 0) rotate(16deg);
+  }
+  to {
+    transform: translate3d(var(--waresh-rain-drift, 0px), 118vh, 0) rotate(16deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .waresh-about-rain-drop {
+    height: 54px;
+  }
+
+  .waresh-about-sound-control {
+    right: 0.75rem;
+    bottom: 0.75rem;
+    min-height: 40px;
+    padding-inline: 0.8rem;
+    font-size: 0.68rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .waresh-about-rain-drop {
+    animation: none;
+    transform: translate3d(var(--waresh-rain-drift, 0px), 6vh, 0) rotate(16deg);
+  }
+
+  .waresh-about-sound-control {
+    transition: none;
+  }
+}
