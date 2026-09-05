@@ -1,0 +1,236 @@
+/* Premium gifting + end-of-page visual flow for the public Waresh Gold storefront. */
+
+.waresh-site #gifts {
+  position: relative;
+  isolation: isolate;
+  background: #1d3028 !important;
+}
+
+.waresh-site #gifts::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(216, 189, 126, 0.34), transparent);
+  pointer-events: none;
+}
+
+.waresh-site #gifts > div:first-child > img {
+  filter: saturate(0.82) contrast(1.04);
+  transform: scale(1.025);
+  transition: transform 900ms ease, filter 500ms ease;
+}
+
+.waresh-site #gifts:hover > div:first-child > img {
+  transform: scale(1.045);
+  filter: saturate(0.9) contrast(1.05);
+}
+
+.waresh-site #gifts .waresh-container {
+  position: relative;
+  z-index: 2;
+}
+
+.waresh-site #gifts .max-w-xl {
+  position: relative;
+}
+
+.waresh-site #gifts .max-w-xl::before {
+  content: "";
+  display: block;
+  width: 54px;
+  height: 2px;
+  margin-bottom: 24px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #d8bd7e, rgba(216, 189, 126, 0));
+}
+
+.waresh-site #gifts .max-w-xl h2 {
+  letter-spacing: -0.035em;
+  text-shadow: 0 12px 34px rgba(0, 0, 0, 0.2);
+}
+
+.waresh-site #gifts .max-w-xl > a {
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.24);
+  transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.waresh-site #gifts .max-w-xl > a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 52px rgba(0, 0, 0, 0.3);
+}
+
+.waresh-site #gifts .waresh-gift-range {
+  position: relative;
+  overflow: hidden;
+  min-height: 86px;
+  border-color: rgba(255, 255, 255, 0.14);
+  background: linear-gradient(135deg, rgba(8, 20, 15, 0.34), rgba(255, 255, 255, 0.055));
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.13);
+  transition: transform 220ms ease, background-color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.waresh-site #gifts .waresh-gift-range::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  right: 0;
+  width: 3px;
+  background: linear-gradient(180deg, transparent, #d8bd7e, transparent);
+  opacity: 0.65;
+  transition: opacity 180ms ease;
+}
+
+.waresh-site #gifts .waresh-gift-range:hover {
+  transform: translateX(-5px);
+  border-color: rgba(216, 189, 126, 0.3);
+  background: linear-gradient(135deg, rgba(8, 20, 15, 0.46), rgba(216, 189, 126, 0.08));
+  box-shadow: 0 20px 46px rgba(0, 0, 0, 0.2);
+}
+
+.waresh-site #gifts .waresh-gift-range:hover::before { opacity: 1; }
+.waresh-site #gifts .waresh-gift-range > span:last-child { transform: translateX(0); transition: transform 180ms ease, color 180ms ease; }
+.waresh-site #gifts .waresh-gift-range:hover > span:last-child { transform: translateX(-3px); }
+
+/* Give the final CTA a deliberate transition into the footer rather than an abrupt stop. */
+.waresh-site section:last-of-type {
+  position: relative;
+  isolation: isolate;
+}
+
+.waresh-site section:last-of-type::after {
+  content: "";
+  position: absolute;
+  inset-inline: 12%;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(216, 189, 126, 0.24), transparent);
+  pointer-events: none;
+}
+
+.waresh-site footer {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(216, 189, 126, 0.08), transparent 34%),
+    #14251e !important;
+  border-top-color: rgba(216, 189, 126, 0.14) !important;
+}
+
+.waresh-site footer::before {
+  z-index: 0;
+  opacity: 0.9;
+}
+
+.waresh-site footer > .waresh-container {
+  position: relative;
+  z-index: 1;
+}
+
+.waresh-site footer img[alt="وارش گلد"] {
+  transition: transform 350ms ease, filter 350ms ease;
+}
+
+.waresh-site footer img[alt="وارش گلد"]:hover {
+  transform: scale(1.035);
+  filter: drop-shadow(0 20px 34px rgba(0, 0, 0, 0.25));
+}
+
+.waresh-site footer a {
+  transition: color 180ms ease, opacity 180ms ease, transform 180ms ease;
+}
+
+.waresh-site footer a:hover {
+  transform: translateY(-1px);
+}
+
+.waresh-site footer > .waresh-container > div {
+  position: relative;
+}
+
+@media (min-width: 1024px) {
+  .waresh-site #gifts .waresh-container {
+    min-height: 540px !important;
+    padding-block: 64px !important;
+  }
+
+  .waresh-site #gifts .max-w-xl {
+    max-width: 560px;
+  }
+
+  .waresh-site #gifts .waresh-gift-range {
+    min-height: 92px;
+    padding: 22px 24px;
+  }
+
+  .waresh-site footer {
+    padding-top: 62px !important;
+    padding-bottom: 48px !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  .waresh-site #gifts .waresh-container {
+    padding-block: 64px !important;
+  }
+
+  .waresh-site #gifts .max-w-xl::before {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .waresh-site #gifts > div:first-child > img {
+    transform: scale(1.04);
+  }
+
+  .waresh-site #gifts:hover > div:first-child > img {
+    transform: scale(1.04);
+  }
+
+  .waresh-site #gifts .waresh-container {
+    padding-block: 58px !important;
+  }
+
+  .waresh-site #gifts .max-w-xl h2 {
+    font-size: clamp(2.6rem, 13vw, 3.7rem) !important;
+    line-height: 1.32 !important;
+  }
+
+  .waresh-site #gifts .max-w-xl > a {
+    width: 100%;
+  }
+
+  .waresh-site #gifts .waresh-gift-range {
+    min-height: 76px;
+    border-radius: 22px !important;
+    padding: 17px 18px !important;
+  }
+
+  .waresh-site footer {
+    padding-top: 52px !important;
+    padding-bottom: 38px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .waresh-site #gifts > div:first-child > img,
+  .waresh-site #gifts .max-w-xl > a,
+  .waresh-site #gifts .waresh-gift-range,
+  .waresh-site #gifts .waresh-gift-range > span:last-child,
+  .waresh-site footer img[alt="وارش گلد"],
+  .waresh-site footer a {
+    transition: none !important;
+  }
+
+  .waresh-site #gifts > div:first-child > img,
+  .waresh-site #gifts:hover > div:first-child > img,
+  .waresh-site #gifts .max-w-xl > a:hover,
+  .waresh-site #gifts .waresh-gift-range:hover,
+  .waresh-site footer img[alt="وارش گلد"]:hover,
+  .waresh-site footer a:hover {
+    transform: none !important;
+  }
+}
