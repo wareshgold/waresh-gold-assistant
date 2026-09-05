@@ -85,16 +85,19 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
   #prices .lg\:sticky { position:static !important; }
 }
 
-/* Keep the original atmospheric rain from globals.css. It is intentionally not
-   reimplemented here: the original irregular drop pattern is subtler and avoids
-   the obvious full-screen stripe/loop effect. */
+/* Atmospheric rain: keep the original irregular drops visible without the
+   aggressive full-screen stripe treatment. */
 #top .waresh-rain {
   z-index:1;
+  display:block;
   pointer-events:none;
-  opacity:.78;
+  opacity:.92 !important;
+  isolation:isolate;
 }
 #top .waresh-rain::before,
 #top .waresh-rain::after {
+  z-index:1;
+  display:block;
   pointer-events:none;
 }
 
@@ -128,7 +131,7 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
   #gifts .waresh-gift-range { min-height:70px; }
   #prices { padding-block:48px !important; }
   #prices form { padding:20px !important; }
-  #top .waresh-rain { opacity:.78 !important; }
+  #top .waresh-rain { opacity:.92 !important; }
 }
 
 @media (prefers-reduced-motion:reduce) {
