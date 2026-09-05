@@ -57,7 +57,7 @@ function setupHeroSlogan(hero: HTMLElement, reduceMotion: boolean): () => void {
   };
 }
 
-function setupHeroRain(hero: HTMLElement, reduceMotion: boolean): () => void {
+function setupHeroRain(hero: HTMLElement): () => void {
   const rain = hero.querySelector<HTMLElement>(".waresh-rain");
   if (!rain) return () => undefined;
 
@@ -80,7 +80,8 @@ function setupHeroRain(hero: HTMLElement, reduceMotion: boolean): () => void {
     opacity: number;
   }> = [];
 
-  const count = window.innerWidth <= 640 ? 34 : 58;
+  const isMobile = window.innerWidth <= 640;
+  const count = isMobile ? 30 : 58;
   const width = Math.max(hero.clientWidth, window.innerWidth, 320);
   const height = Math.max(hero.clientHeight, window.innerHeight, 620);
 
@@ -92,10 +93,10 @@ function setupHeroRain(hero: HTMLElement, reduceMotion: boolean): () => void {
       element,
       x: ((i * 137.7) % (width + 160)) - 80,
       y: ((i * 83.4) % (height + 240)) - 240,
-      speed: 260 + ((i * 47) % 180),
-      drift: 26 + ((i * 13) % 32),
-      length: 42 + ((i * 19) % 34),
-      opacity: 0.22 + ((i * 7) % 28) / 100,
+      speed: isMobile ? 155 + ((i * 29) % 85) : 260 + ((i * 47) % 180),
+      drift: isMobile ? 14 + ((i * 9) % 16) : 26 + ((i * 13) % 32),
+      length: isMobile ? 34 + ((i * 17) % 26) : 42 + ((i * 19) % 34),
+      opacity: isMobile ? 0.18 + ((i * 7) % 20) / 100 : 0.22 + ((i * 7) % 28) / 100,
     };
 
     element.style.height = `${drop.length}px`;
@@ -103,17 +104,6 @@ function setupHeroRain(hero: HTMLElement, reduceMotion: boolean): () => void {
     element.style.animation = "none";
     rain.appendChild(element);
     drops.push(drop);
-  }
-
-  if (reduceMotion) {
-    drops.forEach((drop) => {
-      drop.element.style.transform = `translate3d(${drop.x}px, ${drop.y + 220}px, 0) rotate(9deg)`;
-    });
-    return () => {
-      drops.forEach((drop) => drop.element.remove());
-      rain.classList.remove("waresh-rain-runtime");
-      rain.classList.add("waresh-rain");
-    };
   }
 
   let frameId = 0;
@@ -141,6 +131,9 @@ function setupHeroRain(hero: HTMLElement, reduceMotion: boolean): () => void {
     frameId = window.requestAnimationFrame(animate);
   };
 
+  // Rain is intentionally independent from prefers-reduced-motion here.
+  // The homepage rain is a core atmospheric visual and must remain animated
+  // on mobile; reduced-motion still controls the slogan transition below.
   frameId = window.requestAnimationFrame(animate);
 
   return () => {
@@ -180,7 +173,7 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
     const heroCleanups: Cleanup[] = [];
     if (hero) {
       heroCleanups.push(setupHeroSlogan(hero, reduceMotion));
-      heroCleanups.push(setupHeroRain(hero, reduceMotion));
+      heroCleanups.push(setupHeroRain(hero));
     }
 
     if (reduceMotion) {
