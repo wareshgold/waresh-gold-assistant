@@ -24,6 +24,12 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
 header[class*="sticky"][class*="top-0"][class*="z-50"] > div > div:last-child { flex-shrink:0; }
 header[class*="sticky"][class*="top-0"][class*="z-50"] > div > div:last-child > a { white-space:nowrap; }
 
+/* Keyboard focus: keep interactive controls visibly accessible without breaking the luxury treatment. */
+.waresh-site a:focus-visible,.waresh-site button:focus-visible,.waresh-site input:focus-visible,.waresh-site select:focus-visible { outline:2px solid #b28b4c !important;outline-offset:3px !important; }
+
+/* Keep section anchors from hiding headings beneath the sticky header. */
+.waresh-site section[id] { scroll-margin-top:92px; }
+
 #products .waresh-reveal { opacity:1 !important;transform:none !important; }
 #products article { box-shadow:0 18px 55px rgba(55,52,43,.07); }
 #products article:hover { box-shadow:0 28px 70px rgba(55,52,43,.13); }
@@ -45,11 +51,11 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] > div > div:last-child > 
 #top::before { content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background-image:url("https://images.unsplash.com/photo-1764111812995-b73ff58fc7d7?auto=format&fit=crop&fm=jpg&q=82&w=2400");background-size:cover;background-position:center;background-repeat:no-repeat; }
 #top .waresh-hero-jewel > img { content:url("https://images.unsplash.com/photo-1786052352796-04a29e4634e4?auto=format&fit=crop&fm=jpg&q=82&w=2400") !important;object-position:center center; }
 
-/* Rain: animated layered fields with exact tile travel for a clean, repeatable loop. */
-#top .waresh-rain { z-index:2 !important;display:block;position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:.81 !important;isolation:isolate;mix-blend-mode:screen;background-image:radial-gradient(ellipse 1.2px 30px at 18px 34px,rgba(235,244,237,.72) 0 35%,transparent 70%),radial-gradient(ellipse 1px 22px at 64px 118px,rgba(220,236,224,.58) 0 35%,transparent 70%),radial-gradient(ellipse 1.4px 36px at 112px 62px,rgba(235,244,237,.62) 0 35%,transparent 70%);background-size:180px 180px,220px 210px,280px 260px;background-position:0 0,40px 30px,90px -40px;animation:waresh-rain-field 3.8s linear infinite !important;will-change:background-position; }
+/* Rain: faster layered fields with exact tile travel for a clean, repeatable loop. */
+#top .waresh-rain { z-index:2 !important;display:block;position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:.81 !important;isolation:isolate;mix-blend-mode:screen;background-image:radial-gradient(ellipse 1.2px 30px at 18px 34px,rgba(235,244,237,.72) 0 35%,transparent 70%),radial-gradient(ellipse 1px 22px at 64px 118px,rgba(220,236,224,.58) 0 35%,transparent 70%),radial-gradient(ellipse 1.4px 36px at 112px 62px,rgba(235,244,237,.62) 0 35%,transparent 70%);background-size:180px 180px,220px 210px,280px 260px;background-position:0 0,40px 30px,90px -40px;animation:waresh-rain-field 1.8s linear infinite !important;will-change:background-position; }
 #top .waresh-rain::before,#top .waresh-rain::after { z-index:1;display:block;position:absolute;inset:-30%;content:"";pointer-events:none;will-change:background-position;background-repeat:repeat; }
-#top .waresh-rain::before { opacity:.62;transform:rotate(9deg) scale(1.1);background-image:repeating-linear-gradient(102deg,transparent 0 74px,rgba(235,244,237,.24) 75px 76px,transparent 77px 138px);background-size:138px 138px;background-position:0 0;animation:waresh-rain-near 2.7s linear infinite !important; }
-#top .waresh-rain::after { opacity:.46;transform:rotate(9deg) scale(1.08);background-image:repeating-linear-gradient(102deg,transparent 0 102px,rgba(220,236,224,.18) 103px 104px,transparent 105px 190px);background-size:190px 190px;background-position:0 0;animation:waresh-rain-far 4.8s linear infinite !important; }
+#top .waresh-rain::before { opacity:.62;transform:rotate(9deg) scale(1.1);background-image:repeating-linear-gradient(102deg,transparent 0 74px,rgba(235,244,237,.24) 75px 76px,transparent 77px 138px);background-size:138px 138px;background-position:0 0;animation:waresh-rain-near 1.35s linear infinite !important; }
+#top .waresh-rain::after { opacity:.46;transform:rotate(9deg) scale(1.08);background-image:repeating-linear-gradient(102deg,transparent 0 102px,rgba(220,236,224,.18) 103px 104px,transparent 105px 190px);background-size:190px 190px;background-position:0 0;animation:waresh-rain-far 2.4s linear infinite !important; }
 #top .waresh-container { position:relative;z-index:3; }
 #top .waresh-scroll-marker { z-index:4; }
 @keyframes waresh-rain-field { from { background-position:0 -180px,40px -210px,90px -260px; } to { background-position:0 0,40px 0,90px 0; } }
@@ -113,5 +119,9 @@ footer img[alt="وارش گلد"] { content:url('/waresh-gold-logo-green.png') !
   .waresh-mobile-menu a[aria-label="صفحه اصلی وارش گلد"] { width:190px;height:48px; }
   .waresh-tools-hero h1,.waresh-about-hero h1 { font-size:clamp(2.2rem,11vw,3.15rem) !important;line-height:1.42 !important; }
   .waresh-tools-hero > .waresh-container,.waresh-about-hero > .waresh-container { max-width:100%; }
+  #top .waresh-container { padding-top:3.25rem;padding-bottom:4.25rem; }
+  #top .waresh-hero-jewel { margin-top:.25rem; }
+  #top .waresh-hero-jewel > img { height:390px; }
+  #top .waresh-rain { opacity:.72 !important; }
 }
 @media (prefers-reduced-motion:reduce) { .waresh-hero-jewel img,#products .grid > article > div:first-child,#prices .grid.grid-cols-2 > div { transition:none !important;animation:none !important; } }
