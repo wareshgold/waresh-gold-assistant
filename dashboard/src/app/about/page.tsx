@@ -4,8 +4,8 @@ import { TELEGRAM_BOT_URL } from "@/lib/api";
 import MobileMenu from "@/components/MobileMenu";
 import AboutRainExperience from "@/components/AboutRainExperience";
 
-const rainImage = "/waresh-rain.svg";
-const forestImage = "/waresh-about-forest.svg";
+const rainImage = "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1600&q=82";
+const forestImage = "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1600&q=82";
 
 const aboutLinks = [
   ["داستان وارش", "#story"],
