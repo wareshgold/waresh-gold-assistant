@@ -31,10 +31,10 @@ export default function MobileMenu() {
   }, [open]);
 
   const menu = open ? (
-    <div className="fixed inset-0 z-[2147483647] isolate overflow-hidden bg-[#faf8f2] lg:hidden">
+    <div className="waresh-mobile-menu-root fixed inset-0 z-[2147483647] isolate overflow-hidden bg-[#faf8f2] lg:hidden">
       <button
         type="button"
-        className="absolute inset-0 z-0 bg-[#14251e]/72 backdrop-blur-sm"
+        className="waresh-mobile-menu-backdrop absolute inset-0 z-0 bg-[#14251e]/72 backdrop-blur-sm"
         onClick={() => setOpen(false)}
         aria-label="بستن منو"
       />
