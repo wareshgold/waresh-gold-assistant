@@ -26,6 +26,11 @@ type ProductPricing = {
   finalPrice: number;
 };
 
+type PricingState = {
+  goldPrice: number;
+  products: Record<number, ProductPricing>;
+} | null;
+
 const giftPriceBands: Record<string, string> = {
   "۳ تا ۱۰ میلیون": "under-10",
   "۱۰ تا ۲۰ میلیون": "10-20",
@@ -35,28 +40,24 @@ const giftPriceBands: Record<string, string> = {
 export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice }: ProductCatalogProps) {
   const [category, setCategory] = useState<ProductCategory | "all">("all");
   const [priceBand, setPriceBand] = useState<string>(initialPriceBand);
-  const [pricing, setPricing] = useState<Record<number, ProductPricing>>({});
+  const [pricing, setPricing] = useState<PricingState>(null);
 
   useEffect(() => {
-    let cancelled = false;
-
     if (!liveGoldPrice || liveGoldPrice <= 0) {
-      setPricing({});
-      return () => {
-        cancelled = true;
-      };
+      return;
     }
 
-    setPricing({});
+    let cancelled = false;
 
     void calculateProductPrices(PRODUCTS, liveGoldPrice).then((prices) => {
       if (cancelled) return;
 
-      setPricing(
-        Object.fromEntries(
+      setPricing({
+        goldPrice: liveGoldPrice,
+        products: Object.fromEntries(
           Object.entries(prices).map(([id, finalPrice]) => [Number(id), { finalPrice }]),
         ),
-      );
+      });
     });
 
     return () => {
@@ -101,10 +102,12 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
   const products = useMemo(() => {
     const band = priceBands.find((item) => item.value === priceBand);
     const hasPricing = liveGoldPrice !== undefined && liveGoldPrice > 0;
+    const pricingMatchesCurrentGoldPrice = pricing?.goldPrice === liveGoldPrice;
+    const currentPricing = pricingMatchesCurrentGoldPrice ? pricing.products : {};
 
     return PRODUCTS.map((product) => ({
       product,
-      pricing: pricing[product.id] ?? null,
+      pricing: currentPricing[product.id] ?? null,
     })).filter(({ product, pricing: productPricing }) => {
       const categoryMatch = category === "all" || product.category === category;
       const priceMatch = !band || !hasPricing || !productPricing || (
