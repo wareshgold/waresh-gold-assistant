@@ -1,4 +1,4 @@
-/* Runtime-driven hero motion. The text and rain are animated by ScrollExperience so the effect is reliable on desktop and mobile. */
+/* Runtime-driven hero motion. The text and rain are animated independently so the atmospheric effect stays continuous on desktop and mobile. */
 
 #top > .waresh-container > div:first-child > h1 {
   position: relative;
@@ -39,7 +39,7 @@
   filter: blur(3px);
 }
 
-/* Legacy pseudo-rain must stay disabled. Runtime drops are the only rain system. */
+/* The hero rain is generated as independent DOM drops by ScrollExperience. */
 #top .waresh-rain::before,
 #top .waresh-rain::after,
 #top .waresh-rain-runtime::before,
@@ -62,9 +62,27 @@
   width: 1.5px;
   border-radius: 999px;
   background: linear-gradient(180deg, transparent, rgba(232, 241, 234, 0.82), transparent);
-  box-shadow: 0 0 3px rgba(232, 241, 234, 0.08);
+  box-shadow: 0 0 4px rgba(232, 241, 234, 0.08);
   pointer-events: none;
   will-change: transform;
+}
+
+@keyframes waresh-hero-rain-fall {
+  from {
+    transform: translate3d(var(--waresh-hero-rain-drift), -22vh, 0) rotate(9deg);
+  }
+  to {
+    transform: translate3d(calc(var(--waresh-hero-rain-drift) + 7vw), 132vh, 0) rotate(9deg);
+  }
+}
+
+#top .waresh-rain-drop {
+  animation-name: waresh-hero-rain-fall;
+  animation-duration: var(--waresh-hero-rain-duration, 3.4s);
+  animation-delay: var(--waresh-hero-rain-delay, 0s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
 }
 
 /* Keep the forest composition closer to the desktop framing on narrow screens. */
@@ -86,8 +104,6 @@
     min-height: 3.8em;
   }
 
-  /* The source artwork is 16:9; a slightly tighter vertical crop keeps the
-     forest/mist composition recognizable instead of over-zooming the center. */
   #top > img[aria-hidden="true"] {
     object-position: 50% 42%;
     transform: scale(1.01);
