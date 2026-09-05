@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { TELEGRAM_BOT_URL } from "@/lib/api";
 import MobileMenu from "@/components/MobileMenu";
+import AboutRainExperience from "@/components/AboutRainExperience";
 
 const rainImage = "/waresh-rain.svg";
 const forestImage = "/waresh-about-forest.svg";
@@ -54,10 +55,14 @@ export default function AboutPage() {
         </div>
       </nav>
 
-      <section id="story" className="waresh-about-hero scroll-mt-32 relative bg-[#23372d] py-20 text-white sm:py-32">
-        <div className="waresh-container relative grid items-center gap-10 lg:grid-cols-[1fr_0.85fr] lg:gap-14">
+      <section id="story" className="waresh-about-hero scroll-mt-32 relative overflow-hidden bg-[#23372d] py-20 text-white sm:py-32">
+        <div className="absolute inset-0 z-0 opacity-25" aria-hidden="true">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(216,189,126,0.2),transparent_38%)]" />
+        </div>
+        <AboutRainExperience />
+        <div className="waresh-container relative z-10 grid items-center gap-10 lg:grid-cols-[1fr_0.85fr] lg:gap-14">
           <div><p className="text-xs font-bold tracking-[0.24em] text-[#d7bf8b]">THE WARESH STORY</p><h1 className="mt-5 text-4xl font-extrabold leading-[1.45] sm:mt-6 sm:text-7xl sm:leading-[1.4]">وارش یعنی باران؛<span className="block text-[#d8bd7e]">و قصه‌ی ما از همین‌جا شروع می‌شود.</span></h1><p className="mt-6 max-w-2xl text-base leading-8 text-[#d8e0d9] sm:mt-7 sm:text-lg sm:leading-9">باران در شمال، فقط از آسمان نمی‌بارد؛ در کوچه‌ها، جنگل‌ها و ریتم زندگی می‌نشیند. «وارش» از همین واژه و همین حال‌وهوا آمده است.</p></div>
-          <div className="overflow-hidden rounded-[2.2rem] border border-white/15 bg-white/10 p-2 shadow-[0_35px_90px_rgba(0,0,0,0.25)] sm:rounded-[3rem]"><img src={rainImage} alt="باران و طبیعت شمال ایران" width={1600} height={480} loading="eager" decoding="async" className="h-[320px] w-full rounded-[1.9rem] object-cover sm:h-[480px] sm:rounded-[2.6rem]" /></div>
+          <div className="relative overflow-hidden rounded-[2.2rem] border border-white/15 bg-white/10 p-2 shadow-[0_35px_90px_rgba(0,0,0,0.25)] sm:rounded-[3rem]"><img src={rainImage} alt="باران و طبیعت شمال ایران" width={1600} height={480} loading="eager" decoding="async" className="h-[320px] w-full rounded-[1.9rem] object-cover sm:h-[480px] sm:rounded-[2.6rem]" /></div>
         </div>
       </section>
 
