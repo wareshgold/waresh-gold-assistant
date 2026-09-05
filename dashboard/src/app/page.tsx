@@ -7,9 +7,9 @@ import { formatToman } from "@/data/products";
 
 export const dynamic = "force-dynamic";
 
-const forestImage = "https://images.unsplash.com/photo-1578763747895-23d174993830?auto=format&fit=crop&fm=jpg&q=78&w=2200";
-const jewelryImage = "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=1400&q=85";
-const giftImage = "https://images.unsplash.com/photo-1767921482419-d2d255b5b700?auto=format&fit=crop&fm=jpg&q=82&w=1800";
+const forestImage = "/waresh-forest.svg";
+const jewelryImage = "/waresh-jewelry.svg";
+const giftImage = "/waresh-gift.svg";
 
 export default async function Home() {
   const [marketResult, bubbleResult] = await Promise.allSettled([getMarketPrice(), getGoldBubble()]);
