@@ -1,0 +1,137 @@
+/* Premium navigation treatment for the public Waresh Gold storefront. */
+
+.waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] {
+  transition: background-color 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+
+.waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] > .waresh-container {
+  position: relative;
+}
+
+.waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] nav {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.1vw, 18px) !important;
+}
+
+.waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] nav .waresh-link {
+  position: relative;
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 11px;
+  border-radius: 999px;
+  color: #62685e;
+  transition: color 180ms ease, background-color 180ms ease, transform 180ms ease;
+}
+
+.waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] nav .waresh-link::after {
+  content: "";
+  position: absolute;
+  right: 50%;
+  bottom: 5px;
+  width: 0;
+  height: 2px;
+  border-radius: 999px;
+  background: #b28b4c;
+  transform: translateX(50%);
+  transition: width 180ms ease;
+}
+
+.waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] nav .waresh-link:hover {
+  color: #28382f;
+  background: rgba(216, 189, 126, 0.09);
+  transform: translateY(-1px);
+}
+
+.waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] nav .waresh-link:hover::after {
+  width: 18px;
+}
+
+.waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] > .waresh-container > div:last-child > a {
+  min-height: 44px;
+  border: 1px solid rgba(178, 139, 76, 0.12);
+  box-shadow: 0 10px 24px rgba(55, 45, 31, 0.12);
+  transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] > .waresh-container > div:last-child > a:hover {
+  box-shadow: 0 14px 30px rgba(55, 45, 31, 0.16);
+}
+
+.waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"]:focus-visible,
+.waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]:focus-visible {
+  outline-offset: 5px !important;
+}
+
+@media (min-width: 1024px) {
+  .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] {
+    background: rgba(250, 248, 242, 0.92) !important;
+    box-shadow: 0 8px 32px rgba(38, 59, 49, 0.07);
+  }
+
+  .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"]::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(178, 139, 76, 0.22), transparent);
+    pointer-events: none;
+  }
+
+  .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],
+  .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] {
+    width: 226px;
+    height: 59px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] {
+    background: rgba(250, 248, 242, 0.96) !important;
+  }
+
+  .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] > .waresh-container {
+    padding-inline: clamp(16px, 4vw, 24px);
+  }
+
+  .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],
+  .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] {
+    width: 186px;
+  }
+
+  .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] button[aria-label="باز کردن منوی سایت"] {
+    box-shadow: 0 8px 20px rgba(38, 59, 49, 0.07);
+  }
+}
+
+@media (max-width: 640px) {
+  .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] > .waresh-container {
+    min-height: 68px;
+    height: 68px;
+  }
+
+  .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],
+  .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] {
+    width: 168px;
+    height: 46px;
+  }
+
+  .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"]::after,
+  .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]::after {
+    font-size: 17px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"],
+  .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] nav .waresh-link,
+  .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] nav .waresh-link::after,
+  .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] > .waresh-container > div:last-child > a {
+    transition: none !important;
+  }
+}
