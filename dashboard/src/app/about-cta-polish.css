@@ -1,0 +1,146 @@
+/* Refined brand-story and final CTA treatment for the public Waresh Gold storefront. */
+
+.waresh-site section[class*="bg-[#f5f1e9]"] .waresh-container {
+  position: relative;
+}
+
+.waresh-site section[class*="bg-[#f5f1e9]"] .waresh-reveal[data-reveal="right"] h2 {
+  letter-spacing: -0.035em;
+}
+
+.waresh-site section[class*="bg-[#f5f1e9]"] .waresh-reveal[data-reveal="right"] > a {
+  box-shadow: 0 14px 30px rgba(38, 59, 49, 0.12);
+  transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.waresh-site section[class*="bg-[#f5f1e9]"] .waresh-reveal[data-reveal="right"] > a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px rgba(38, 59, 49, 0.18);
+}
+
+.waresh-site section[class*="bg-[#f5f1e9]"] .waresh-reveal[data-reveal="left"] > div {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 86% 16%, rgba(178, 139, 76, 0.14), transparent 28%),
+    linear-gradient(145deg, #f0ede4, #e7e2d5);
+  box-shadow: 0 24px 70px rgba(50, 54, 45, 0.08);
+  transition: transform 260ms ease, box-shadow 260ms ease;
+}
+
+.waresh-site section[class*="bg-[#f5f1e9]"] .waresh-reveal[data-reveal="left"] > div::before {
+  content: "";
+  position: absolute;
+  top: -70px;
+  left: -55px;
+  width: 190px;
+  height: 190px;
+  border: 1px solid rgba(178, 139, 76, 0.2);
+  border-radius: 50%;
+  box-shadow: 0 0 0 24px rgba(178, 139, 76, 0.035), 0 0 0 48px rgba(178, 139, 76, 0.02);
+  pointer-events: none;
+}
+
+.waresh-site section[class*="bg-[#f5f1e9]"] .waresh-reveal[data-reveal="left"] > div:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 30px 80px rgba(50, 54, 45, 0.11);
+}
+
+.waresh-site section[class*="bg-[#24382f]"] {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 14% 50%, rgba(216, 189, 126, 0.08), transparent 28%),
+    radial-gradient(circle at 86% 0%, rgba(111, 155, 114, 0.08), transparent 25%),
+    #24382f !important;
+}
+
+.waresh-site section[class*="bg-[#24382f]"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(620px, 70vw);
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(216, 189, 126, 0.38), transparent);
+  pointer-events: none;
+}
+
+.waresh-site section[class*="bg-[#24382f]"] .waresh-container {
+  position: relative;
+  z-index: 1;
+}
+
+.waresh-site section[class*="bg-[#24382f]"] h2 {
+  letter-spacing: -0.025em;
+}
+
+.waresh-site section[class*="bg-[#24382f]"] a {
+  min-height: 50px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+  transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.waresh-site section[class*="bg-[#24382f]"] a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 19px 40px rgba(0, 0, 0, 0.24);
+}
+
+@media (min-width: 1024px) {
+  .waresh-site section[class*="bg-[#f5f1e9]"] .waresh-container {
+    min-height: 470px;
+  }
+
+  .waresh-site section[class*="bg-[#f5f1e9]"] .waresh-reveal[data-reveal="left"] > div {
+    padding: 54px !important;
+  }
+
+  .waresh-site section[class*="bg-[#24382f]"] {
+    padding-block: 76px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .waresh-site section[class*="bg-[#f5f1e9]"] {
+    padding-block: 72px !important;
+  }
+
+  .waresh-site section[class*="bg-[#f5f1e9]"] .waresh-reveal[data-reveal="left"] > div {
+    border-radius: 26px !important;
+    padding: 28px !important;
+  }
+
+  .waresh-site section[class*="bg-[#f5f1e9]"] .waresh-reveal[data-reveal="left"] > div p:last-child {
+    font-size: 1.45rem;
+    line-height: 1.65;
+  }
+
+  .waresh-site section[class*="bg-[#24382f]"] {
+    padding-block: 54px !important;
+  }
+
+  .waresh-site section[class*="bg-[#24382f]"] .waresh-container {
+    align-items: stretch;
+  }
+
+  .waresh-site section[class*="bg-[#24382f]"] a {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .waresh-site section[class*="bg-[#f5f1e9]"] .waresh-reveal[data-reveal="right"] > a,
+  .waresh-site section[class*="bg-[#f5f1e9]"] .waresh-reveal[data-reveal="left"] > div,
+  .waresh-site section[class*="bg-[#24382f]"] a {
+    transition: none !important;
+  }
+
+  .waresh-site section[class*="bg-[#f5f1e9]"] .waresh-reveal[data-reveal="right"] > a:hover,
+  .waresh-site section[class*="bg-[#f5f1e9]"] .waresh-reveal[data-reveal="left"] > div:hover,
+  .waresh-site section[class*="bg-[#24382f]"] a:hover {
+    transform: none !important;
+  }
+}
