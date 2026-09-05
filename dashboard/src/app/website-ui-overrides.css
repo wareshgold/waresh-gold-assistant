@@ -2,15 +2,20 @@
 
 .waresh-site { overflow-x:clip !important; overflow-y:visible !important; }
 
+/* Header: keep the brand lockup, navigation and CTA balanced at every width. */
 header[class*="sticky"][class*="top-0"][class*="z-50"] {
   background:rgba(250,248,242,.96) !important;
   border-color:rgba(222,223,215,.9) !important;
   box-shadow:0 10px 35px rgba(45,54,47,.08);
 }
-header[class*="sticky"][class*="top-0"][class*="z-50"] > div { min-height:80px; }
+header[class*="sticky"][class*="top-0"][class*="z-50"] > div {
+  min-height:76px;
+  height:76px;
+  gap:clamp(16px,2.5vw,32px);
+}
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] {
-  display:inline-flex;align-items:center;justify-content:center;position:relative;width:227px;height:59px;padding:0;border:0;border-radius:0;background:transparent url('/waresh-gold-header-lockup.svg') center/contain no-repeat !important;box-shadow:none !important;
+  display:inline-flex;align-items:center;justify-content:center;position:relative;width:218px;height:57px;padding:0;border:0;border-radius:0;background:transparent url('/waresh-gold-header-lockup.svg') center/contain no-repeat !important;box-shadow:none !important;
 }
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"]::after,
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]::after {
@@ -19,9 +24,14 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگش�
 }
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"] img,
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] img { width:100%;height:100%;object-fit:contain;opacity:0; }
+header[class*="sticky"][class*="top-0"][class*="z-50"] nav { flex:0 1 auto; }
 header[class*="sticky"][class*="top-0"][class*="z-50"] nav,
 header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link { color:#62685e; }
+header[class*="sticky"][class*="top-0"][class*="z-50"] nav { gap:clamp(18px,2.15vw,32px); }
+header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link { white-space:nowrap;transition:color 180ms ease; }
 header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { color:#9b753c; }
+header[class*="sticky"][class*="top-0"][class*="z-50"] > div > div:last-child { flex-shrink:0; }
+header[class*="sticky"][class*="top-0"][class*="z-50"] > div > div:last-child > a { white-space:nowrap; }
 
 #products .waresh-reveal { opacity:1 !important;transform:none !important; }
 #products article { box-shadow:0 18px 55px rgba(55,52,43,.07); }
@@ -68,13 +78,15 @@ footer img[alt="وارش گلد"] { content:url('/waresh-gold-logo-green.png') !
   #prices .lg\\:sticky { position:static !important; }
 }
 @media (max-width:1023px) {
+  header[class*="sticky"][class*="top-0"][class*="z-50"] > div {
+    min-height:72px;
+    height:72px;
+    gap:14px;
+  }
   header[class*="sticky"][class*="top-0"][class*="z-50"] button[aria-label="باز کردن منوی سایت"] { border-color:#d8d2c7;background:rgba(255,255,255,.65);color:#334238; }
-  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] { width:191px;height:53px;padding:0;border-radius:0;background-color:transparent !important;box-shadow:none !important; }
-  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"]::after,header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]::after { right:6.5%;font-size:18.6px !important;z-index:10; }
-}
-@media (max-width:1023px) {
-  .waresh-mobile-menu a[aria-label="صفحه اصلی وارش گلد"] { display:inline-flex !important;align-items:center;justify-content:center;width:205px;height:52px;background:url('/waresh-gold-header-lockup.svg') center/contain no-repeat; }
-  .waresh-mobile-menu a[aria-label="صفحه اصلی وارش گلد"] img { opacity:0 !important;width:100% !important;height:100% !important; }
+  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] { width:178px;height:49px;padding:0;border-radius:0;background-color:transparent !important;box-shadow:none !important; }
+  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"]::after,header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]::after { right:6.5%;font-size:18px !important;z-index:10; }
+  header[class*="sticky"][class*="top-0"][class*="z-50"] > div > div:last-child { gap:0; }
 }
 @media (max-width:640px) {
   .waresh-site > div:first-child { min-height:30px; }
