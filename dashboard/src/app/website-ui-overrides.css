@@ -15,8 +15,8 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگش�
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  width:206px;
-  height:54px;
+  width:227px;
+  height:59px;
   padding:0;
   border:0;
   border-radius:0;
@@ -55,9 +55,7 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
 /* Gift is intentionally compact and part of the normal document flow. */
 #gifts > .waresh-container { min-height:0 !important; }
 
-/* Hero rain: render the effect directly on the rain layer instead of relying
-   only on pseudo-element box-shadows. This keeps it visible through the
-   hero gradients and makes the animation deterministic across browsers. */
+/* Hero rain: visible, animated, but 10% softer than the previous version. */
 #top .waresh-rain {
   z-index:2 !important;
   display:block;
@@ -65,7 +63,7 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
   inset:0;
   overflow:hidden;
   pointer-events:none;
-  opacity:1 !important;
+  opacity:.9 !important;
   isolation:isolate;
   mix-blend-mode:screen;
   background-image:
@@ -84,16 +82,8 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
   pointer-events:none;
   will-change:transform;
 }
-#top .waresh-rain::before {
-  opacity:.62;
-  transform:rotate(9deg) scale(1.1);
-  animation:waresh-rain-near 2.7s linear infinite;
-}
-#top .waresh-rain::after {
-  opacity:.46;
-  transform:rotate(9deg) scale(1.08);
-  animation:waresh-rain-far 4.8s linear infinite;
-}
+#top .waresh-rain::before { opacity:.62;transform:rotate(9deg) scale(1.1);animation:waresh-rain-near 2.7s linear infinite; }
+#top .waresh-rain::after { opacity:.46;transform:rotate(9deg) scale(1.08);animation:waresh-rain-far 4.8s linear infinite; }
 #top .waresh-container { position:relative;z-index:3; }
 #top .waresh-scroll-marker { z-index:4; }
 
@@ -104,20 +94,11 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
 
 @media (min-width:641px) {
   #gifts { min-height:0 !important; }
-  #gifts > div:first-child {
-    position:absolute;inset:0;z-index:0;overflow:hidden;border-radius:0;box-shadow:none;
-  }
+  #gifts > div:first-child { position:absolute;inset:0;z-index:0;overflow:hidden;border-radius:0;box-shadow:none; }
   #gifts > div:first-child > img { opacity:.48;object-position:center 48%; }
-  #gifts > div:first-child > div:first-of-type {
-    background:linear-gradient(90deg,rgba(18,37,29,.97) 0%,rgba(22,43,34,.86) 42%,rgba(18,35,28,.62) 70%,rgba(12,25,20,.78) 100%);
-  }
-  #gifts > .waresh-container {
-    min-height:520px !important;
-    padding-block:56px !important;
-  }
+  #gifts > div:first-child > div:first-of-type { background:linear-gradient(90deg,rgba(18,37,29,.97) 0%,rgba(22,43,34,.86) 42%,rgba(18,35,28,.62) 70%,rgba(12,25,20,.78) 100%); }
+  #gifts > .waresh-container { min-height:520px !important;padding-block:56px !important; }
   #gifts .waresh-gift-range { min-height:72px; }
-
-  /* Market stays a regular section and ends as soon as its content ends. */
   #prices { min-height:auto !important;padding-block:64px !important; }
   #prices > .waresh-container { padding-block:0 !important; }
   #prices form { padding:28px !important; }
@@ -130,14 +111,7 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
 @media (max-width:1023px) {
   header[class*="sticky"][class*="top-0"][class*="z-50"] button[aria-label="باز کردن منوی سایت"] { border-color:#d8d2c7;background:rgba(255,255,255,.65);color:#334238; }
   header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],
-  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] {
-    width:174px;
-    height:48px;
-    padding:0;
-    border-radius:0;
-    background-color:transparent !important;
-    box-shadow:none !important;
-  }
+  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] { width:191px;height:53px;padding:0;border-radius:0;background-color:transparent !important;box-shadow:none !important; }
 }
 
 @media (max-width:640px) {
@@ -154,7 +128,7 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
   #gifts .waresh-gift-range { min-height:70px; }
   #prices { padding-block:48px !important; }
   #prices form { padding:20px !important; }
-  #top .waresh-rain { opacity:1 !important; }
+  #top .waresh-rain { opacity:.9 !important; }
 }
 
 @media (prefers-reduced-motion:reduce) {
