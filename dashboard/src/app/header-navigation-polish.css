@@ -10,9 +10,7 @@
 
 .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] nav {
   align-self: stretch;
-  display: flex;
   align-items: center;
-  gap: clamp(8px, 1.1vw, 18px) !important;
 }
 
 .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] nav .waresh-link {
@@ -81,6 +79,11 @@
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(178, 139, 76, 0.22), transparent);
     pointer-events: none;
+  }
+
+  .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] nav {
+    display: flex;
+    gap: clamp(8px, 1.1vw, 18px) !important;
   }
 
   .waresh-site header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],
