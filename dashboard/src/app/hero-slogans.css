@@ -67,17 +67,41 @@
   line-height: 2;
 }
 
-/* Rain speed: keep the seamless tile loop, but make the fall clearly visible. */
+/* Rain: 10% faster on desktop while keeping a clearly animated mobile field. */
 #top .waresh-rain {
-  animation: waresh-rain-field 1.8s linear infinite !important;
+  animation: waresh-rain-field 1.62s linear infinite !important;
+  animation-play-state: running !important;
 }
 
 #top .waresh-rain::before {
-  animation: waresh-rain-near 1.35s linear infinite !important;
+  animation: waresh-rain-near 1.215s linear infinite !important;
+  animation-play-state: running !important;
 }
 
 #top .waresh-rain::after {
-  animation: waresh-rain-far 2.4s linear infinite !important;
+  animation: waresh-rain-far 2.16s linear infinite !important;
+  animation-play-state: running !important;
+}
+
+@media (max-width: 640px) {
+  #top .waresh-rain {
+    animation: waresh-rain-field 1.62s linear infinite !important;
+    animation-play-state: running !important;
+    transform: translate3d(0, 0, 0);
+    will-change: background-position, transform;
+  }
+
+  #top .waresh-rain::before {
+    animation: waresh-rain-near 1.215s linear infinite !important;
+    animation-play-state: running !important;
+    will-change: background-position, transform;
+  }
+
+  #top .waresh-rain::after {
+    animation: waresh-rain-far 2.16s linear infinite !important;
+    animation-play-state: running !important;
+    will-change: background-position, transform;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
