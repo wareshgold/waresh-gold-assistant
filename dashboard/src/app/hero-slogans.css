@@ -39,13 +39,17 @@
   filter: blur(3px);
 }
 
-/* Disable the old CSS pseudo-drop animation; runtime-generated drops replace it. */
+/* Legacy pseudo-rain must stay disabled. Runtime drops are the only rain system. */
 #top .waresh-rain::before,
-#top .waresh-rain::after {
+#top .waresh-rain::after,
+#top .waresh-rain-runtime::before,
+#top .waresh-rain-runtime::after {
   display: none !important;
+  content: none !important;
 }
 
-#top .waresh-rain {
+#top .waresh-rain,
+#top .waresh-rain-runtime {
   opacity: 0.72 !important;
   overflow: hidden;
   pointer-events: none;
@@ -63,6 +67,14 @@
   will-change: transform;
 }
 
+/* Keep the forest composition closer to the desktop framing on narrow screens. */
+#top > img[aria-hidden="true"] {
+  object-fit: cover;
+  object-position: 50% center;
+  transform: scale(1.01);
+  transform-origin: center center;
+}
+
 @media (max-width: 640px) {
   #top > .waresh-container > div:first-child > h1 {
     min-height: 3.8em;
@@ -72,6 +84,13 @@
 
   .waresh-hero-slogan-rotator {
     min-height: 3.8em;
+  }
+
+  /* The source artwork is 16:9; a slightly tighter vertical crop keeps the
+     forest/mist composition recognizable instead of over-zooming the center. */
+  #top > img[aria-hidden="true"] {
+    object-position: 50% 42%;
+    transform: scale(1.01);
   }
 
   .waresh-rain-drop {
