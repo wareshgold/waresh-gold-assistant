@@ -12,6 +12,7 @@ import "./market-calculator-polish.css";
 import "./gift-footer-polish.css";
 import "./about-cta-polish.css";
 import "./inner-pages-polish.css";
+import "./about-rain.css";
 
 const primaryLogo = "/waresh-gold-logo-green.png";
 const browserIcon = "/waresh-gold-logo-white.jpg";
