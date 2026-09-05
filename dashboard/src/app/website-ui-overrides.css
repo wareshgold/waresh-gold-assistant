@@ -15,23 +15,7 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگش�
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"]::after,
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]::after {
   content:"وارش گلد";
-  position:absolute;
-  z-index:10;
-  right:6.5%;
-  top:50%;
-  transform:translateY(-52%);
-  direction:rtl;
-  white-space:nowrap;
-  color:#174F3C !important;
-  font-family:"Vazirmatn",Tahoma,Arial,sans-serif !important;
-  font-size:22.1px !important;
-  font-weight:600 !important;
-  line-height:1;
-  letter-spacing:0;
-  opacity:1 !important;
-  visibility:visible !important;
-  pointer-events:none;
-  text-shadow:0 0 1px rgba(23,79,60,.08);
+  position:absolute;z-index:10;right:6.5%;top:50%;transform:translateY(-52%);direction:rtl;white-space:nowrap;color:#174F3C !important;font-family:"Vazirmatn",Tahoma,Arial,sans-serif !important;font-size:22.1px !important;font-weight:600 !important;line-height:1;letter-spacing:0;opacity:1 !important;visibility:visible !important;pointer-events:none;text-shadow:0 0 1px rgba(23,79,60,.08);
 }
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"] img,
 header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] img { width:100%;height:100%;object-fit:contain;opacity:0; }
@@ -51,36 +35,22 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
 #products .mb-10 button { min-height:42px; }
 #prices .grid.grid-cols-2 > div { transition:transform 250ms ease,box-shadow 250ms ease; }
 #prices .grid.grid-cols-2 > div:hover { transform:translateY(-2px);box-shadow:0 18px 42px rgba(48,60,51,.09); }
-
 #top .mt-9 > span:first-child { font-size:0; }
 #top .mt-9 > span:first-child::after { content:"محصولات منتخب"; font-size:.75rem; }
-
 #gifts > .waresh-container { min-height:0 !important; }
 
-/* Hero rain: identical desktop/mobile field. Keep the animation even when the OS requests reduced motion so the hero rain remains a core visual element. */
-#top .waresh-rain {
-  z-index:2 !important;display:block;position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:.81 !important;isolation:isolate;mix-blend-mode:screen;
-  background-image:
-    radial-gradient(ellipse 1.2px 30px at 18px 34px,rgba(235,244,237,.72) 0 35%,transparent 70%),
-    radial-gradient(ellipse 1px 22px at 64px 118px,rgba(220,236,224,.58) 0 35%,transparent 70%),
-    radial-gradient(ellipse 1.4px 36px at 112px 62px,rgba(235,244,237,.62) 0 35%,transparent 70%);
-  background-size:180px 180px,220px 210px,280px 260px;
-  background-position:0 0,40px 30px,90px -40px;
-  animation:waresh-rain-field 3.8s linear infinite !important;
-  will-change:background-position;
-}
+#top .waresh-rain { z-index:2 !important;display:block;position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:.81 !important;isolation:isolate;mix-blend-mode:screen;background-image:radial-gradient(ellipse 1.2px 30px at 18px 34px,rgba(235,244,237,.72) 0 35%,transparent 70%),radial-gradient(ellipse 1px 22px at 64px 118px,rgba(220,236,224,.58) 0 35%,transparent 70%),radial-gradient(ellipse 1.4px 36px at 112px 62px,rgba(235,244,237,.62) 0 35%,transparent 70%);background-size:180px 180px,220px 210px,280px 260px;background-position:0 0,40px 30px,90px -40px;animation:waresh-rain-field 3.8s linear infinite !important;will-change:background-position; }
 #top .waresh-rain::before,#top .waresh-rain::after { z-index:1;display:block;position:absolute;inset:-30%;content:"";pointer-events:none;will-change:transform;background-repeat:repeat; }
 #top .waresh-rain::before { opacity:.62;transform:rotate(9deg) scale(1.1);background-image:repeating-linear-gradient(102deg,transparent 0 74px,rgba(235,244,237,.24) 75px 76px,transparent 77px 138px);background-size:138px 138px;animation:waresh-rain-near 2.7s linear infinite !important; }
 #top .waresh-rain::after { opacity:.46;transform:rotate(9deg) scale(1.08);background-image:repeating-linear-gradient(102deg,transparent 0 102px,rgba(220,236,224,.18) 103px 104px,transparent 105px 190px);background-size:190px 190px;animation:waresh-rain-far 4.8s linear infinite !important; }
 #top .waresh-container { position:relative;z-index:3; }
 #top .waresh-scroll-marker { z-index:4; }
-
 @keyframes waresh-rain-field { from { background-position:0 -220px,40px -180px,90px -300px; } to { background-position:52px 760px,6px 700px,128px 660px; } }
 @keyframes waresh-rain-near { from { background-position:0 -180px; } to { background-position:55px 520px; } }
 @keyframes waresh-rain-far { from { background-position:0 -260px; } to { background-position:-42px 430px; } }
 
-/* Footer logo: use the green Waresh Gold brand logo. */
-footer img[alt="وارش گلد"] { height:110px !important;width:auto !important;max-width:300px;object-fit:contain;object-position:left center; }
+/* Footer logo: force the green Waresh Gold logo asset. */
+footer img[alt="وارش گلد"] { content:url('/waresh-gold-logo-green.png') !important;height:110px !important;width:auto !important;max-width:300px;object-fit:contain;object-position:left center; }
 
 @media (min-width:641px) {
   #gifts { min-height:0 !important; }
@@ -97,31 +67,15 @@ footer img[alt="وارش گلد"] { height:110px !important;width:auto !importan
   #prices form > .mt-6 { margin-top:18px; }
   #prices .lg\\:sticky { position:static !important; }
 }
-
 @media (max-width:1023px) {
   header[class*="sticky"][class*="top-0"][class*="z-50"] button[aria-label="باز کردن منوی سایت"] { border-color:#d8d2c7;background:rgba(255,255,255,.65);color:#334238; }
   header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"],header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"] { width:191px;height:53px;padding:0;border-radius:0;background-color:transparent !important;box-shadow:none !important; }
-  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"]::after,
-  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]::after { right:6.5%;font-size:18.6px !important;z-index:10; }
+  header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="وارش گلد"]::after,header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]::after { right:6.5%;font-size:18.6px !important;z-index:10; }
 }
-
-/* Mobile menu brand: use the same premium header lockup instead of the small green PNG. */
 @media (max-width:1023px) {
-  .waresh-mobile-menu a[aria-label="صفحه اصلی وارش گلد"] {
-    display:inline-flex !important;
-    align-items:center;
-    justify-content:center;
-    width:205px;
-    height:52px;
-    background:url('/waresh-gold-header-lockup.svg') center/contain no-repeat;
-  }
-  .waresh-mobile-menu a[aria-label="صفحه اصلی وارش گلد"] img {
-    opacity:0 !important;
-    width:100% !important;
-    height:100% !important;
-  }
+  .waresh-mobile-menu a[aria-label="صفحه اصلی وارش گلد"] { display:inline-flex !important;align-items:center;justify-content:center;width:205px;height:52px;background:url('/waresh-gold-header-lockup.svg') center/contain no-repeat; }
+  .waresh-mobile-menu a[aria-label="صفحه اصلی وارش گلد"] img { opacity:0 !important;width:100% !important;height:100% !important; }
 }
-
 @media (max-width:640px) {
   .waresh-site > div:first-child { min-height:30px; }
   .waresh-site > div:first-child .waresh-container { min-height:30px;font-size:10px; }
@@ -139,7 +93,4 @@ footer img[alt="وارش گلد"] { height:110px !important;width:auto !importan
   footer img[alt="وارش گلد"] { height:92px !important;max-width:250px; }
   .waresh-mobile-menu a[aria-label="صفحه اصلی وارش گلد"] { width:190px;height:48px; }
 }
-
-@media (prefers-reduced-motion:reduce) {
-  .waresh-hero-jewel img,#products .grid > article > div:first-child,#prices .grid.grid-cols-2 > div { transition:none !important;animation:none !important; }
-}
+@media (prefers-reduced-motion:reduce) { .waresh-hero-jewel img,#products .grid > article > div:first-child,#prices .grid.grid-cols-2 > div { transition:none !important;animation:none !important; } }
