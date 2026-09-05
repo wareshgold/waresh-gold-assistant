@@ -15,12 +15,10 @@
     font-size: 1rem;
   }
 
-  /* Keep sticky-header navigation targets visible after anchor jumps. */
   .waresh-site section[id] {
     scroll-margin-top: 92px;
   }
 
-  /* Keep secondary sticky navigation directly beneath the compact mobile header. */
   .waresh-site nav.sticky.top-\[76px\] {
     top: 68px;
   }
@@ -43,9 +41,9 @@
   #top .waresh-container {
     min-height: auto !important;
     grid-template-columns: 1fr;
-    gap: 2.25rem;
-    padding-top: 3rem;
-    padding-bottom: 4.25rem;
+    gap: 1.75rem;
+    padding-top: 2.5rem;
+    padding-bottom: 3.5rem;
   }
 
   #top .waresh-container > div:first-child {
@@ -53,38 +51,39 @@
   }
 
   #top h1 {
-    font-size: clamp(2.55rem, 12.5vw, 3.5rem) !important;
-    line-height: 1.24;
+    font-size: clamp(2.45rem, 11.8vw, 3.35rem) !important;
+    line-height: 1.27;
     letter-spacing: -0.025em;
   }
 
   #top p {
-    font-size: clamp(1.02rem, 4.5vw, 1.18rem) !important;
-    line-height: 2.05;
+    font-size: clamp(1rem, 4.35vw, 1.15rem) !important;
+    line-height: 2;
   }
 
   #top .waresh-container > div:first-child > div a {
     font-size: 1rem;
     font-weight: 700;
+    min-height: 52px;
   }
 
   #top .waresh-container > div:first-child > div:last-child {
     font-size: 0.95rem;
   }
 
-  /* Show the full jewelry composition on phones instead of aggressively cropping its sides. */
   #top .waresh-container > div:last-child {
-    width: min(100%, 360px);
-    max-width: 360px;
+    width: min(100%, 340px);
+    max-width: 340px;
+    margin-inline: auto;
   }
 
   #top .waresh-hero-jewel {
-    border-radius: 2.1rem;
+    border-radius: 2rem;
     background: #162a22;
   }
 
   #top .waresh-hero-jewel img {
-    height: 390px !important;
+    height: 350px !important;
     object-fit: contain !important;
     object-position: center center !important;
     background: #162a22;
@@ -109,7 +108,6 @@
     line-height: 2;
   }
 
-  /* Product collection must remain visible on touch devices. */
   #products .waresh-reveal {
     opacity: 1 !important;
     transform: none !important;
@@ -120,6 +118,14 @@
   #products .mb-10 > div:first-child button,
   #products .mb-10 select {
     font-size: 0.98rem;
+  }
+
+  #products .mb-10 > div:first-child button {
+    min-height: 44px;
+  }
+
+  #products .mb-10 select {
+    min-height: 48px;
   }
 
   /* Product cards */
@@ -133,6 +139,14 @@
     line-height: 1.95;
   }
 
+  #products .grid > article > div:first-child {
+    height: 248px;
+  }
+
+  #products .grid > article > div:last-child {
+    padding: 1.15rem;
+  }
+
   #products .grid > article > div:last-child > div:last-child > div:first-child > p {
     font-size: clamp(1.02rem, 4.4vw, 1.18rem) !important;
   }
@@ -144,6 +158,11 @@
 
   .waresh-gift-range p {
     font-size: clamp(1rem, 4.2vw, 1.12rem);
+  }
+
+  #gifts > .waresh-container {
+    padding-top: 48px !important;
+    padding-bottom: 48px !important;
   }
 
   /* Live market cards */
@@ -171,7 +190,6 @@
     font-size: 0.98rem;
   }
 
-  /* Avoid accidental tiny text from utility classes on narrow screens. */
   .waresh-site .text-xs {
     font-size: 0.82rem !important;
   }
