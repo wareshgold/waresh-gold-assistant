@@ -1,0 +1,80 @@
+/* Rotating homepage hero slogans: one calm brand line every 30 seconds. */
+#top > .waresh-container > div:first-child > h1 {
+  position: relative;
+  min-height: 2.5em;
+  font-size: 0 !important;
+}
+
+#top > .waresh-container > div:first-child > h1::after {
+  content: "زیبایی، وقتی ماندگار می‌شود که ارزشمند باشد.";
+  display: block;
+  min-height: 2.5em;
+  color: #ffffff;
+  font-size: clamp(2.9rem, 5vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.24;
+  letter-spacing: -0.025em;
+  direction: rtl;
+  text-align: right;
+  opacity: 1;
+  animation: waresh-hero-slogan 150s ease-in-out infinite;
+}
+
+@keyframes waresh-hero-slogan {
+  0% {
+    content: "زیبایی، وقتی ماندگار می‌شود که ارزشمند باشد.";
+    opacity: 1;
+  }
+  18% { opacity: 1; }
+  19.5% { opacity: 0; }
+  20% {
+    content: "طلا، انتخابی برای امروز و ارزشی برای فردا.";
+    opacity: 0;
+  }
+  21.5% { opacity: 1; }
+  38% { opacity: 1; }
+  39.5% { opacity: 0; }
+  40% {
+    content: "ظرافتی که دیده می‌شود، ارزشی که می‌ماند.";
+    opacity: 0;
+  }
+  41.5% { opacity: 1; }
+  58% { opacity: 1; }
+  59.5% { opacity: 0; }
+  60% {
+    content: "برای لحظه‌هایی که ارزش ماندن دارند.";
+    opacity: 0;
+  }
+  61.5% { opacity: 1; }
+  78% { opacity: 1; }
+  79.5% { opacity: 0; }
+  80% {
+    content: "وارش گلد؛ جایی میان زیبایی و ارزش.";
+    opacity: 0;
+  }
+  81.5% { opacity: 1; }
+  98% { opacity: 1; }
+  99.5% { opacity: 0; }
+  100% {
+    content: "زیبایی، وقتی ماندگار می‌شود که ارزشمند باشد.";
+    opacity: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  #top > .waresh-container > div:first-child > h1 {
+    min-height: 3.8em;
+  }
+
+  #top > .waresh-container > div:first-child > h1::after {
+    min-height: 3.8em;
+    font-size: clamp(2.25rem, 10.5vw, 3.2rem);
+    line-height: 1.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #top > .waresh-container > div:first-child > h1::after {
+    animation: none;
+  }
+}
