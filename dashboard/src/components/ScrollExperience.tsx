@@ -61,6 +61,13 @@ function setupHeroRain(hero: HTMLElement, reduceMotion: boolean): () => void {
   const rain = hero.querySelector<HTMLElement>(".waresh-rain");
   if (!rain) return () => undefined;
 
+  // The old `.waresh-rain` selector also owns a legacy CSS pseudo-rain layer.
+  // Remove that class before creating the runtime rain so there can only be
+  // one rain system on the hero. This prevents the old diagonal/faster patch
+  // from rendering underneath the new uniform rain animation.
+  rain.classList.remove("waresh-rain");
+  rain.classList.add("waresh-rain-runtime");
+
   rain.querySelectorAll(".waresh-rain-drop").forEach((drop) => drop.remove());
 
   const drops: Array<{
@@ -104,6 +111,8 @@ function setupHeroRain(hero: HTMLElement, reduceMotion: boolean): () => void {
     });
     return () => {
       drops.forEach((drop) => drop.element.remove());
+      rain.classList.remove("waresh-rain-runtime");
+      rain.classList.add("waresh-rain");
     };
   }
 
@@ -138,6 +147,8 @@ function setupHeroRain(hero: HTMLElement, reduceMotion: boolean): () => void {
     active = false;
     window.cancelAnimationFrame(frameId);
     drops.forEach((drop) => drop.element.remove());
+    rain.classList.remove("waresh-rain-runtime");
+    rain.classList.add("waresh-rain");
   };
 }
 
