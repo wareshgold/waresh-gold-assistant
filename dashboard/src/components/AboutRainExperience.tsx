@@ -1,8 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 
-const DROP_COUNT = 46;
+const DROP_COUNT = 52;
+
+type RainStyle = CSSProperties & {
+  "--waresh-about-drift": string;
+  "--waresh-about-duration": string;
+  "--waresh-about-delay": string;
+};
 
 function createRainAudio(): HTMLAudioElement {
   const rainAudio = new Audio("/rain-forest.mp3");
@@ -22,35 +28,6 @@ export default function AboutRainExperience() {
   const [soundEnabled, setSoundEnabled] = useState(false);
 
   useEffect(() => {
-    const root = document.querySelector<HTMLElement>(".waresh-about-rain-layer");
-    if (!root) return;
-
-    const drops = Array.from(root.querySelectorAll<HTMLElement>(".waresh-about-rain-drop"));
-
-    drops.forEach((drop, index) => {
-      const x = ((index * 47) % 101) + (index % 5) * 0.7;
-      const y = (index * 37) % 125 - 25;
-      const duration = 2.4 + ((index * 17) % 18) / 10;
-      const delay = -((index * 29) % 38) / 10;
-      const drift = ((index * 19) % 9) - 4;
-      const opacity = 0.16 + ((index * 23) % 17) / 100;
-
-      drop.style.left = `${x}%`;
-      drop.style.top = `${y}vh`;
-      drop.style.opacity = `${opacity}`;
-      drop.style.setProperty("--waresh-rain-drift", `${drift}px`);
-      drop.style.setProperty("--waresh-rain-duration", `${duration}s`);
-      drop.style.setProperty("--waresh-rain-delay", `${delay}s`);
-    });
-
-    return () => {
-      drops.forEach((drop) => {
-        drop.style.animationPlayState = "paused";
-      });
-    };
-  }, []);
-
-  useEffect(() => {
     return () => {
       if (audio) stopRainAudio(audio);
     };
@@ -63,8 +40,6 @@ export default function AboutRainExperience() {
       return;
     }
 
-    // Real recorded ambience is intentionally used here instead of generated
-    // Web Audio noise. The approved recording should live at this public path.
     const nextAudio = audio ?? createRainAudio();
 
     try {
@@ -89,30 +64,36 @@ export default function AboutRainExperience() {
 
         .waresh-about-rain-drop {
           position: absolute;
+          top: 0;
           left: 0;
           width: 1.5px;
           height: 58px;
           border-radius: 999px;
-          background: linear-gradient(180deg, transparent, rgba(232, 241, 234, 0.78), transparent);
-          box-shadow: 0 0 4px rgba(232, 241, 234, 0.08);
-          transform: translate3d(0, 0, 0) rotate(16deg);
-          animation: waresh-about-rain-fall var(--waresh-rain-duration, 3s) linear var(--waresh-rain-delay, 0s) infinite;
+          background: linear-gradient(180deg, transparent, rgba(232, 241, 234, 0.76), transparent);
+          box-shadow: 0 0 5px rgba(232, 241, 234, 0.08);
+          transform: translate3d(0, -18vh, 0) rotate(16deg);
+          animation-name: waresh-about-rain-fall;
+          animation-duration: var(--waresh-about-duration);
+          animation-delay: var(--waresh-about-delay);
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+          animation-fill-mode: both;
           will-change: transform;
         }
 
         @keyframes waresh-about-rain-fall {
           from {
-            transform: translate3d(var(--waresh-rain-drift, 0px), -18vh, 0) rotate(16deg);
+            transform: translate3d(var(--waresh-about-drift), -18vh, 0) rotate(16deg);
           }
           to {
-            transform: translate3d(calc(var(--waresh-rain-drift, 0px) + 5vw), 128vh, 0) rotate(16deg);
+            transform: translate3d(calc(var(--waresh-about-drift) + 7vw), 128vh, 0) rotate(16deg);
           }
         }
 
         .waresh-about-rain-vignette {
           position: absolute;
           inset: 0;
-          background: radial-gradient(circle at 52% 42%, transparent 20%, rgba(7, 20, 15, 0.22) 100%);
+          background: radial-gradient(circle at 52% 42%, transparent 18%, rgba(7, 20, 15, 0.24) 100%);
         }
 
         .waresh-about-sound-control {
@@ -153,9 +134,27 @@ export default function AboutRainExperience() {
         }
       `}</style>
 
-      {Array.from({ length: DROP_COUNT }, (_, index) => (
-        <span key={index} className="waresh-about-rain-drop" aria-hidden="true" />
-      ))}
+      {Array.from({ length: DROP_COUNT }, (_, index) => {
+        const left = ((index * 61.73 + 13) % 108) - 4;
+        const top = ((index * 43.17 + 7) % 118) - 18;
+        const duration = 2.8 + ((index * 17) % 24) / 10;
+        const delay = -(((index * 29) % 64) / 10);
+        const drift = ((index * 19) % 13) - 6;
+        const length = 42 + ((index * 23) % 31);
+        const opacity = 0.18 + ((index * 11) % 23) / 100;
+
+        const style: RainStyle = {
+          left: `${left}%`,
+          top: `${top}vh`,
+          height: `${length}px`,
+          opacity,
+          "--waresh-about-drift": `${drift}px`,
+          "--waresh-about-duration": `${duration}s`,
+          "--waresh-about-delay": `${delay}s`,
+        };
+
+        return <span key={index} className="waresh-about-rain-drop" style={style} aria-hidden="true" />;
+      })}
 
       <div className="waresh-about-rain-vignette" aria-hidden="true" />
 
