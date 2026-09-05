@@ -1,0 +1,153 @@
+/* Premium market + calculator treatment for the public Waresh Gold storefront. */
+
+.waresh-site #prices {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(178, 139, 76, 0.1), transparent 28%),
+    radial-gradient(circle at 88% 78%, rgba(111, 155, 114, 0.08), transparent 30%),
+    #e9eee7 !important;
+}
+
+.waresh-site #prices::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 8%;
+  width: min(520px, 48vw);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(178, 139, 76, 0.42), transparent);
+  pointer-events: none;
+}
+
+.waresh-site #prices > .waresh-container > .grid {
+  position: relative;
+  z-index: 1;
+}
+
+.waresh-site #prices .waresh-reveal > div:first-child h2 {
+  letter-spacing: -0.035em;
+}
+
+.waresh-site #prices .waresh-reveal > div:first-child > p:not(.text-xs) {
+  max-width: 34rem;
+}
+
+.waresh-site #prices .waresh-reveal > div:first-child > .grid > div {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(120, 129, 116, 0.1);
+  box-shadow: 0 12px 30px rgba(54, 68, 57, 0.045);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.waresh-site #prices .waresh-reveal > div:first-child > .grid > div::after {
+  content: "";
+  position: absolute;
+  left: -18px;
+  bottom: -30px;
+  width: 90px;
+  height: 70px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(216, 189, 126, 0.12), transparent 70%);
+  pointer-events: none;
+}
+
+.waresh-site #prices .waresh-reveal > div:first-child > .grid > div:hover {
+  transform: translateY(-2px);
+  border-color: rgba(178, 139, 76, 0.2);
+  box-shadow: 0 16px 34px rgba(54, 68, 57, 0.08);
+}
+
+.waresh-site #prices .waresh-reveal > div:first-child > .grid > div p:last-child {
+  direction: rtl;
+  font-variant-numeric: tabular-nums;
+}
+
+.waresh-site #prices .waresh-reveal:last-child > form {
+  border-color: rgba(201, 193, 179, 0.72) !important;
+  background: rgba(250, 248, 242, 0.9) !important;
+  box-shadow: 0 30px 90px rgba(54, 68, 57, 0.1) !important;
+  backdrop-filter: blur(10px);
+}
+
+.waresh-site #prices .waresh-reveal:last-child > form > div:first-child {
+  border-bottom-color: rgba(211, 202, 188, 0.75);
+}
+
+.waresh-site #prices .waresh-reveal:last-child > form > div:first-child h3 {
+  letter-spacing: -0.025em;
+}
+
+.waresh-site #prices .waresh-reveal:last-child input {
+  border-color: #ddd4c7;
+  background: rgba(255, 253, 249, 0.96);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.waresh-site #prices .waresh-reveal:last-child input:hover {
+  border-color: #cfc2ae;
+}
+
+.waresh-site #prices .waresh-reveal:last-child input:focus {
+  box-shadow: 0 0 0 4px rgba(178, 139, 76, 0.08);
+}
+
+.waresh-site #prices .waresh-reveal:last-child button[type="submit"] {
+  box-shadow: 0 14px 30px rgba(48, 43, 37, 0.13);
+}
+
+.waresh-site #prices .waresh-reveal:last-child button[type="submit"]:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 34px rgba(48, 43, 37, 0.18);
+}
+
+.waresh-site #prices .waresh-reveal:last-child button[type="button"]:not(:disabled):hover {
+  border-color: #cbb994;
+  color: #87652f;
+}
+
+@media (max-width: 1023px) {
+  .waresh-site #prices .waresh-reveal:first-child {
+    position: relative !important;
+    top: auto !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .waresh-site #prices {
+    padding-top: 76px !important;
+    padding-bottom: 76px !important;
+  }
+
+  .waresh-site #prices .waresh-reveal > div:first-child > .grid {
+    gap: 8px;
+  }
+
+  .waresh-site #prices .waresh-reveal > div:first-child > .grid > div {
+    padding: 16px !important;
+    border-radius: 20px !important;
+  }
+
+  .waresh-site #prices .waresh-reveal:last-child > form {
+    border-radius: 26px !important;
+    padding: 18px !important;
+  }
+
+  .waresh-site #prices .waresh-reveal:last-child > form > div:first-child {
+    padding-bottom: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .waresh-site #prices .waresh-reveal > div:first-child > .grid > div,
+  .waresh-site #prices .waresh-reveal:last-child button[type="submit"] {
+    transition: none !important;
+  }
+
+  .waresh-site #prices .waresh-reveal > div:first-child > .grid > div:hover,
+  .waresh-site #prices .waresh-reveal:last-child button[type="submit"]:not(:disabled):hover {
+    transform: none !important;
+  }
+}
