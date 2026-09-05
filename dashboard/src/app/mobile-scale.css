@@ -72,19 +72,22 @@
     font-size: 0.95rem;
   }
 
-  /* Keep the jewelry image visually present without letting it dominate the phone viewport. */
+  /* Show the full jewelry composition on phones instead of aggressively cropping its sides. */
   #top .waresh-container > div:last-child {
     width: min(100%, 360px);
     max-width: 360px;
   }
 
-  #top .waresh-hero-jewel img {
-    height: 350px !important;
-    object-position: center 42%;
-  }
-
   #top .waresh-hero-jewel {
     border-radius: 2.1rem;
+    background: #162a22;
+  }
+
+  #top .waresh-hero-jewel img {
+    height: 390px !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+    background: #162a22;
   }
 
   /* Section headings */
