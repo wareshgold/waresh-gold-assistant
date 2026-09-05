@@ -8,7 +8,7 @@ import {
   PRODUCT_CATEGORIES,
   type ProductCategory,
 } from "@/data/products";
-import { TELEGRAM_BOT_URL } from "@/lib/api";
+import { calculateProductPrices, TELEGRAM_BOT_URL } from "@/lib/api";
 
 const priceBands = [
   { value: "under-10", label: "تا ۱۰ میلیون", min: 0, max: 10_000_000 },
@@ -22,29 +22,47 @@ type ProductCatalogProps = {
   liveGoldPrice?: number;
 };
 
+type ProductPricing = {
+  finalPrice: number;
+};
+
 const giftPriceBands: Record<string, string> = {
   "۳ تا ۱۰ میلیون": "under-10",
   "۱۰ تا ۲۰ میلیون": "10-20",
   "۲۰ تا ۳۰ میلیون": "20-30",
 };
 
-function calculateProductPrice(product: (typeof PRODUCTS)[number], liveGoldPrice: number) {
-  const goldValue = product.weight * liveGoldPrice;
-  const laborAmount = goldValue * (product.laborPercent / 100);
-  const subtotal = goldValue + laborAmount;
-  const profitAmount = subtotal * (product.profitPercent / 100);
-  const beforeDiscount = subtotal + profitAmount;
-
-  const finalPrice = Math.floor(beforeDiscount / 100_000) * 100_000;
-  const discountAmount = Math.max(0, beforeDiscount - finalPrice);
-  const totalLaborPercent = product.laborPercent + product.profitPercent + product.taxPercent;
-
-  return { goldValue, finalPrice, discountAmount, totalLaborPercent };
-}
-
 export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice }: ProductCatalogProps) {
   const [category, setCategory] = useState<ProductCategory | "all">("all");
   const [priceBand, setPriceBand] = useState<string>(initialPriceBand);
+  const [pricing, setPricing] = useState<Record<number, ProductPricing>>({});
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!liveGoldPrice || liveGoldPrice <= 0) {
+      setPricing({});
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    setPricing({});
+
+    void calculateProductPrices(PRODUCTS, liveGoldPrice).then((prices) => {
+      if (cancelled) return;
+
+      setPricing(
+        Object.fromEntries(
+          Object.entries(prices).map(([id, finalPrice]) => [Number(id), { finalPrice }]),
+        ),
+      );
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [liveGoldPrice]);
 
   useEffect(() => {
     const syncFromUrl = () => {
@@ -82,16 +100,19 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
 
   const products = useMemo(() => {
     const band = priceBands.find((item) => item.value === priceBand);
+    const hasPricing = liveGoldPrice !== undefined && liveGoldPrice > 0;
 
     return PRODUCTS.map((product) => ({
       product,
-      pricing: liveGoldPrice && liveGoldPrice > 0 ? calculateProductPrice(product, liveGoldPrice) : null,
-    })).filter(({ product, pricing }) => {
+      pricing: pricing[product.id] ?? null,
+    })).filter(({ product, pricing: productPricing }) => {
       const categoryMatch = category === "all" || product.category === category;
-      const priceMatch = !band || !pricing || (pricing.finalPrice >= band.min && pricing.finalPrice <= band.max);
+      const priceMatch = !band || !hasPricing || !productPricing || (
+        productPricing.finalPrice >= band.min && productPricing.finalPrice <= band.max
+      );
       return categoryMatch && priceMatch;
     });
-  }, [category, priceBand, liveGoldPrice]);
+  }, [category, priceBand, pricing, liveGoldPrice]);
 
   const selectPriceBand = (value: string) => {
     setPriceBand(value);
@@ -147,7 +168,7 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
         </div>
       ) : (
         <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {products.map(({ product, pricing }) => (
+          {products.map(({ product, pricing: productPricing }) => (
             <article key={product.id} className="group overflow-hidden rounded-[2rem] border border-[#e2ddd3] bg-[#fffdf8] shadow-[0_14px_45px_rgba(55,52,43,0.06)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(55,52,43,0.11)]">
               <div className="relative h-56 overflow-hidden bg-[#eee8dc] sm:h-64">
                 <img src={product.image} alt={product.name} loading="lazy" referrerPolicy="no-referrer" className="h-full w-full object-cover object-center transition duration-700 ease-out group-hover:scale-[1.045]" />
@@ -161,9 +182,9 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
                 <div className="mt-5 border-t border-[#ebe6dc] pt-4 sm:mt-6 sm:pt-5">
                   <div className="flex items-end justify-between gap-4">
                     <div><p className="text-xs text-[#96968d]">وزن</p><p className="mt-1 text-sm font-bold text-[#55584f]">{formatWeight(product.weight)}</p></div>
-                    {pricing ? <p className="text-base font-extrabold text-[#9b753c] sm:text-lg">{formatToman(pricing.finalPrice)}</p> : <p className="text-sm font-bold text-[#9b753c]">قیمت در حال دریافت…</p>}
+                    {productPricing ? <p className="text-base font-extrabold text-[#9b753c] sm:text-lg">{formatToman(productPricing.finalPrice)}</p> : <p className="text-sm font-bold text-[#9b753c]">قیمت در حال دریافت…</p>}
                   </div>
-                  {pricing && <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#8b8b82]"><span>اجرت کل {pricing.totalLaborPercent}٪</span><span>تخفیف {formatToman(pricing.discountAmount)}</span></div>}
+                  {productPricing && <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#8b8b82]"><span>اجرت {product.laborPercent}٪</span><span>سود {product.profitPercent}٪</span>{product.taxPercent > 0 && <span>مالیات {product.taxPercent}٪</span>}</div>}
                 </div>
                 <a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer" className="mt-5 flex min-h-11 w-full items-center justify-center rounded-full border border-[#d9c69f] bg-[#fbf6ea] px-4 py-3 text-sm font-bold text-[#7e6030] transition hover:-translate-y-0.5 hover:bg-[#f5ecd9]">
                   مشاوره و سفارش
