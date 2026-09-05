@@ -32,7 +32,7 @@ export default function AboutRainExperience() {
 
     const seed = drops.map((drop, index) => ({
       drop,
-      x: ((index * 47) % 101) + ((index % 5) * 0.7),
+      x: ((index * 47) % 101) + (index % 5) * 0.7,
       y: (index * 37) % 125,
       speed: 0.8 + ((index * 13) % 17) / 10,
       drift: ((index * 19) % 9) - 4,
@@ -45,6 +45,7 @@ export default function AboutRainExperience() {
       drop.style.opacity = `${opacity}`;
       drop.style.setProperty("--waresh-rain-speed", `${speed}s`);
       drop.style.setProperty("--waresh-rain-drift", `${drift}px`);
+      drop.dataset.y = `${y - 25}`;
     });
 
     if (reduceMotion) return;
@@ -67,10 +68,6 @@ export default function AboutRainExperience() {
       animationFrame = requestAnimationFrame(animate);
     };
 
-    seed.forEach((item) => {
-      item.drop.dataset.y = `${item.y - 25}`;
-    });
-
     animationFrame = requestAnimationFrame(animate);
 
     return () => cancelAnimationFrame(animationFrame);
@@ -79,7 +76,11 @@ export default function AboutRainExperience() {
   useEffect(() => {
     return () => {
       const context = audioContextRef.current;
-      sourceRef.current?.stop();
+      try {
+        sourceRef.current?.stop();
+      } catch {
+        // The source may already be stopped.
+      }
       sourceRef.current?.disconnect();
       gainRef.current?.disconnect();
       if (context) void context.close();
@@ -141,17 +142,16 @@ export default function AboutRainExperience() {
   };
 
   return (
-    <div ref={rootRef} className="waresh-about-rain-layer" aria-hidden="true">
+    <div ref={rootRef} className="waresh-about-rain-layer">
       {Array.from({ length: DROP_COUNT }, (_, index) => (
-        <span key={index} className="waresh-about-rain-drop" />
+        <span key={index} className="waresh-about-rain-drop" aria-hidden="true" />
       ))}
 
-      <div className="waresh-about-rain-vignette" />
+      <div className="waresh-about-rain-vignette" aria-hidden="true" />
 
       <button
         type="button"
         className="waresh-about-sound-control"
-        aria-hidden="false"
         aria-label={soundEnabled ? "خاموش کردن صدای باران" : "پخش صدای باران"}
         aria-pressed={soundEnabled}
         onClick={(event) => {
