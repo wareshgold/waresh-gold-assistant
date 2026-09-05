@@ -1,0 +1,64 @@
+/* Desktop closing-brand treatment: the storefront should end on Waresh Gold itself. */
+@media (min-width: 1024px) {
+  .waresh-site footer {
+    position: relative;
+    padding-top: 54px !important;
+    padding-bottom: 42px !important;
+    overflow: hidden;
+  }
+
+  .waresh-site footer > .waresh-container {
+    min-height: 255px;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 22px !important;
+    text-align: center;
+  }
+
+  .waresh-site footer img[alt="وارش گلد"] {
+    order: -1;
+    width: min(380px, 34vw) !important;
+    height: 148px !important;
+    max-width: none !important;
+    margin: 0 auto !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.2));
+    transform: scale(1.06);
+    transform-origin: center center;
+  }
+
+  .waresh-site footer > .waresh-container > div {
+    justify-content: center;
+  }
+
+  .waresh-site footer > .waresh-container > p {
+    margin: 0;
+  }
+
+  .waresh-site footer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: min(560px, 48vw);
+    height: 1px;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, transparent, rgba(216, 189, 126, 0.52), transparent);
+  }
+
+  .waresh-site footer::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -120px;
+    width: 460px;
+    height: 260px;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(216, 189, 126, 0.1), transparent 68%);
+    pointer-events: none;
+  }
+}
