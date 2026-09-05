@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 108" role="img" aria-labelledby="title desc">
+  <title id="title">Waresh Gold</title>
+  <desc id="desc">Waresh Gold website header lockup in forest green and warm gold.</desc>
+  <g fill="none" fill-rule="evenodd">
+    <path d="M46 12C31 28 18 43 18 61c0 20 13 34 28 34s28-14 28-34C74 43 61 28 46 12Z" stroke="#B79858" stroke-width="3"/>
+    <path d="M46 22 29 49h34L46 22Z" stroke="#B79858" stroke-width="2"/>
+    <path d="M29 49 46 78 63 49H29Z" fill="#0D5A43" stroke="#B79858" stroke-width="2"/>
+    <path d="m29 49 17 12 17-12M46 61v17M36.5 49 46 61l9.5-12" stroke="#D1B56D" stroke-width="1.8"/>
+    <path d="M46 5l3.7 5.7L46 16l-3.7-5.3L46 5Z" fill="#0D5A43"/>
+    <path d="M46 0l2 3-2 3-2-3 2-3Z" fill="#D1B56D"/>
+    <path d="M46 94l2.2 3.4L46 101l-2.2-3.6L46 94Z" fill="#D1B56D"/>
+
+    <path d="M96 20H536" stroke="#245646" stroke-width="1.3" opacity=".75"/>
+    <path d="M96 88H536" stroke="#245646" stroke-width="1.3" opacity=".75"/>
+
+    <text x="111" y="68" fill="#174F3C" font-family="Georgia, 'Times New Roman', serif" font-size="42" letter-spacing="-.5">Waresh</text>
+    <path d="M276 36v37" stroke="#174F3C" stroke-width="1.5" opacity=".8"/>
+    <text x="294" y="67" fill="#174F3C" font-family="Tahoma, Arial, sans-serif" font-size="33" font-weight="700" direction="rtl" unicode-bidi="bidi-override">وارش گلد</text>
+  </g>
+</svg>
