@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { TELEGRAM_BOT_URL } from "@/lib/api";
 import MobileMenu from "@/components/MobileMenu";
@@ -10,6 +11,20 @@ const aboutLinks = [
   ["دیدگاه ما", "#view"],
   ["ادامه مسیر", "#next"],
 ] as const;
+
+export const metadata: Metadata = {
+  title: "درباره وارش | وارش گلد",
+  description:
+    "داستان وارش گلد؛ ریشه‌ای شمالی، تجربه‌ای روشن و نگاهی رو به آینده در بازار طلا و جواهر.",
+  alternates: { canonical: "/about" },
+  openGraph: {
+    title: "درباره وارش | وارش گلد",
+    description:
+      "داستان، نگاه و مسیر آینده وارش گلد در بازار طلا و جواهر ایران.",
+    type: "website",
+    locale: "fa_IR",
+  },
+};
 
 export default function AboutPage() {
   return (
@@ -24,7 +39,7 @@ export default function AboutPage() {
             <Link className="waresh-link" href="/#gifts">هدیه</Link>
             <Link className="waresh-link" href="/#prices">قیمت امروز</Link>
             <Link className="waresh-link" href="/tools">ابزار طلا</Link>
-            <Link className="waresh-link" href="/about">درباره وارش</Link>
+            <Link className="waresh-link" href="/about" aria-current="page">درباره وارش</Link>
           </nav>
           <div className="flex items-center gap-2">
             <a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer" className="hidden min-h-11 items-center rounded-full bg-[#b28b4c] px-5 py-2.5 text-xs font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#9d773d] sm:inline-flex">گفتگو در تلگرام</a>
