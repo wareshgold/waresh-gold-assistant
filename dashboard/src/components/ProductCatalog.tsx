@@ -37,6 +37,12 @@ const giftPriceBands: Record<string, string> = {
   "۲۰ تا ۳۰ میلیون": "20-30",
 };
 
+const PRICE_DISPLAY_STEP = 10_000;
+
+function getRoundedDisplayPrice(price: number): number {
+  return Math.floor(price / PRICE_DISPLAY_STEP) * PRICE_DISPLAY_STEP;
+}
+
 export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice }: ProductCatalogProps) {
   const [category, setCategory] = useState<ProductCategory | "all">("all");
   const [priceBand, setPriceBand] = useState<string>(initialPriceBand);
@@ -219,7 +225,14 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3" aria-live="polite">
-          {products.map(({ product, pricing: productPricing }, index) => (
+          {products.map(({ product, pricing: productPricing }, index) => {
+            const displayPrice = productPricing ? getRoundedDisplayPrice(productPricing.finalPrice) : null;
+            const displayDiscount = productPricing && displayPrice !== null
+              ? productPricing.finalPrice - displayPrice
+              : 0;
+            const totalLaborPercent = product.laborPercent + product.profitPercent;
+
+            return (
             <article
               key={`${product.id}-${category}-${priceBand}`}
               className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-[#e2ddd3] bg-[#fffdf8] shadow-[0_14px_45px_rgba(55,52,43,0.06)] opacity-0 [animation:waresh-catalog-card-in_480ms_ease-out_forwards] transition duration-500 hover:-translate-y-1 hover:border-[#d8c7a8] hover:shadow-[0_24px_60px_rgba(55,52,43,0.11)]"
@@ -255,7 +268,17 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
                     <div className="text-left" dir="rtl">
                       <p className="text-[10px] font-semibold text-[#aaa397]">قیمت با نرخ لحظه‌ای</p>
                       {productPricing ? (
-                        <p className="mt-1 text-base font-extrabold text-[#9b753c] sm:text-lg">{formatToman(productPricing.finalPrice)}</p>
+                        <>
+                          {displayDiscount > 0 && (
+                            <p className="mt-1 text-[11px] font-semibold text-[#aaa397] line-through decoration-[#c9bca6]">
+                              {formatToman(productPricing.finalPrice)}
+                            </p>
+                          )}
+                          <p className="mt-1 text-base font-extrabold text-[#9b753c] sm:text-lg">{formatToman(displayPrice ?? productPricing.finalPrice)}</p>
+                          {displayDiscount > 0 && (
+                            <p className="mt-1 text-[11px] font-bold text-[#5e8a68]">تخفیف {formatToman(displayDiscount)}</p>
+                          )}
+                        </>
                       ) : (
                         <div className="mt-2 flex items-center justify-end gap-2" aria-label="در حال دریافت قیمت">
                           <span className="h-2 w-16 animate-pulse rounded-full bg-[#e6dfd1]" />
@@ -266,10 +289,9 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
                   </div>
 
                   {productPricing ? (
-                    <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#8b8b82]">
-                      <span>اجرت {product.laborPercent}٪</span>
-                      <span>سود {product.profitPercent}٪</span>
-                      {product.taxPercent > 0 && <span>مالیات {product.taxPercent}٪</span>}
+                    <div className="mt-3 text-[11px] text-[#8b8b82]">
+                      <span>اجرت کل {totalLaborPercent}٪</span>
+                      {product.taxPercent > 0 && <span className="mr-4">مالیات {product.taxPercent}٪</span>}
                     </div>
                   ) : (
                     <p className="mt-3 text-[11px] text-[#a09d94]">جزئیات قیمت پس از دریافت نرخ بازار نمایش داده می‌شود.</p>
@@ -287,7 +309,8 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
                 </a>
               </div>
             </article>
-          ))}
+            );
+          })}
         </div>
       )}
 
