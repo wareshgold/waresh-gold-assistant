@@ -15,6 +15,6 @@
 
     <text x="111" y="68" fill="#174F3C" font-family="Georgia, 'Times New Roman', serif" font-size="42" letter-spacing="-.5">Waresh</text>
     <path d="M276 36v37" stroke="#174F3C" stroke-width="1.5" opacity=".8"/>
-    <text x="294" y="67" fill="#174F3C" font-family="Tahoma, Arial, sans-serif" font-size="33" font-weight="700" direction="rtl" unicode-bidi="bidi-override">وارش گلد</text>
+    <text x="520" y="67" text-anchor="end" fill="#174F3C" font-family="Tahoma, Arial, sans-serif" font-size="33" font-weight="700" direction="rtl">وارش گلد</text>
   </g>
 </svg>
