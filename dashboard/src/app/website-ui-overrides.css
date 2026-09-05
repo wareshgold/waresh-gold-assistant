@@ -55,7 +55,7 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
 /* Gift is intentionally compact and part of the normal document flow. */
 #gifts > .waresh-container { min-height:0 !important; }
 
-/* Hero rain: visible, animated, but 10% softer than the previous version. */
+/* Hero rain: visible, animated, now 20% softer than the original restored version. */
 #top .waresh-rain {
   z-index:2 !important;
   display:block;
@@ -63,7 +63,7 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
   inset:0;
   overflow:hidden;
   pointer-events:none;
-  opacity:.9 !important;
+  opacity:.81 !important;
   isolation:isolate;
   mix-blend-mode:screen;
   background-image:
@@ -128,7 +128,7 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
   #gifts .waresh-gift-range { min-height:70px; }
   #prices { padding-block:48px !important; }
   #prices form { padding:20px !important; }
-  #top .waresh-rain { opacity:.9 !important; }
+  #top .waresh-rain { opacity:.81 !important; }
 }
 
 @media (prefers-reduced-motion:reduce) {
