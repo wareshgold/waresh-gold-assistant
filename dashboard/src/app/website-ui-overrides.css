@@ -105,6 +105,23 @@ footer img[alt="وارش گلد"] { height:110px !important;width:auto !importan
   header[class*="sticky"][class*="top-0"][class*="z-50"] a[aria-label="بازگشت به خانه"]::after { right:6.5%;font-size:18.6px !important;z-index:10; }
 }
 
+/* Mobile menu brand: use the same premium header lockup instead of the small green PNG. */
+@media (max-width:1023px) {
+  .waresh-mobile-menu a[aria-label="صفحه اصلی وارش گلد"] {
+    display:inline-flex !important;
+    align-items:center;
+    justify-content:center;
+    width:205px;
+    height:52px;
+    background:url('/waresh-gold-header-lockup.svg') center/contain no-repeat;
+  }
+  .waresh-mobile-menu a[aria-label="صفحه اصلی وارش گلد"] img {
+    opacity:0 !important;
+    width:100% !important;
+    height:100% !important;
+  }
+}
+
 @media (max-width:640px) {
   .waresh-site > div:first-child { min-height:30px; }
   .waresh-site > div:first-child .waresh-container { min-height:30px;font-size:10px; }
@@ -120,6 +137,7 @@ footer img[alt="وارش گلد"] { height:110px !important;width:auto !importan
   #prices { padding-block:48px !important; }
   #prices form { padding:20px !important; }
   footer img[alt="وارش گلد"] { height:92px !important;max-width:250px; }
+  .waresh-mobile-menu a[aria-label="صفحه اصلی وارش گلد"] { width:190px;height:48px; }
 }
 
 @media (prefers-reduced-motion:reduce) {
