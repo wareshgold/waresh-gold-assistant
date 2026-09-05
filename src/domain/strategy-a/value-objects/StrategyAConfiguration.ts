@@ -33,10 +33,10 @@ export const DEFAULT_StrategyA_CONFIGURATION: StrategyAConfiguration = {
     strategyVersion: "StrategyA-v1",
     minSpikeCandles: 3,
     maxSpikeCandles: 3,
-    minBodyRatio: 0.65,
+    minBodyRatio: 0.55,           // was 0.65 - lowered to capture more signals
     minSpikeRangeMultiplier: 1.8,
-    minSpikeMovePercent: 0.12,
-    minGapRatio: 0.15,
+    minSpikeMovePercent: 0.08,    // was 0.12 - lowered for smaller moves
+    minGapRatio: 0.08,            // was 0.15 - lowered for smaller gaps
     minRetracementPercent: 20,
     maxRetracementPercent: 85,
     riskReward: 1

@@ -234,7 +234,7 @@ implements TelegramCommandHandler {
 
                         input.weight !== undefined
 
-                            ? `⚖️ وزن: ${this.numberFormatter.format(input.weight)} گرم`
+                            ? `⚖️ وزن: ${this.numberFormatter.weight(input.weight)}`
 
                             : "",
 

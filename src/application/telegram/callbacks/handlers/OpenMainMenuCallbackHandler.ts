@@ -7,6 +7,8 @@ import {
     TelegramNavigationService,
 } from "../../navigation/TelegramNavigationService";
 
+import { TelegramFooter } from "../../presentation/TelegramFooter";
+
 
 
 
@@ -32,7 +34,7 @@ extends BaseMenuCallbackHandler {
 
             "menu:main",
 
-            "🟡 Waresh Gold",
+            TelegramFooter.FOOTER,
 
             () =>
 

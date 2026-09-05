@@ -6,7 +6,7 @@ export class TrendCalculator {
 
 
     constructor(
-        private readonly volatilityThreshold: number = 2
+        private readonly volatilityThreshold: number = 0.5
     ) {
 
 

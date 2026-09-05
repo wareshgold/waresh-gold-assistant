@@ -29,11 +29,11 @@ export const TelegramAlertsMenu: TelegramMenuItem[] = [
         },
     },
     {
-        id: "alerts.market-analysis",
-        label: "📊 تحلیل بازار",
+        id: "alerts.reports",
+        label: "📊 گزارش بازار",
         action: {
             type: TelegramMenuActionType.CALLBACK,
-            value: NavigationAction.ALERTS_MARKET_ANALYSIS,
+            value: NavigationAction.ALERTS_REPORTS,
         },
     },
     {

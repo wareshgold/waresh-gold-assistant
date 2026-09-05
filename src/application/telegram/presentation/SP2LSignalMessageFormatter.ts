@@ -2,6 +2,10 @@ import {
     SP2LSignal
 } from "../../../domain/sp2l/entities/SP2LSignal";
 
+import {
+    formatWithCommas
+} from "../../../shared/utils/number";
+
 export class SP2LSignalMessageFormatter {
 
     format(
@@ -25,7 +29,7 @@ Reason:
 ${signal.reason}
 
 Confidence:
-${Math.round(signal.confidence * 100)}%
+${this.formatNumber(signal.confidence * 100)}٪
 
 Strategy:
 ${signal.strategyVersion}
@@ -59,7 +63,7 @@ Risk Reward:
 1:${this.formatNumber(signal.riskReward)}
 
 Confidence:
-${Math.round(signal.confidence * 100)}%
+${this.formatNumber(signal.confidence * 100)}٪
 
 Strategy:
 ${signal.strategyVersion}
@@ -74,11 +78,6 @@ ${signal.reason}
         value:number
     ):string {
 
-        return new Intl.NumberFormat(
-            "en-US",
-            {
-                maximumFractionDigits:2
-            }
-        ).format(value);
+        return formatWithCommas(value);
     }
 }

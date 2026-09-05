@@ -11,6 +11,7 @@ import { TelegramConversationManager } from "../../application/telegram/flows/Te
 import { GoldCalculationConversationFlow } from "../../application/telegram/flows/GoldCalculationConversationFlow";
 import { ReverseGoldConversationFlow } from "../../application/telegram/flows/ReverseGoldConversationFlow";
 import { AIConversationFlow } from "../../application/telegram/flows/AIConversationFlow";
+import { PriceTargetConversationFlow } from "../../application/telegram/flows/PriceTargetConversationFlow";
 import { TelegramWebhookController } from "../../interfaces/telegram/TelegramWebhookController";
 import { TelegramWebhookSecurityGuard } from "../../interfaces/telegram/TelegramWebhookSecurityGuard";
 import { TelegramWebhookAbuseGuard } from "../../infrastructure/telegram/security/TelegramWebhookAbuseGuard";
@@ -92,7 +93,11 @@ export function createTelegramModule(env: AppEnv, dependencies: Dependencies) {
                 dependencies.calculateReverseGoldUseCase,
                 telegramNumberFormatter
             ),
-            new AIConversationFlow(dependencies.aiService)
+            new AIConversationFlow(dependencies.aiService),
+            new PriceTargetConversationFlow(
+                dependencies.sessionStore,
+                dependencies.priceTargetAlertService ?? new PriceTargetAlertService(new D1PriceTargetAlertRepository(env.waresh_gold_db))
+            )
         ]
     );
 

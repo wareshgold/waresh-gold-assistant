@@ -4,12 +4,16 @@ import { TelegramCommandResponse } from "../../commands/TelegramCommandHandler";
 import { PriceTargetAlertService } from "../../../price-target-alert/PriceTargetAlertService";
 import { TelegramNumberFormatter } from "../../presentation/TelegramNumberFormatter";
 import { TelegramDateTimeFormatter } from "../../presentation/TelegramDateTimeFormatter";
+import { TelegramSessionStore } from "../../state/TelegramSessionStore";
 
 export class PriceTargetCallbackHandler implements TelegramCallbackHandler {
     private readonly numberFormatter = new TelegramNumberFormatter();
     private readonly dateTimeFormatter = new TelegramDateTimeFormatter();
 
-    constructor(private readonly alertService: PriceTargetAlertService) {}
+    constructor(
+        private readonly alertService: PriceTargetAlertService,
+        private readonly sessionStore?: TelegramSessionStore
+    ) {}
 
     canHandle(context: TelegramCallbackContext): boolean {
         const data = context.data;
@@ -46,6 +50,17 @@ export class PriceTargetCallbackHandler implements TelegramCallbackHandler {
         if (data === "price-target-above" || data === "price-target-below") {
             const direction = data === "price-target-above" ? "ABOVE" : "BELOW";
             const dirLabel = direction === "ABOVE" ? "بالاتر از" : "پایین‌تر از";
+
+            // Save session state so conversation flow can pick up the price input
+            if (this.sessionStore) {
+                await this.sessionStore.save({
+                    userId,
+                    state: "price-target-awaiting-input",
+                    data: { direction },
+                    updatedAt: Date.now()
+                });
+            }
+
             return {
                 type: "text",
                 content: [
@@ -94,7 +109,7 @@ export class PriceTargetCallbackHandler implements TelegramCallbackHandler {
 
         const alertList = alerts.map((alert: any, i: number) => {
             const dirLabel = alert.direction === "ABOVE" ? "⬆️ بالاتر از" : "⬇️ پایین‌تر از";
-            return `${i + 1}. ${dirLabel} ${this.numberFormatter.money(alert.targetPrice)} تومان`;
+            return `${i + 1}. ${dirLabel} ${this.numberFormatter.money(alert.targetPrice)}`;
         }).join("\n");
 
         const cancelButtons = alerts.map((alert: any) => ({

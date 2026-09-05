@@ -20,7 +20,6 @@ import {
     Spike
 } from "../models/Spike";
 
-
 function candle(
     open: number,
     high: number,
@@ -67,226 +66,142 @@ function makeSpike(
         startIndex,
         endIndex,
         strength: 0.8,
-        gapSize: 2.0,
+        gapSize: 2,
         candlesCount: 3,
         extremeHigh: Math.max(startPrice, endPrice) + 1,
         extremeLow: Math.min(startPrice, endPrice) - 1
     };
 }
 
-
 describe("TwoLegDetector", () => {
+    it("detects a genuine BUY two-leg correction with a retracement between legs", () => {
+        const detector = new TwoLegDetector();
 
-    describe("happy path - BUY correction", () => {
+        const candles = [
+            candle(100, 101, 99.5, 101, 1),
+            candle(102, 103.5, 101.5, 103.5, 2),
+            candle(104, 106, 103.5, 106, 3),
+            // Leg 1: down to 101.5
+            candle(105.5, 105.8, 101.5, 102, 4),
+            // Retracement: upward counter-move
+            candle(102, 103.8, 101.8, 103.5, 5),
+            // Leg 2: new low below leg 1; close is the entry price
+            candle(103.5, 103.8, 101, 101.2, 6),
+            // Newest closed candle is not needed for entry
+            candle(101.2, 102.8, 101.1, 102.6, 7)
+        ];
 
-        it("detects bullish correction when candle breaks previous low", () => {
-            const detector = new TwoLegDetector();
+        const twoLeg = detector.detect(
+            candles,
+            makeSpike("BUY", 0, 2, 99.5, 106),
+            testConfig
+        );
 
-            // Spike: 99.5 → 106 (range 6.5)
-            // Correction: drops to 102.5 (~54% retracement)
-            const candles: StrategyACandle[] = [
-                candle(100, 101, 99.5, 101, 1),
-                candle(102, 103.5, 101.5, 103.5, 2),
-                candle(104, 106, 103.5, 106, 3),
-                candle(103, 103.5, 102.5, 102.8, 4),
-                candle(102.5, 103, 102, 102.2, 5),
-                candle(102.2, 102.5, 101.5, 101.8, 6),
-                candle(101.8, 102, 101, 101.2, 7)
-            ];
-
-            const spike = makeSpike("BUY", 0, 2, 99.5, 106);
-
-            const twoLeg = detector.detect(candles, spike, testConfig);
-
-            expect(twoLeg).not.toBeNull();
-            expect(twoLeg!.completionPrice).toBeLessThan(106);
-            expect(twoLeg!.retracementPercent).toBeGreaterThan(20);
-            expect(twoLeg!.retracementPercent).toBeLessThan(85);
-        });
-
-        it("completes at lowest point after break", () => {
-            const detector = new TwoLegDetector();
-
-            const candles: StrategyACandle[] = [
-                candle(100, 101, 99.5, 101, 1),
-                candle(102, 103.5, 101.5, 103.5, 2),
-                candle(104, 106, 103.5, 106, 3),
-                candle(103, 103.5, 102.5, 102.8, 4),
-                candle(102.5, 103, 102, 102.2, 5),
-                candle(102.2, 102.5, 101.5, 101.8, 6),
-                candle(101.8, 102, 101, 101.2, 7)
-            ];
-
-            const spike = makeSpike("BUY", 0, 2, 99.5, 106);
-
-            const twoLeg = detector.detect(candles, spike, testConfig);
-
-            expect(twoLeg).not.toBeNull();
-            expect(twoLeg!.completionPrice).toBe(101);
-        });
+        expect(twoLeg).not.toBeNull();
+        expect(twoLeg!.leg1.endIndex).toBe(3);
+        expect(twoLeg!.leg2.endIndex).toBe(5);
+        expect(twoLeg!.completionIndex).toBe(5);
+        expect(twoLeg!.completionPrice).toBe(101.2);
+        expect(twoLeg!.retracementPercent).toBeGreaterThan(20);
+        expect(twoLeg!.retracementPercent).toBeLessThan(85);
     });
 
-    describe("happy path - SELL correction", () => {
+    it("detects a genuine SELL two-leg correction with a retracement between legs", () => {
+        const detector = new TwoLegDetector();
 
-        it("detects bearish correction when candle breaks previous high", () => {
-            const detector = new TwoLegDetector();
+        const candles = [
+            candle(106, 106.5, 104, 104, 1),
+            candle(103.5, 104, 102, 102, 2),
+            candle(101, 101.5, 100, 100, 3),
+            // Leg 1: up to 104.5
+            candle(100.2, 104.5, 100, 104, 4),
+            // Retracement: downward counter-move
+            candle(104, 104.2, 102.8, 103, 5),
+            // Leg 2: new high above leg 1; close is the entry price
+            candle(103, 105, 102.8, 104.8, 6),
+            // Newest closed candle is not needed for entry
+            candle(104.8, 104.9, 102.5, 102.7, 7)
+        ];
 
-            // Spike: 106 → 100 (range 6)
-            // Correction: rises to 103.5 (~58% retracement)
-            const candles: StrategyACandle[] = [
-                candle(106, 106, 104, 104, 1),
-                candle(103, 104, 102, 102, 2),
-                candle(101, 101.5, 100, 100, 3),
-                candle(101, 103, 100.5, 102.8, 4),
-                candle(102.8, 104, 102, 103.5, 5),
-                candle(103.5, 104.5, 103, 104.2, 6),
-                candle(104.2, 105, 104, 104.8, 7)
-            ];
+        const twoLeg = detector.detect(
+            candles,
+            makeSpike("SELL", 0, 2, 106, 100),
+            testConfig
+        );
 
-            const spike = makeSpike("SELL", 0, 2, 106, 100);
-
-            const twoLeg = detector.detect(candles, spike, testConfig);
-
-            expect(twoLeg).not.toBeNull();
-            expect(twoLeg!.completionPrice).toBeGreaterThan(100);
-            expect(twoLeg!.retracementPercent).toBeGreaterThan(20);
-            expect(twoLeg!.retracementPercent).toBeLessThan(85);
-        });
+        expect(twoLeg).not.toBeNull();
+        expect(twoLeg!.leg1.endIndex).toBe(3);
+        expect(twoLeg!.leg2.endIndex).toBe(5);
+        expect(twoLeg!.completionPrice).toBe(104.8);
+        expect(twoLeg!.retracementPercent).toBeGreaterThan(20);
+        expect(twoLeg!.retracementPercent).toBeLessThan(85);
     });
 
-    describe("rejection", () => {
+    it("rejects a single continuous correction without an intervening retracement", () => {
+        const detector = new TwoLegDetector();
 
-        it("returns null when no break after BUY spike", () => {
-            const detector = new TwoLegDetector();
+        const candles = [
+            candle(100, 101, 99.5, 101, 1),
+            candle(102, 103.5, 101.5, 103.5, 2),
+            candle(104, 106, 103.5, 106, 3),
+            candle(103, 103.5, 102.5, 102.8, 4),
+            candle(102.5, 103, 102, 102.2, 5),
+            candle(102.2, 102.5, 101.5, 101.8, 6),
+            candle(101.8, 102, 101, 101.2, 7)
+        ];
 
-            const candles: StrategyACandle[] = [
-                candle(100, 101, 99.5, 101, 1),
-                candle(102, 103.5, 101.5, 103.5, 2),
-                candle(104, 106, 103.5, 106, 3),
-                candle(106, 107, 105.5, 106.5, 4),
-                candle(106.5, 107.5, 106, 107, 5),
-                candle(107, 108, 106.5, 107.5, 6)
-            ];
+        const twoLeg = detector.detect(
+            candles,
+            makeSpike("BUY", 0, 2, 99.5, 106),
+            testConfig
+        );
 
-            const spike = makeSpike("BUY", 0, 2, 99.5, 106);
-
-            const twoLeg = detector.detect(candles, spike, testConfig);
-
-            expect(twoLeg).toBeNull();
-        });
-
-        it("returns null when retracement too shallow", () => {
-            const detector = new TwoLegDetector();
-
-            const config: StrategyAConfiguration = {
-                ...testConfig,
-                minRetracementPercent: 50
-            };
-
-            // Spike: 99.5 → 106 (range 6.5)
-            // Correction: only drops to 105 (~15% retracement, need 50%)
-            const candles: StrategyACandle[] = [
-                candle(100, 101, 99.5, 101, 1),
-                candle(102, 103.5, 101.5, 103.5, 2),
-                candle(104, 106, 103.5, 106, 3),
-                candle(105, 105.5, 104.5, 105.2, 4),
-                candle(105.2, 105.5, 104.8, 105, 5),
-                candle(105, 105.3, 104.5, 104.8, 6)
-            ];
-
-            const spike = makeSpike("BUY", 0, 2, 99.5, 106);
-
-            const twoLeg = detector.detect(candles, spike, config);
-
-            expect(twoLeg).toBeNull();
-        });
-
-        it("returns null when retracement too deep", () => {
-            const detector = new TwoLegDetector();
-
-            const config: StrategyAConfiguration = {
-                ...testConfig,
-                maxRetracementPercent: 50
-            };
-
-            // Spike: 99.5 → 106 (range 6.5)
-            // Correction: drops to 100 (~92% retracement, need max 50%)
-            const candles: StrategyACandle[] = [
-                candle(100, 101, 99.5, 101, 1),
-                candle(102, 103.5, 101.5, 103.5, 2),
-                candle(104, 106, 103.5, 106, 3),
-                candle(103, 104, 102, 102.5, 4),
-                candle(102, 102.5, 100.5, 100.8, 5),
-                candle(100.5, 101, 99.5, 99.8, 6)
-            ];
-
-            const spike = makeSpike("BUY", 0, 2, 99.5, 106);
-
-            const twoLeg = detector.detect(candles, spike, config);
-
-            expect(twoLeg).toBeNull();
-        });
+        expect(twoLeg).toBeNull();
     });
 
-    describe("edge cases", () => {
+    it("rejects a correction when retracement is too shallow", () => {
+        const detector = new TwoLegDetector();
+        const config = {
+            ...testConfig,
+            minRetracementPercent: 50
+        };
 
-        it("returns null when spikeRange is zero", () => {
-            const detector = new TwoLegDetector();
+        const candles = [
+            candle(100, 101, 99.5, 101, 1),
+            candle(102, 103.5, 101.5, 103.5, 2),
+            candle(104, 106, 103.5, 106, 3),
+            candle(105.5, 105.8, 103.8, 104, 4),
+            candle(104, 104.8, 103.9, 104.5, 5),
+            candle(104.5, 104.8, 103.6, 103.8, 6),
+            candle(103.8, 105, 103.7, 104.8, 7)
+        ];
 
-            const candles: StrategyACandle[] = [
-                candle(100, 101, 99.5, 101, 1),
-                candle(102, 103.5, 101.5, 103.5, 2),
-                candle(104, 106, 103.5, 106, 3),
-                candle(103, 104, 102, 102.8, 4),
-                candle(102.5, 103, 102, 102.2, 5)
-            ];
+        const twoLeg = detector.detect(
+            candles,
+            makeSpike("BUY", 0, 2, 99.5, 106),
+            config
+        );
 
-            const spike = makeSpike("BUY", 0, 2, 106, 106);
+        expect(twoLeg).toBeNull();
+    });
 
-            const twoLeg = detector.detect(candles, spike, testConfig);
+    it("rejects a correction when no candle remains to complete the second leg", () => {
+        const detector = new TwoLegDetector();
 
-            expect(twoLeg).toBeNull();
-        });
+        const candles = [
+            candle(100, 101, 99.5, 101, 1),
+            candle(102, 103.5, 101.5, 103.5, 2),
+            candle(104, 106, 103.5, 106, 3),
+            candle(105.5, 105.8, 101.5, 102, 4),
+            candle(102, 103.8, 101.8, 103.5, 5)
+        ];
 
-        it("returns correct completionIndex", () => {
-            const detector = new TwoLegDetector();
+        const twoLeg = detector.detect(
+            candles,
+            makeSpike("BUY", 0, 2, 99.5, 106),
+            testConfig
+        );
 
-            const candles: StrategyACandle[] = [
-                candle(100, 101, 99.5, 101, 1),
-                candle(102, 103.5, 101.5, 103.5, 2),
-                candle(104, 106, 103.5, 106, 3),
-                candle(103, 103.5, 102.5, 102.8, 4),
-                candle(102.5, 103, 102, 102.2, 5),
-                candle(102.2, 102.5, 101.5, 101.8, 6)
-            ];
-
-            const spike = makeSpike("BUY", 0, 2, 99.5, 106);
-
-            const twoLeg = detector.detect(candles, spike, testConfig);
-
-            expect(twoLeg).not.toBeNull();
-            expect(twoLeg!.completionIndex).toBeGreaterThanOrEqual(3);
-        });
-
-        it("returns correct retracementPercent", () => {
-            const detector = new TwoLegDetector();
-
-            const candles: StrategyACandle[] = [
-                candle(100, 101, 99.5, 101, 1),
-                candle(102, 103.5, 101.5, 103.5, 2),
-                candle(104, 106, 103.5, 106, 3),
-                candle(103, 103.5, 102.5, 102.8, 4),
-                candle(102.5, 103, 102, 102.2, 5),
-                candle(102.2, 102.5, 101.5, 101.8, 6)
-            ];
-
-            const spike = makeSpike("BUY", 0, 2, 99.5, 106);
-
-            const twoLeg = detector.detect(candles, spike, testConfig);
-
-            expect(twoLeg).not.toBeNull();
-            expect(twoLeg!.retracementPercent).toBeGreaterThan(0);
-            expect(twoLeg!.retracementPercent).toBeLessThan(100);
-        });
+        expect(twoLeg).toBeNull();
     });
 });

@@ -106,7 +106,12 @@ export class TelegramCommandRegistry {
 
         if (goldPriceAlertService) {
             handlers.push(new GoldPriceAlertCommandHandler(goldPriceAlertService));
-            handlers.push(new MyAlertsCommandHandler(goldPriceAlertService));
+            handlers.push(new MyAlertsCommandHandler(
+                goldPriceAlertService,
+                bubbleAlertService,
+                marketReportService,
+                priceTargetAlertService
+            ));
         }
 
         if (bubbleAlertService) {
@@ -114,7 +119,7 @@ export class TelegramCommandRegistry {
         }
 
         if (priceTargetAlertService) {
-            handlers.push(new PriceTargetAlertCommandHandler(priceTargetAlertService));
+            handlers.push(new PriceTargetAlertCommandHandler(priceTargetAlertService, sessionStore));
         }
 
         if (marketReportService) {

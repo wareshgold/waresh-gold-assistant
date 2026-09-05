@@ -14,18 +14,25 @@ export class MarketAnalyticsMessageFormatter {
         const trend = analytics.getTrend();
         const range = analytics.getPriceRange();
 
-        const scoreLabel = this.translateScore(score.value);
+        const changeSign = change.value >= 0 ? "+" : "-";
 
         return this.builder.build([
             "📊 <b>تحلیل بازار</b>",
             "",
-            `وضعیت بازار:    ${score.formatted} (${scoreLabel})`,
-            `روند:            ${trend.emoji} ${this.translateTrend(trend.type)}`,
-            `تغییر:           ${change.formatted}`,
-            `نوسان:           ${this.numberFormatter.percent(analytics.getVolatility())}`,
+            "💰 قیمت فعلی:",
+            this.numberFormatter.money(analytics.getCurrentPrice()),
             "",
-            `💰 قیمت فعلی:    ${this.numberFormatter.money(analytics.getCurrentPrice())}`,
-            `📈 بازه ۲۴ ساعت: ${this.numberFormatter.money(range.min)} تا ${this.numberFormatter.money(range.max)}`
+            "📈 بازه ۲۴ ساعت:",
+            `${this.numberFormatter.format(range.min)} تا ${this.numberFormatter.format(range.max)} تومان`,
+            "",
+            "🧭 روند بازار:",
+            `${trend.emoji} ${this.translateTrend(trend.type)}`,
+            "",
+            "📊 تغییر:",
+            `${changeSign}${this.numberFormatter.percentRtl(Math.abs(change.value))}`,
+            "",
+            "🌊 نوسان:",
+            this.numberFormatter.percentRtl(analytics.getVolatility())
         ]);
     }
 
@@ -44,11 +51,5 @@ export class MarketAnalyticsMessageFormatter {
         }
     }
 
-    private translateScore(score: number): string {
-        if (score >= 80) return "عالی";
-        if (score >= 60) return "خوب";
-        if (score >= 40) return "متوسط";
-        if (score >= 20) return "ضعیف";
-        return "بحرانی";
-    }
+
 }

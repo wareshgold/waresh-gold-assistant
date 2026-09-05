@@ -30,7 +30,7 @@ export class AboutBotCallbackHandler implements TelegramCallbackHandler {
                 "🤖 دستیار هوشمند هوش مصنوعی",
                 "⭐ سیگنال استراتژی A (VIP)",
                 "",
-                "bot: @wareshgold_bot",
+                "bot: @Wareshgoldbot",
                 "web: wareshgold.ir",
                 "",
                 `🕐 ${now}`

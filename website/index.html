@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وارش گلد | فروشگاه طلا و جواهر</title>
+    <meta name="description" content="فروش آنلاین طلا و جواهر با قیمت مناسب از وارش گلد. محاسبه قیمت طلا، تحلیل بازار و دستیار هوشمند.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">🟡</span>
+                    <span class="logo-text">وارش گلد</span>
+                </div>
+                <nav class="nav">
+                    <a href="#categories" class="nav-link">محصولات</a>
+                    <a href="#gifts" class="nav-link">هدیه</a>
+                    <a href="https://t.me/Wareshgoldbot" class="nav-link nav-btn" target="_blank">🤖 ربات تلگرام</a>
+                </nav>
+                <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1 class="hero-title">طلای خاص، برای لحظه‌های خاص</h1>
+            <p class="hero-subtitle">محصولات دست‌ساز با طراحی مینیمال و کیفیت بالا</p>
+            <div class="hero-actions">
+                <a href="#categories" class="btn btn-primary">مشاهده محصولات</a>
+                <a href="https://t.me/Wareshgoldbot" class="btn btn-secondary" target="_blank">شروع با ربات</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="categories" class="section">
+        <div class="container">
+            <h2 class="section-title">دسته‌بندی محصولات</h2>
+            <p class="section-subtitle">محصول مورد نظر خود را پیدا کنید</p>
+            <div class="categories-grid">
+                <a href="#products" class="category-card" data-category="کم-اجرت" onclick="filterProducts('کم-اجرت')"><div class="category-icon">💎</div><h3 class="category-name">کم اجرت</h3><p class="category-desc">محصولات با اجرت پایین</p></a>
+                <a href="#products" class="category-card" data-category="انگشتر" onclick="filterProducts('انگشتر')"><div class="category-icon">💍</div><h3 class="category-name">انگشتر</h3><p class="category-desc">طرح‌های متنوع</p></a>
+                <a href="#products" class="category-card" data-category="آویز" onclick="filterProducts('آویز')"><div class="category-icon">✨</div><h3 class="category-name">آویز</h3><p class="category-desc">آویزهای زیبا</p></a>
+                <a href="#products" class="category-card" data-category="النگو" onclick="filterProducts('النگو')"><div class="category-icon">⭕</div><h3 class="category-name">النگو</h3><p class="category-desc">النگوهای شیک</p></a>
+                <a href="#products" class="category-card" data-category="گوشواره" onclick="filterProducts('گوشواره')"><div class="category-icon">👂</div><h3 class="category-name">گوشواره</h3><p class="category-desc">گوشواره‌های ظریف</p></a>
+                <a href="#products" class="category-card" data-category="گردنبند" onclick="filterProducts('گردنبند')"><div class="category-icon">📿</div><h3 class="category-name">گردنبند</h3><p class="category-desc">گردنبند‌های خاص</p></a>
+                <a href="#products" class="category-card" data-category="دستبند" onclick="filterProducts('دستبند')"><div class="category-icon">⌚</div><h3 class="category-name">دستبند</h3><p class="category-desc">دستبند‌های مدرن</p></a>
+                <a href="#products" class="category-card" data-category="مردانه" onclick="filterProducts('مردانه')"><div class="category-icon">👔</div><h3 class="category-name">مردانه</h3><p class="category-desc">محصولات مردانه</p></a>
+            </div>
+        </div>
+    </section>
+
+    <section id="gifts" class="section section-dark">
+        <div class="container">
+            <h2 class="section-title">🎯 انتخاب مناسب‌ترین هدیه</h2>
+            <p class="section-subtitle">بر اساس بودجه خود، بهترین هدیه را پیدا کنید</p>
+            <div class="gift-grid">
+                <div class="gift-card" onclick="filterByPrice(3, 10)"><div class="gift-badge">۳ تا ۱۰ میلیون</div><div class="gift-icon">🎁</div><h3 class="gift-title">هدیه اقتصادی</h3><p class="gift-desc">انگشتر، گوشواره، پلاک</p><div class="gift-range"><span>۳,۰۰۰,۰۰۰</span><span>تا</span><span>۱۰,۰۰۰,۰۰۰ تومان</span></div></div>
+                <div class="gift-card gift-card-featured" onclick="filterByPrice(10, 20)"><div class="gift-badge">۱۰ تا ۲۰ میلیون</div><div class="gift-icon">💎</div><h3 class="gift-title">هدیه ویژه</h3><p class="gift-desc">انگشتر، دستبند، گردنبند</p><div class="gift-range"><span>۱۰,۰۰۰,۰۰۰</span><span>تا</span><span>۲۰,۰۰۰,۰۰۰ تومان</span></div></div>
+                <div class="gift-card" onclick="filterByPrice(20, 30)"><div class="gift-badge">۲۰ تا ۳۰ میلیون</div><div class="gift-icon">👑</div><h3 class="gift-title">هدیه لاکچری</h3><p class="gift-desc">ست‌های طلا، النگو، گردنبند</p><div class="gift-range"><span>۲۰,۰۰۰,۰۰۰</span><span>تا</span><span>۳۰,۰۰۰,۰۰۰ تومان</span></div></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="products" class="section">
+        <div class="container">
+            <div class="products-header">
+                <h2 class="section-title" id="products-title">محصولات</h2>
+                <button class="btn btn-outline" onclick="filterProducts('all')">نمایش همه</button>
+            </div>
+            <div class="products-grid" id="products-grid"></div>
+        </div>
+    </section>
+
+    <section class="section section-cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">🤖 با ربات تلگرام ما خرید کنید</h2>
+                <p class="cta-desc">قیمت لحظه‌ای طلا، محاسبه هزینه، و مشاوره خرید</p>
+                <a href="https://t.me/Wareshgoldbot" class="btn btn-primary btn-large" target="_blank">شروع در تلگرام</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand"><span class="logo-icon">🟡</span><span class="logo-text">وارش گلد</span><p class="footer-desc">دستیار هوشمند طلا و جواهر</p></div>
+                <div class="footer-links">
+                    <a href="https://t.me/Wareshgoldbot" target="_blank">🤖 ربات تلگرام</a>
+                    <a href="https://t.me/wareshgold" target="_blank">📢 کانال</a>
+                    <a href="https://wareshgold.ir" target="_blank">🌐 وب‌سایت</a>
+                </div>
+            </div>
+            <div class="footer-bottom"><p>© ۱۴۰۵ وارش گلد. تمامی حقوق محفوظ است.</p></div>
+        </div>
+    </footer>
+    <script src="products.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

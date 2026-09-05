@@ -18,7 +18,6 @@ export class StrategyAValidator {
         higherTimeframeBias?: "BUY" | "SELL" | "NEUTRAL";
     }): ValidationResult {
         if (!input.spike) return { valid: false, reason: "Spike معتبر یافت نشد", confidence: 0 };
-        if (input.spike.gapSize <= 0) return { valid: false, reason: "P-Gap در Spike وجود ندارد", confidence: 0 };
         if (!input.twoLeg) return { valid: false, reason: "اصلاح 2Leg کامل نشده است", confidence: 0 };
         if (!input.level || !input.level.confirmation) return { valid: false, reason: "Level ورود تایید نشده است", confidence: 0 };
         if (!input.risk) return { valid: false, reason: "Risk plan نامعتبر است", confidence: 0 };
@@ -45,7 +44,7 @@ export class StrategyAValidator {
 
         return {
             valid: true,
-            reason: `Setup StrategyA معتبر: Spike ${input.spike.direction} + 2Leg + Level`,
+            reason: `Setup StrategyA معتبر: Spike ${input.spike.direction} + 2Leg + Entry`,
             confidence
         };
     }
