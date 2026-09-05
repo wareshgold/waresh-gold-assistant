@@ -16,18 +16,13 @@ function setupHeroSlogan(hero: HTMLElement, reduceMotion: boolean): () => void {
   const heading = hero.querySelector<HTMLElement>("h1");
   if (!heading) return () => undefined;
 
-  const originalNodes = Array.from(heading.childNodes);
-  originalNodes.forEach((node) => {
-    if (node.nodeType === Node.TEXT_NODE || node.nodeType === Node.ELEMENT_NODE) {
-      (node as HTMLElement).classList?.add("waresh-hero-slogan-original");
-    }
-  });
-
+  const originalHtml = heading.innerHTML;
   const rotator = document.createElement("span");
   rotator.className = "waresh-hero-slogan-rotator";
   rotator.setAttribute("aria-live", "polite");
   rotator.textContent = HERO_SLOGANS[0];
-  heading.appendChild(rotator);
+
+  heading.replaceChildren(rotator);
 
   let timerId: number | undefined;
   let index = 0;
@@ -58,11 +53,7 @@ function setupHeroSlogan(hero: HTMLElement, reduceMotion: boolean): () => void {
   return () => {
     stopped = true;
     if (timerId !== undefined) window.clearInterval(timerId);
-    rotator.remove();
-    originalNodes.forEach((node) => {
-      if (node.nodeType === Node.TEXT_NODE) return;
-      (node as HTMLElement).classList?.remove("waresh-hero-slogan-original");
-    });
+    heading.innerHTML = originalHtml;
   };
 }
 
