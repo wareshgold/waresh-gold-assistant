@@ -43,15 +43,10 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
   const [pricing, setPricing] = useState<PricingState>(null);
 
   useEffect(() => {
-    if (!liveGoldPrice || liveGoldPrice <= 0) {
-      return;
-    }
-
+    if (!liveGoldPrice || liveGoldPrice <= 0) return;
     let cancelled = false;
-
     void calculateProductPrices(PRODUCTS, liveGoldPrice).then((prices) => {
       if (cancelled) return;
-
       setPricing({
         goldPrice: liveGoldPrice,
         products: Object.fromEntries(
@@ -59,10 +54,7 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
         ),
       });
     });
-
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [liveGoldPrice]);
 
   useEffect(() => {
@@ -70,29 +62,23 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
       const value = new URLSearchParams(window.location.search).get("price") ?? "all";
       setPriceBand(value);
     };
-
     const handleGiftRangeClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement | null;
       const link = target?.closest<HTMLAnchorElement>('a[href="#products"]');
       if (!link) return;
-
       const range = Object.keys(giftPriceBands).find((item) => link.textContent?.includes(item));
       if (!range) return;
-
       event.preventDefault();
       const value = giftPriceBands[range];
       setPriceBand(value);
-
       const url = new URL(window.location.href);
       url.searchParams.set("price", value);
       window.history.replaceState(null, "", `${url.pathname}${url.search}#products`);
       document.getElementById("products")?.scrollIntoView({ behavior: "smooth", block: "start" });
     };
-
     syncFromUrl();
     document.addEventListener("click", handleGiftRangeClick);
     window.addEventListener("popstate", syncFromUrl);
-
     return () => {
       document.removeEventListener("click", handleGiftRangeClick);
       window.removeEventListener("popstate", syncFromUrl);
@@ -102,17 +88,10 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
   const products = useMemo(() => {
     const band = priceBands.find((item) => item.value === priceBand);
     const hasPricing = liveGoldPrice !== undefined && liveGoldPrice > 0;
-    const currentPricing: Record<number, ProductPricing> =
-      pricing && pricing.goldPrice === liveGoldPrice ? pricing.products : {};
-
-    return PRODUCTS.map((product) => ({
-      product,
-      pricing: currentPricing[product.id] ?? null,
-    })).filter(({ product, pricing: productPricing }) => {
+    const currentPricing: Record<number, ProductPricing> = pricing && pricing.goldPrice === liveGoldPrice ? pricing.products : {};
+    return PRODUCTS.map((product) => ({ product, pricing: currentPricing[product.id] ?? null })).filter(({ product, pricing: productPricing }) => {
       const categoryMatch = category === "all" || product.category === category;
-      const priceMatch = !band || !hasPricing || !productPricing || (
-        productPricing.finalPrice >= band.min && productPricing.finalPrice <= band.max
-      );
+      const priceMatch = !band || !hasPricing || !productPricing || (productPricing.finalPrice >= band.min && productPricing.finalPrice <= band.max);
       return categoryMatch && priceMatch;
     });
   }, [category, priceBand, pricing, liveGoldPrice]);
@@ -150,11 +129,7 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
               <option value="all">بازه قیمت</option>
               {priceBands.map((band) => <option key={band.value} value={band.value}>{band.label}</option>)}
             </select>
-            {activeFilterCount > 0 && (
-              <button type="button" onClick={clearFilters} className="min-h-11 whitespace-nowrap rounded-full px-3 text-xs font-bold text-[#92713e] transition hover:bg-[#f2eadb] hover:text-[#6e522b]">
-                پاک کردن فیلترها
-              </button>
-            )}
+            {activeFilterCount > 0 && <button type="button" onClick={clearFilters} className="min-h-11 whitespace-nowrap rounded-full px-3 text-xs font-bold text-[#92713e] transition hover:bg-[#f2eadb] hover:text-[#6e522b]">پاک کردن فیلترها</button>}
           </div>
         </div>
       </div>
@@ -176,7 +151,7 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
               <div className="relative h-56 overflow-hidden bg-[#eee8dc] sm:h-64">
                 <img src={product.image} alt={product.name} loading="lazy" referrerPolicy="no-referrer" className="h-full w-full object-cover object-center transition duration-700 ease-out group-hover:scale-[1.045]" />
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,30,24,0.02)_45%,rgba(20,30,24,0.18)_100%)]" />
-                <span className="absolute right-4 top-4 rounded-full border border-white/70 bg-white/70 px-3 py-1.5 text-[11px] font-bold text-[#746a5d] shadow-sm backdrop-blur sm:right-5 sm:top-5">{product.subcategory ?? product.category}</span>
+                <span className="absolute right-4 top-4 rounded-full border border-white/70 bg-white/70 px-3 py-1.5 text-[11px] font-bold text-[#746a5d] shadow-sm backdrop-blur sm:right-5 sm:top-5">{product.subcategory ?? (product.category === "کم-اجرت" ? "اقتصادی" : product.category)}</span>
               </div>
               <div className="p-5 sm:p-6">
                 <p className="text-xs font-semibold tracking-[0.12em] text-[#a17c45]">{product.category === "کم-اجرت" ? "اقتصادی" : product.category}</p>
@@ -189,9 +164,7 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
                   </div>
                   {productPricing && <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#8b8b82]"><span>اجرت {product.laborPercent}٪</span><span>سود {product.profitPercent}٪</span>{product.taxPercent > 0 && <span>مالیات {product.taxPercent}٪</span>}</div>}
                 </div>
-                <a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer" className="mt-5 flex min-h-11 w-full items-center justify-center rounded-full border border-[#d9c69f] bg-[#fbf6ea] px-4 py-3 text-sm font-bold text-[#7e6030] transition hover:-translate-y-0.5 hover:bg-[#f5ecd9]">
-                  مشاوره و سفارش
-                </a>
+                <a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer" className="mt-5 flex min-h-11 w-full items-center justify-center rounded-full border border-[#d9c69f] bg-[#fbf6ea] px-4 py-3 text-sm font-bold text-[#7e6030] transition hover:-translate-y-0.5 hover:bg-[#f5ecd9]">مشاوره و سفارش</a>
               </div>
             </article>
           ))}
