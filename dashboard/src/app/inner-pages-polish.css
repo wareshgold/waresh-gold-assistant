@@ -1,14 +1,14 @@
 /* Shared premium treatment for Website V2 inner pages. */
 
-.waresh-site .waresh-tools-hero,
-.waresh-site .waresh-about-hero {
+.waresh-tools-hero,
+.waresh-about-hero {
   position: relative;
   isolation: isolate;
   overflow: hidden;
 }
 
-.waresh-site .waresh-tools-hero::after,
-.waresh-site .waresh-about-hero::after {
+.waresh-tools-hero::after,
+.waresh-about-hero::after {
   content: "";
   position: absolute;
   inset-inline: 0;
@@ -18,43 +18,43 @@
   pointer-events: none;
 }
 
-.waresh-site .waresh-tools-hero > .absolute:first-child,
-.waresh-site .waresh-about-hero .waresh-container > div:last-child {
+.waresh-tools-hero > .absolute:first-child,
+.waresh-about-hero .waresh-container > div:last-child {
   filter: saturate(0.86) contrast(1.04);
 }
 
-.waresh-site main > nav[aria-label*="دسترسی سریع"] {
+main > nav[aria-label*="دسترسی سریع"] {
   box-shadow: 0 8px 24px rgba(38, 59, 49, 0.05);
 }
 
-.waresh-site main > nav[aria-label*="دسترسی سریع"] a {
+main > nav[aria-label*="دسترسی سریع"] a {
   transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
 }
 
-.waresh-site main > nav[aria-label*="دسترسی سریع"] a:hover {
+main > nav[aria-label*="دسترسی سریع"] a:hover {
   transform: translateY(-1px);
   box-shadow: 0 8px 18px rgba(38, 59, 49, 0.06);
 }
 
-.waresh-site main > section[id="prices"] .grid > div,
-.waresh-site main > section[id="view"] .waresh-container > div:first-child {
+main > section[id="prices"] .grid > div,
+main > section[id="view"] .waresh-container > div:first-child {
   transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
 }
 
-.waresh-site main > section[id="prices"] .grid > div:hover,
-.waresh-site main > section[id="view"] .waresh-container > div:first-child:hover {
+main > section[id="prices"] .grid > div:hover,
+main > section[id="view"] .waresh-container > div:first-child:hover {
   transform: translateY(-3px);
   box-shadow: 0 20px 46px rgba(48, 62, 51, 0.09);
 }
 
-.waresh-site main > section[id="calculator"] > .waresh-container > div:last-child,
-.waresh-site main > section[id="bubble"] .waresh-container > div:last-child {
+main > section[id="calculator"] > .waresh-container > div:last-child,
+main > section[id="bubble"] .waresh-container > div:last-child {
   position: relative;
   overflow: hidden;
 }
 
-.waresh-site main > section[id="calculator"] > .waresh-container > div:last-child::before,
-.waresh-site main > section[id="bubble"] .waresh-container > div:last-child::before {
+main > section[id="calculator"] > .waresh-container > div:last-child::before,
+main > section[id="bubble"] .waresh-container > div:last-child::before {
   content: "";
   position: absolute;
   top: 0;
@@ -65,22 +65,22 @@
   pointer-events: none;
 }
 
-.waresh-site .waresh-about-hero h1,
-.waresh-site .waresh-tools-hero h1 {
+.waresh-about-hero h1,
+.waresh-tools-hero h1 {
   letter-spacing: -0.035em;
 }
 
-.waresh-site .waresh-about-hero .waresh-container > div:last-child {
+.waresh-about-hero .waresh-container > div:last-child {
   box-shadow: 0 35px 90px rgba(0, 0, 0, 0.2);
 }
 
-.waresh-site main > section[id="next"] {
+main > section[id="next"] {
   position: relative;
   isolation: isolate;
   overflow: hidden;
 }
 
-.waresh-site main > section[id="next"]::before {
+main > section[id="next"]::before {
   content: "";
   position: absolute;
   top: 0;
@@ -89,59 +89,60 @@
   height: 1px;
   transform: translateX(-50%);
   background: linear-gradient(90deg, transparent, rgba(178, 139, 76, 0.32), transparent);
+  pointer-events: none;
 }
 
-.waresh-site main > section[id="next"] .waresh-container {
+main > section[id="next"] .waresh-container {
   position: relative;
   z-index: 1;
 }
 
-.waresh-site main > section[id="next"] a {
+main > section[id="next"] a {
   box-shadow: 0 10px 24px rgba(48, 57, 49, 0.06);
   transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
 }
 
-.waresh-site main > section[id="next"] a:hover {
+main > section[id="next"] a:hover {
   transform: translateY(-2px);
   box-shadow: 0 14px 30px rgba(48, 57, 49, 0.1);
 }
 
 @media (max-width: 640px) {
-  .waresh-site .waresh-tools-hero,
-  .waresh-site .waresh-about-hero {
+  .waresh-tools-hero,
+  .waresh-about-hero {
     padding-block: 72px !important;
   }
 
-  .waresh-site .waresh-tools-hero h1,
-  .waresh-site .waresh-about-hero h1 {
+  .waresh-tools-hero h1,
+  .waresh-about-hero h1 {
     font-size: clamp(2.6rem, 12.5vw, 3.7rem) !important;
     line-height: 1.45 !important;
   }
 
-  .waresh-site main > nav[aria-label*="دسترسی سریع"] > .waresh-container {
+  main > nav[aria-label*="دسترسی سریع"] > .waresh-container {
     padding-block: 10px;
   }
 
-  .waresh-site main > section[id="prices"],
-  .waresh-site main > section[id="calculator"],
-  .waresh-site main > section[id="bubble"],
-  .waresh-site main > section[id="view"] {
+  main > section[id="prices"],
+  main > section[id="calculator"],
+  main > section[id="bubble"],
+  main > section[id="view"] {
     scroll-margin-top: 118px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .waresh-site main > nav[aria-label*="دسترسی سریع"] a,
-  .waresh-site main > section[id="prices"] .grid > div,
-  .waresh-site main > section[id="view"] .waresh-container > div:first-child,
-  .waresh-site main > section[id="next"] a {
+  main > nav[aria-label*="دسترسی سریع"] a,
+  main > section[id="prices"] .grid > div,
+  main > section[id="view"] .waresh-container > div:first-child,
+  main > section[id="next"] a {
     transition: none !important;
   }
 
-  .waresh-site main > nav[aria-label*="دسترسی سریع"] a:hover,
-  .waresh-site main > section[id="prices"] .grid > div:hover,
-  .waresh-site main > section[id="view"] .waresh-container > div:first-child:hover,
-  .waresh-site main > section[id="next"] a:hover {
+  main > nav[aria-label*="دسترسی سریع"] a:hover,
+  main > section[id="prices"] .grid > div:hover,
+  main > section[id="view"] .waresh-container > div:first-child:hover,
+  main > section[id="next"] a:hover {
     transform: none !important;
   }
 }
