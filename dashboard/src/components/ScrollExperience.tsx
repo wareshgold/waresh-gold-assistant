@@ -61,85 +61,64 @@ function setupHeroRain(hero: HTMLElement): () => void {
   const rain = hero.querySelector<HTMLElement>(".waresh-rain");
   if (!rain) return () => undefined;
 
-  // The old `.waresh-rain` selector also owns a legacy CSS pseudo-rain layer.
-  // Remove that class before creating the runtime rain so there can only be
-  // one rain system on the hero. This prevents the old diagonal/faster patch
-  // from rendering underneath the new uniform rain animation.
   rain.classList.remove("waresh-rain");
   rain.classList.add("waresh-rain-runtime");
 
   rain.querySelectorAll(".waresh-rain-drop").forEach((drop) => drop.remove());
 
-  const drops: Array<{
-    element: HTMLSpanElement;
-    x: number;
-    y: number;
-    speed: number;
-    drift: number;
-    length: number;
-    opacity: number;
-  }> = [];
-
   const isMobile = window.innerWidth <= 640;
-  const count = isMobile ? 30 : 58;
-  const width = Math.max(hero.clientWidth, window.innerWidth, 320);
-  const height = Math.max(hero.clientHeight, window.innerHeight, 620);
+  const count = isMobile ? 34 : 72;
+  const width = Math.max(rain.clientWidth, window.innerWidth, 320);
+  const height = Math.max(rain.clientHeight, window.innerHeight, 620);
+
+  const drops: HTMLSpanElement[] = [];
 
   for (let i = 0; i < count; i += 1) {
-    const element = document.createElement("span");
-    element.className = "waresh-rain-drop";
+    const drop = document.createElement("span");
+    drop.className = "waresh-rain-drop";
 
-    const drop = {
-      element,
-      x: ((i * 137.7) % (width + 160)) - 80,
-      y: ((i * 83.4) % (height + 240)) - 240,
-      speed: isMobile ? 155 + ((i * 29) % 85) : 260 + ((i * 47) % 180),
-      drift: isMobile ? 14 + ((i * 9) % 16) : 26 + ((i * 13) % 32),
-      length: isMobile ? 34 + ((i * 17) % 26) : 42 + ((i * 19) % 34),
-      opacity: isMobile ? 0.18 + ((i * 7) % 20) / 100 : 0.22 + ((i * 7) % 28) / 100,
-    };
+    const x = ((i * 83.17 + 31) % (width + 180)) - 90;
+    const y = ((i * 137.31 + 47) % (height + 220)) - 220;
+    const duration = isMobile ? 2.9 + ((i * 17) % 22) / 10 : 2.6 + ((i * 23) % 28) / 10;
+    const delay = -(((i * 41) % 57) / 10);
+    const drift = isMobile ? 3 + ((i * 11) % 8) : 5 + ((i * 13) % 14);
+    const length = isMobile ? 34 + ((i * 19) % 25) : 42 + ((i * 29) % 34);
+    const opacity = isMobile ? 0.16 + ((i * 7) % 18) / 100 : 0.18 + ((i * 11) % 25) / 100;
 
-    element.style.height = `${drop.length}px`;
-    element.style.opacity = `${drop.opacity}`;
-    element.style.animation = "none";
-    rain.appendChild(element);
+    drop.style.left = `${x}px`;
+    drop.style.top = `${y}px`;
+    drop.style.height = `${length}px`;
+    drop.style.opacity = `${opacity}`;
+    drop.style.setProperty("--waresh-hero-rain-drift", `${drift}px`);
+    drop.style.setProperty("--waresh-hero-rain-duration", `${duration}s`);
+    drop.style.setProperty("--waresh-hero-rain-delay", `${delay}s`);
+    drop.style.animation = "waresh-hero-rain-fall var(--waresh-hero-rain-duration) linear var(--waresh-hero-rain-delay) infinite";
+
+    rain.appendChild(drop);
     drops.push(drop);
   }
 
-  let frameId = 0;
-  let previousTime = performance.now();
-  let active = true;
+  let resizeTimer: number | undefined;
 
-  const animate = (time: number) => {
-    if (!active) return;
-
-    const deltaSeconds = Math.min((time - previousTime) / 1000, 0.05);
-    previousTime = time;
-
-    drops.forEach((drop) => {
-      drop.y += drop.speed * deltaSeconds;
-      drop.x += drop.drift * deltaSeconds;
-
-      if (drop.y > height + 180 || drop.x > width + 120) {
-        drop.y = -drop.length - 80;
-        drop.x = ((drop.x * 0.37 + 97) % (width + 160)) - 80;
-      }
-
-      drop.element.style.transform = `translate3d(${drop.x}px, ${drop.y}px, 0) rotate(9deg)`;
+  const refresh = () => {
+    const nextWidth = Math.max(rain.clientWidth, window.innerWidth, 320);
+    drops.forEach((drop, index) => {
+      const x = ((index * 83.17 + 31) % (nextWidth + 180)) - 90;
+      drop.style.left = `${x}px`;
     });
-
-    frameId = window.requestAnimationFrame(animate);
   };
 
-  // Rain is intentionally independent from prefers-reduced-motion here.
-  // The homepage rain is a core atmospheric visual and must remain animated
-  // on mobile; reduced-motion still controls the slogan transition below.
-  frameId = window.requestAnimationFrame(animate);
+  const onResize = () => {
+    if (resizeTimer !== undefined) window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(refresh, 120);
+  };
+
+  window.addEventListener("resize", onResize, { passive: true });
 
   return () => {
-    active = false;
-    window.cancelAnimationFrame(frameId);
-    drops.forEach((drop) => drop.element.remove());
+    if (resizeTimer !== undefined) window.clearTimeout(resizeTimer);
+    window.removeEventListener("resize", onResize);
+    drops.forEach((drop) => drop.remove());
     rain.classList.remove("waresh-rain-runtime");
     rain.classList.add("waresh-rain");
   };
