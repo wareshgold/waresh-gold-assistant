@@ -1,5 +1,5 @@
 export type ProductCategory =
-  | "کم-اجرت"
+  | "اقتصادی"
   | "انگشتر"
   | "آویز"
   | "النگو"
@@ -54,9 +54,9 @@ const IMAGE = {
 } as const;
 
 export const PRODUCTS: Product[] = [
-  { id: 1, name: "انگشتر ساده مخصوص هدیه", category: "کم-اجرت", subcategory: "انگشتر", weight: 1.2, laborPercent: 3, profitPercent: 7, taxPercent: 0, icon: "◌", image: IMAGE.ringSimple, description: "انگشتر ساده و ظریف، انتخابی مناسب برای هدیه", shippingNote: SHIPPING_NOTE },
-  { id: 2, name: "گوشواره میخی مخصوص هدیه", category: "کم-اجرت", subcategory: "گوشواره", weight: 0.8, laborPercent: 4, profitPercent: 7, taxPercent: 0, icon: "◐", image: IMAGE.earringsHoop, description: "گوشواره میخی ساده و ظریف، مناسب هدیه", shippingNote: SHIPPING_NOTE },
-  { id: 3, name: "پلاک کوچک مخصوص هدیه", category: "کم-اجرت", subcategory: "آویز", weight: 0.5, laborPercent: 5, profitPercent: 7, taxPercent: 0, icon: "✦", image: IMAGE.pendantSet, description: "پلاک کوچک و ظریف، انتخابی مناسب برای هدیه", shippingNote: SHIPPING_NOTE },
+  { id: 1, name: "انگشتر ساده مخصوص هدیه", category: "اقتصادی", subcategory: "انگشتر", weight: 1.2, laborPercent: 3, profitPercent: 7, taxPercent: 0, icon: "◌", image: IMAGE.ringSimple, description: "انگشتر ساده و ظریف، انتخابی مناسب برای هدیه", shippingNote: SHIPPING_NOTE },
+  { id: 2, name: "گوشواره میخی مخصوص هدیه", category: "اقتصادی", subcategory: "گوشواره", weight: 0.8, laborPercent: 4, profitPercent: 7, taxPercent: 0, icon: "◐", image: IMAGE.earringsHoop, description: "گوشواره میخی ساده و ظریف، مناسب هدیه", shippingNote: SHIPPING_NOTE },
+  { id: 3, name: "پلاک کوچک مخصوص هدیه", category: "اقتصادی", subcategory: "آویز", weight: 0.5, laborPercent: 5, profitPercent: 7, taxPercent: 0, icon: "✦", image: IMAGE.pendantSet, description: "پلاک کوچک و ظریف، انتخابی مناسب برای هدیه", shippingNote: SHIPPING_NOTE },
   { id: 4, name: "انگشتر نگین‌دار", category: "انگشتر", weight: 2.5, laborPercent: 6, profitPercent: 7, taxPercent: 0, icon: "◈", image: IMAGE.ringStone, description: "انگشتر با نگین درخشان", shippingNote: SHIPPING_NOTE },
   { id: 5, name: "انگشتر حلقه‌ای", category: "انگشتر", weight: 1.8, laborPercent: 5, profitPercent: 7, taxPercent: 0, icon: "○", image: IMAGE.ringPebbles, description: "انگشتر حلقه‌ای مینیمال", shippingNote: SHIPPING_NOTE },
   { id: 6, name: "انگشتر مردانه", category: "مردانه", weight: 4.2, laborPercent: 7, profitPercent: 7, taxPercent: 0, icon: "◉", image: IMAGE.menRing, description: "انگشتر مردانه شیک", shippingNote: SHIPPING_NOTE },
@@ -72,14 +72,14 @@ export const PRODUCTS: Product[] = [
   { id: 16, name: "دستبند النگویی", category: "دستبند", weight: 8.2, laborPercent: 7, profitPercent: 7, taxPercent: 0, icon: "◎", image: IMAGE.braceletSoft, description: "دستبند النگویی شیک", shippingNote: SHIPPING_NOTE },
   { id: 17, name: "انگشتر مردانه ساده", category: "مردانه", weight: 5.8, laborPercent: 5, profitPercent: 7, taxPercent: 0, icon: "◉", image: IMAGE.ringMinimal, description: "انگشتر مردانه ساده و شیک", shippingNote: SHIPPING_NOTE },
   { id: 18, name: "زنجیر مردانه", category: "مردانه", weight: 12.5, laborPercent: 10, profitPercent: 7, taxPercent: 0, icon: "⌁", image: IMAGE.menChain, description: "زنجیر مردانه ضخیم", shippingNote: SHIPPING_NOTE },
-  { id: 19, name: "دستبند چرم مشکی مخصوص هدیه", category: "کم-اجرت", subcategory: "دستبند", weight: 0.24, laborPercent: 2, profitPercent: 7, taxPercent: 0, icon: "◍", image: IMAGE.leatherGoldBlack, description: "دستبند چرم مشکی با قطعه طلای ظریف؛ انتخابی سبک برای هدیه", shippingNote: SHIPPING_NOTE },
-  { id: 20, name: "دستبند چرم قهوه‌ای مخصوص هدیه", category: "کم-اجرت", subcategory: "دستبند", weight: 0.28, laborPercent: 2, profitPercent: 7, taxPercent: 0, icon: "◍", image: IMAGE.leatherGoldBrown, description: "ترکیب چرم قهوه‌ای و طلای ظریف با ظاهر مردانه و مینیمال", shippingNote: SHIPPING_NOTE },
-  { id: 21, name: "دستبند چرم مینیمال مخصوص هدیه", category: "کم-اجرت", subcategory: "دستبند", weight: 0.32, laborPercent: 3, profitPercent: 7, taxPercent: 0, icon: "◍", image: IMAGE.leatherGoldMinimal, description: "دستبند چرم و طلا با طراحی ساده برای استفاده روزمره", shippingNote: SHIPPING_NOTE },
-  { id: 22, name: "دستبند چرم باریک مخصوص هدیه", category: "کم-اجرت", subcategory: "دستبند", weight: 0.35, laborPercent: 3, profitPercent: 7, taxPercent: 0, icon: "◍", image: IMAGE.leatherGoldSlim, description: "مدل باریک و سبک چرم و طلا برای یک هدیه جمع‌وجور", shippingNote: SHIPPING_NOTE },
+  { id: 19, name: "دستبند چرم مشکی مخصوص هدیه", category: "اقتصادی", subcategory: "دستبند", weight: 0.24, laborPercent: 2, profitPercent: 7, taxPercent: 0, icon: "◍", image: IMAGE.leatherGoldBlack, description: "دستبند چرم مشکی با قطعه طلای ظریف؛ انتخابی سبک برای هدیه", shippingNote: SHIPPING_NOTE },
+  { id: 20, name: "دستبند چرم قهوه‌ای مخصوص هدیه", category: "اقتصادی", subcategory: "دستبند", weight: 0.28, laborPercent: 2, profitPercent: 7, taxPercent: 0, icon: "◍", image: IMAGE.leatherGoldBrown, description: "ترکیب چرم قهوه‌ای و طلای ظریف با ظاهر مردانه و مینیمال", shippingNote: SHIPPING_NOTE },
+  { id: 21, name: "دستبند چرم مینیمال مخصوص هدیه", category: "اقتصادی", subcategory: "دستبند", weight: 0.32, laborPercent: 3, profitPercent: 7, taxPercent: 0, icon: "◍", image: IMAGE.leatherGoldMinimal, description: "دستبند چرم و طلا با طراحی ساده برای استفاده روزمره", shippingNote: SHIPPING_NOTE },
+  { id: 22, name: "دستبند چرم باریک مخصوص هدیه", category: "اقتصادی", subcategory: "دستبند", weight: 0.35, laborPercent: 3, profitPercent: 7, taxPercent: 0, icon: "◍", image: IMAGE.leatherGoldSlim, description: "مدل باریک و سبک چرم و طلا برای یک هدیه جمع‌وجور", shippingNote: SHIPPING_NOTE },
 ];
 
 export const PRODUCT_CATEGORIES: Array<{ value: ProductCategory; label: string }> = [
-  { value: "کم-اجرت", label: "مخصوص هدیه" },
+  { value: "اقتصادی", label: "اقتصادی" },
   { value: "انگشتر", label: "انگشتر" },
   { value: "آویز", label: "آویز" },
   { value: "النگو", label: "النگو" },
