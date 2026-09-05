@@ -4,6 +4,154 @@ import { useEffect, type ReactNode } from "react";
 
 type ScrollExperienceProps = { children: ReactNode };
 
+const HERO_SLOGANS = [
+  "طلا را فقط برای امروز نخر.",
+  "زیبایی، وقتی ماندگار می‌شود که ارزشمند باشد.",
+  "طلا، انتخابی برای امروز و ارزشی برای فردا.",
+  "ظرافتی که دیده می‌شود، ارزشی که می‌ماند.",
+  "وارش گلد؛ جایی میان زیبایی و ارزش.",
+];
+
+function setupHeroSlogan(hero: HTMLElement, reduceMotion: boolean): () => void {
+  const heading = hero.querySelector<HTMLElement>("h1");
+  if (!heading) return () => undefined;
+
+  const originalNodes = Array.from(heading.childNodes);
+  originalNodes.forEach((node) => {
+    if (node.nodeType === Node.TEXT_NODE || node.nodeType === Node.ELEMENT_NODE) {
+      (node as HTMLElement).classList?.add("waresh-hero-slogan-original");
+    }
+  });
+
+  const rotator = document.createElement("span");
+  rotator.className = "waresh-hero-slogan-rotator";
+  rotator.setAttribute("aria-live", "polite");
+  rotator.textContent = HERO_SLOGANS[0];
+  heading.appendChild(rotator);
+
+  let timerId: number | undefined;
+  let index = 0;
+  let stopped = false;
+
+  const showNext = () => {
+    if (stopped) return;
+
+    index = (index + 1) % HERO_SLOGANS.length;
+
+    if (reduceMotion) {
+      rotator.textContent = HERO_SLOGANS[index];
+      return;
+    }
+
+    rotator.classList.add("is-changing");
+    window.setTimeout(() => {
+      if (stopped) return;
+      rotator.textContent = HERO_SLOGANS[index];
+      rotator.classList.remove("is-changing");
+    }, 420);
+  };
+
+  if (!reduceMotion) {
+    timerId = window.setInterval(showNext, 6000);
+  }
+
+  return () => {
+    stopped = true;
+    if (timerId !== undefined) window.clearInterval(timerId);
+    rotator.remove();
+    originalNodes.forEach((node) => {
+      if (node.nodeType === Node.TEXT_NODE) return;
+      (node as HTMLElement).classList?.remove("waresh-hero-slogan-original");
+    });
+  };
+}
+
+function setupHeroRain(hero: HTMLElement, reduceMotion: boolean): () => void {
+  const rain = hero.querySelector<HTMLElement>(".waresh-rain");
+  if (!rain) return () => undefined;
+
+  rain.querySelectorAll(".waresh-rain-drop").forEach((drop) => drop.remove());
+
+  const drops: Array<{
+    element: HTMLSpanElement;
+    x: number;
+    y: number;
+    speed: number;
+    drift: number;
+    length: number;
+    opacity: number;
+  }> = [];
+
+  const count = window.innerWidth <= 640 ? 34 : 58;
+  const width = Math.max(hero.clientWidth, window.innerWidth, 320);
+  const height = Math.max(hero.clientHeight, window.innerHeight, 620);
+
+  for (let i = 0; i < count; i += 1) {
+    const element = document.createElement("span");
+    element.className = "waresh-rain-drop";
+
+    const drop = {
+      element,
+      x: ((i * 137.7) % (width + 160)) - 80,
+      y: ((i * 83.4) % (height + 240)) - 240,
+      speed: 260 + ((i * 47) % 180),
+      drift: 26 + ((i * 13) % 32),
+      length: 42 + ((i * 19) % 34),
+      opacity: 0.22 + ((i * 7) % 28) / 100,
+    };
+
+    element.style.height = `${drop.length}px`;
+    element.style.opacity = `${drop.opacity}`;
+    element.style.animation = "none";
+    rain.appendChild(element);
+    drops.push(drop);
+  }
+
+  if (reduceMotion) {
+    drops.forEach((drop) => {
+      drop.element.style.transform = `translate3d(${drop.x}px, ${drop.y + 220}px, 0) rotate(9deg)`;
+    });
+    return () => {
+      drops.forEach((drop) => drop.element.remove());
+    };
+  }
+
+  let frameId = 0;
+  let previousTime = performance.now();
+  let active = true;
+
+  const animate = (time: number) => {
+    if (!active) return;
+
+    const deltaSeconds = Math.min((time - previousTime) / 1000, 0.05);
+    previousTime = time;
+
+    drops.forEach((drop) => {
+      drop.y += drop.speed * deltaSeconds;
+      drop.x += drop.drift * deltaSeconds;
+
+      if (drop.y > height + 180 || drop.x > width + 120) {
+        drop.y = -drop.length - 80;
+        drop.x = ((drop.x * 0.37 + 97) % (width + 160)) - 80;
+      }
+
+      drop.element.style.transform = `translate3d(${drop.x}px, ${drop.y}px, 0) rotate(9deg)`;
+    });
+
+    frameId = window.requestAnimationFrame(animate);
+  };
+
+  frameId = window.requestAnimationFrame(animate);
+
+  return () => {
+    active = false;
+    window.cancelAnimationFrame(frameId);
+    drops.forEach((drop) => drop.element.remove());
+  };
+}
+
+type Cleanup = () => void;
+
 export default function ScrollExperience({ children }: ScrollExperienceProps) {
   useEffect(() => {
     const root = document.documentElement;
@@ -27,9 +175,16 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
     const animatedReveals = reveals.filter((element) => !hero?.contains(element));
     const animatedParallaxItems = parallaxItems.filter((element) => !hero?.contains(element));
 
+    const heroCleanups: Cleanup[] = [];
+    if (hero) {
+      heroCleanups.push(setupHeroSlogan(hero, reduceMotion));
+      heroCleanups.push(setupHeroRain(hero, reduceMotion));
+    }
+
     if (reduceMotion) {
       reveals.forEach((element) => element.classList.add("is-visible"));
       return () => {
+        heroCleanups.forEach((cleanup) => cleanup());
         root.style.scrollSnapType = previousSnapType;
         root.style.scrollPaddingTop = previousSnapPadding;
       };
@@ -74,6 +229,7 @@ export default function ScrollExperience({ children }: ScrollExperienceProps) {
     window.addEventListener("resize", onScroll);
 
     return () => {
+      heroCleanups.forEach((cleanup) => cleanup());
       revealObserver.disconnect();
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
