@@ -4,13 +4,32 @@ import { useEffect, useRef, useState } from "react";
 
 const DROP_COUNT = 46;
 
-function createNoiseBuffer(context: AudioContext) {
-  const length = context.sampleRate * 2;
-  const buffer = context.createBuffer(1, length, context.sampleRate);
-  const data = buffer.getChannelData(0);
+function createRainBuffer(context: AudioContext) {
+  const duration = 8;
+  const length = Math.floor(context.sampleRate * duration);
+  const buffer = context.createBuffer(2, length, context.sampleRate);
 
-  for (let index = 0; index < length; index += 1) {
-    data[index] = (Math.random() * 2 - 1) * 0.32;
+  for (let channel = 0; channel < buffer.numberOfChannels; channel += 1) {
+    const data = buffer.getChannelData(channel);
+
+    for (let index = 0; index < length; index += 1) {
+      data[index] = 0;
+    }
+
+    const dropCount = 520 + channel * 80;
+    for (let drop = 0; drop < dropCount; drop += 1) {
+      const start = Math.floor(Math.random() * (length - 2200));
+      const amplitude = 0.018 + Math.random() * 0.045;
+      const durationSamples = 350 + Math.floor(Math.random() * 1500);
+      const frequency = 1200 + Math.random() * 4200;
+
+      for (let offset = 0; offset < durationSamples && start + offset < length; offset += 1) {
+        const envelope = Math.exp(-offset / (durationSamples * 0.22));
+        const tone = Math.sin((2 * Math.PI * frequency * offset) / context.sampleRate);
+        const softNoise = Math.random() * 2 - 1;
+        data[start + offset] += amplitude * envelope * (tone * 0.28 + softNoise * 0.72);
+      }
+    }
   }
 
   return buffer;
@@ -33,22 +52,25 @@ export default function AboutRainExperience() {
     const seed = drops.map((drop, index) => ({
       drop,
       x: ((index * 47) % 101) + (index % 5) * 0.7,
-      y: (index * 37) % 125,
-      speed: 0.8 + ((index * 13) % 17) / 10,
+      y: (index * 37) % 125 - 25,
+      speed: 52 + ((index * 13) % 34),
       drift: ((index * 19) % 9) - 4,
-      opacity: 0.13 + ((index * 23) % 17) / 100,
+      opacity: 0.16 + ((index * 23) % 17) / 100,
     }));
 
-    seed.forEach(({ drop, x, y, speed, drift, opacity }) => {
+    seed.forEach(({ drop, x, y, opacity }) => {
       drop.style.left = `${x}%`;
-      drop.style.top = `${y - 25}%`;
+      drop.style.top = "0";
       drop.style.opacity = `${opacity}`;
-      drop.style.setProperty("--waresh-rain-speed", `${speed}s`);
-      drop.style.setProperty("--waresh-rain-drift", `${drift}px`);
-      drop.dataset.y = `${y - 25}`;
+      drop.style.setProperty("--waresh-rain-y", `${y}vh`);
     });
 
-    if (reduceMotion) return;
+    if (reduceMotion) {
+      seed.forEach(({ drop, drift }) => {
+        drop.style.transform = `translate3d(${drift}px, var(--waresh-rain-y), 0) rotate(16deg)`;
+      });
+      return;
+    }
 
     let animationFrame = 0;
     let lastTime = performance.now();
@@ -58,8 +80,8 @@ export default function AboutRainExperience() {
       lastTime = time;
 
       seed.forEach((item) => {
-        const current = Number.parseFloat(item.drop.dataset.y ?? "0") || 0;
-        const next = current + item.speed * 72 * delta;
+        const current = Number.parseFloat(item.drop.dataset.y ?? `${item.y}`) || item.y;
+        const next = current + item.speed * delta;
         const wrapped = next > 118 ? -18 : next;
         item.drop.dataset.y = `${wrapped}`;
         item.drop.style.transform = `translate3d(${item.drift}px, ${wrapped}vh, 0) rotate(16deg)`;
@@ -67,6 +89,10 @@ export default function AboutRainExperience() {
 
       animationFrame = requestAnimationFrame(animate);
     };
+
+    seed.forEach((item) => {
+      item.drop.dataset.y = `${item.y}`;
+    });
 
     animationFrame = requestAnimationFrame(animate);
 
@@ -96,7 +122,7 @@ export default function AboutRainExperience() {
       const context = audioContextRef.current;
       if (gain && context) {
         gain.gain.cancelScheduledValues(context.currentTime);
-        gain.gain.setTargetAtTime(0, context.currentTime, 0.18);
+        gain.gain.setTargetAtTime(0, context.currentTime, 0.2);
       }
       setSoundEnabled(false);
       return;
@@ -114,21 +140,21 @@ export default function AboutRainExperience() {
 
     if (!sourceRef.current) {
       const source = context.createBufferSource();
-      const filter = context.createBiquadFilter();
+      const lowpass = context.createBiquadFilter();
       const highpass = context.createBiquadFilter();
       const gain = context.createGain();
 
-      source.buffer = createNoiseBuffer(context);
+      source.buffer = createRainBuffer(context);
       source.loop = true;
-      filter.type = "lowpass";
-      filter.frequency.value = 5200;
-      filter.Q.value = 0.45;
       highpass.type = "highpass";
-      highpass.frequency.value = 900;
-      highpass.Q.value = 0.25;
+      highpass.frequency.value = 450;
+      highpass.Q.value = 0.35;
+      lowpass.type = "lowpass";
+      lowpass.frequency.value = 7200;
+      lowpass.Q.value = 0.25;
       gain.gain.value = 0;
 
-      source.connect(highpass).connect(filter).connect(gain).connect(context.destination);
+      source.connect(highpass).connect(lowpass).connect(gain).connect(context.destination);
       source.start();
 
       sourceRef.current = source;
@@ -137,7 +163,7 @@ export default function AboutRainExperience() {
 
     const gain = gainRef.current;
     gain?.gain.cancelScheduledValues(context.currentTime);
-    gain?.gain.setTargetAtTime(0.018, context.currentTime, 0.55);
+    gain?.gain.setTargetAtTime(0.022, context.currentTime, 0.7);
     setSoundEnabled(true);
   };
 
