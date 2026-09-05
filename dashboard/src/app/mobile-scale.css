@@ -197,4 +197,10 @@
   .waresh-site .text-sm {
     font-size: 0.94rem !important;
   }
+
+  /* Mobile market ticker: enlarge both the label and live gold price by ~20%. */
+  .waresh-site > div:first-child .waresh-container {
+    min-height: 30px;
+    font-size: 12px !important;
+  }
 }
