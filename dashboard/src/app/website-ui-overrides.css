@@ -49,19 +49,15 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
 #prices .grid.grid-cols-2 > div:hover { transform:translateY(-2px);box-shadow:0 18px 42px rgba(48,60,51,.09); }
 
 /* Restore the cleaner hero detail row that existed before the rain rollback. */
-#top .mt-9 > span:first-child {
-  font-size:0;
-}
-#top .mt-9 > span:first-child::after {
-  content:"محصولات منتخب";
-  font-size:.75rem;
-}
+#top .mt-9 > span:first-child { font-size:0; }
+#top .mt-9 > span:first-child::after { content:"محصولات منتخب"; font-size:.75rem; }
 
 /* Gift is intentionally compact and part of the normal document flow. */
 #gifts > .waresh-container { min-height:0 !important; }
 
-/* Atmospheric rain: deliberately sits above the dark hero overlays so it
-   cannot disappear behind the cinematic gradient. The content remains above it. */
+/* Hero rain: render the effect directly on the rain layer instead of relying
+   only on pseudo-element box-shadows. This keeps it visible through the
+   hero gradients and makes the animation deterministic across browsers. */
 #top .waresh-rain {
   z-index:2 !important;
   display:block;
@@ -72,6 +68,13 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
   opacity:1 !important;
   isolation:isolate;
   mix-blend-mode:screen;
+  background-image:
+    radial-gradient(ellipse 1.2px 30px at 18px 34px,rgba(235,244,237,.72) 0 35%,transparent 70%),
+    radial-gradient(ellipse 1px 22px at 64px 118px,rgba(220,236,224,.58) 0 35%,transparent 70%),
+    radial-gradient(ellipse 1.4px 36px at 112px 62px,rgba(235,244,237,.62) 0 35%,transparent 70%);
+  background-size:180px 180px,220px 210px,280px 260px;
+  background-position:0 0,40px 30px,90px -40px;
+  animation:waresh-rain-field 3.8s linear infinite;
 }
 #top .waresh-rain::before,
 #top .waresh-rain::after {
@@ -81,11 +84,23 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
   pointer-events:none;
   will-change:transform;
 }
-#top .waresh-rain::before { opacity:.62; }
-#top .waresh-rain::after { opacity:.46; }
-
+#top .waresh-rain::before {
+  opacity:.62;
+  transform:rotate(9deg) scale(1.1);
+  animation:waresh-rain-near 2.7s linear infinite;
+}
+#top .waresh-rain::after {
+  opacity:.46;
+  transform:rotate(9deg) scale(1.08);
+  animation:waresh-rain-far 4.8s linear infinite;
+}
 #top .waresh-container { position:relative;z-index:3; }
 #top .waresh-scroll-marker { z-index:4; }
+
+@keyframes waresh-rain-field {
+  from { background-position:0 -220px,40px -180px,90px -300px; }
+  to { background-position:52px 760px,6px 700px,128px 660px; }
+}
 
 @media (min-width:641px) {
   #gifts { min-height:0 !important; }
@@ -109,7 +124,7 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
   #prices form > div:first-child { padding-bottom:18px; }
   #prices form > .mt-7 { margin-top:18px;gap:14px; }
   #prices form > .mt-6 { margin-top:18px; }
-  #prices .lg\:sticky { position:static !important; }
+  #prices .lg\\:sticky { position:static !important; }
 }
 
 @media (max-width:1023px) {
@@ -144,4 +159,5 @@ header[class*="sticky"][class*="top-0"][class*="z-50"] .waresh-link:hover { colo
 
 @media (prefers-reduced-motion:reduce) {
   .waresh-hero-jewel img,#products .grid > article > div:first-child,#prices .grid.grid-cols-2 > div,.waresh-rain::before,.waresh-rain::after { transition:none !important;animation:none !important; }
+  #top .waresh-rain { animation:none !important; }
 }
