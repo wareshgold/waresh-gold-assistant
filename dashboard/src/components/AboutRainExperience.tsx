@@ -4,171 +4,166 @@ import { useEffect, useRef, useState } from "react";
 
 const DROP_COUNT = 46;
 
-function createRainBuffer(context: AudioContext) {
-  const duration = 8;
-  const length = Math.floor(context.sampleRate * duration);
-  const buffer = context.createBuffer(2, length, context.sampleRate);
-
-  for (let channel = 0; channel < buffer.numberOfChannels; channel += 1) {
-    const data = buffer.getChannelData(channel);
-
-    for (let index = 0; index < length; index += 1) {
-      data[index] = 0;
-    }
-
-    const dropCount = 520 + channel * 80;
-    for (let drop = 0; drop < dropCount; drop += 1) {
-      const start = Math.floor(Math.random() * (length - 2200));
-      const amplitude = 0.018 + Math.random() * 0.045;
-      const durationSamples = 350 + Math.floor(Math.random() * 1500);
-      const frequency = 1200 + Math.random() * 4200;
-
-      for (let offset = 0; offset < durationSamples && start + offset < length; offset += 1) {
-        const envelope = Math.exp(-offset / (durationSamples * 0.22));
-        const tone = Math.sin((2 * Math.PI * frequency * offset) / context.sampleRate);
-        const softNoise = Math.random() * 2 - 1;
-        data[start + offset] += amplitude * envelope * (tone * 0.28 + softNoise * 0.72);
-      }
-    }
-  }
-
-  return buffer;
-}
-
 export default function AboutRainExperience() {
   const rootRef = useRef<HTMLDivElement | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const sourceRef = useRef<AudioBufferSourceNode | null>(null);
-  const gainRef = useRef<GainNode | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [soundEnabled, setSoundEnabled] = useState(false);
 
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
 
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const drops = Array.from(root.querySelectorAll<HTMLElement>(".waresh-about-rain-drop"));
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const seed = drops.map((drop, index) => ({
-      drop,
-      x: ((index * 47) % 101) + (index % 5) * 0.7,
-      y: (index * 37) % 125 - 25,
-      speed: 52 + ((index * 13) % 34),
-      drift: ((index * 19) % 9) - 4,
-      opacity: 0.16 + ((index * 23) % 17) / 100,
-    }));
+    drops.forEach((drop, index) => {
+      const x = ((index * 47) % 101) + (index % 5) * 0.7;
+      const y = (index * 37) % 125 - 25;
+      const duration = 2.4 + ((index * 17) % 18) / 10;
+      const delay = -((index * 29) % 38) / 10;
+      const drift = ((index * 19) % 9) - 4;
+      const opacity = 0.16 + ((index * 23) % 17) / 100;
 
-    seed.forEach(({ drop, x, y, opacity }) => {
       drop.style.left = `${x}%`;
-      drop.style.top = "0";
+      drop.style.top = `${y}vh`;
       drop.style.opacity = `${opacity}`;
-      drop.style.setProperty("--waresh-rain-y", `${y}vh`);
+      drop.style.setProperty("--waresh-rain-drift", `${drift}px`);
+      drop.style.setProperty("--waresh-rain-duration", `${duration}s`);
+      drop.style.setProperty("--waresh-rain-delay", `${delay}s`);
+      drop.style.animationPlayState = reducedMotion ? "paused" : "running";
     });
 
-    if (reduceMotion) {
-      seed.forEach(({ drop, drift }) => {
-        drop.style.transform = `translate3d(${drift}px, var(--waresh-rain-y), 0) rotate(16deg)`;
+    return () => {
+      drops.forEach((drop) => {
+        drop.style.animationPlayState = "paused";
       });
-      return;
-    }
-
-    let animationFrame = 0;
-    let lastTime = performance.now();
-
-    const animate = (time: number) => {
-      const delta = Math.min((time - lastTime) / 1000, 0.05);
-      lastTime = time;
-
-      seed.forEach((item) => {
-        const current = Number.parseFloat(item.drop.dataset.y ?? `${item.y}`) || item.y;
-        const next = current + item.speed * delta;
-        const wrapped = next > 118 ? -18 : next;
-        item.drop.dataset.y = `${wrapped}`;
-        item.drop.style.transform = `translate3d(${item.drift}px, ${wrapped}vh, 0) rotate(16deg)`;
-      });
-
-      animationFrame = requestAnimationFrame(animate);
     };
-
-    seed.forEach((item) => {
-      item.drop.dataset.y = `${item.y}`;
-    });
-
-    animationFrame = requestAnimationFrame(animate);
-
-    return () => cancelAnimationFrame(animationFrame);
   }, []);
 
   useEffect(() => {
     return () => {
-      const context = audioContextRef.current;
-      try {
-        sourceRef.current?.stop();
-      } catch {
-        // The source may already be stopped.
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
       }
-      sourceRef.current?.disconnect();
-      gainRef.current?.disconnect();
-      if (context) void context.close();
-      sourceRef.current = null;
-      gainRef.current = null;
-      audioContextRef.current = null;
+      audioRef.current = null;
     };
   }, []);
 
   const toggleSound = async () => {
+    const audio = audioRef.current;
+
     if (soundEnabled) {
-      const gain = gainRef.current;
-      const context = audioContextRef.current;
-      if (gain && context) {
-        gain.gain.cancelScheduledValues(context.currentTime);
-        gain.gain.setTargetAtTime(0, context.currentTime, 0.2);
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
       }
       setSoundEnabled(false);
       return;
     }
 
-    const AudioContextConstructor = window.AudioContext ||
-      (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    // Real recorded ambience is intentionally used here instead of generated
+    // Web Audio noise. The file can be replaced by the final approved recording
+    // without changing this component.
+    const nextAudio = audio ?? new Audio("/rain-forest.mp3");
+    nextAudio.loop = true;
+    nextAudio.preload = "auto";
+    nextAudio.volume = 0.16;
+    audioRef.current = nextAudio;
 
-    if (!AudioContextConstructor) return;
-
-    const context = audioContextRef.current ?? new AudioContextConstructor();
-    audioContextRef.current = context;
-
-    if (context.state === "suspended") await context.resume();
-
-    if (!sourceRef.current) {
-      const source = context.createBufferSource();
-      const lowpass = context.createBiquadFilter();
-      const highpass = context.createBiquadFilter();
-      const gain = context.createGain();
-
-      source.buffer = createRainBuffer(context);
-      source.loop = true;
-      highpass.type = "highpass";
-      highpass.frequency.value = 450;
-      highpass.Q.value = 0.35;
-      lowpass.type = "lowpass";
-      lowpass.frequency.value = 7200;
-      lowpass.Q.value = 0.25;
-      gain.gain.value = 0;
-
-      source.connect(highpass).connect(lowpass).connect(gain).connect(context.destination);
-      source.start();
-
-      sourceRef.current = source;
-      gainRef.current = gain;
+    try {
+      await nextAudio.play();
+      setSoundEnabled(true);
+    } catch {
+      setSoundEnabled(false);
     }
-
-    const gain = gainRef.current;
-    gain?.gain.cancelScheduledValues(context.currentTime);
-    gain?.gain.setTargetAtTime(0.022, context.currentTime, 0.7);
-    setSoundEnabled(true);
   };
 
   return (
-    <div ref={rootRef} className="waresh-about-rain-layer">
+    <div ref={rootRef} className="waresh-about-rain-layer" aria-hidden="false">
+      <style>{`
+        .waresh-about-rain-layer {
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+          overflow: hidden;
+          pointer-events: none;
+        }
+
+        .waresh-about-rain-drop {
+          position: absolute;
+          left: 0;
+          width: 1.5px;
+          height: 58px;
+          border-radius: 999px;
+          background: linear-gradient(180deg, transparent, rgba(232, 241, 234, 0.78), transparent);
+          box-shadow: 0 0 4px rgba(232, 241, 234, 0.08);
+          transform: translate3d(0, 0, 0) rotate(16deg);
+          animation: waresh-about-rain-fall var(--waresh-rain-duration, 3s) linear var(--waresh-rain-delay, 0s) infinite;
+          will-change: transform;
+        }
+
+        @keyframes waresh-about-rain-fall {
+          from {
+            transform: translate3d(var(--waresh-rain-drift, 0px), -18vh, 0) rotate(16deg);
+          }
+          to {
+            transform: translate3d(calc(var(--waresh-rain-drift, 0px) + 5vw), 128vh, 0) rotate(16deg);
+          }
+        }
+
+        .waresh-about-rain-vignette {
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(circle at 52% 42%, transparent 20%, rgba(7, 20, 15, 0.22) 100%);
+        }
+
+        .waresh-about-sound-control {
+          position: absolute;
+          right: 18px;
+          bottom: 18px;
+          z-index: 4;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          min-height: 42px;
+          padding: 0 15px;
+          border: 1px solid rgba(255,255,255,.16);
+          border-radius: 999px;
+          background: rgba(20, 38, 30, .72);
+          color: rgba(255,255,255,.88);
+          font: inherit;
+          font-size: 11px;
+          font-weight: 700;
+          backdrop-filter: blur(12px);
+          pointer-events: auto;
+          cursor: pointer;
+        }
+
+        @media (max-width: 640px) {
+          .waresh-about-rain-drop {
+            width: 1.25px;
+            height: 46px;
+          }
+
+          .waresh-about-sound-control {
+            right: 12px;
+            bottom: 12px;
+            min-height: 38px;
+            padding-inline: 12px;
+            font-size: 10px;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .waresh-about-rain-drop {
+            animation: none;
+            transform: translate3d(var(--waresh-rain-drift, 0px), 18vh, 0) rotate(16deg);
+          }
+        }
+      `}</style>
+
       {Array.from({ length: DROP_COUNT }, (_, index) => (
         <span key={index} className="waresh-about-rain-drop" aria-hidden="true" />
       ))}
