@@ -6,9 +6,21 @@ import type {
     OtpVerification,
 } from "../../domain/auth/providers/OtpService";
 
-export type OtpServiceHttpClient = {
-    fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
+type OtpRequestInit = {
+    method?: string;
+    headers?: Record<string, string>;
+    body?: string;
 };
+
+type OtpHttpResponse = {
+    ok: boolean;
+    json(): Promise<unknown>;
+};
+
+export type OtpServiceHttpClient = (
+    input: string,
+    init?: OtpRequestInit,
+) => Promise<OtpHttpResponse>;
 
 export class HttpOtpService implements OtpService {
     constructor(
