@@ -4,6 +4,8 @@ import type { CustomerAddress } from "../entities/CustomerAddress";
 export interface CustomerRepository {
     findById(customerId: string): Promise<Customer | null>;
     findByPhone(phone: string): Promise<Customer | null>;
+    findByUsername(username: string): Promise<Customer | null>;
+    findByNationalId(nationalId: string): Promise<Customer | null>;
     save(customer: Customer): Promise<void>;
     listAddresses(customerId: string): Promise<CustomerAddress[]>;
     saveAddress(address: CustomerAddress): Promise<void>;
