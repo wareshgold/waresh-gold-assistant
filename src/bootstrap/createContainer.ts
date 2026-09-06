@@ -48,6 +48,9 @@ import { PriceTargetAlertService } from "../application/price-target-alert/Price
 import { D1PriceTargetAlertRepository } from "../infrastructure/price-target-alert/D1PriceTargetAlertRepository";
 import { PriceTargetAlertSchedulerJob } from "../application/jobs/PriceTargetAlertSchedulerJob";
 import { TelegramPriceTargetAlertNotifier } from "../infrastructure/price-target-alert/TelegramPriceTargetAlertNotifier";
+import { RegisterCustomerUseCase } from "../application/auth/RegisterCustomerUseCase";
+import { LoginCustomerUseCase } from "../application/auth/LoginCustomerUseCase";
+import { WebCryptoPasswordHasher } from "../infrastructure/auth/WebCryptoPasswordHasher";
 
 export function createContainer(env: AppEnv) {
     const storage = createStorageModule(env);
@@ -59,6 +62,10 @@ export function createContainer(env: AppEnv) {
     const gold = createGoldModule();
     const strategyA = createStrategyAModule(env);
     const vip = createVipModule(env);
+
+    const passwordHasher = new WebCryptoPasswordHasher();
+    const registerCustomerUseCase = new RegisterCustomerUseCase(storage.customerRepository, storage.sessionService, passwordHasher);
+    const loginCustomerUseCase = new LoginCustomerUseCase(storage.customerRepository, storage.sessionService, passwordHasher);
 
     const ingestOunceTickFromTextUseCase = new IngestOunceTickFromTextUseCase(strategyA.tickRepository);
     const saveGoldCalculationHistoryUseCase = new SaveGoldCalculationHistoryUseCase(storage.goldCalculationHistoryRepository);
@@ -206,6 +213,10 @@ export function createContainer(env: AppEnv) {
         priceTargetAlertSchedulerJob,
         marketReportService,
         marketReportSchedulerJob,
+        registerCustomerUseCase,
+        loginCustomerUseCase,
+        sessionService: storage.sessionService,
+        customerRepository: storage.customerRepository,
         waresh_gold_db: env.waresh_gold_db
     };
 }
