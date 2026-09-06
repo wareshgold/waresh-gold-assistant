@@ -10,6 +10,7 @@ import {
   type ProductCategory,
 } from "@/data/products";
 import { calculateProductPrices, TELEGRAM_BOT_URL } from "@/lib/api";
+import WishlistButton from "@/components/WishlistButton";
 
 const priceBands = [
   { value: "under-10", label: "تا ۱۰ میلیون", min: 0, max: 10_000_000 },
@@ -226,33 +227,33 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
               className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-[#e2ddd3] bg-[#fffdf8] shadow-[0_14px_45px_rgba(55,52,43,0.06)] opacity-0 [animation:waresh-catalog-card-in_480ms_ease-out_forwards] transition duration-500 hover:-translate-y-1 hover:border-[#d8c7a8] hover:shadow-[0_24px_60px_rgba(55,52,43,0.11)]"
               style={{ animationDelay: `${Math.min(index * 45, 270)}ms` }}
             >
-              <Link
-                href={`/products/${product.id}`}
-                aria-label={`مشاهده جزئیات ${product.name}`}
-                className="relative block h-56 shrink-0 overflow-hidden bg-[#eee8dc] sm:h-64"
-              >
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  loading="lazy"
-                  referrerPolicy="no-referrer"
-                  className="h-full w-full object-cover object-center transition duration-700 ease-out group-hover:scale-[1.045]"
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,30,24,0.02)_45%,rgba(20,30,24,0.18)_100%)]" />
+              <div className="relative h-56 shrink-0 overflow-hidden bg-[#eee8dc] sm:h-64">
+                <Link href={`/products/${product.id}`} aria-label={`مشاهده ${product.name}`} className="block h-full w-full">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                    className="h-full w-full object-cover object-center transition duration-700 ease-out group-hover:scale-[1.045]"
+                  />
+                </Link>
+                <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(180deg,rgba(20,30,24,0.02)_45%,rgba(20,30,24,0.18)_100%)]" />
                 <span className="absolute right-4 top-4 rounded-full border border-white/70 bg-white/75 px-3 py-1.5 text-[11px] font-bold text-[#746a5d] shadow-sm backdrop-blur sm:right-5 sm:top-5">
                   {product.subcategory ?? product.category}
                 </span>
-              </Link>
+                <div className="absolute left-4 top-4">
+                  <WishlistButton productId={product.id} size="sm" />
+                </div>
+              </div>
 
               <div className="flex flex-1 flex-col p-5 sm:p-6">
-                <Link
-                  href={`/products/${product.id}`}
-                  className="block rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-[#a47d3f]/50"
-                >
+                <div>
                   <p className="text-xs font-semibold tracking-[0.12em] text-[#a17c45]">{product.category}</p>
-                  <h3 className="mt-2 text-lg font-extrabold text-[#292c27] transition-colors group-hover:text-[#806131]">{product.name}</h3>
-                  <p className="mt-2 text-sm leading-7 text-[#7b7d76]">{product.description}</p>
-                </Link>
+                  <Link href={`/products/${product.id}`} className="block">
+                    <h3 className="mt-2 text-lg font-extrabold text-[#292c27] transition hover:text-[#8d6835]">{product.name}</h3>
+                    <p className="mt-2 text-sm leading-7 text-[#7b7d76]">{product.description}</p>
+                  </Link>
+                </div>
 
                 <div className="mt-auto border-t border-[#ebe6dc] pt-4 sm:mt-6 sm:pt-5">
                   <div className="flex items-end justify-between gap-4">
@@ -287,7 +288,7 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
                 <div className="mt-5 grid grid-cols-[1fr_auto] gap-2">
                   <Link
                     href={`/products/${product.id}`}
-                    className="flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#263b31] px-4 py-3 text-sm font-bold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#1c2e26] hover:shadow-[0_10px_24px_rgba(38,59,49,0.14)]"
+                    className="flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#25392f] px-4 py-3 text-sm font-bold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#1d3028] hover:shadow-[0_10px_24px_rgba(37,57,47,0.14)]"
                   >
                     مشاهده محصول
                     <span aria-hidden="true" className="text-base leading-none">←</span>
@@ -297,9 +298,9 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`مشاوره و سفارش ${product.name}`}
-                    className="flex min-h-11 items-center justify-center rounded-full border border-[#d9c69f] bg-[#fbf6ea] px-4 py-3 text-sm font-bold text-[#7e6030] transition duration-300 hover:-translate-y-0.5 hover:border-[#cdb27c] hover:bg-[#f5ecd9] hover:shadow-[0_10px_24px_rgba(126,96,48,0.1)]"
+                    className="flex min-h-11 items-center justify-center rounded-full border border-[#d9c69f] bg-[#fbf6ea] px-4 py-3 text-sm font-bold text-[#7e6030] transition duration-300 hover:-translate-y-0.5 hover:border-[#cdb27c] hover:bg-[#f5ecd9]"
                   >
-                    مشاوره
+                    سفارش
                   </a>
                 </div>
               </div>
