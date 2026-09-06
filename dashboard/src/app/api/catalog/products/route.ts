@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 
-const BACKEND_URL = process.env.WARESH_BACKEND_URL ?? "http://localhost:8787";
+const BACKEND_URL =
+    process.env.WARESH_BACKEND_URL ??
+    process.env.NEXT_PUBLIC_API_URL ??
+    "https://waresh-gold-assistant.wareshgold.workers.dev";
 
 type BackendProduct = Record<string, unknown>;
 
 type CatalogResponse = {
-    products?: BackendProduct[];
+    items?: BackendProduct[];
 };
 
 export async function GET() {
@@ -23,7 +26,7 @@ export async function GET() {
             );
         }
 
-        return NextResponse.json(payload);
+        return NextResponse.json({ products: Array.isArray(payload.items) ? payload.items : [] });
     } catch {
         return NextResponse.json(
             { error: "سرویس کاتالوگ در دسترس نیست." },
