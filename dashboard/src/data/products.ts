@@ -8,12 +8,24 @@ export type ProductCategory =
   | "دستبند"
   | "مردانه";
 
+export type ProductStockStatus = "in-stock" | "limited" | "out-of-stock";
+
+export type ProductColor = "yellow-gold" | "white-gold" | "rose-gold";
+
 export interface Product {
   id: number;
+  sku?: string;
   name: string;
   category: ProductCategory;
   subcategory?: string;
   weight: number;
+  karat?: 18 | 24;
+  color?: ProductColor;
+  availableColors?: ProductColor[];
+  sizes?: string[];
+  stockStatus?: ProductStockStatus;
+  images?: string[];
+  tags?: string[];
   laborPercent: number;
   profitPercent: number;
   taxPercent: number;
