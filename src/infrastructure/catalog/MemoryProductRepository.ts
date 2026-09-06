@@ -1,39 +1,51 @@
 import type { Product } from "../../domain/catalog/entities/Product";
 import type { ProductRepository } from "../../domain/catalog/repositories/ProductRepository";
 
-const PRODUCTS: Product[] = [
-    [1, "انگشتر ساده مخصوص هدیه", "اقتصادی", "انگشتر", 1.2, 3, 7],
-    [2, "گوشواره میخی مخصوص هدیه", "اقتصادی", "گوشواره", 0.8, 4, 7],
-    [3, "پلاک کوچک مخصوص هدیه", "اقتصادی", "آویز", 0.5, 5, 7],
-    [4, "انگشتر نگین‌دار", "انگشتر", null, 2.5, 6, 7],
-    [5, "انگشتر حلقه‌ای", "انگشتر", null, 1.8, 5, 7],
-    [6, "انگشتر مردانه", "مردانه", null, 4.2, 7, 7],
-    [7, "آویز قلب", "آویز", null, 1.5, 8, 7],
-    [8, "آویز ستاره", "آویز", null, 1.2, 6, 7],
-    [9, "النگو ساده", "النگو", null, 15.5, 4, 7],
-    [10, "النگو طرح‌دار", "النگو", null, 18.2, 9, 7],
-    [11, "گوشواره آویزی", "گوشواره", null, 1.8, 8, 7],
-    [12, "گوشواره میخی", "گوشواره", null, 0.9, 5, 7],
-    [13, "گردنبند زنجیری", "گردنبند", null, 5.5, 6, 7],
-    [14, "گردنبند با پلاک", "گردنبند", null, 3.2, 7, 7],
-    [15, "دستبند زنجیری", "دستبند", null, 4.5, 6, 7],
-    [16, "دستبند النگویی", "دستبند", null, 8.2, 7, 7],
-    [17, "انگشتر مردانه ساده", "مردانه", null, 5.8, 5, 7],
-    [18, "زنجیر مردانه", "مردانه", null, 12.5, 10, 7],
-    [19, "دستبند چرم مشکی مخصوص هدیه", "اقتصادی", "دستبند", 0.24, 2, 7],
-    [20, "دستبند چرم قهوه‌ای مخصوص هدیه", "اقتصادی", "دستبند", 0.28, 2, 7],
-    [21, "دستبند چرم مینیمال مخصوص هدیه", "اقتصادی", "دستبند", 0.32, 3, 7],
-    [22, "دستبند چرم باریک مخصوص هدیه", "اقتصادی", "دستبند", 0.35, 3, 7],
-].map(([id, name, category, subcategory, weight, labor, profit]) => ({
-    productId: String(id),
-    sku: `WG-${String(id).padStart(4, "0")}`,
-    name,
-    category,
-    subcategory,
-    weightGrams: weight,
+type ProductSeed = {
+    id: number;
+    name: string;
+    category: string;
+    subcategory: string | null;
+    weightGrams: number;
+    laborPercent: number;
+    profitPercent: number;
+};
+
+const PRODUCT_SEEDS: ProductSeed[] = [
+    { id: 1, name: "انگشتر ساده مخصوص هدیه", category: "اقتصادی", subcategory: "انگشتر", weightGrams: 1.2, laborPercent: 3, profitPercent: 7 },
+    { id: 2, name: "گوشواره میخی مخصوص هدیه", category: "اقتصادی", subcategory: "گوشواره", weightGrams: 0.8, laborPercent: 4, profitPercent: 7 },
+    { id: 3, name: "پلاک کوچک مخصوص هدیه", category: "اقتصادی", subcategory: "آویز", weightGrams: 0.5, laborPercent: 5, profitPercent: 7 },
+    { id: 4, name: "انگشتر نگین‌دار", category: "انگشتر", subcategory: null, weightGrams: 2.5, laborPercent: 6, profitPercent: 7 },
+    { id: 5, name: "انگشتر حلقه‌ای", category: "انگشتر", subcategory: null, weightGrams: 1.8, laborPercent: 5, profitPercent: 7 },
+    { id: 6, name: "انگشتر مردانه", category: "مردانه", subcategory: null, weightGrams: 4.2, laborPercent: 7, profitPercent: 7 },
+    { id: 7, name: "آویز قلب", category: "آویز", subcategory: null, weightGrams: 1.5, laborPercent: 8, profitPercent: 7 },
+    { id: 8, name: "آویز ستاره", category: "آویز", subcategory: null, weightGrams: 1.2, laborPercent: 6, profitPercent: 7 },
+    { id: 9, name: "النگو ساده", category: "النگو", subcategory: null, weightGrams: 15.5, laborPercent: 4, profitPercent: 7 },
+    { id: 10, name: "النگو طرح‌دار", category: "النگو", subcategory: null, weightGrams: 18.2, laborPercent: 9, profitPercent: 7 },
+    { id: 11, name: "گوشواره آویزی", category: "گوشواره", subcategory: null, weightGrams: 1.8, laborPercent: 8, profitPercent: 7 },
+    { id: 12, name: "گوشواره میخی", category: "گوشواره", subcategory: null, weightGrams: 0.9, laborPercent: 5, profitPercent: 7 },
+    { id: 13, name: "گردنبند زنجیری", category: "گردنبند", subcategory: null, weightGrams: 5.5, laborPercent: 6, profitPercent: 7 },
+    { id: 14, name: "گردنبند با پلاک", category: "گردنبند", subcategory: null, weightGrams: 3.2, laborPercent: 7, profitPercent: 7 },
+    { id: 15, name: "دستبند زنجیری", category: "دستبند", subcategory: null, weightGrams: 4.5, laborPercent: 6, profitPercent: 7 },
+    { id: 16, name: "دستبند النگویی", category: "دستبند", subcategory: null, weightGrams: 8.2, laborPercent: 7, profitPercent: 7 },
+    { id: 17, name: "انگشتر مردانه ساده", category: "مردانه", subcategory: null, weightGrams: 5.8, laborPercent: 5, profitPercent: 7 },
+    { id: 18, name: "زنجیر مردانه", category: "مردانه", subcategory: null, weightGrams: 12.5, laborPercent: 10, profitPercent: 7 },
+    { id: 19, name: "دستبند چرم مشکی مخصوص هدیه", category: "اقتصادی", subcategory: "دستبند", weightGrams: 0.24, laborPercent: 2, profitPercent: 7 },
+    { id: 20, name: "دستبند چرم قهوه‌ای مخصوص هدیه", category: "اقتصادی", subcategory: "دستبند", weightGrams: 0.28, laborPercent: 2, profitPercent: 7 },
+    { id: 21, name: "دستبند چرم مینیمال مخصوص هدیه", category: "اقتصادی", subcategory: "دستبند", weightGrams: 0.32, laborPercent: 3, profitPercent: 7 },
+    { id: 22, name: "دستبند چرم باریک مخصوص هدیه", category: "اقتصادی", subcategory: "دستبند", weightGrams: 0.35, laborPercent: 3, profitPercent: 7 },
+];
+
+const PRODUCTS: Product[] = PRODUCT_SEEDS.map((seed) => ({
+    productId: String(seed.id),
+    sku: `WG-${String(seed.id).padStart(4, "0")}`,
+    name: seed.name,
+    category: seed.category,
+    subcategory: seed.subcategory,
+    weightGrams: seed.weightGrams,
     karat: 18,
-    laborPercent: labor,
-    profitPercent: profit,
+    laborPercent: seed.laborPercent,
+    profitPercent: seed.profitPercent,
     taxPercent: 0,
     stockStatus: "in-stock",
     active: true,
