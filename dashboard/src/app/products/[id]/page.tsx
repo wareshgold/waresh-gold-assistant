@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import MobileMenu from "@/components/MobileMenu";
+import WishlistButton from "@/components/WishlistButton";
 import { calculateProductPrice, getMarketPrice, TELEGRAM_BOT_URL } from "@/lib/api";
 import { PRODUCTS, formatToman, formatWeight } from "@/data/products";
 
@@ -51,7 +52,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     .filter((item) => item.id !== product.id && (item.category === product.category || item.subcategory === product.subcategory))
     .slice(0, 4);
 
-  const gallery = [product.image, product.image];
+  const gallery = product.images?.length ? product.images : [product.image];
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#f5f1e9] text-[#292b26]">
@@ -76,7 +77,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
           <div className="lg:sticky lg:top-28">
             <div className="flex flex-wrap items-center gap-2"><span className="rounded-full bg-[#e8eee6] px-3 py-1.5 text-[11px] font-bold text-[#5f755f]">{product.category}</span>{product.subcategory && <span className="rounded-full bg-[#f2eadb] px-3 py-1.5 text-[11px] font-bold text-[#84632e]">{product.subcategory}</span>}</div>
-            <h1 className="mt-5 text-3xl font-extrabold leading-[1.45] tracking-tight sm:text-5xl">{product.name}</h1>
+            <div className="mt-5 flex items-start justify-between gap-4">
+              <h1 className="text-3xl font-extrabold leading-[1.45] tracking-tight sm:text-5xl">{product.name}</h1>
+              <WishlistButton productId={product.id} />
+            </div>
             <p className="mt-4 max-w-xl text-sm leading-8 text-[#70766d] sm:text-base">{product.description}</p>
 
             <div className="mt-7 rounded-[1.75rem] border border-[#ded8cc] bg-[#fffdf8] p-5 shadow-[0_18px_50px_rgba(55,52,43,0.06)] sm:p-6">
