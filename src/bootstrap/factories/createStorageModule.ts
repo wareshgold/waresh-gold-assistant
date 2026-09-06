@@ -46,6 +46,10 @@ import { D1CustomerRepository }
 from "../../infrastructure/customer/D1CustomerRepository";
 
 
+import { MemoryCustomerRepository }
+from "../../infrastructure/customer/MemoryCustomerRepository";
+
+
 import { CustomerRepository }
 from "../../domain/customer/repositories/CustomerRepository";
 
@@ -178,13 +182,13 @@ export function createStorageModule(
 
 
 
-    const customerRepository: CustomerRepository | null =
+    const customerRepository: CustomerRepository =
 
         env.waresh_gold_db
 
             ? new D1CustomerRepository(env.waresh_gold_db)
 
-            : null;
+            : new MemoryCustomerRepository();
 
 
 
