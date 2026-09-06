@@ -51,6 +51,8 @@ import { TelegramPriceTargetAlertNotifier } from "../infrastructure/price-target
 import { RegisterCustomerUseCase } from "../application/auth/RegisterCustomerUseCase";
 import { LoginCustomerUseCase } from "../application/auth/LoginCustomerUseCase";
 import { WebCryptoPasswordHasher } from "../infrastructure/auth/WebCryptoPasswordHasher";
+import { GetProductsUseCase } from "../application/catalog/GetProductsUseCase";
+import { GetProductUseCase } from "../application/catalog/GetProductUseCase";
 
 export function createContainer(env: AppEnv) {
     const storage = createStorageModule(env);
@@ -66,6 +68,8 @@ export function createContainer(env: AppEnv) {
     const passwordHasher = new WebCryptoPasswordHasher();
     const registerCustomerUseCase = new RegisterCustomerUseCase(storage.customerRepository, storage.sessionService, passwordHasher);
     const loginCustomerUseCase = new LoginCustomerUseCase(storage.customerRepository, storage.sessionService, passwordHasher);
+    const getProductsUseCase = new GetProductsUseCase(storage.productRepository);
+    const getProductUseCase = new GetProductUseCase(storage.productRepository);
 
     const ingestOunceTickFromTextUseCase = new IngestOunceTickFromTextUseCase(strategyA.tickRepository);
     const saveGoldCalculationHistoryUseCase = new SaveGoldCalculationHistoryUseCase(storage.goldCalculationHistoryRepository);
@@ -215,6 +219,8 @@ export function createContainer(env: AppEnv) {
         marketReportSchedulerJob,
         registerCustomerUseCase,
         loginCustomerUseCase,
+        getProductsUseCase,
+        getProductUseCase,
         sessionService: storage.sessionService,
         customerRepository: storage.customerRepository,
         waresh_gold_db: env.waresh_gold_db
