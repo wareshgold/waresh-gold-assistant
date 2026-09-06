@@ -35,31 +35,45 @@ const giftPriceBands: Record<string, string> = {
   "۲۰ تا ۳۰ میلیون": "20-30",
 };
 
+const FALLBACK_IMAGE = "/waresh-gold-logo-green.png";
+
 function mergeCatalogProducts(catalog: CatalogProduct[]): Product[] {
   const visualById = new Map(PRODUCTS.map((product) => [String(product.id), product]));
 
-  return catalog
-    .filter((item) => item.active)
-    .map((item) => {
-      const visual = visualById.get(item.productId);
-      if (!visual) return null;
+  return catalog.filter((item) => item.active).map((item): Product => {
+    const visual = visualById.get(item.productId);
+    const productId = Number(item.productId);
+    const category = item.category as ProductCategory;
 
-      return {
-        ...visual,
-        id: Number(item.productId),
-        sku: item.sku,
+    return {
+      ...(visual ?? {
+        id: productId,
         name: item.name,
-        category: item.category as ProductCategory,
+        category,
         subcategory: item.subcategory ?? undefined,
         weight: item.weightGrams,
         karat: item.karat,
         laborPercent: item.laborPercent,
         profitPercent: item.profitPercent,
         taxPercent: item.taxPercent,
-        stockStatus: item.stockStatus,
-      } satisfies Product;
-    })
-    .filter((product): product is Product => product !== null);
+        icon: "◌",
+        image: FALLBACK_IMAGE,
+        description: "محصول ثبت‌شده در کاتالوگ وارش گلد.",
+        shippingNote: "هزینه ارسال به عهده مشتری می‌باشد.",
+      }),
+      id: productId,
+      sku: item.sku,
+      name: item.name,
+      category,
+      subcategory: item.subcategory ?? undefined,
+      weight: item.weightGrams,
+      karat: item.karat,
+      laborPercent: item.laborPercent,
+      profitPercent: item.profitPercent,
+      taxPercent: item.taxPercent,
+      stockStatus: item.stockStatus,
+    };
+  });
 }
 
 export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice }: ProductCatalogProps) {
@@ -75,8 +89,7 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
     void fetchCatalogProducts()
       .then((catalog) => {
         if (cancelled) return;
-        const merged = mergeCatalogProducts(catalog);
-        if (merged.length > 0) setCatalogProducts(merged);
+        setCatalogProducts(mergeCatalogProducts(catalog));
         setCatalogError(false);
       })
       .catch(() => {
@@ -85,14 +98,12 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
       .finally(() => {
         if (!cancelled) setCatalogLoading(false);
       });
-
     return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
     if (!liveGoldPrice || liveGoldPrice <= 0 || catalogProducts.length === 0) return;
     let cancelled = false;
-
     void calculateProductPrices(catalogProducts, liveGoldPrice).then((prices) => {
       if (cancelled) return;
       setPricing({
@@ -102,7 +113,6 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
         ),
       });
     });
-
     return () => { cancelled = true; };
   }, [catalogProducts, liveGoldPrice]);
 
@@ -136,7 +146,8 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
     const hasPricing = liveGoldPrice !== undefined && liveGoldPrice > 0;
     const currentPricing = pricing && pricing.goldPrice === liveGoldPrice ? pricing.products : {};
 
-    return catalogProducts.map((product) => ({ product, pricing: currentPricing[product.id] ?? null }))
+    return catalogProducts
+      .map((product) => ({ product, pricing: currentPricing[product.id] ?? null }))
       .filter(({ product, pricing: productPricing }) => {
         const categoryMatch = category === "all" || product.category === category;
         const priceMatch = !band || !hasPricing || !productPricing ||
@@ -168,7 +179,8 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <label className="sr-only" htmlFor="product-price-band">فیلتر بازه قیمت</label>
             <select id="product-price-band" value={priceBand} onChange={(event) => selectPriceBand(event.target.value)} className="min-h-11 w-full rounded-full border border-[#d8d1c5] bg-[#fffdf8] px-4 py-2.5 text-sm font-semibold text-[#4f514a] sm:w-52" aria-label="فیلتر بازه قیمت">
-              <option value="all">بازه قیمت</option>{priceBands.map((band) => <option key={band.value} value={band.value}>{band.label}</option>)}
+              <option value="all">بازه قیمت</option>
+              {priceBands.map((band) => <option key={band.value} value={band.value}>{band.label}</option>)}
             </select>
             {activeFilterCount > 0 && <button type="button" onClick={clearFilters} className="min-h-11 whitespace-nowrap rounded-full px-3 text-xs font-bold text-[#92713e] hover:bg-[#f2eadb]">پاک کردن فیلترها</button>}
           </div>
@@ -186,20 +198,32 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
       </div>
 
       {products.length === 0 ? (
-        <div className="rounded-[1.75rem] border border-dashed border-[#cfc8bb] bg-[#faf7f0] px-6 py-16 text-center text-[#77776f]"><p className="font-bold text-[#5d6159]">محصولی در این محدوده پیدا نشد.</p><button type="button" onClick={clearFilters} className="mt-5 min-h-11 rounded-full bg-[#263b31] px-5 py-2.5 text-sm font-bold text-white">نمایش همه محصولات</button></div>
+        <div className="rounded-[1.75rem] border border-dashed border-[#cfc8bb] bg-[#faf7f0] px-6 py-16 text-center text-[#77776f]">
+          <p className="font-bold text-[#5d6159]">محصولی در این محدوده پیدا نشد.</p>
+          <button type="button" onClick={clearFilters} className="mt-5 min-h-11 rounded-full bg-[#263b31] px-5 py-2.5 text-sm font-bold text-white">نمایش همه محصولات</button>
+        </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3" aria-live="polite">
           {products.map(({ product, pricing: productPricing }, index) => (
             <article key={`${product.id}-${category}-${priceBand}`} className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-[#e2ddd3] bg-[#fffdf8] shadow-[0_14px_45px_rgba(55,52,43,0.06)] transition hover:-translate-y-1 hover:border-[#d8c7a8] hover:shadow-[0_24px_60px_rgba(55,52,43,0.11)]" style={{ animationDelay: `${Math.min(index * 45, 270)}ms` }}>
               <div className="relative h-56 shrink-0 overflow-hidden bg-[#eee8dc] sm:h-64">
                 <Link href={`/products/${product.id}`} aria-label={`مشاهده ${product.name}`} className="block h-full w-full"><img src={product.image} alt={product.name} loading="lazy" referrerPolicy="no-referrer" className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.045]" /></Link>
-                <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(180deg,rgba(20,30,24,0.02)_45%,rgba(20,30,24,0.18)_100%)]" />
+                <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(20,30,24,0.02)_45%,rgba(20,30,24,0.18)_100%)]" />
                 <span className="absolute right-4 top-4 rounded-full border border-white/70 bg-white/75 px-3 py-1.5 text-[11px] font-bold text-[#746a5d] shadow-sm backdrop-blur">{product.subcategory ?? product.category}</span>
                 <div className="absolute left-4 top-4"><WishlistButton productId={product.id} size="sm" /></div>
               </div>
               <div className="flex flex-1 flex-col p-5 sm:p-6">
-                <div><p className="text-xs font-semibold tracking-[0.12em] text-[#a17c45]">{product.category}</p><Link href={`/products/${product.id}`} className="block"><h3 className="mt-2 text-lg font-extrabold text-[#292c27]">{product.name}</h3><p className="mt-2 text-sm leading-7 text-[#7b7d76]">{product.description}</p></Link></div>
-                <div className="mt-auto border-t border-[#ebe6dc] pt-4 sm:mt-6 sm:pt-5"><div className="flex items-end justify-between gap-4"><div><p className="text-xs text-[#96968d]">وزن</p><p className="mt-1 text-sm font-bold text-[#55584f]">{formatWeight(product.weight)}</p></div><div className="text-left" dir="rtl"><p className="text-[10px] font-semibold text-[#aaa397]">قیمت با نرخ لحظه‌ای</p>{productPricing ? <p className="mt-1 text-base font-extrabold text-[#9b753c] sm:text-lg">{formatToman(productPricing.finalPrice)}</p> : <p className="mt-2 text-xs text-[#a09d94]">در حال دریافت قیمت</p>}</div></div>{productPricing && <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#8b8b82]"><span>اجرت {product.laborPercent}٪</span><span>سود {product.profitPercent}٪</span>{product.taxPercent > 0 && <span>مالیات {product.taxPercent}٪</span>}</div>}</div>
+                <div>
+                  <p className="text-xs font-semibold tracking-[0.12em] text-[#a17c45]">{product.category}</p>
+                  <Link href={`/products/${product.id}`} className="block"><h3 className="mt-2 text-lg font-extrabold text-[#292c27]">{product.name}</h3><p className="mt-2 text-sm leading-7 text-[#7b7d76]">{product.description}</p></Link>
+                </div>
+                <div className="mt-auto border-t border-[#ebe6dc] pt-4 sm:mt-6 sm:pt-5">
+                  <div className="flex items-end justify-between gap-4">
+                    <div><p className="text-xs text-[#96968d]">وزن</p><p className="mt-1 text-sm font-bold text-[#55584f]">{formatWeight(product.weight)}</p></div>
+                    <div className="text-left" dir="rtl"><p className="text-[10px] font-semibold text-[#aaa397]">قیمت با نرخ لحظه‌ای</p>{productPricing ? <p className="mt-1 text-base font-extrabold text-[#9b753c] sm:text-lg">{formatToman(productPricing.finalPrice)}</p> : <p className="mt-2 text-xs text-[#a09d94]">در حال دریافت قیمت</p>}</div>
+                  </div>
+                  {productPricing && <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#8b8b82]"><span>اجرت {product.laborPercent}٪</span><span>سود {product.profitPercent}٪</span>{product.taxPercent > 0 && <span>مالیات {product.taxPercent}٪</span>}</div>}
+                </div>
                 <div className="mt-5 grid grid-cols-[1fr_auto] gap-2"><Link href={`/products/${product.id}`} className="flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#25392f] px-4 py-3 text-sm font-bold text-white">مشاهده محصول <span aria-hidden="true">←</span></Link><a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer" aria-label={`مشاوره و سفارش ${product.name}`} className="flex min-h-11 items-center justify-center rounded-full border border-[#d9c69f] bg-[#fbf6ea] px-4 py-3 text-sm font-bold text-[#7e6030]">سفارش</a></div>
               </div>
             </article>
