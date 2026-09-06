@@ -7,19 +7,33 @@ export type CartItem = {
 export const CART_STORAGE_KEY = "waresh-cart";
 export const CART_CHANGE_EVENT = "waresh:cart-change";
 
+type UnknownRecord = Record<string, unknown>;
+
+function isRecord(value: unknown): value is UnknownRecord {
+  return typeof value === "object" && value !== null;
+}
+
 function normalizeItems(value: unknown): CartItem[] {
   if (!Array.isArray(value)) return [];
 
-  return value.flatMap((item) => {
-    if (!item || typeof item !== "object") return [];
+  return value.flatMap((item): CartItem[] => {
+    if (!isRecord(item)) return [];
 
-    const candidate = item as Record<string, unknown>;
-    const productId = candidate.productId;
-    const variantId = candidate.variantId;
-    const quantity = candidate.quantity;
+    const productId = item.productId;
+    const variantId = item.variantId;
+    const quantity = item.quantity;
 
-    if (!Number.isInteger(productId) || typeof variantId !== "string" || !variantId) return [];
-    if (!Number.isInteger(quantity) || quantity < 1) return [];
+    if (
+      typeof productId !== "number" ||
+      !Number.isInteger(productId) ||
+      typeof variantId !== "string" ||
+      !variantId ||
+      typeof quantity !== "number" ||
+      !Number.isInteger(quantity) ||
+      quantity < 1
+    ) {
+      return [];
+    }
 
     return [{ productId, variantId, quantity }];
   });
