@@ -10,6 +10,7 @@ export type CustomerAddress = {
 };
 
 export type CustomerProfile = {
+  customerId: string;
   phone: string;
   firstName: string;
   lastName: string;
@@ -19,7 +20,8 @@ export type CustomerProfile = {
 const STORAGE_KEY = "waresh-customer-account";
 const ACCOUNT_CHANGE_EVENT = "waresh:account-change";
 
-const emptyProfile = (phone = ""): CustomerProfile => ({
+const emptyProfile = (phone = "", customerId = ""): CustomerProfile => ({
+  customerId,
   phone,
   firstName: "",
   lastName: "",
@@ -46,9 +48,11 @@ export function readCustomerProfile(): CustomerProfile | null {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<CustomerProfile>;
-    if (typeof parsed.phone !== "string") return null;
+    if (typeof parsed.phone !== "string" || typeof parsed.customerId !== "string" || !parsed.customerId) {
+      return null;
+    }
     return {
-      ...emptyProfile(parsed.phone),
+      ...emptyProfile(parsed.phone, parsed.customerId),
       ...parsed,
       addresses: Array.isArray(parsed.addresses) ? parsed.addresses : [],
     };
