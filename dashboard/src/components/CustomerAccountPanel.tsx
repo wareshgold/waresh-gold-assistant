@@ -50,7 +50,10 @@ export default function CustomerAccountPanel() {
     }
   };
 
-  useEffect(() => { void loadAccount(); }, []);
+  useEffect(() => {
+    const timer = window.setTimeout(() => void loadAccount(), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const submit = async () => {
     setLoading(true);
@@ -119,7 +122,7 @@ export default function CustomerAccountPanel() {
       <h1 className="mt-3 text-2xl font-extrabold sm:text-4xl">{mode === "login" ? "ورود به حساب وارش" : "ساخت حساب وارش"}</h1>
       <p className="mt-3 max-w-xl text-sm leading-7 text-[#70766d]">فعلاً ورود و ثبت‌نام با نام کاربری و رمز عبور انجام می‌شود. تأیید پیامکی و ایمیلی در این مرحله غیرفعال است.</p>
 
-      <div className="mt-6 flex gap-2 rounded-full bg-[#f5f1e9] p-1 max-w-md">
+      <div className="mt-6 flex max-w-md gap-2 rounded-full bg-[#f5f1e9] p-1">
         <button type="button" onClick={() => { setMode("login"); setMessage(""); }} className={`flex-1 rounded-full px-4 py-2.5 text-xs font-bold ${mode === "login" ? "bg-white shadow-sm" : "text-[#777970]"}`}>ورود</button>
         <button type="button" onClick={() => { setMode("register"); setMessage(""); }} className={`flex-1 rounded-full px-4 py-2.5 text-xs font-bold ${mode === "register" ? "bg-white shadow-sm" : "text-[#777970]"}`}>ثبت‌نام</button>
       </div>
