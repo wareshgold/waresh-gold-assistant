@@ -12,16 +12,29 @@ import {
   type CustomerProfile,
 } from "@/lib/customerAccount";
 
-function createProfile(phone: string): CustomerProfile {
-  return { phone, firstName: "", lastName: "", addresses: [] };
+function createProfile(phone: string, customerId: string): CustomerProfile {
+  return { phone, customerId, firstName: "", lastName: "", addresses: [] };
 }
+
+type OtpRequestResponse = {
+  requestId: string;
+  expiresAt: string;
+  retryAfterSeconds: number;
+};
+
+type OtpVerifyResponse = {
+  customerId: string;
+  phone: string;
+};
 
 export default function CustomerAccountPanel() {
   const [profile, setProfile] = useState<CustomerProfile | null>(null);
   const [phone, setPhone] = useState("");
+  const [requestId, setRequestId] = useState("");
   const [otpRequested, setOtpRequested] = useState(false);
   const [otp, setOtp] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const sync = () => setProfile(readCustomerProfile());
@@ -35,27 +48,80 @@ export default function CustomerAccountPanel() {
     };
   }, []);
 
-  const requestOtp = () => {
+  const requestOtp = async () => {
     const normalized = normalizeIranPhone(phone);
     if (!isValidIranPhone(normalized)) {
       setMessage("شماره موبایل ایران را به شکل معتبر وارد کنید.");
       return;
     }
-    setPhone(normalized);
-    setOtpRequested(true);
-    setMessage("در نسخه فعلی، ارسال واقعی پیامک فعال نیست؛ این فرم برای اتصال به سرویس OTP آماده شده است.");
+
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/auth/request-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: normalized, purpose: "login" }),
+      });
+
+      const data = (await response.json().catch(() => null)) as OtpRequestResponse | { error?: string } | null;
+
+      if (!response.ok || !data || !("requestId" in data)) {
+        setMessage(data && "error" in data && data.error ? data.error : "ارسال کد تأیید انجام نشد. دوباره تلاش کنید.");
+        return;
+      }
+
+      setPhone(normalized);
+      setRequestId(data.requestId);
+      setOtpRequested(true);
+      setMessage("کد تأیید برای شماره شما ارسال شد.");
+    } catch {
+      setMessage("ارتباط با سرویس احراز هویت برقرار نشد.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const verifyOtp = () => {
-    if (!/^\d{4,6}$/.test(otp)) {
+  const verifyOtp = async () => {
+    if (!requestId || !/^\d{4,6}$/.test(otp)) {
       setMessage("کد تأیید را وارد کنید.");
       return;
     }
-    const next = profile ?? createProfile(normalizeIranPhone(phone));
-    setProfile(saveCustomerProfile(next));
-    setOtp("");
-    setOtpRequested(false);
-    setMessage("حساب محلی شما آماده شد. اتصال به OTP واقعی در لایه API انجام خواهد شد.");
+
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requestId,
+          phone: normalizeIranPhone(phone),
+          code: otp,
+          purpose: "login",
+        }),
+      });
+
+      const data = (await response.json().catch(() => null)) as OtpVerifyResponse | { error?: string } | null;
+
+      if (!response.ok || !data || !("customerId" in data) || !("phone" in data)) {
+        setMessage(data && "error" in data && data.error ? data.error : "کد تأیید نامعتبر است.");
+        return;
+      }
+
+      const next = profile ?? createProfile(data.phone, data.customerId);
+      setProfile(saveCustomerProfile({ ...next, customerId: data.customerId, phone: data.phone }));
+      setOtp("");
+      setRequestId("");
+      setOtpRequested(false);
+      setMessage("ورود با موفقیت انجام شد.");
+    } catch {
+      setMessage("ارتباط با سرویس احراز هویت برقرار نشد.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (profile) {
@@ -84,18 +150,18 @@ export default function CustomerAccountPanel() {
     <div className="rounded-[2rem] border border-[#ded8cc] bg-[#fffdf8] p-6 shadow-[0_18px_50px_rgba(55,52,43,0.06)] sm:p-8">
       <p className="text-xs font-bold tracking-[0.2em] text-[#9b7b48]">CUSTOMER ACCOUNT</p>
       <h1 className="mt-3 text-2xl font-extrabold sm:text-4xl">ورود به حساب وارش</h1>
-      <p className="mt-3 max-w-xl text-sm leading-7 text-[#70766d]">حساب کاربری برای سفارش‌ها، آدرس‌ها، علاقه‌مندی‌ها و ادامه فرایند خرید آماده می‌شود.</p>
+      <p className="mt-3 max-w-xl text-sm leading-7 text-[#70766d]">برای ورود، شماره موبایل خود را وارد کنید تا کد تأیید از سرویس احراز هویت ارسال شود.</p>
 
       <div className="mt-8 max-w-md">
         <label className="text-xs font-bold text-[#55584f]" htmlFor="account-phone">شماره موبایل</label>
-        <input id="account-phone" value={phone} onChange={(event) => setPhone(event.target.value)} inputMode="tel" autoComplete="tel" placeholder="۰۹۱۲۱۲۳۴۵۶۷" className="mt-2 h-12 w-full rounded-2xl border border-[#ddd7cb] bg-white px-4 text-sm outline-none transition focus:border-[#b28b4c]" dir="ltr" />
+        <input id="account-phone" value={phone} onChange={(event) => setPhone(event.target.value)} inputMode="tel" autoComplete="tel" placeholder="۰۹۱۲۱۲۳۴۵۶۷" className="mt-2 h-12 w-full rounded-2xl border border-[#ddd7cb] bg-white px-4 text-sm outline-none transition focus:border-[#b28b4c]" dir="ltr" disabled={loading} />
         {!otpRequested ? (
-          <button type="button" onClick={requestOtp} className="mt-3 min-h-12 w-full rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white">دریافت کد تأیید</button>
+          <button type="button" onClick={requestOtp} disabled={loading} className="mt-3 min-h-12 w-full rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white disabled:opacity-60">{loading ? "در حال ارسال..." : "دریافت کد تأیید"}</button>
         ) : (
           <>
             <label className="mt-5 block text-xs font-bold text-[#55584f]" htmlFor="account-otp">کد تأیید</label>
-            <input id="account-otp" value={otp} onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" placeholder="کد ۴ تا ۶ رقمی" className="mt-2 h-12 w-full rounded-2xl border border-[#ddd7cb] bg-white px-4 text-sm tracking-[0.3em] outline-none transition focus:border-[#b28b4c]" dir="ltr" />
-            <button type="button" onClick={verifyOtp} className="mt-3 min-h-12 w-full rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white">تأیید و ورود</button>
+            <input id="account-otp" value={otp} onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" placeholder="کد ۴ تا ۶ رقمی" className="mt-2 h-12 w-full rounded-2xl border border-[#ddd7cb] bg-white px-4 text-sm tracking-[0.3em] outline-none transition focus:border-[#b28b4c]" dir="ltr" disabled={loading} />
+            <button type="button" onClick={verifyOtp} disabled={loading} className="mt-3 min-h-12 w-full rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white disabled:opacity-60">{loading ? "در حال بررسی..." : "تأیید و ورود"}</button>
           </>
         )}
         {message && <p className="mt-4 rounded-2xl bg-[#f5f1e9] p-4 text-xs leading-6 text-[#777970]">{message}</p>}
