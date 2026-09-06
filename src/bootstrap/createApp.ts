@@ -5,6 +5,7 @@ import { createRequestContext } from "../shared/middleware/requestContext";
 import { errorHandler } from "../presentation/middleware/errorHandler";
 import { TelegramWebhookController } from "../interfaces/telegram/TelegramWebhookController";
 import { SystemMetricsController } from "../interfaces/http/SystemMetricsController";
+import { CatalogController } from "../interfaces/http/CatalogController";
 import { MarketPriceProvider } from "../domain/market/providers/MarketPriceProvider";
 import { MarketSnapshotService } from "../application/market/services/MarketSnapshotService";
 import { GetGoldBubbleDataUseCase } from "../application/market/GetGoldBubbleDataUseCase";
@@ -15,6 +16,8 @@ import { RegisterCustomerUseCase } from "../application/auth/RegisterCustomerUse
 import { LoginCustomerUseCase } from "../application/auth/LoginCustomerUseCase";
 import type { CustomerRepository } from "../domain/customer/repositories/CustomerRepository";
 import type { SessionService } from "../domain/auth/providers/SessionService";
+import type { GetProductsUseCase } from "../application/catalog/GetProductsUseCase";
+import type { GetProductUseCase } from "../application/catalog/GetProductUseCase";
 
 interface AppContainer {
   telegramWebhookController: TelegramWebhookController;
@@ -29,6 +32,8 @@ interface AppContainer {
   loginCustomerUseCase: LoginCustomerUseCase;
   customerRepository: CustomerRepository;
   sessionService: SessionService;
+  getProductsUseCase: GetProductsUseCase;
+  getProductUseCase: GetProductUseCase;
 }
 
 const jsonBody = async (c: any): Promise<Record<string, unknown> | null> => {
@@ -47,6 +52,7 @@ const publicCustomer = (customer: any) => ({
 
 export function createApp(container: AppContainer) {
   const app = new Hono();
+  const catalogController = new CatalogController(container.getProductsUseCase, container.getProductUseCase);
 
   app.use("*", createRequestContext());
   app.use("*", createRequestLogger(container.monitoringService));
@@ -77,6 +83,12 @@ export function createApp(container: AppContainer) {
     return c.json({ items: await container.snapshotService.getHistory(limit) });
   });
 
+  app.get("/api/v1/catalog/products", async (c) => c.json({ items: await catalogController.list() }));
+  app.get("/api/v1/catalog/products/:productId", async (c) => {
+    const product = await catalogController.get(c.req.param("productId"));
+    return product ? c.json({ product }) : c.json({ error: "محصول پیدا نشد." }, 404);
+  });
+
   app.post("/api/v1/calculate/gold-price", async (c) => {
     const body = await jsonBody(c);
     if (!body) return c.json({ error: "درخواست نامعتبر است." }, 400);
@@ -103,34 +115,23 @@ export function createApp(container: AppContainer) {
     return c.json({ total: result.total });
   });
 
-  // Website authentication: password login is active. OTP/email verification intentionally remains disabled.
   app.post("/api/v1/auth/register", async (c) => {
     const body = await jsonBody(c);
     if (!body || typeof body.username !== "string" || typeof body.password !== "string" || typeof body.phone !== "string" || typeof body.nationalId !== "string") {
       return c.json({ error: "اطلاعات ثبت‌نام کامل نیست." }, 400);
     }
     try {
-      const result = await container.registerCustomerUseCase.execute({
-        username: body.username,
-        password: body.password,
-        phone: body.phone,
-        nationalId: body.nationalId,
-        firstName: typeof body.firstName === "string" ? body.firstName : "",
-        lastName: typeof body.lastName === "string" ? body.lastName : "",
-      });
+      const result = await container.registerCustomerUseCase.execute({ username: body.username, password: body.password, phone: body.phone, nationalId: body.nationalId, firstName: typeof body.firstName === "string" ? body.firstName : "", lastName: typeof body.lastName === "string" ? body.lastName : "" });
       return c.json({ customer: publicCustomer(result), sessionId: result.session.sessionId, expiresAt: result.session.expiresAt }, 201);
     } catch (error) {
       const message = error instanceof Error ? error.message : "ثبت‌نام انجام نشد.";
-      const conflict = message.includes("قبلاً ثبت") ? 409 : 400;
-      return c.json({ error: message }, conflict);
+      return c.json({ error: message }, message.includes("قبلاً ثبت") ? 409 : 400);
     }
   });
 
   app.post("/api/v1/auth/login", async (c) => {
     const body = await jsonBody(c);
-    if (!body || typeof body.username !== "string" || typeof body.password !== "string") {
-      return c.json({ error: "نام کاربری و رمز عبور الزامی است." }, 400);
-    }
+    if (!body || typeof body.username !== "string" || typeof body.password !== "string") return c.json({ error: "نام کاربری و رمز عبور الزامی است." }, 400);
     try {
       const result = await container.loginCustomerUseCase.execute(body.username, body.password);
       return c.json({ customer: publicCustomer(result), sessionId: result.session.sessionId, expiresAt: result.session.expiresAt });
@@ -156,11 +157,9 @@ export function createApp(container: AppContainer) {
     return c.json({ ok: true });
   });
 
-  // OTP is intentionally not exposed until a real SMS provider is configured.
   app.all("/api/v1/auth/request-otp", (c) => c.json({ error: "OTP فعلاً غیرفعال است." }, 410));
   app.all("/api/v1/auth/verify-otp", (c) => c.json({ error: "OTP فعلاً غیرفعال است." }, 410));
 
-  // Strategy A diagnostic endpoint
   app.get("/api/v1/strategy-a/status", async (c) => {
     try {
       const db = (container as any).waresh_gold_db;
@@ -176,7 +175,6 @@ export function createApp(container: AppContainer) {
     } catch (error) { return c.json({ error: String(error) }, 500); }
   });
 
-  // Strategy A debug endpoint - shows last candles and rejection reasons
   app.get("/api/v1/strategy-a/debug", async (c) => {
     try {
       const db = (container as any).waresh_gold_db;
