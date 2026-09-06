@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
   formatToman,
@@ -36,12 +37,6 @@ const giftPriceBands: Record<string, string> = {
   "۱۰ تا ۲۰ میلیون": "10-20",
   "۲۰ تا ۳۰ میلیون": "20-30",
 };
-
-const PRICE_DISPLAY_STEP = 100_000;
-
-function getRoundedDisplayPrice(price: number): number {
-  return Math.floor(price / PRICE_DISPLAY_STEP) * PRICE_DISPLAY_STEP;
-}
 
 export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice }: ProductCatalogProps) {
   const [category, setCategory] = useState<ProductCategory | "all">("all");
@@ -225,20 +220,17 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3" aria-live="polite">
-          {products.map(({ product, pricing: productPricing }, index) => {
-            const displayPrice = productPricing ? getRoundedDisplayPrice(productPricing.finalPrice) : null;
-            const displayDiscount = productPricing && displayPrice !== null
-              ? productPricing.finalPrice - displayPrice
-              : 0;
-            const totalLaborPercent = product.laborPercent + product.profitPercent;
-
-            return (
+          {products.map(({ product, pricing: productPricing }, index) => (
             <article
               key={`${product.id}-${category}-${priceBand}`}
               className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-[#e2ddd3] bg-[#fffdf8] shadow-[0_14px_45px_rgba(55,52,43,0.06)] opacity-0 [animation:waresh-catalog-card-in_480ms_ease-out_forwards] transition duration-500 hover:-translate-y-1 hover:border-[#d8c7a8] hover:shadow-[0_24px_60px_rgba(55,52,43,0.11)]"
               style={{ animationDelay: `${Math.min(index * 45, 270)}ms` }}
             >
-              <div className="relative h-56 shrink-0 overflow-hidden bg-[#eee8dc] sm:h-64">
+              <Link
+                href={`/products/${product.id}`}
+                aria-label={`مشاهده جزئیات ${product.name}`}
+                className="relative block h-56 shrink-0 overflow-hidden bg-[#eee8dc] sm:h-64"
+              >
                 <img
                   src={product.image}
                   alt={product.name}
@@ -250,14 +242,17 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
                 <span className="absolute right-4 top-4 rounded-full border border-white/70 bg-white/75 px-3 py-1.5 text-[11px] font-bold text-[#746a5d] shadow-sm backdrop-blur sm:right-5 sm:top-5">
                   {product.subcategory ?? product.category}
                 </span>
-              </div>
+              </Link>
 
               <div className="flex flex-1 flex-col p-5 sm:p-6">
-                <div>
+                <Link
+                  href={`/products/${product.id}`}
+                  className="block rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-[#a47d3f]/50"
+                >
                   <p className="text-xs font-semibold tracking-[0.12em] text-[#a17c45]">{product.category}</p>
-                  <h3 className="mt-2 text-lg font-extrabold text-[#292c27]">{product.name}</h3>
+                  <h3 className="mt-2 text-lg font-extrabold text-[#292c27] transition-colors group-hover:text-[#806131]">{product.name}</h3>
                   <p className="mt-2 text-sm leading-7 text-[#7b7d76]">{product.description}</p>
-                </div>
+                </Link>
 
                 <div className="mt-auto border-t border-[#ebe6dc] pt-4 sm:mt-6 sm:pt-5">
                   <div className="flex items-end justify-between gap-4">
@@ -268,17 +263,7 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
                     <div className="text-left" dir="rtl">
                       <p className="text-[10px] font-semibold text-[#aaa397]">قیمت با نرخ لحظه‌ای</p>
                       {productPricing ? (
-                        <>
-                          {displayDiscount > 0 && (
-                            <p className="mt-1 text-[11px] font-semibold text-[#aaa397] line-through decoration-[#c9bca6]">
-                              {formatToman(productPricing.finalPrice)}
-                            </p>
-                          )}
-                          <p className="mt-1 text-base font-extrabold text-[#9b753c] sm:text-lg">{formatToman(displayPrice ?? productPricing.finalPrice)}</p>
-                          {displayDiscount > 0 && (
-                            <p className="mt-1 text-[11px] font-bold text-[#5e8a68]">تخفیف {formatToman(displayDiscount)}</p>
-                          )}
-                        </>
+                        <p className="mt-1 text-base font-extrabold text-[#9b753c] sm:text-lg">{formatToman(productPricing.finalPrice)}</p>
                       ) : (
                         <div className="mt-2 flex items-center justify-end gap-2" aria-label="در حال دریافت قیمت">
                           <span className="h-2 w-16 animate-pulse rounded-full bg-[#e6dfd1]" />
@@ -289,28 +274,37 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
                   </div>
 
                   {productPricing ? (
-                    <div className="mt-3 text-[11px] text-[#8b8b82]">
-                      <span>اجرت کل {totalLaborPercent}٪</span>
-                      {product.taxPercent > 0 && <span className="mr-4">مالیات {product.taxPercent}٪</span>}
+                    <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#8b8b82]">
+                      <span>اجرت {product.laborPercent}٪</span>
+                      <span>سود {product.profitPercent}٪</span>
+                      {product.taxPercent > 0 && <span>مالیات {product.taxPercent}٪</span>}
                     </div>
                   ) : (
                     <p className="mt-3 text-[11px] text-[#a09d94]">جزئیات قیمت پس از دریافت نرخ بازار نمایش داده می‌شود.</p>
                   )}
                 </div>
 
-                <a
-                  href={TELEGRAM_BOT_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-5 flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[#d9c69f] bg-[#fbf6ea] px-4 py-3 text-sm font-bold text-[#7e6030] transition duration-300 hover:-translate-y-0.5 hover:border-[#cdb27c] hover:bg-[#f5ecd9] hover:shadow-[0_10px_24px_rgba(126,96,48,0.1)]"
-                >
-                  مشاوره و سفارش
-                  <span aria-hidden="true" className="text-base leading-none">←</span>
-                </a>
+                <div className="mt-5 grid grid-cols-[1fr_auto] gap-2">
+                  <Link
+                    href={`/products/${product.id}`}
+                    className="flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#263b31] px-4 py-3 text-sm font-bold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#1c2e26] hover:shadow-[0_10px_24px_rgba(38,59,49,0.14)]"
+                  >
+                    مشاهده محصول
+                    <span aria-hidden="true" className="text-base leading-none">←</span>
+                  </Link>
+                  <a
+                    href={TELEGRAM_BOT_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`مشاوره و سفارش ${product.name}`}
+                    className="flex min-h-11 items-center justify-center rounded-full border border-[#d9c69f] bg-[#fbf6ea] px-4 py-3 text-sm font-bold text-[#7e6030] transition duration-300 hover:-translate-y-0.5 hover:border-[#cdb27c] hover:bg-[#f5ecd9] hover:shadow-[0_10px_24px_rgba(126,96,48,0.1)]"
+                  >
+                    مشاوره
+                  </a>
+                </div>
               </div>
             </article>
-            );
-          })}
+          ))}
         </div>
       )}
 
