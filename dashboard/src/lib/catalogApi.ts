@@ -35,13 +35,8 @@ export async function fetchCatalogProduct(productId: string): Promise<CatalogPro
         cache: "no-store",
     });
 
-    if (response.status === 404) {
-        return null;
-    }
-
-    if (!response.ok) {
-        throw new Error("دریافت محصول ناموفق بود.");
-    }
+    if (response.status === 404) return null;
+    if (!response.ok) throw new Error("دریافت محصول ناموفق بود.");
 
     return (await response.json()) as CatalogProduct;
 }
