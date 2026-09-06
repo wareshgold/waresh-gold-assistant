@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "waresh-wishlist";
+const WISHLIST_CHANGE_EVENT = "waresh:wishlist-change";
 
 type WishlistButtonProps = {
   productId: number;
@@ -26,7 +27,18 @@ export default function WishlistButton({ productId, size = "md", className = "" 
   const [active, setActive] = useState(false);
 
   useEffect(() => {
-    setActive(readWishlist().includes(productId));
+    const syncWishlistState = () => {
+      setActive(readWishlist().includes(productId));
+    };
+
+    syncWishlistState();
+    window.addEventListener(WISHLIST_CHANGE_EVENT, syncWishlistState);
+    window.addEventListener("storage", syncWishlistState);
+
+    return () => {
+      window.removeEventListener(WISHLIST_CHANGE_EVENT, syncWishlistState);
+      window.removeEventListener("storage", syncWishlistState);
+    };
   }, [productId]);
 
   const toggle = () => {
@@ -37,7 +49,7 @@ export default function WishlistButton({ productId, size = "md", className = "" 
 
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     setActive(next.includes(productId));
-    window.dispatchEvent(new CustomEvent("waresh:wishlist-change", { detail: next }));
+    window.dispatchEvent(new CustomEvent(WISHLIST_CHANGE_EVENT, { detail: next }));
   };
 
   const dimensions = size === "sm" ? "h-10 w-10" : "h-11 w-11";
