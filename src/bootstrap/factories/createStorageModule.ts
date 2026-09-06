@@ -42,6 +42,14 @@ import { AIConversationMemory }
 from "../../application/ai/memory/AIConversationMemory";
 
 
+import { D1CustomerRepository }
+from "../../infrastructure/customer/D1CustomerRepository";
+
+
+import { CustomerRepository }
+from "../../domain/customer/repositories/CustomerRepository";
+
+
 import { AppEnv }
 from "../../shared/config/env";
 
@@ -170,6 +178,18 @@ export function createStorageModule(
 
 
 
+    const customerRepository: CustomerRepository | null =
+
+        env.waresh_gold_db
+
+            ? new D1CustomerRepository(env.waresh_gold_db)
+
+            : null;
+
+
+
+
+
 
     return {
 
@@ -186,7 +206,10 @@ export function createStorageModule(
         goldCalculationHistoryRepository,
 
 
-        aiConversationMemory
+        aiConversationMemory,
+
+
+        customerRepository
 
 
     };
