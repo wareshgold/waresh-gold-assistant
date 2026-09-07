@@ -56,6 +56,7 @@ import { CreateOrderQuoteUseCase } from "../application/catalog/CreateOrderQuote
 import { GetOrderQuoteUseCase } from "../application/catalog/GetOrderQuoteUseCase";
 import { CreateOrderFromQuoteUseCase } from "../application/catalog/CreateOrderFromQuoteUseCase";
 import { GetOrderUseCase } from "../application/catalog/GetOrderUseCase";
+import { ListCustomerOrdersUseCase } from "../application/catalog/ListCustomerOrdersUseCase";
 import { D1OrderQuoteRepository } from "../infrastructure/catalog/D1OrderQuoteRepository";
 import { MemoryOrderQuoteRepository } from "../infrastructure/catalog/MemoryOrderQuoteRepository";
 import { D1OrderRepository } from "../infrastructure/catalog/D1OrderRepository";
@@ -130,6 +131,7 @@ export function createContainer(env: AppEnv) {
         storage.customerRepository,
     );
     const getOrderUseCase = new GetOrderUseCase(orderRepository);
+    const listCustomerOrdersUseCase = new ListCustomerOrdersUseCase(orderRepository);
 
     const goldPriceAlertService = new GoldPriceAlertService(new D1GoldPriceAlertRepository(env.waresh_gold_db));
     const bubbleAlertService = new BubbleAlertService(new D1BubbleAlertRepository(env.waresh_gold_db));
@@ -239,6 +241,7 @@ export function createContainer(env: AppEnv) {
         getOrderQuoteUseCase,
         createOrderFromQuoteUseCase,
         getOrderUseCase,
+        listCustomerOrdersUseCase,
         saveGoldCalculationHistoryUseCase,
         getGoldCalculationHistoryUseCase,
         ingestOunceTickFromTextUseCase,
