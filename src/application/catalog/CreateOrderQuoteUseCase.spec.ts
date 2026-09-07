@@ -3,7 +3,7 @@ import type { Product } from "../../domain/catalog/entities/Product";
 import type { ProductRepository } from "../../domain/catalog/repositories/ProductRepository";
 import type { MarketPriceProvider } from "../../domain/market/providers/MarketPriceProvider";
 import { CalculateGoldPriceUseCase } from "../gold/CalculateGoldPriceUseCase";
-import { GoldRuleEngine } from "../../domain/gold/services/GoldRuleEngine";
+import { createGoldRuleEngine } from "../../domain/gold/services/createGoldRuleEngine";
 import { CreateOrderQuoteUseCase } from "./CreateOrderQuoteUseCase";
 
 const product: Product = {
@@ -37,15 +37,17 @@ const marketProvider: MarketPriceProvider = {
     }),
 };
 
+function createUseCase() {
+    return new CreateOrderQuoteUseCase(
+        repository,
+        marketProvider,
+        new CalculateGoldPriceUseCase(createGoldRuleEngine()),
+    );
+}
+
 describe("CreateOrderQuoteUseCase", () => {
     it("resolves products and calculates prices from the server market snapshot", async () => {
-        const useCase = new CreateOrderQuoteUseCase(
-            repository,
-            marketProvider,
-            new CalculateGoldPriceUseCase(new GoldRuleEngine()),
-        );
-
-        const quote = await useCase.execute([
+        const quote = await createUseCase().execute([
             { productId: "8", variantId: "default-standard", quantity: 2 },
         ]);
 
@@ -57,13 +59,7 @@ describe("CreateOrderQuoteUseCase", () => {
     });
 
     it("rejects unavailable products", async () => {
-        const useCase = new CreateOrderQuoteUseCase(
-            repository,
-            marketProvider,
-            new CalculateGoldPriceUseCase(new GoldRuleEngine()),
-        );
-
-        await expect(useCase.execute([
+        await expect(createUseCase().execute([
             { productId: "missing", variantId: "default-standard", quantity: 1 },
         ])).rejects.toThrow("محصول missing پیدا نشد");
     });
