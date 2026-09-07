@@ -19,4 +19,11 @@ export class MemoryOrderRepository implements OrderRepository {
         }
         return null;
     }
+
+    async findByCustomerId(customerId: string): Promise<Order[]> {
+        return [...this.orders.values()]
+            .filter((order) => order.customerId === customerId)
+            .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+            .map((order) => structuredClone(order));
+    }
 }
