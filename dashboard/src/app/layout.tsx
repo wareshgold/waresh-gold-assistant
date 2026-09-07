@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import InstallPrompt from "@/components/InstallPrompt";
+import MarketPriceProvider from "@/components/MarketPriceProvider";
 import "./globals.css";
 import "./website-polish.css";
 import "./mobile-scale.css";
@@ -57,7 +58,9 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full bg-[#f7f3ec] text-[#24211d]">
-        {children}
+        <MarketPriceProvider>
+          {children}
+        </MarketPriceProvider>
         <InstallPrompt />
       </body>
     </html>
