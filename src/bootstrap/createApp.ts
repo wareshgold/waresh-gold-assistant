@@ -14,17 +14,15 @@ import { HealthCheckService } from "../application/system/HealthCheckService";
 import { CalculateGoldPriceUseCase } from "../application/gold/CalculateGoldPriceUseCase";
 import { RegisterCustomerUseCase } from "../application/auth/RegisterCustomerUseCase";
 import { LoginCustomerUseCase } from "../application/auth/LoginCustomerUseCase";
-import { CreateOrderQuoteUseCase, type OrderQuoteItemInput } from "../application/catalog/CreateOrderQuoteUseCase";
-import { GetOrderQuoteUseCase } from "../application/catalog/GetOrderQuoteUseCase";
-import { CreateOrderFromQuoteUseCase } from "../application/catalog/CreateOrderFromQuoteUseCase";
-import { GetOrderUseCase } from "../application/catalog/GetOrderUseCase";
-import { ListCustomerOrdersUseCase } from "../application/catalog/ListCustomerOrdersUseCase";
-import { getOrderRoute } from "../interfaces/http/routes/GetOrderRoute";
-import { listCustomerOrdersRoute } from "../interfaces/http/routes/ListCustomerOrdersRoute";
+import { AddCustomerAddressUseCase } from "../application/customer/AddCustomerAddressUseCase";
+import { RemoveCustomerAddressUseCase } from "../application/customer/RemoveCustomerAddressUseCase";
 import type { CustomerRepository } from "../domain/customer/repositories/CustomerRepository";
 import type { SessionService } from "../domain/auth/providers/SessionService";
 import type { GetProductsUseCase } from "../application/catalog/GetProductsUseCase";
 import type { GetProductUseCase } from "../application/catalog/GetProductUseCase";
+import type { CreateOrderFromQuoteUseCase } from "../application/catalog/CreateOrderFromQuoteUseCase";
+import type { GetOrderUseCase } from "../application/catalog/GetOrderUseCase";
+import type { ListCustomerOrdersUseCase } from "../application/catalog/ListCustomerOrdersUseCase";
 
 interface AppContainer {
   telegramWebhookController: TelegramWebhookController;
@@ -32,20 +30,20 @@ interface AppContainer {
   monitoringService: SystemMonitoringService;
   healthCheckService: HealthCheckService;
   calculateGoldPriceUseCase: CalculateGoldPriceUseCase;
-  createOrderQuoteUseCase: CreateOrderQuoteUseCase;
-  getOrderQuoteUseCase: GetOrderQuoteUseCase;
-  createOrderFromQuoteUseCase: CreateOrderFromQuoteUseCase;
-  getOrderUseCase: GetOrderUseCase;
-  listCustomerOrdersUseCase: ListCustomerOrdersUseCase;
   marketProvider: MarketPriceProvider;
   snapshotService: MarketSnapshotService;
   getGoldBubbleDataUseCase: GetGoldBubbleDataUseCase;
   registerCustomerUseCase: RegisterCustomerUseCase;
   loginCustomerUseCase: LoginCustomerUseCase;
+  addCustomerAddressUseCase: AddCustomerAddressUseCase;
+  removeCustomerAddressUseCase: RemoveCustomerAddressUseCase;
   customerRepository: CustomerRepository;
   sessionService: SessionService;
   getProductsUseCase: GetProductsUseCase;
   getProductUseCase: GetProductUseCase;
+  createOrderFromQuoteUseCase: CreateOrderFromQuoteUseCase;
+  getOrderUseCase: GetOrderUseCase;
+  listCustomerOrdersUseCase: ListCustomerOrdersUseCase;
 }
 
 const jsonBody = async (c: any): Promise<Record<string, unknown> | null> => {
@@ -101,112 +99,172 @@ export function createApp(container: AppContainer) {
     return product ? c.json({ product }) : c.json({ error: "محصول پیدا نشد." }, 404);
   });
 
-  app.post("/api/v1/checkout/quote", async (c) => {
-    const body = await jsonBody(c);
-    if (!body || !Array.isArray(body.items)) return c.json({ error: "اقلام سفارش معتبر نیستند." }, 400);
-    const items: OrderQuoteItemInput[] = body.items.map((item) => {
-      const candidate = item && typeof item === "object" ? item as Record<string, unknown> : {};
-      return { productId: typeof candidate.productId === "string" || typeof candidate.productId === "number" ? String(candidate.productId) : "", variantId: typeof candidate.variantId === "string" ? candidate.variantId : "", quantity: typeof candidate.quantity === "string" || typeof candidate.quantity === "number" ? Number(candidate.quantity) : NaN };
-    });
-    try { return c.json({ quote: await container.createOrderQuoteUseCase.execute(items) }); }
-    catch (error) { return c.json({ error: error instanceof Error ? error.message : "آماده‌سازی سفارش انجام نشد." }, 400); }
-  });
-
-  app.get("/api/v1/checkout/quote/:quoteId", async (c) => {
-    try {
-      const quote = await container.getOrderQuoteUseCase.execute(c.req.param("quoteId"));
-      return quote ? c.json({ quote }, 200, { "Cache-Control": "no-store" }) : c.json({ error: "پیش‌فاکتور پیدا نشد." }, 404, { "Cache-Control": "no-store" });
-    } catch (error) { return c.json({ error: error instanceof Error ? error.message : "دریافت پیش‌فاکتور انجام نشد." }, 400, { "Cache-Control": "no-store" }); }
-  });
-
-  app.post("/api/v1/orders/from-quote", async (c) => {
-    const body = await jsonBody(c);
-    if (!body || typeof body.quoteId !== "string") return c.json({ error: "شناسه پیش‌فاکتور الزامی است." }, 400);
-    const sessionId = c.req.header("X-Customer-Session")?.trim();
-    let customerId: string | undefined;
-    if (sessionId) {
-      const session = await container.sessionService.get(sessionId);
-      if (!session) return c.json({ error: "نشست کاربری معتبر نیست." }, 401);
-      customerId = session.customerId;
-    }
-    try {
-      const order = await container.createOrderFromQuoteUseCase.execute({ quoteId: body.quoteId, customerId });
-      return c.json({ order }, 200, { "Cache-Control": "no-store" });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "ثبت سفارش انجام نشد.";
-      const status = message.includes("پیدا نشد") ? 404 : message.includes("دیگری") ? 409 : 400;
-      return c.json({ error: message }, status, { "Cache-Control": "no-store" });
-    }
-  });
-
-  app.get("/api/v1/orders/:orderId", async (c) => {
-    const sessionId = c.req.header("X-Customer-Session")?.trim();
-    let customerId: string | undefined;
-    if (sessionId) {
-      const session = await container.sessionService.get(sessionId);
-      if (!session) return c.json({ error: "نشست کاربری معتبر نیست." }, 401, { "Cache-Control": "no-store" });
-      customerId = session.customerId;
-    }
-    return getOrderRoute(c.req.raw, container.getOrderUseCase, c.req.param("orderId"), customerId);
-  });
-
-  app.get("/api/v1/orders", async (c) => {
-    const sessionId = c.req.header("X-Customer-Session")?.trim();
-    if (!sessionId) return c.json({ error: "احراز هویت لازم است." }, 401, { "Cache-Control": "no-store" });
-    const session = await container.sessionService.get(sessionId);
-    if (!session) return c.json({ error: "نشست کاربری معتبر نیست." }, 401, { "Cache-Control": "no-store" });
-    return listCustomerOrdersRoute(container.listCustomerOrdersUseCase, session.customerId);
-  });
-
   app.post("/api/v1/calculate/gold-price", async (c) => {
     const body = await jsonBody(c);
     if (!body) return c.json({ error: "درخواست نامعتبر است." }, 400);
-    const numberField = (value: unknown): number | null => { const num = typeof value === "string" ? Number(value) : value; return typeof num === "number" && Number.isFinite(num) ? num : null; };
+    const numberField = (value: unknown): number | null => {
+      const num = typeof value === "string" ? Number(value) : value;
+      return typeof num === "number" && Number.isFinite(num) ? num : null;
+    };
     const optionalNumberField = (value: unknown): number | null => value === undefined || value === null || value === "" ? 0 : numberField(value);
-    const weight = numberField(body.weight), goldPrice = numberField(body.goldPrice), laborPercent = optionalNumberField(body.laborPercent), profitPercent = optionalNumberField(body.profitPercent), taxPercent = optionalNumberField(body.taxPercent);
-    if (weight === null || goldPrice === null || laborPercent === null || profitPercent === null || taxPercent === null || weight <= 0 || goldPrice <= 0 || laborPercent < 0 || profitPercent < 0 || taxPercent < 0) return c.json({ error: "مقادیر ورودی معتبر نیستند." }, 400);
+    const weight = numberField(body.weight);
+    const goldPrice = numberField(body.goldPrice);
+    const laborPercent = optionalNumberField(body.laborPercent);
+    const profitPercent = optionalNumberField(body.profitPercent);
+    const taxPercent = optionalNumberField(body.taxPercent);
+    if (weight === null || goldPrice === null || laborPercent === null || profitPercent === null || taxPercent === null || weight <= 0 || goldPrice <= 0 || laborPercent < 0 || profitPercent < 0 || taxPercent < 0) {
+      return c.json({ error: "مقادیر ورودی معتبر نیستند." }, 400);
+    }
     let discount: number | undefined;
-    if (body.discount !== undefined && body.discount !== null && body.discount !== "") { const parsed = numberField(body.discount); if (parsed === null || parsed < 0) return c.json({ error: "مقادیر ورودی معتبر نیستند." }, 400); discount = parsed; }
+    if (body.discount !== undefined && body.discount !== null && body.discount !== "") {
+      const parsed = numberField(body.discount);
+      if (parsed === null || parsed < 0) return c.json({ error: "مقادیر ورودی معتبر نیستند." }, 400);
+      discount = parsed;
+    }
     const result = container.calculateGoldPriceUseCase.execute({ weight, goldPrice, laborPercent, profitPercent, taxPercent, ...(discount !== undefined ? { discount } : {}) });
     return c.json({ total: result.total });
   });
 
   app.post("/api/v1/auth/register", async (c) => {
     const body = await jsonBody(c);
-    if (!body || typeof body.username !== "string" || typeof body.password !== "string" || typeof body.phone !== "string" || typeof body.nationalId !== "string") return c.json({ error: "اطلاعات ثبت‌نام کامل نیست." }, 400);
+    if (!body || typeof body.username !== "string" || typeof body.password !== "string" || typeof body.phone !== "string" || typeof body.nationalId !== "string") {
+      return c.json({ error: "اطلاعات ثبت‌نام کامل نیست." }, 400);
+    }
     try {
       const result = await container.registerCustomerUseCase.execute({ username: body.username, password: body.password, phone: body.phone, nationalId: body.nationalId, firstName: typeof body.firstName === "string" ? body.firstName : "", lastName: typeof body.lastName === "string" ? body.lastName : "" });
-      return c.json({ customer: publicCustomer(result), sessionId: result.session.sessionId, expiresAt: result.session.expiresAt }, 201);
-    } catch (error) { const message = error instanceof Error ? error.message : "ثبت‌نام انجام نشد."; return c.json({ error: message }, message.includes("قبلاً ثبت") ? 409 : 400); }
+      const addresses = await container.customerRepository.listAddresses(result.customer.customerId);
+      return c.json({ customer: { ...publicCustomer(result.customer), addresses }, sessionId: result.session.sessionId, expiresAt: result.session.expiresAt }, 201);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "ثبت‌نام انجام نشد.";
+      return c.json({ error: message }, message.includes("قبلاً ثبت") ? 409 : 400);
+    }
   });
 
   app.post("/api/v1/auth/login", async (c) => {
     const body = await jsonBody(c);
     if (!body || typeof body.username !== "string" || typeof body.password !== "string") return c.json({ error: "نام کاربری و رمز عبور الزامی است." }, 400);
-    try { const result = await container.loginCustomerUseCase.execute(body.username, body.password); return c.json({ customer: publicCustomer(result), sessionId: result.session.sessionId, expiresAt: result.session.expiresAt }); }
-    catch { return c.json({ error: "نام کاربری یا رمز عبور نادرست است." }, 401); }
+    try {
+      const result = await container.loginCustomerUseCase.execute(body.username, body.password);
+      const addresses = await container.customerRepository.listAddresses(result.customer.customerId);
+      return c.json({ customer: { ...publicCustomer(result.customer), addresses }, sessionId: result.session.sessionId, expiresAt: result.session.expiresAt });
+    } catch {
+      return c.json({ error: "نام کاربری یا رمز عبور نادرست است." }, 401);
+    }
   });
 
-  app.get("/api/v1/auth/me", async (c) => {
+  const getAuthenticatedCustomerId = async (c: any): Promise<string | null> => {
     const sessionId = c.req.header("X-Customer-Session")?.trim();
-    if (!sessionId) return c.json({ error: "احراز هویت لازم است." }, 401);
+    if (!sessionId) return null;
     const session = await container.sessionService.get(sessionId);
-    if (!session) return c.json({ error: "نشست کاربری معتبر نیست." }, 401);
-    const customer = await container.customerRepository.findById(session.customerId);
+    return session?.customerId ?? null;
+  };
+
+  app.get("/api/v1/auth/me", async (c) => {
+    const customerId = await getAuthenticatedCustomerId(c);
+    if (!customerId) return c.json({ error: "نشست کاربری معتبر نیست." }, 401);
+    const customer = await container.customerRepository.findById(customerId);
     if (!customer) return c.json({ error: "حساب کاربری پیدا نشد." }, 401);
     const addresses = await container.customerRepository.listAddresses(customer.customerId);
     return c.json({ customer: { ...publicCustomer(customer), addresses } });
   });
 
-  app.post("/api/v1/auth/logout", async (c) => { const sessionId = c.req.header("X-Customer-Session")?.trim(); if (sessionId) await container.sessionService.revoke(sessionId); return c.json({ ok: true }); });
+  app.get("/api/v1/account/addresses", async (c) => {
+    const customerId = await getAuthenticatedCustomerId(c);
+    if (!customerId) return c.json({ error: "احراز هویت لازم است." }, 401);
+    return c.json({ addresses: await container.customerRepository.listAddresses(customerId) });
+  });
+
+  app.post("/api/v1/account/addresses", async (c) => {
+    const customerId = await getAuthenticatedCustomerId(c);
+    if (!customerId) return c.json({ error: "احراز هویت لازم است." }, 401);
+
+    const body = await jsonBody(c);
+    const fields = ["title", "recipientName", "phone", "province", "city", "address", "postalCode"] as const;
+    if (!body || fields.some((field) => typeof body[field] !== "string" || !(body[field] as string).trim())) {
+      return c.json({ error: "اطلاعات آدرس کامل نیست." }, 400);
+    }
+
+    try {
+      const address = await container.addCustomerAddressUseCase.execute({
+        customerId,
+        title: body.title as string,
+        recipientName: body.recipientName as string,
+        phone: body.phone as string,
+        province: body.province as string,
+        city: body.city as string,
+        address: body.address as string,
+        postalCode: body.postalCode as string,
+      });
+      return c.json({ address }, 201);
+    } catch (error) {
+      return c.json({ error: error instanceof Error ? error.message : "ثبت آدرس انجام نشد." }, 400);
+    }
+  });
+
+  app.delete("/api/v1/account/addresses/:addressId", async (c) => {
+    const customerId = await getAuthenticatedCustomerId(c);
+    if (!customerId) return c.json({ error: "احراز هویت لازم است." }, 401);
+
+    try {
+      await container.removeCustomerAddressUseCase.execute({ customerId, addressId: c.req.param("addressId") });
+      return c.json({ ok: true });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "حذف آدرس انجام نشد.";
+      return c.json({ error: message }, message === "Customer address not found" ? 404 : 400);
+    }
+  });
+
+  app.post("/api/v1/auth/logout", async (c) => {
+    const sessionId = c.req.header("X-Customer-Session")?.trim();
+    if (sessionId) await container.sessionService.revoke(sessionId);
+    return c.json({ ok: true });
+  });
+
   app.all("/api/v1/auth/request-otp", (c) => c.json({ error: "OTP فعلاً غیرفعال است." }, 410));
   app.all("/api/v1/auth/verify-otp", (c) => c.json({ error: "OTP فعلاً غیرفعال است." }, 410));
+
+  app.post("/api/v1/orders/from-quote", async (c) => {
+    const body = await jsonBody(c);
+    if (!body || typeof body.quoteId !== "string" || !body.quoteId.trim()) {
+      return c.json({ error: "شناسه پیش‌فاکتور الزامی است." }, 400);
+    }
+
+    const customerId = await getAuthenticatedCustomerId(c);
+    const addressId = typeof body.addressId === "string" ? body.addressId.trim() : undefined;
+
+    try {
+      const order = await container.createOrderFromQuoteUseCase.execute({
+        quoteId: body.quoteId,
+        ...(customerId ? { customerId } : {}),
+        ...(addressId ? { addressId } : {}),
+      });
+      return c.json({ order }, 201);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "ثبت سفارش انجام نشد.";
+      const status = message.includes("پیدا نشد") ? 404 : message.includes("الزامی") || message.includes("باید وارد") ? 400 : 409;
+      return c.json({ error: message }, status);
+    }
+  });
+
+  app.get("/api/v1/orders", async (c) => {
+    const customerId = await getAuthenticatedCustomerId(c);
+    if (!customerId) return c.json({ error: "احراز هویت لازم است." }, 401);
+    return c.json({ orders: await container.listCustomerOrdersUseCase.execute({ customerId }) });
+  });
+
+  app.get("/api/v1/orders/:orderId", async (c) => {
+    const orderId = c.req.param("orderId");
+    const customerId = await getAuthenticatedCustomerId(c);
+    const order = await container.getOrderUseCase.execute({ orderId, ...(customerId ? { customerId } : {}) });
+    return order ? c.json({ order }) : c.json({ error: "سفارش پیدا نشد." }, 404);
+  });
 
   app.get("/api/v1/strategy-a/status", async (c) => {
     try {
       const db = (container as any).waresh_gold_db;
       if (!db) return c.json({ error: "D1 database not available" });
-      const sixHoursAgo = Date.now() - 6 * 60 * 60 * 1000, oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+      const sixHoursAgo = Date.now() - 6 * 60 * 60 * 1000;
+      const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
       const ticks6h = await db.prepare("SELECT COUNT(*) as count FROM ounce_ticks WHERE timestamp >= ?").bind(sixHoursAgo).first();
       const ticks24h = await db.prepare("SELECT COUNT(*) as count FROM ounce_ticks WHERE timestamp >= ?").bind(oneDayAgo).first();
       const lastTick = await db.prepare("SELECT price, direction, timestamp FROM ounce_ticks ORDER BY timestamp DESC LIMIT 1").first();
@@ -229,12 +287,12 @@ export function createApp(container: AppContainer) {
       const candles = [...buckets.entries()].sort((a, b) => a[0] - b[0]).map(([ts, bucket]) => { const prices = bucket.map((t: any) => t.price); return { timestamp: new Date(ts).toISOString(), open: prices[0], high: Math.max(...prices), low: Math.min(...prices), close: prices[prices.length - 1], volume: prices.length }; });
       const last5 = candles.slice(-5);
       const avgRange = last5.reduce((s, c) => s + (c.high - c.low), 0) / last5.length;
-      const analysis = last5.map((candle, i) => { const range = candle.high - candle.low, body = Math.abs(candle.close - candle.open), bodyRatio = range > 0 ? body / range : 0, isBullish = candle.close > candle.open, isStrong = bodyRatio >= 0.65; let gapInfo = "N/A (first candle)"; if (i > 0) { const prev = last5[i - 1]; gapInfo = `BUY gap: ${(candle.low - prev.high).toFixed(2)}, SELL gap: ${(prev.low - candle.high).toFixed(2)}`; } return { time: candle.timestamp, O: candle.open, H: candle.high, L: candle.low, C: candle.close, range: range.toFixed(2), body: body.toFixed(2), bodyRatio: (bodyRatio * 100).toFixed(1) + "%", direction: isBullish ? "BULL" : "BEAR", isStrong: isStrong ? "✅" : `❌ (${(bodyRatio * 100).toFixed(1)}% < 65%)`, gap: i > 0 ? gapInfo : "N/A" }; });
+      const analysis = last5.map((candle, i) => { const range = candle.high - candle.low; const body = Math.abs(candle.close - candle.open); const bodyRatio = range > 0 ? body / range : 0; const isBullish = candle.close > candle.open; const isStrong = bodyRatio >= 0.65; let gapInfo = "N/A (first candle)"; if (i > 0) { const prev = last5[i - 1]; const buyGap = candle.low - prev.high; const sellGap = prev.low - candle.high; gapInfo = `BUY gap: ${buyGap.toFixed(2)}, SELL gap: ${sellGap.toFixed(2)}`; } return { time: candle.timestamp, O: candle.open, H: candle.high, L: candle.low, C: candle.close, range: range.toFixed(2), body: body.toFixed(2), bodyRatio: (bodyRatio * 100).toFixed(1) + "%", direction: isBullish ? "BULL" : "BEAR", isStrong: isStrong ? "✅" : `❌ (${(bodyRatio * 100).toFixed(1)}% < 65%)`, gap: i > 0 ? gapInfo : "N/A" }; });
       const reasons: string[] = [];
-      const strongCandles = last5.filter(c => { const range = c.high - c.low, body = Math.abs(c.close - c.open); return range > 0 && (body / range) >= 0.65; });
+      const strongCandles = last5.filter(c => { const range = c.high - c.low; const body = Math.abs(c.close - c.open); return range > 0 && (body / range) >= 0.65; });
       if (strongCandles.length < 3) reasons.push(`Only ${strongCandles.length}/5 candles have 65%+ body ratio`);
       let hasAnyGap = false;
-      for (let i = 1; i < last5.length; i++) { const prev = last5[i - 1], curr = last5[i]; if (curr.low > prev.high || curr.high < prev.low) { hasAnyGap = true; break; } }
+      for (let i = 1; i < last5.length; i++) { const prev = last5[i - 1]; const curr = last5[i]; if (curr.low > prev.high || curr.high < prev.low) { hasAnyGap = true; break; } }
       if (!hasAnyGap) reasons.push("No P-Gap found between consecutive candles (all overlap)");
       return c.json({ candleCount: candles.length, avgRange: avgRange.toFixed(2), last5Candles: analysis, rejectionReasons: reasons, config: { minBodyRatio: "65%", minSpikeCandles: 3, minSpikeMovePercent: "0.12%", minGapRatio: "15% of avg range", pGapRequired: "YES (mandatory)" } });
     } catch (error) { return c.json({ error: String(error) }, 500); }
