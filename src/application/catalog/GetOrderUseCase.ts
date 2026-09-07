@@ -4,13 +4,21 @@ import type { OrderRepository } from "../../domain/catalog/repositories/OrderRep
 export class GetOrderUseCase {
   constructor(private readonly orderRepository: OrderRepository) {}
 
-  async execute(input: { orderId: string }): Promise<Order | null> {
+  async execute(input: { orderId: string; customerId?: string }): Promise<Order | null> {
     const orderId = input?.orderId?.trim();
 
     if (!orderId) {
       throw new Error("Order ID is required");
     }
 
-    return this.orderRepository.findById(orderId);
+    const order = await this.orderRepository.findById(orderId);
+    if (!order) return null;
+
+    const customerId = input.customerId?.trim();
+    if (order.customerId && order.customerId !== customerId) {
+      return null;
+    }
+
+    return order;
   }
 }
