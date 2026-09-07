@@ -6,6 +6,17 @@ const UPSTREAM_TIMEOUT_MS = 10_000;
 
 export const dynamic = "force-dynamic";
 
+const proxyResponse = async (response: Response) => {
+  const data = await response.json().catch(() => null);
+  return NextResponse.json(
+    data ?? { error: "دریافت پیش‌فاکتور انجام نشد." },
+    {
+      status: response.status,
+      headers: { "Cache-Control": "no-store" },
+    },
+  );
+};
+
 export async function POST(request: NextRequest) {
   const contentLength = request.headers.get("content-length");
 
@@ -42,21 +53,39 @@ export async function POST(request: NextRequest) {
       signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
     });
 
-    const data = await response.json().catch(() => null);
+    return proxyResponse(response);
+  } catch {
+    return NextResponse.json(
+      { error: "ارتباط با سرویس سفارش برقرار نشد." },
+      {
+        status: 503,
+        headers: { "Cache-Control": "no-store" },
+      },
+    );
+  }
+}
 
-    if (!response.ok) {
-      return NextResponse.json(
-        data ?? { error: "آماده‌سازی سفارش انجام نشد." },
-        {
-          status: response.status,
-          headers: { "Cache-Control": "no-store" },
-        },
-      );
-    }
+export async function GET(request: NextRequest) {
+  const quoteId = request.nextUrl.searchParams.get("quoteId")?.trim();
 
-    return NextResponse.json(data, {
-      headers: { "Cache-Control": "no-store" },
-    });
+  if (!quoteId) {
+    return NextResponse.json(
+      { error: "شناسه پیش‌فاکتور الزامی است." },
+      { status: 400, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/v1/checkout/quote/${encodeURIComponent(quoteId)}`,
+      {
+        method: "GET",
+        cache: "no-store",
+        signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+      },
+    );
+
+    return proxyResponse(response);
   } catch {
     return NextResponse.json(
       { error: "ارتباط با سرویس سفارش برقرار نشد." },
