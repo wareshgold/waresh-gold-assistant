@@ -8,11 +8,12 @@ export class D1OrderRepository implements OrderRepository {
         await this.db.batch([
             this.db.prepare(
                 `INSERT INTO orders
-                    (order_id, quote_id, status, created_at, updated_at, gold18_price, currency_price, ounce_price, market_updated_at, total)
-                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)`
+                    (order_id, quote_id, customer_id, status, created_at, updated_at, gold18_price, currency_price, ounce_price, market_updated_at, total)
+                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)`
             ).bind(
                 order.orderId,
                 order.quoteId,
+                order.customerId,
                 order.status,
                 order.createdAt,
                 order.updatedAt,
@@ -50,7 +51,7 @@ export class D1OrderRepository implements OrderRepository {
 
     private async findOne(field: "order_id" | "quote_id", value: string): Promise<Order | null> {
         const orderRow = await this.db.prepare(
-            `SELECT order_id, quote_id, status, created_at, updated_at, gold18_price, currency_price, ounce_price, market_updated_at, total
+            `SELECT order_id, quote_id, customer_id, status, created_at, updated_at, gold18_price, currency_price, ounce_price, market_updated_at, total
              FROM orders WHERE ${field} = ?1 LIMIT 1`
         ).bind(value).first<OrderRow>();
 
@@ -64,6 +65,7 @@ export class D1OrderRepository implements OrderRepository {
         return {
             orderId: orderRow.order_id,
             quoteId: orderRow.quote_id,
+            customerId: orderRow.customer_id,
             status: orderRow.status as OrderStatus,
             createdAt: orderRow.created_at,
             updatedAt: orderRow.updated_at,
@@ -91,6 +93,7 @@ export class D1OrderRepository implements OrderRepository {
 type OrderRow = {
     order_id: string;
     quote_id: string;
+    customer_id: string | null;
     status: string;
     created_at: string;
     updated_at: string;
