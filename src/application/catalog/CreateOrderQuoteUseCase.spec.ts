@@ -61,19 +61,23 @@ describe("CreateOrderQuoteUseCase", () => {
     });
 
     it("persists the immutable quote snapshot", async () => {
-        const repository = new MemoryOrderQuoteRepository();
+        const productRepository: ProductRepository = {
+            listActive: async () => [product],
+            findById: async (productId) => productId === product.productId ? product : null,
+        };
+        const quoteRepository = new MemoryOrderQuoteRepository();
         const useCase = new CreateOrderQuoteUseCase(
-            repository,
+            productRepository,
             marketProvider,
             new CalculateGoldPriceUseCase(createGoldRuleEngine()),
-            repository,
+            quoteRepository,
         );
 
         const quote = await useCase.execute([
             { productId: "8", variantId: "default-standard", quantity: 1 },
         ]);
 
-        await expect(repository.findById(quote.quoteId)).resolves.toEqual(quote);
+        await expect(quoteRepository.findById(quote.quoteId)).resolves.toEqual(quote);
     });
 
     it("rejects unavailable products", async () => {
