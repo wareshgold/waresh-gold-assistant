@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Product } from "../../domain/catalog/entities/Product";
 import type { ProductRepository } from "../../domain/catalog/repositories/ProductRepository";
 import type { MarketPriceProvider } from "../../domain/market/providers/MarketPriceProvider";
+import { MemoryOrderQuoteRepository } from "../../infrastructure/catalog/MemoryOrderQuoteRepository";
 import { CalculateGoldPriceUseCase } from "../gold/CalculateGoldPriceUseCase";
 import { createGoldRuleEngine } from "../../domain/gold/services/createGoldRuleEngine";
 import { CreateOrderQuoteUseCase } from "./CreateOrderQuoteUseCase";
@@ -42,6 +43,7 @@ function createUseCase() {
         repository,
         marketProvider,
         new CalculateGoldPriceUseCase(createGoldRuleEngine()),
+        new MemoryOrderQuoteRepository(),
     );
 }
 
@@ -56,6 +58,22 @@ describe("CreateOrderQuoteUseCase", () => {
         expect(quote.items[0]?.unitPrice).toBe(32_051_131);
         expect(quote.items[0]?.lineTotal).toBe(64_102_262);
         expect(quote.total).toBe(64_102_262);
+    });
+
+    it("persists the immutable quote snapshot", async () => {
+        const repository = new MemoryOrderQuoteRepository();
+        const useCase = new CreateOrderQuoteUseCase(
+            repository,
+            marketProvider,
+            new CalculateGoldPriceUseCase(createGoldRuleEngine()),
+            repository,
+        );
+
+        const quote = await useCase.execute([
+            { productId: "8", variantId: "default-standard", quantity: 1 },
+        ]);
+
+        await expect(repository.findById(quote.quoteId)).resolves.toEqual(quote);
     });
 
     it("rejects unavailable products", async () => {
