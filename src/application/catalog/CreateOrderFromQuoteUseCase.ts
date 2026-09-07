@@ -21,7 +21,6 @@ export class CreateOrderFromQuoteUseCase {
         if (customerId) {
             const customer = await this.customerRepository.findById(customerId);
             if (!customer) throw new Error("حساب کاربری پیدا نشد.");
-            if (!addressId) throw new Error("انتخاب آدرس برای ثبت سفارش الزامی است.");
         } else if (addressId) {
             throw new Error("برای استفاده از آدرس باید وارد حساب کاربری شوید.");
         }
@@ -31,7 +30,7 @@ export class CreateOrderFromQuoteUseCase {
             if (customerId && existing.customerId !== customerId) {
                 throw new Error("این پیش‌فاکتور قبلاً به حساب کاربری دیگری ثبت شده است.");
             }
-            if (customerId && existing.address?.addressId !== addressId) {
+            if (customerId && addressId && existing.address?.addressId !== addressId) {
                 throw new Error("این پیش‌فاکتور قبلاً با آدرس دیگری ثبت شده است.");
             }
             return existing;
