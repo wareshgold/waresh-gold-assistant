@@ -14,6 +14,7 @@ import { HealthCheckService } from "../application/system/HealthCheckService";
 import { CalculateGoldPriceUseCase } from "../application/gold/CalculateGoldPriceUseCase";
 import { RegisterCustomerUseCase } from "../application/auth/RegisterCustomerUseCase";
 import { LoginCustomerUseCase } from "../application/auth/LoginCustomerUseCase";
+import { CreateOrderQuoteUseCase, type OrderQuoteItemInput } from "../application/catalog/CreateOrderQuoteUseCase";
 import type { CustomerRepository } from "../domain/customer/repositories/CustomerRepository";
 import type { SessionService } from "../domain/auth/providers/SessionService";
 import type { GetProductsUseCase } from "../application/catalog/GetProductsUseCase";
@@ -25,6 +26,7 @@ interface AppContainer {
   monitoringService: SystemMonitoringService;
   healthCheckService: HealthCheckService;
   calculateGoldPriceUseCase: CalculateGoldPriceUseCase;
+  createOrderQuoteUseCase: CreateOrderQuoteUseCase;
   marketProvider: MarketPriceProvider;
   snapshotService: MarketSnapshotService;
   getGoldBubbleDataUseCase: GetGoldBubbleDataUseCase;
@@ -87,6 +89,30 @@ export function createApp(container: AppContainer) {
   app.get("/api/v1/catalog/products/:productId", async (c) => {
     const product = await catalogController.get(c.req.param("productId"));
     return product ? c.json({ product }) : c.json({ error: "محصول پیدا نشد." }, 404);
+  });
+
+  app.post("/api/v1/checkout/quote", async (c) => {
+    const body = await jsonBody(c);
+    if (!body || !Array.isArray(body.items)) {
+      return c.json({ error: "اقلام سفارش معتبر نیستند." }, 400);
+    }
+
+    const items: OrderQuoteItemInput[] = body.items.map((item) => {
+      const candidate = item && typeof item === "object" ? item as Record<string, unknown> : {};
+      return {
+        productId: typeof candidate.productId === "string" || typeof candidate.productId === "number" ? String(candidate.productId) : "",
+        variantId: typeof candidate.variantId === "string" ? candidate.variantId : "",
+        quantity: typeof candidate.quantity === "string" || typeof candidate.quantity === "number" ? Number(candidate.quantity) : NaN,
+      };
+    });
+
+    try {
+      const quote = await container.createOrderQuoteUseCase.execute(items);
+      return c.json({ quote });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "آماده‌سازی سفارش انجام نشد.";
+      return c.json({ error: message }, 400);
+    }
   });
 
   app.post("/api/v1/calculate/gold-price", async (c) => {
