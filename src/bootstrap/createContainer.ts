@@ -57,6 +57,8 @@ import { GetOrderQuoteUseCase } from "../application/catalog/GetOrderQuoteUseCas
 import { CreateOrderFromQuoteUseCase } from "../application/catalog/CreateOrderFromQuoteUseCase";
 import { GetOrderUseCase } from "../application/catalog/GetOrderUseCase";
 import { ListCustomerOrdersUseCase } from "../application/catalog/ListCustomerOrdersUseCase";
+import { AddCustomerAddressUseCase } from "../application/customer/AddCustomerAddressUseCase";
+import { RemoveCustomerAddressUseCase } from "../application/customer/RemoveCustomerAddressUseCase";
 import { D1OrderQuoteRepository } from "../infrastructure/catalog/D1OrderQuoteRepository";
 import { MemoryOrderQuoteRepository } from "../infrastructure/catalog/MemoryOrderQuoteRepository";
 import { D1OrderRepository } from "../infrastructure/catalog/D1OrderRepository";
@@ -79,6 +81,8 @@ export function createContainer(env: AppEnv) {
     const passwordHasher = new WebCryptoPasswordHasher();
     const registerCustomerUseCase = new RegisterCustomerUseCase(storage.customerRepository, storage.sessionService, passwordHasher);
     const loginCustomerUseCase = new LoginCustomerUseCase(storage.customerRepository, storage.sessionService, passwordHasher);
+    const addCustomerAddressUseCase = new AddCustomerAddressUseCase(storage.customerRepository);
+    const removeCustomerAddressUseCase = new RemoveCustomerAddressUseCase(storage.customerRepository);
 
     const ingestOunceTickFromTextUseCase = new IngestOunceTickFromTextUseCase(strategyA.tickRepository);
     const saveGoldCalculationHistoryUseCase = new SaveGoldCalculationHistoryUseCase(storage.goldCalculationHistoryRepository);
@@ -242,6 +246,8 @@ export function createContainer(env: AppEnv) {
         createOrderFromQuoteUseCase,
         getOrderUseCase,
         listCustomerOrdersUseCase,
+        addCustomerAddressUseCase,
+        removeCustomerAddressUseCase,
         saveGoldCalculationHistoryUseCase,
         getGoldCalculationHistoryUseCase,
         ingestOunceTickFromTextUseCase,
