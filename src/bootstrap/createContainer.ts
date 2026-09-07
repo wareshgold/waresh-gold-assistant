@@ -124,7 +124,11 @@ export function createContainer(env: AppEnv) {
     const orderRepository: OrderRepository = env.waresh_gold_db
         ? new D1OrderRepository(env.waresh_gold_db)
         : new MemoryOrderRepository();
-    const createOrderFromQuoteUseCase = new CreateOrderFromQuoteUseCase(orderQuoteRepository, orderRepository);
+    const createOrderFromQuoteUseCase = new CreateOrderFromQuoteUseCase(
+        orderQuoteRepository,
+        orderRepository,
+        storage.customerRepository,
+    );
     const getOrderUseCase = new GetOrderUseCase(orderRepository);
 
     const goldPriceAlertService = new GoldPriceAlertService(new D1GoldPriceAlertRepository(env.waresh_gold_db));
