@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import MobileMenu from "@/components/MobileMenu";
 import { PRODUCTS, formatToman, formatWeight } from "@/data/products";
 import { getVariantLabel } from "@/data/productVariants";
@@ -40,7 +40,7 @@ export default function CheckoutPage() {
     return product ? [{ item, product }] : [];
   }), [cart]);
 
-  const refreshPrices = async () => {
+  const refreshPrices = useCallback(async () => {
     if (!products.length) {
       setPrices({});
       setLoadingPrices(false);
@@ -64,7 +64,7 @@ export default function CheckoutPage() {
     } finally {
       setLoadingPrices(false);
     }
-  };
+  }, [products]);
 
   useEffect(() => {
     let cancelled = false;
@@ -88,7 +88,7 @@ export default function CheckoutPage() {
       window.clearInterval(interval);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [products]);
+  }, [refreshPrices]);
 
   const count = getCartCount(cart);
   const total = products.reduce((sum, { item, product }) => sum + (prices[product.id] ?? 0) * item.quantity, 0);
