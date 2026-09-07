@@ -1,4 +1,3 @@
-import type { Product } from "../../domain/catalog/entities/Product";
 import type { ProductRepository } from "../../domain/catalog/repositories/ProductRepository";
 import type { MarketPriceProvider } from "../../domain/market/providers/MarketPriceProvider";
 import type { CalculateGoldPriceUseCase } from "../gold/CalculateGoldPriceUseCase";
@@ -26,7 +25,7 @@ export interface OrderQuote {
     market: {
         gold18Price: number;
         currencyPrice: number;
-        ouncePrice: number;
+        ouncePrice: number | null;
         updatedAt: string;
     };
     items: OrderQuoteLine[];
@@ -100,16 +99,14 @@ export class CreateOrderQuoteUseCase {
             });
         }
 
-        const createdAt = new Date().toISOString();
-
         return {
             quoteId: crypto.randomUUID(),
-            createdAt,
+            createdAt: new Date().toISOString(),
             market: {
                 gold18Price: market.gold18Price,
                 currencyPrice: market.currencyPrice,
                 ouncePrice: market.ouncePrice,
-                updatedAt: market.updatedAt,
+                updatedAt: market.updatedAt.toISOString(),
             },
             items: lines,
             total: lines.reduce((sum, line) => sum + line.lineTotal, 0),
