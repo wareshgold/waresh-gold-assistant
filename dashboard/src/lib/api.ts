@@ -39,11 +39,17 @@ type GoldCalculationResponse = {
   total: number;
 };
 
+function getCalculationUrl(): string {
+  return typeof window === "undefined"
+    ? `${API_BASE_URL}/api/v1/calculate/gold-price`
+    : "/api/calc";
+}
+
 export async function calculateProductPrice(
   product: Product,
   goldPrice: number,
 ): Promise<number> {
-  const response = await fetch("/api/calc", {
+  const response = await fetch(getCalculationUrl(), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
