@@ -148,4 +148,19 @@ describe("createApp checkout order route", () => {
         await expect(orderRepository.findByQuoteId(quote.quoteId)).resolves.toBeNull();
         expect(sessionService.get).toHaveBeenCalledWith("missing-session");
     });
+
+    it("rejects a missing customer session before creating an order", async () => {
+        const { app, quoteRepository, orderRepository, sessionService } = createTestApp();
+        await quoteRepository.save(quote);
+
+        const response = await app.request("http://localhost/api/v1/orders/from-quote", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ quoteId: quote.quoteId, addressId: address.id }),
+        });
+
+        expect(response.status).toBe(401);
+        await expect(orderRepository.findByQuoteId(quote.quoteId)).resolves.toBeNull();
+        expect(sessionService.get).not.toHaveBeenCalled();
+    });
 });
