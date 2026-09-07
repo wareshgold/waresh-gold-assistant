@@ -33,7 +33,7 @@ const marketProvider: MarketPriceProvider = {
         gold18Price: 23_549_000,
         currencyPrice: 1_000_000,
         ouncePrice: 4_000,
-        updatedAt: "2026-09-07T06:00:00.000Z",
+        updatedAt: new Date("2026-09-07T06:00:00.000Z"),
     }),
 };
 
