@@ -161,7 +161,11 @@ export default function CheckoutPage() {
     const lines = [
       "سلام وارش گلد، می‌خواهم این سفارش را ثبت کنم:",
       `شناسه پیش‌فاکتور: ${quote.quoteId}`,
-      ...quote.items.map((item) => `• ${item.name} | ${getVariantLabel(PRODUCTS.find((product) => String(product.id) === item.productId) ?? products[0]?.product, item.variantId)} | ${item.quantity} عدد | ${formatToman(item.lineTotal)}`),
+      ...quote.items.map((item) => {
+        const product = PRODUCTS.find((candidate) => String(candidate.id) === item.productId);
+        const variantLabel = product ? getVariantLabel(product, item.variantId) : item.variantId;
+        return `• ${item.name} | ${variantLabel} | ${item.quantity} عدد | ${formatToman(item.lineTotal)}`;
+      }),
       `جمع نهایی پیش‌فاکتور: ${formatToman(quote.total)}`,
       `نرخ طلای ۱۸ عیار در زمان صدور: ${formatToman(quote.market.gold18Price)}`,
       `زمان صدور: ${new Date(quote.createdAt).toLocaleString("fa-IR")}`,
@@ -170,7 +174,7 @@ export default function CheckoutPage() {
       note.trim() ? `توضیحات: ${note.trim()}` : "",
     ].filter(Boolean);
     return `${TELEGRAM_BOT_URL}?text=${encodeURIComponent(lines.join("\n"))}`;
-  }, [name, note, phone, products, quote]);
+  }, [name, note, phone, quote]);
 
   if (!products.length) {
     return (
