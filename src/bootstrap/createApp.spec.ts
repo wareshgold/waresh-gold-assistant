@@ -79,7 +79,7 @@ function createTestApp() {
     const container = {
         telegramWebhookController: {} as never,
         systemMetricsController: { handle: vi.fn(async () => ({})) } as never,
-        monitoringService: undefined,
+        monitoringService: { record: vi.fn(async () => undefined) } as never,
         healthCheckService: { execute: vi.fn(async () => ({ status: "ok" })) } as never,
         calculateGoldPriceUseCase: {} as never,
         createOrderQuoteUseCase: {} as never,
