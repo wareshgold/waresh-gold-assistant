@@ -74,7 +74,7 @@ export class D1OrderRepository implements OrderRepository {
                 quantity: Number(row.quantity),
                 weightGrams: Number(row.weight_grams),
                 unitPrice: Number(row.unit_price),
-                lineTotal: Number(row.lineTotal),
+                lineTotal: Number(row.line_total),
             })),
             total: Number(orderRow.total),
         };
