@@ -63,18 +63,18 @@ function formatDate(value: string) {
   }).format(new Date(value));
 }
 
-function OrderTimeline({ status }: { status: OrderStatus }) {
+function OrderTimeline({ status, updatedAt }: { status: OrderStatus; updatedAt: string }) {
   const terminal = status === "cancelled" || status === "expired";
   const currentIndex = terminal ? -1 : timelineIndex[status];
 
   return (
     <section className="mt-8 rounded-[2rem] border border-[#e0dbd1] bg-[#fffdf8] p-6 shadow-[0_18px_50px_rgba(55,52,43,0.05)] sm:p-8" aria-label="وضعیت سفارش">
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-bold tracking-[0.18em] text-[#9b7b48]">ORDER STATUS</p>
           <h2 className="mt-2 text-xl font-extrabold">مراحل سفارش</h2>
         </div>
-        <span className="text-xs font-bold text-[#777b72]">آخرین بروزرسانی: {formatDate(new Date().toISOString())}</span>
+        <span className="text-xs font-bold text-[#777b72]">آخرین بروزرسانی: {formatDate(updatedAt)}</span>
       </div>
 
       {terminal ? (
@@ -178,7 +178,7 @@ export default function OrderPage({ params }: { params: Promise<{ orderId: strin
             <p className="text-xs font-bold tracking-[0.2em] text-[#9b7b48]">ORDER TRACKING</p>
             <h1 className="mt-4 text-3xl font-extrabold sm:text-5xl">پیگیری سفارش</h1>
 
-            <OrderTimeline status={order.status} />
+            <OrderTimeline status={order.status} updatedAt={order.updatedAt} />
 
             <div className="mt-6 rounded-[2rem] border border-[#e0dbd1] bg-[#fffdf8] p-6 shadow-[0_18px_50px_rgba(55,52,43,0.05)] sm:p-8">
               <div className="flex flex-wrap items-center justify-between gap-4">
