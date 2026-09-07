@@ -30,6 +30,17 @@ type CheckoutQuote = {
   total: number;
 };
 
+type CheckoutOrder = {
+  orderId: string;
+  quoteId: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  market: CheckoutQuote["market"];
+  items: CheckoutQuote["items"];
+  total: number;
+};
+
 const PRICE_REFRESH_MS = 30_000;
 
 export default function CheckoutPage() {
@@ -39,7 +50,10 @@ export default function CheckoutPage() {
   const [priceError, setPriceError] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [validatingOrder, setValidatingOrder] = useState(false);
+  const [creatingOrder, setCreatingOrder] = useState(false);
   const [quote, setQuote] = useState<CheckoutQuote | null>(null);
+  const [order, setOrder] = useState<CheckoutOrder | null>(null);
+  const [orderError, setOrderError] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [note, setNote] = useState("");
@@ -49,6 +63,8 @@ export default function CheckoutPage() {
       setCart(readCart());
       setSubmitted(false);
       setQuote(null);
+      setOrder(null);
+      setOrderError(false);
     };
     sync();
     window.addEventListener(CART_CHANGE_EVENT, sync);
@@ -124,6 +140,8 @@ export default function CheckoutPage() {
     setValidatingOrder(true);
     setSubmitted(false);
     setQuote(null);
+    setOrder(null);
+    setOrderError(false);
 
     try {
       const isFresh = await refreshPrices();
@@ -166,12 +184,40 @@ export default function CheckoutPage() {
     }
   };
 
+  const handleCreateOrder = async () => {
+    if (!quote || creatingOrder) return;
+
+    setCreatingOrder(true);
+    setOrderError(false);
+
+    try {
+      const response = await fetch("/api/orders/from-quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+        body: JSON.stringify({ quoteId: quote.quoteId }),
+      });
+
+      const data = (await response.json().catch(() => null)) as { order?: CheckoutOrder; error?: string } | null;
+      if (!response.ok || !data?.order) {
+        setOrderError(true);
+        return;
+      }
+
+      setOrder(data.order);
+    } catch {
+      setOrderError(true);
+    } finally {
+      setCreatingOrder(false);
+    }
+  };
+
   const telegramMessage = useMemo(() => {
     if (!quote) return "#";
 
     const lines = [
       "سلام وارش گلد، می‌خواهم این سفارش را ثبت کنم:",
-      `شناسه پیش‌فاکتور: ${quote.quoteId}`,
+      order ? `شناسه سفارش: ${order.orderId}` : `شناسه پیش‌فاکتور: ${quote.quoteId}`,
       ...quote.items.map((item) => {
         const product = PRODUCTS.find((candidate) => String(candidate.id) === item.productId);
         const variantLabel = product ? getVariantLabel(product, item.variantId) : item.variantId;
@@ -185,7 +231,7 @@ export default function CheckoutPage() {
       note.trim() ? `توضیحات: ${note.trim()}` : "",
     ].filter(Boolean);
     return `${TELEGRAM_BOT_URL}?text=${encodeURIComponent(lines.join("\n"))}`;
-  }, [name, note, phone, quote]);
+  }, [name, note, order, phone, quote]);
 
   if (!products.length) {
     return (
@@ -211,7 +257,8 @@ export default function CheckoutPage() {
             </div>
             <label className="mt-5 block"><span className="text-xs font-bold text-[#55584f]">توضیحات سفارش <span className="font-normal text-[#99978f]">(اختیاری)</span></span><textarea value={note} onChange={(event) => setNote(event.target.value)} rows={5} className="mt-2 w-full rounded-2xl border border-[#ded8cc] bg-white px-4 py-3 text-sm leading-7 outline-none transition focus:border-[#b28b4c]" placeholder="مثلاً زمان مناسب برای تماس یا توضیح درباره مدل..." /></label>
             {priceError && <p className="mt-5 rounded-2xl bg-[#f8eee9] px-4 py-3 text-[11px] leading-6 text-[#94675f]">برای آماده‌سازی سفارش باید قیمت همه محصولات با نرخ جاری بازار با موفقیت دریافت شود.</p>}
-            {!submitted ? <button type="submit" disabled={loadingPrices || validatingOrder || priceError || !total} className="mt-6 min-h-13 w-full rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white shadow-[0_14px_35px_rgba(37,57,47,0.14)] transition hover:-translate-y-0.5 hover:bg-[#1d3028] disabled:cursor-not-allowed disabled:opacity-45">{validatingOrder ? "در حال بررسی نهایی قیمت..." : loadingPrices ? "در حال بررسی قیمت..." : "ادامه و آماده‌سازی سفارش"}</button> : <div className="mt-6 rounded-[1.5rem] border border-[#cddbcf] bg-[#edf4ee] p-5"><p className="text-sm font-extrabold text-[#35543e]">پیش‌فاکتور آماده ارسال است ✓</p><p className="mt-2 text-xs leading-6 text-[#58705f]">قیمت نهایی توسط سرویس سفارش و بر اساس نرخ بازار در لحظه صدور پیش‌فاکتور محاسبه شده است. برای تأیید نهایی و هماهنگی خرید، سفارش را در تلگرام برای وارش ارسال کنید.</p><a href={telegramMessage} target="_blank" rel="noopener noreferrer" className="mt-4 flex min-h-12 items-center justify-center rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white">ارسال پیش‌فاکتور در تلگرام</a></div>}
+            {orderError && <p className="mt-5 rounded-2xl bg-[#f8eee9] px-4 py-3 text-[11px] leading-6 text-[#94675f]">ثبت سفارش انجام نشد. پیش‌فاکتور شما حفظ شده است؛ دوباره تلاش کنید.</p>}
+            {!submitted ? <button type="submit" disabled={loadingPrices || validatingOrder || priceError || !total} className="mt-6 min-h-13 w-full rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white shadow-[0_14px_35px_rgba(37,57,47,0.14)] transition hover:-translate-y-0.5 hover:bg-[#1d3028] disabled:cursor-not-allowed disabled:opacity-45">{validatingOrder ? "در حال بررسی نهایی قیمت..." : loadingPrices ? "در حال بررسی قیمت..." : "ادامه و آماده‌سازی سفارش"}</button> : <div className="mt-6 rounded-[1.5rem] border border-[#cddbcf] bg-[#edf4ee] p-5"><p className="text-sm font-extrabold text-[#35543e]">پیش‌فاکتور آماده است ✓</p><p className="mt-2 text-xs leading-6 text-[#58705f]">پیش‌فاکتور در سرور ذخیره شده و قیمت آن بر اساس نرخ بازار در لحظه صدور ثابت شده است.</p>{!order ? <><button type="button" onClick={() => void handleCreateOrder()} disabled={creatingOrder} className="mt-4 flex min-h-12 w-full items-center justify-center rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-45">{creatingOrder ? "در حال ثبت سفارش..." : "ثبت سفارش"}</button><p className="mt-3 text-center text-[10px] leading-5 text-[#708076]">با ثبت سفارش، همین پیش‌فاکتور به یک سفارش با وضعیت «در انتظار تأیید» تبدیل می‌شود.</p></> : <div className="mt-4 rounded-2xl border border-[#cddbcf] bg-white/70 p-4"><p className="text-xs font-extrabold text-[#35543e]">سفارش با موفقیت ثبت شد ✓</p><p className="mt-2 text-[11px] leading-6 text-[#58705f]">شناسه سفارش: <span dir="ltr" className="font-bold">{order.orderId}</span></p><p className="text-[11px] leading-6 text-[#58705f]">وضعیت: در انتظار تأیید</p></div>}{order && <a href={telegramMessage} target="_blank" rel="noopener noreferrer" className="mt-4 flex min-h-12 items-center justify-center rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white">ارسال جزئیات در تلگرام</a>}</div>}
             <Link href="/cart" className="mt-3 flex min-h-11 items-center justify-center rounded-full border border-[#ded8cc] bg-white px-5 py-3 text-xs font-bold text-[#62685e]">بازگشت و ویرایش سبد</Link>
           </form>
 
