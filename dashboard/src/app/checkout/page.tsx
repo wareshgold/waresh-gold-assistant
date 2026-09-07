@@ -14,7 +14,7 @@ type CheckoutQuote = {
   market: {
     gold18Price: number;
     currencyPrice: number;
-    ouncePrice: number;
+    ouncePrice: number | null;
     updatedAt: string;
   };
   items: Array<{
@@ -148,7 +148,18 @@ export default function CheckoutPage() {
         return;
       }
 
-      setQuote(data.quote);
+      const quoteResponse = await fetch(`/api/checkout/quote?quoteId=${encodeURIComponent(data.quote.quoteId)}`, {
+        method: "GET",
+        cache: "no-store",
+      });
+      const quoteData = (await quoteResponse.json().catch(() => null)) as { quote?: CheckoutQuote; error?: string } | null;
+
+      if (!quoteResponse.ok || !quoteData?.quote) {
+        setPriceError(true);
+        return;
+      }
+
+      setQuote(quoteData.quote);
       setSubmitted(true);
     } finally {
       setValidatingOrder(false);
