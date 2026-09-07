@@ -8,9 +8,29 @@ export class D1OrderRepository implements OrderRepository {
         await this.db.batch([
             this.db.prepare(
                 `INSERT INTO orders
-                    (order_id, quote_id, customer_id, status, created_at, updated_at, gold18_price, currency_price, ounce_price, market_updated_at, total)
-                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)`
-            ).bind(order.orderId, order.quoteId, order.customerId, order.status, order.createdAt, order.updatedAt, order.market.gold18Price, order.market.currencyPrice, order.market.ouncePrice, order.market.updatedAt, order.total),
+                    (order_id, quote_id, customer_id, address_id, address_title, address_recipient_name, address_phone, address_province, address_city, address, address_postal_code, status, created_at, updated_at, gold18_price, currency_price, ounce_price, market_updated_at, total)
+                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19)`
+            ).bind(
+                order.orderId,
+                order.quoteId,
+                order.customerId,
+                order.address?.addressId ?? null,
+                order.address?.title ?? null,
+                order.address?.recipientName ?? null,
+                order.address?.phone ?? null,
+                order.address?.province ?? null,
+                order.address?.city ?? null,
+                order.address?.address ?? null,
+                order.address?.postalCode ?? null,
+                order.status,
+                order.createdAt,
+                order.updatedAt,
+                order.market.gold18Price,
+                order.market.currencyPrice,
+                order.market.ouncePrice,
+                order.market.updatedAt,
+                order.total,
+            ),
             ...order.items.map((item) => this.db.prepare(
                 `INSERT INTO order_items
                     (order_id, product_id, variant_id, sku, name, quantity, weight_grams, unit_price, line_total)
@@ -42,7 +62,7 @@ export class D1OrderRepository implements OrderRepository {
 
     private async findOne(field: "order_id" | "quote_id", value: string): Promise<Order | null> {
         const orderRow = await this.db.prepare(
-            `SELECT order_id, quote_id, customer_id, status, created_at, updated_at, gold18_price, currency_price, ounce_price, market_updated_at, total
+            `SELECT order_id, quote_id, customer_id, address_id, address_title, address_recipient_name, address_phone, address_province, address_city, address, address_postal_code, status, created_at, updated_at, gold18_price, currency_price, ounce_price, market_updated_at, total
              FROM orders WHERE ${field} = ?1 LIMIT 1`
         ).bind(value).first<OrderRow>();
 
@@ -53,10 +73,22 @@ export class D1OrderRepository implements OrderRepository {
              FROM order_items WHERE order_id = ?1 ORDER BY id`
         ).bind(orderRow.order_id).all<OrderItemRow>();
 
+        const hasAddress = Boolean(orderRow.address_id);
+
         return {
             orderId: orderRow.order_id,
             quoteId: orderRow.quote_id,
             customerId: orderRow.customer_id,
+            address: hasAddress ? {
+                addressId: orderRow.address_id as string,
+                title: orderRow.address_title ?? "",
+                recipientName: orderRow.address_recipient_name ?? "",
+                phone: orderRow.address_phone ?? "",
+                province: orderRow.address_province ?? "",
+                city: orderRow.address_city ?? "",
+                address: orderRow.address ?? "",
+                postalCode: orderRow.address_postal_code ?? "",
+            } : null,
             status: orderRow.status as OrderStatus,
             createdAt: orderRow.created_at,
             updatedAt: orderRow.updated_at,
@@ -85,6 +117,14 @@ type OrderRow = {
     order_id: string;
     quote_id: string;
     customer_id: string | null;
+    address_id: string | null;
+    address_title: string | null;
+    address_recipient_name: string | null;
+    address_phone: string | null;
+    address_province: string | null;
+    address_city: string | null;
+    address: string | null;
+    address_postal_code: string | null;
     status: string;
     created_at: string;
     updated_at: string;
