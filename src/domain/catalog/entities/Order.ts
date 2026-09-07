@@ -12,6 +12,7 @@ export type OrderStatus =
 export type Order = {
     orderId: string;
     quoteId: string;
+    customerId: string | null;
     status: OrderStatus;
     createdAt: string;
     updatedAt: string;
