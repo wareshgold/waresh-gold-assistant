@@ -15,6 +15,7 @@ import { CalculateGoldPriceUseCase } from "../application/gold/CalculateGoldPric
 import { RegisterCustomerUseCase } from "../application/auth/RegisterCustomerUseCase";
 import { LoginCustomerUseCase } from "../application/auth/LoginCustomerUseCase";
 import { CreateOrderQuoteUseCase, type OrderQuoteItemInput } from "../application/catalog/CreateOrderQuoteUseCase";
+import { GetOrderQuoteUseCase } from "../application/catalog/GetOrderQuoteUseCase";
 import type { CustomerRepository } from "../domain/customer/repositories/CustomerRepository";
 import type { SessionService } from "../domain/auth/providers/SessionService";
 import type { GetProductsUseCase } from "../application/catalog/GetProductsUseCase";
@@ -27,6 +28,7 @@ interface AppContainer {
   healthCheckService: HealthCheckService;
   calculateGoldPriceUseCase: CalculateGoldPriceUseCase;
   createOrderQuoteUseCase: CreateOrderQuoteUseCase;
+  getOrderQuoteUseCase: GetOrderQuoteUseCase;
   marketProvider: MarketPriceProvider;
   snapshotService: MarketSnapshotService;
   getGoldBubbleDataUseCase: GetGoldBubbleDataUseCase;
@@ -112,6 +114,16 @@ export function createApp(container: AppContainer) {
     } catch (error) {
       const message = error instanceof Error ? error.message : "آماده‌سازی سفارش انجام نشد.";
       return c.json({ error: message }, 400);
+    }
+  });
+
+  app.get("/api/v1/checkout/quote/:quoteId", async (c) => {
+    try {
+      const quote = await container.getOrderQuoteUseCase.execute(c.req.param("quoteId"));
+      return quote ? c.json({ quote }, 200, { "Cache-Control": "no-store" }) : c.json({ error: "پیش‌فاکتور پیدا نشد." }, 404, { "Cache-Control": "no-store" });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "دریافت پیش‌فاکتور انجام نشد.";
+      return c.json({ error: message }, 400, { "Cache-Control": "no-store" });
     }
   });
 
