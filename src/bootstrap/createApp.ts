@@ -138,17 +138,33 @@ export function createApp(container: AppContainer) {
       return c.json({ error: "شناسه پیش‌فاکتور الزامی است." }, 400);
     }
 
+    const sessionId = c.req.header("X-Customer-Session")?.trim();
+    let customerId: string | undefined;
+    if (sessionId) {
+      const session = await container.sessionService.get(sessionId);
+      if (!session) return c.json({ error: "نشست کاربری معتبر نیست." }, 401);
+      customerId = session.customerId;
+    }
+
     try {
-      const order = await container.createOrderFromQuoteUseCase.execute(body.quoteId);
+      const order = await container.createOrderFromQuoteUseCase.execute({ quoteId: body.quoteId, customerId });
       return c.json({ order }, 200, { "Cache-Control": "no-store" });
     } catch (error) {
       const message = error instanceof Error ? error.message : "ثبت سفارش انجام نشد.";
-      return c.json({ error: message }, message.includes("پیدا نشد") ? 404 : 400, { "Cache-Control": "no-store" });
+      const status = message.includes("پیدا نشد") ? 404 : message.includes("دیگری") ? 409 : 400;
+      return c.json({ error: message }, status, { "Cache-Control": "no-store" });
     }
   });
 
   app.get("/api/v1/orders/:orderId", async (c) => {
-    return getOrderRoute(c.req.raw, container.getOrderUseCase, c.req.param("orderId"));
+    const sessionId = c.req.header("X-Customer-Session")?.trim();
+    let customerId: string | undefined;
+    if (sessionId) {
+      const session = await container.sessionService.get(sessionId);
+      if (!session) return c.json({ error: "نشست کاربری معتبر نیست." }, 401, { "Cache-Control": "no-store" });
+      customerId = session.customerId;
+    }
+    return getOrderRoute(c.req.raw, container.getOrderUseCase, c.req.param("orderId"), customerId);
   });
 
   app.post("/api/v1/calculate/gold-price", async (c) => {
