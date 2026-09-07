@@ -53,6 +53,7 @@ import { RegisterCustomerUseCase } from "../application/auth/RegisterCustomerUse
 import { LoginCustomerUseCase } from "../application/auth/LoginCustomerUseCase";
 import { WebCryptoPasswordHasher } from "../infrastructure/auth/WebCryptoPasswordHasher";
 import { CreateOrderQuoteUseCase } from "../application/catalog/CreateOrderQuoteUseCase";
+import { GetOrderQuoteUseCase } from "../application/catalog/GetOrderQuoteUseCase";
 import { D1OrderQuoteRepository } from "../infrastructure/catalog/D1OrderQuoteRepository";
 import { MemoryOrderQuoteRepository } from "../infrastructure/catalog/MemoryOrderQuoteRepository";
 import type { OrderQuoteRepository } from "../domain/catalog/repositories/OrderQuoteRepository";
@@ -113,6 +114,7 @@ export function createContainer(env: AppEnv) {
         gold.calculateGoldPriceUseCase,
         orderQuoteRepository,
     );
+    const getOrderQuoteUseCase = new GetOrderQuoteUseCase(orderQuoteRepository);
 
     const goldPriceAlertService = new GoldPriceAlertService(new D1GoldPriceAlertRepository(env.waresh_gold_db));
     const bubbleAlertService = new BubbleAlertService(new D1BubbleAlertRepository(env.waresh_gold_db));
@@ -219,6 +221,7 @@ export function createContainer(env: AppEnv) {
         refreshMarketPriceUseCase,
         refreshMarketPriceJob,
         createOrderQuoteUseCase,
+        getOrderQuoteUseCase,
         saveGoldCalculationHistoryUseCase,
         getGoldCalculationHistoryUseCase,
         ingestOunceTickFromTextUseCase,
