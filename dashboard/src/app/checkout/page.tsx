@@ -8,6 +8,28 @@ import { getVariantLabel } from "@/data/productVariants";
 import { calculateCurrentProductPrices, TELEGRAM_BOT_URL } from "@/lib/api";
 import { CART_CHANGE_EVENT, getCartCount, readCart, type CartItem } from "@/lib/cart";
 
+type CheckoutQuote = {
+  quoteId: string;
+  createdAt: string;
+  market: {
+    gold18Price: number;
+    currencyPrice: number;
+    ouncePrice: number;
+    updatedAt: string;
+  };
+  items: Array<{
+    productId: string;
+    variantId: string;
+    sku: string;
+    name: string;
+    quantity: number;
+    weightGrams: number;
+    unitPrice: number;
+    lineTotal: number;
+  }>;
+  total: number;
+};
+
 const PRICE_REFRESH_MS = 30_000;
 
 export default function CheckoutPage() {
@@ -17,6 +39,7 @@ export default function CheckoutPage() {
   const [priceError, setPriceError] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [validatingOrder, setValidatingOrder] = useState(false);
+  const [quote, setQuote] = useState<CheckoutQuote | null>(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [note, setNote] = useState("");
@@ -25,6 +48,7 @@ export default function CheckoutPage() {
     const sync = () => {
       setCart(readCart());
       setSubmitted(false);
+      setQuote(null);
     };
     sync();
     window.addEventListener(CART_CHANGE_EVENT, sync);
@@ -99,10 +123,32 @@ export default function CheckoutPage() {
 
     setValidatingOrder(true);
     setSubmitted(false);
+    setQuote(null);
 
     try {
       const isFresh = await refreshPrices();
       if (!isFresh) return;
+
+      const response = await fetch("/api/checkout/quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+        body: JSON.stringify({
+          items: cart.map((item) => ({
+            productId: String(item.productId),
+            variantId: item.variantId,
+            quantity: item.quantity,
+          })),
+        }),
+      });
+
+      const data = (await response.json().catch(() => null)) as { quote?: CheckoutQuote; error?: string } | null;
+      if (!response.ok || !data?.quote) {
+        setPriceError(true);
+        return;
+      }
+
+      setQuote(data.quote);
       setSubmitted(true);
     } finally {
       setValidatingOrder(false);
@@ -110,16 +156,21 @@ export default function CheckoutPage() {
   };
 
   const telegramMessage = useMemo(() => {
+    if (!quote) return "#";
+
     const lines = [
       "سلام وارش گلد، می‌خواهم این سفارش را ثبت کنم:",
-      ...products.map(({ item, product }) => `• ${product.name} | ${getVariantLabel(product, item.variantId)} | ${item.quantity} عدد | ${formatToman((prices[product.id] ?? 0) * item.quantity)}`),
-      `جمع فعلی: ${formatToman(total)}`,
+      `شناسه پیش‌فاکتور: ${quote.quoteId}`,
+      ...quote.items.map((item) => `• ${item.name} | ${getVariantLabel(PRODUCTS.find((product) => String(product.id) === item.productId) ?? products[0]?.product, item.variantId)} | ${item.quantity} عدد | ${formatToman(item.lineTotal)}`),
+      `جمع نهایی پیش‌فاکتور: ${formatToman(quote.total)}`,
+      `نرخ طلای ۱۸ عیار در زمان صدور: ${formatToman(quote.market.gold18Price)}`,
+      `زمان صدور: ${new Date(quote.createdAt).toLocaleString("fa-IR")}`,
       `نام: ${name.trim()}`,
       `شماره تماس: ${phone.trim()}`,
       note.trim() ? `توضیحات: ${note.trim()}` : "",
     ].filter(Boolean);
     return `${TELEGRAM_BOT_URL}?text=${encodeURIComponent(lines.join("\n"))}`;
-  }, [name, note, phone, prices, products, total]);
+  }, [name, note, phone, products, quote]);
 
   if (!products.length) {
     return (
@@ -145,11 +196,11 @@ export default function CheckoutPage() {
             </div>
             <label className="mt-5 block"><span className="text-xs font-bold text-[#55584f]">توضیحات سفارش <span className="font-normal text-[#99978f]">(اختیاری)</span></span><textarea value={note} onChange={(event) => setNote(event.target.value)} rows={5} className="mt-2 w-full rounded-2xl border border-[#ded8cc] bg-white px-4 py-3 text-sm leading-7 outline-none transition focus:border-[#b28b4c]" placeholder="مثلاً زمان مناسب برای تماس یا توضیح درباره مدل..." /></label>
             {priceError && <p className="mt-5 rounded-2xl bg-[#f8eee9] px-4 py-3 text-[11px] leading-6 text-[#94675f]">برای آماده‌سازی سفارش باید قیمت همه محصولات با نرخ جاری بازار با موفقیت دریافت شود.</p>}
-            {!submitted ? <button type="submit" disabled={loadingPrices || validatingOrder || priceError || !total} className="mt-6 min-h-13 w-full rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white shadow-[0_14px_35px_rgba(37,57,47,0.14)] transition hover:-translate-y-0.5 hover:bg-[#1d3028] disabled:cursor-not-allowed disabled:opacity-45">{validatingOrder ? "در حال بررسی نهایی قیمت..." : loadingPrices ? "در حال بررسی قیمت..." : "ادامه و آماده‌سازی سفارش"}</button> : <div className="mt-6 rounded-[1.5rem] border border-[#cddbcf] bg-[#edf4ee] p-5"><p className="text-sm font-extrabold text-[#35543e]">سفارش آماده ارسال است ✓</p><p className="mt-2 text-xs leading-6 text-[#58705f]">قیمت‌ها همین حالا دوباره از نرخ جاری بازار محاسبه شده‌اند. برای تأیید نهایی قیمت و هماهنگی خرید، سفارش را در تلگرام برای وارش ارسال کنید.</p><a href={telegramMessage} target="_blank" rel="noopener noreferrer" className="mt-4 flex min-h-12 items-center justify-center rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white">ارسال سفارش در تلگرام</a></div>}
+            {!submitted ? <button type="submit" disabled={loadingPrices || validatingOrder || priceError || !total} className="mt-6 min-h-13 w-full rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white shadow-[0_14px_35px_rgba(37,57,47,0.14)] transition hover:-translate-y-0.5 hover:bg-[#1d3028] disabled:cursor-not-allowed disabled:opacity-45">{validatingOrder ? "در حال بررسی نهایی قیمت..." : loadingPrices ? "در حال بررسی قیمت..." : "ادامه و آماده‌سازی سفارش"}</button> : <div className="mt-6 rounded-[1.5rem] border border-[#cddbcf] bg-[#edf4ee] p-5"><p className="text-sm font-extrabold text-[#35543e]">پیش‌فاکتور آماده ارسال است ✓</p><p className="mt-2 text-xs leading-6 text-[#58705f]">قیمت نهایی توسط سرویس سفارش و بر اساس نرخ بازار در لحظه صدور پیش‌فاکتور محاسبه شده است. برای تأیید نهایی و هماهنگی خرید، سفارش را در تلگرام برای وارش ارسال کنید.</p><a href={telegramMessage} target="_blank" rel="noopener noreferrer" className="mt-4 flex min-h-12 items-center justify-center rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white">ارسال پیش‌فاکتور در تلگرام</a></div>}
             <Link href="/cart" className="mt-3 flex min-h-11 items-center justify-center rounded-full border border-[#ded8cc] bg-white px-5 py-3 text-xs font-bold text-[#62685e]">بازگشت و ویرایش سبد</Link>
           </form>
 
-          <aside className="lg:sticky lg:top-28 rounded-[2rem] border border-[#ded8cc] bg-[#fffdf8] p-5 shadow-[0_18px_50px_rgba(55,52,43,0.06)] sm:p-7"><p className="text-xs font-bold text-[#929188]">خلاصه سفارش</p><div className="mt-5 space-y-4">{products.map(({ item, product }) => <div key={`${item.productId}-${item.variantId}`} className="flex gap-3"><img src={product.image} alt="" className="h-16 w-14 shrink-0 rounded-xl object-cover" /><div className="min-w-0 flex-1"><p className="text-xs font-extrabold leading-6">{product.name}</p><p className="text-[10px] text-[#88877f]">{getVariantLabel(product, item.variantId)} · {item.quantity} عدد · {formatWeight(product.weight)}</p><p className="mt-1 text-xs font-bold text-[#9b753c]">{prices[product.id] ? formatToman(prices[product.id] * item.quantity) : loadingPrices ? "در حال محاسبه" : "قیمت در دسترس نیست"}</p></div></div>)}</div><div className="mt-6 border-t border-[#e6e0d5] pt-5"><div className="flex items-center justify-between"><span className="text-sm text-[#777970]">جمع فعلی</span><strong className="text-lg text-[#9b753c]">{total && !priceError ? formatToman(total) : "—"}</strong></div><p className="mt-3 text-[11px] leading-6 text-[#88877f]">این مبلغ با نرخ جاری بازار محاسبه می‌شود و درست قبل از آماده‌سازی سفارش دوباره اعتبارسنجی خواهد شد.</p></div></aside>
+          <aside className="lg:sticky lg:top-28 rounded-[2rem] border border-[#ded8cc] bg-[#fffdf8] p-5 shadow-[0_18px_50px_rgba(55,52,43,0.06)] sm:p-7"><p className="text-xs font-bold text-[#929188]">خلاصه سفارش</p><div className="mt-5 space-y-4">{products.map(({ item, product }) => <div key={`${item.productId}-${item.variantId}`} className="flex gap-3"><img src={product.image} alt="" className="h-16 w-14 shrink-0 rounded-xl object-cover" /><div className="min-w-0 flex-1"><p className="text-xs font-extrabold leading-6">{product.name}</p><p className="text-[10px] text-[#88877f]">{getVariantLabel(product, item.variantId)} · {item.quantity} عدد · {formatWeight(product.weight)}</p><p className="mt-1 text-xs font-bold text-[#9b753c]">{prices[product.id] ? formatToman(prices[product.id] * item.quantity) : loadingPrices ? "در حال محاسبه" : "قیمت در دسترس نیست"}</p></div></div>)}</div><div className="mt-6 border-t border-[#e6e0d5] pt-5"><div className="flex items-center justify-between"><span className="text-sm text-[#777970]">جمع فعلی</span><strong className="text-lg text-[#9b753c]">{total && !priceError ? formatToman(total) : "—"}</strong></div><p className="mt-3 text-[11px] leading-6 text-[#88877f]">این مبلغ برای نمایش فعلی است. هنگام ادامه فرایند، سرور محصول و نرخ بازار را دوباره بررسی و پیش‌فاکتور مستقل صادر می‌کند.</p></div></aside>
         </div>
       </section>
 
