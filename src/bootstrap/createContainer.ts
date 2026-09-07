@@ -54,9 +54,13 @@ import { LoginCustomerUseCase } from "../application/auth/LoginCustomerUseCase";
 import { WebCryptoPasswordHasher } from "../infrastructure/auth/WebCryptoPasswordHasher";
 import { CreateOrderQuoteUseCase } from "../application/catalog/CreateOrderQuoteUseCase";
 import { GetOrderQuoteUseCase } from "../application/catalog/GetOrderQuoteUseCase";
+import { CreateOrderFromQuoteUseCase } from "../application/catalog/CreateOrderFromQuoteUseCase";
 import { D1OrderQuoteRepository } from "../infrastructure/catalog/D1OrderQuoteRepository";
 import { MemoryOrderQuoteRepository } from "../infrastructure/catalog/MemoryOrderQuoteRepository";
+import { D1OrderRepository } from "../infrastructure/catalog/D1OrderRepository";
+import { MemoryOrderRepository } from "../infrastructure/catalog/MemoryOrderRepository";
 import type { OrderQuoteRepository } from "../domain/catalog/repositories/OrderQuoteRepository";
+import type { OrderRepository } from "../domain/catalog/repositories/OrderRepository";
 
 export function createContainer(env: AppEnv) {
     const storage = createStorageModule(env);
@@ -115,6 +119,11 @@ export function createContainer(env: AppEnv) {
         orderQuoteRepository,
     );
     const getOrderQuoteUseCase = new GetOrderQuoteUseCase(orderQuoteRepository);
+
+    const orderRepository: OrderRepository = env.waresh_gold_db
+        ? new D1OrderRepository(env.waresh_gold_db)
+        : new MemoryOrderRepository();
+    const createOrderFromQuoteUseCase = new CreateOrderFromQuoteUseCase(orderQuoteRepository, orderRepository);
 
     const goldPriceAlertService = new GoldPriceAlertService(new D1GoldPriceAlertRepository(env.waresh_gold_db));
     const bubbleAlertService = new BubbleAlertService(new D1BubbleAlertRepository(env.waresh_gold_db));
@@ -222,6 +231,7 @@ export function createContainer(env: AppEnv) {
         refreshMarketPriceJob,
         createOrderQuoteUseCase,
         getOrderQuoteUseCase,
+        createOrderFromQuoteUseCase,
         saveGoldCalculationHistoryUseCase,
         getGoldCalculationHistoryUseCase,
         ingestOunceTickFromTextUseCase,
