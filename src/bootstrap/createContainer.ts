@@ -52,6 +52,7 @@ import { TelegramPriceTargetAlertNotifier } from "../infrastructure/price-target
 import { RegisterCustomerUseCase } from "../application/auth/RegisterCustomerUseCase";
 import { LoginCustomerUseCase } from "../application/auth/LoginCustomerUseCase";
 import { WebCryptoPasswordHasher } from "../infrastructure/auth/WebCryptoPasswordHasher";
+import { CreateOrderQuoteUseCase } from "../application/catalog/CreateOrderQuoteUseCase";
 
 export function createContainer(env: AppEnv) {
     const storage = createStorageModule(env);
@@ -98,6 +99,12 @@ export function createContainer(env: AppEnv) {
     const getMarketChartUseCase = new GetMarketChartUseCase(market.marketChartService);
     const refreshMarketPriceUseCase = new RefreshMarketPriceUseCase(market.priceRefreshService);
     const refreshMarketPriceJob = new RefreshMarketPriceJob(refreshMarketPriceUseCase);
+
+    const createOrderQuoteUseCase = new CreateOrderQuoteUseCase(
+        catalog.productRepository,
+        market.cachedMarketProvider,
+        gold.calculateGoldPriceUseCase,
+    );
 
     const goldPriceAlertService = new GoldPriceAlertService(new D1GoldPriceAlertRepository(env.waresh_gold_db));
     const bubbleAlertService = new BubbleAlertService(new D1BubbleAlertRepository(env.waresh_gold_db));
@@ -203,6 +210,7 @@ export function createContainer(env: AppEnv) {
         getMarketChartUseCase,
         refreshMarketPriceUseCase,
         refreshMarketPriceJob,
+        createOrderQuoteUseCase,
         saveGoldCalculationHistoryUseCase,
         getGoldCalculationHistoryUseCase,
         ingestOunceTickFromTextUseCase,
