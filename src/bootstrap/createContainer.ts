@@ -53,6 +53,9 @@ import { RegisterCustomerUseCase } from "../application/auth/RegisterCustomerUse
 import { LoginCustomerUseCase } from "../application/auth/LoginCustomerUseCase";
 import { WebCryptoPasswordHasher } from "../infrastructure/auth/WebCryptoPasswordHasher";
 import { CreateOrderQuoteUseCase } from "../application/catalog/CreateOrderQuoteUseCase";
+import { D1OrderQuoteRepository } from "../infrastructure/catalog/D1OrderQuoteRepository";
+import { MemoryOrderQuoteRepository } from "../infrastructure/catalog/MemoryOrderQuoteRepository";
+import type { OrderQuoteRepository } from "../domain/catalog/repositories/OrderQuoteRepository";
 
 export function createContainer(env: AppEnv) {
     const storage = createStorageModule(env);
@@ -100,10 +103,15 @@ export function createContainer(env: AppEnv) {
     const refreshMarketPriceUseCase = new RefreshMarketPriceUseCase(market.priceRefreshService);
     const refreshMarketPriceJob = new RefreshMarketPriceJob(refreshMarketPriceUseCase);
 
+    const orderQuoteRepository: OrderQuoteRepository = env.waresh_gold_db
+        ? new D1OrderQuoteRepository(env.waresh_gold_db)
+        : new MemoryOrderQuoteRepository();
+
     const createOrderQuoteUseCase = new CreateOrderQuoteUseCase(
         catalog.productRepository,
         market.cachedMarketProvider,
         gold.calculateGoldPriceUseCase,
+        orderQuoteRepository,
     );
 
     const goldPriceAlertService = new GoldPriceAlertService(new D1GoldPriceAlertRepository(env.waresh_gold_db));
