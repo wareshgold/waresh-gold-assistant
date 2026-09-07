@@ -52,6 +52,7 @@ export async function calculateProductPrice(
   const response = await fetch(getCalculationUrl(), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    cache: "no-store",
     body: JSON.stringify({
       weight: product.weight,
       goldPrice,
@@ -87,4 +88,11 @@ export async function calculateProductPrices(
   return Object.fromEntries(
     results.filter((entry): entry is readonly [number, number] => entry[1] !== null),
   );
+}
+
+export async function calculateCurrentProductPrices(
+  products: readonly Product[],
+): Promise<Record<number, number>> {
+  const market = await getMarketPrice();
+  return calculateProductPrices(products, market.gold18Price);
 }
