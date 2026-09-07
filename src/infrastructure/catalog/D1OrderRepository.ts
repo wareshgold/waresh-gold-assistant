@@ -10,34 +10,12 @@ export class D1OrderRepository implements OrderRepository {
                 `INSERT INTO orders
                     (order_id, quote_id, customer_id, status, created_at, updated_at, gold18_price, currency_price, ounce_price, market_updated_at, total)
                  VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)`
-            ).bind(
-                order.orderId,
-                order.quoteId,
-                order.customerId,
-                order.status,
-                order.createdAt,
-                order.updatedAt,
-                order.market.gold18Price,
-                order.market.currencyPrice,
-                order.market.ouncePrice,
-                order.market.updatedAt,
-                order.total,
-            ),
+            ).bind(order.orderId, order.quoteId, order.customerId, order.status, order.createdAt, order.updatedAt, order.market.gold18Price, order.market.currencyPrice, order.market.ouncePrice, order.market.updatedAt, order.total),
             ...order.items.map((item) => this.db.prepare(
                 `INSERT INTO order_items
                     (order_id, product_id, variant_id, sku, name, quantity, weight_grams, unit_price, line_total)
                  VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)`
-            ).bind(
-                order.orderId,
-                item.productId,
-                item.variantId,
-                item.sku,
-                item.name,
-                item.quantity,
-                item.weightGrams,
-                item.unitPrice,
-                item.lineTotal,
-            )),
+            ).bind(order.orderId, item.productId, item.variantId, item.sku, item.name, item.quantity, item.weightGrams, item.unitPrice, item.lineTotal)),
         ]);
     }
 
@@ -47,6 +25,19 @@ export class D1OrderRepository implements OrderRepository {
 
     async findByQuoteId(quoteId: string): Promise<Order | null> {
         return this.findOne("quote_id", quoteId);
+    }
+
+    async findByCustomerId(customerId: string): Promise<Order[]> {
+        const rows = await this.db.prepare(
+            `SELECT order_id FROM orders WHERE customer_id = ?1 ORDER BY created_at DESC`
+        ).bind(customerId).all<{ order_id: string }>();
+
+        const orders: Order[] = [];
+        for (const row of rows.results) {
+            const order = await this.findOne("order_id", row.order_id);
+            if (order) orders.push(order);
+        }
+        return orders;
     }
 
     private async findOne(field: "order_id" | "quote_id", value: string): Promise<Order | null> {
@@ -83,7 +74,7 @@ export class D1OrderRepository implements OrderRepository {
                 quantity: Number(row.quantity),
                 weightGrams: Number(row.weight_grams),
                 unitPrice: Number(row.unit_price),
-                lineTotal: Number(row.line_total),
+                lineTotal: Number(row.lineTotal),
             })),
             total: Number(orderRow.total),
         };
