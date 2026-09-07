@@ -6,10 +6,9 @@ export async function POST(request: Request) {
     try {
         const body = await request.json();
         const quoteId = typeof body?.quoteId === "string" ? body.quoteId.trim() : "";
+        const addressId = typeof body?.addressId === "string" ? body.addressId.trim() : "";
 
-        if (!quoteId) {
-            return NextResponse.json({ error: "شناسه پیش‌فاکتور الزامی است." }, { status: 400 });
-        }
+        if (!quoteId) return NextResponse.json({ error: "شناسه پیش‌فاکتور الزامی است." }, { status: 400 });
 
         const sessionId = (await cookies()).get("waresh_customer_session")?.value;
         const headers: HeadersInit = { "Content-Type": "application/json" };
@@ -18,7 +17,7 @@ export async function POST(request: Request) {
         const response = await fetch(`${API_BASE_URL}/api/v1/orders/from-quote`, {
             method: "POST",
             headers,
-            body: JSON.stringify({ quoteId }),
+            body: JSON.stringify({ quoteId, ...(addressId ? { addressId } : {}) }),
             cache: "no-store",
         });
 
