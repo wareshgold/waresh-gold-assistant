@@ -18,6 +18,7 @@ import { CreateOrderQuoteUseCase, type OrderQuoteItemInput } from "../applicatio
 import { GetOrderQuoteUseCase } from "../application/catalog/GetOrderQuoteUseCase";
 import { CreateOrderFromQuoteUseCase } from "../application/catalog/CreateOrderFromQuoteUseCase";
 import { GetOrderUseCase } from "../application/catalog/GetOrderUseCase";
+import { ListCustomerOrdersUseCase } from "../application/catalog/ListCustomerOrdersUseCase";
 import { getOrderRoute } from "../interfaces/http/routes/GetOrderRoute";
 import { listCustomerOrdersRoute } from "../interfaces/http/routes/ListCustomerOrdersRoute";
 import type { CustomerRepository } from "../domain/customer/repositories/CustomerRepository";
@@ -35,6 +36,7 @@ interface AppContainer {
   getOrderQuoteUseCase: GetOrderQuoteUseCase;
   createOrderFromQuoteUseCase: CreateOrderFromQuoteUseCase;
   getOrderUseCase: GetOrderUseCase;
+  listCustomerOrdersUseCase: ListCustomerOrdersUseCase;
   marketProvider: MarketPriceProvider;
   snapshotService: MarketSnapshotService;
   getGoldBubbleDataUseCase: GetGoldBubbleDataUseCase;
@@ -153,7 +155,7 @@ export function createApp(container: AppContainer) {
     if (!sessionId) return c.json({ error: "احراز هویت لازم است." }, 401, { "Cache-Control": "no-store" });
     const session = await container.sessionService.get(sessionId);
     if (!session) return c.json({ error: "نشست کاربری معتبر نیست." }, 401, { "Cache-Control": "no-store" });
-    return listCustomerOrdersRoute(container.getOrderUseCase, session.customerId);
+    return listCustomerOrdersRoute(container.listCustomerOrdersUseCase, session.customerId);
   });
 
   app.post("/api/v1/calculate/gold-price", async (c) => {
