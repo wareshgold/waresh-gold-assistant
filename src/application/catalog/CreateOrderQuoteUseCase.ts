@@ -1,4 +1,6 @@
 import type { ProductRepository } from "../../domain/catalog/repositories/ProductRepository";
+import type { OrderQuoteRepository } from "../../domain/catalog/repositories/OrderQuoteRepository";
+import type { OrderQuote } from "../../domain/catalog/entities/OrderQuote";
 import type { MarketPriceProvider } from "../../domain/market/providers/MarketPriceProvider";
 import type { CalculateGoldPriceUseCase } from "../gold/CalculateGoldPriceUseCase";
 
@@ -8,35 +10,12 @@ export interface OrderQuoteItemInput {
     quantity: number;
 }
 
-export interface OrderQuoteLine {
-    productId: string;
-    variantId: string;
-    sku: string;
-    name: string;
-    quantity: number;
-    weightGrams: number;
-    unitPrice: number;
-    lineTotal: number;
-}
-
-export interface OrderQuote {
-    quoteId: string;
-    createdAt: string;
-    market: {
-        gold18Price: number;
-        currencyPrice: number;
-        ouncePrice: number | null;
-        updatedAt: string;
-    };
-    items: OrderQuoteLine[];
-    total: number;
-}
-
 export class CreateOrderQuoteUseCase {
     constructor(
         private readonly productRepository: ProductRepository,
         private readonly marketPriceProvider: MarketPriceProvider,
         private readonly calculateGoldPriceUseCase: CalculateGoldPriceUseCase,
+        private readonly orderQuoteRepository: OrderQuoteRepository,
     ) {}
 
     async execute(items: readonly OrderQuoteItemInput[]): Promise<OrderQuote> {
@@ -61,7 +40,7 @@ export class CreateOrderQuoteUseCase {
             Promise.all(normalizedItems.map((item) => this.productRepository.findById(item.productId))),
         ]);
 
-        const lines: OrderQuoteLine[] = [];
+        const lines: OrderQuote["items"] = [];
 
         for (let index = 0; index < normalizedItems.length; index += 1) {
             const item = normalizedItems[index];
@@ -99,7 +78,7 @@ export class CreateOrderQuoteUseCase {
             });
         }
 
-        return {
+        const quote: OrderQuote = {
             quoteId: crypto.randomUUID(),
             createdAt: new Date().toISOString(),
             market: {
@@ -111,5 +90,8 @@ export class CreateOrderQuoteUseCase {
             items: lines,
             total: lines.reduce((sum, line) => sum + line.lineTotal, 0),
         };
+
+        await this.orderQuoteRepository.save(quote);
+        return quote;
     }
 }
