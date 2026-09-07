@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { API_BASE_URL } from "@/lib/api";
 
@@ -13,9 +14,13 @@ export async function GET(
       return NextResponse.json({ error: "شناسه سفارش الزامی است." }, { status: 400 });
     }
 
+    const sessionId = (await cookies()).get("waresh_customer_session")?.value;
+    const headers: HeadersInit = {};
+    if (sessionId) headers["X-Customer-Session"] = sessionId;
+
     const response = await fetch(
       `${API_BASE_URL}/api/v1/orders/${encodeURIComponent(normalizedOrderId)}`,
-      { cache: "no-store" },
+      { cache: "no-store", headers },
     );
 
     const payload = await response.json().catch(() => ({ error: "دریافت سفارش انجام نشد." }));
