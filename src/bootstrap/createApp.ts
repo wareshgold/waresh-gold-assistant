@@ -16,6 +16,7 @@ import { RegisterCustomerUseCase } from "../application/auth/RegisterCustomerUse
 import { LoginCustomerUseCase } from "../application/auth/LoginCustomerUseCase";
 import { CreateOrderQuoteUseCase, type OrderQuoteItemInput } from "../application/catalog/CreateOrderQuoteUseCase";
 import { GetOrderQuoteUseCase } from "../application/catalog/GetOrderQuoteUseCase";
+import { CreateOrderFromQuoteUseCase } from "../application/catalog/CreateOrderFromQuoteUseCase";
 import type { CustomerRepository } from "../domain/customer/repositories/CustomerRepository";
 import type { SessionService } from "../domain/auth/providers/SessionService";
 import type { GetProductsUseCase } from "../application/catalog/GetProductsUseCase";
@@ -29,6 +30,7 @@ interface AppContainer {
   calculateGoldPriceUseCase: CalculateGoldPriceUseCase;
   createOrderQuoteUseCase: CreateOrderQuoteUseCase;
   getOrderQuoteUseCase: GetOrderQuoteUseCase;
+  createOrderFromQuoteUseCase: CreateOrderFromQuoteUseCase;
   marketProvider: MarketPriceProvider;
   snapshotService: MarketSnapshotService;
   getGoldBubbleDataUseCase: GetGoldBubbleDataUseCase;
@@ -124,6 +126,21 @@ export function createApp(container: AppContainer) {
     } catch (error) {
       const message = error instanceof Error ? error.message : "دریافت پیش‌فاکتور انجام نشد.";
       return c.json({ error: message }, 400, { "Cache-Control": "no-store" });
+    }
+  });
+
+  app.post("/api/v1/orders/from-quote", async (c) => {
+    const body = await jsonBody(c);
+    if (!body || typeof body.quoteId !== "string") {
+      return c.json({ error: "شناسه پیش‌فاکتور الزامی است." }, 400);
+    }
+
+    try {
+      const order = await container.createOrderFromQuoteUseCase.execute(body.quoteId);
+      return c.json({ order }, 200, { "Cache-Control": "no-store" });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "ثبت سفارش انجام نشد.";
+      return c.json({ error: message }, message.includes("پیدا نشد") ? 404 : 400, { "Cache-Control": "no-store" });
     }
   });
 
