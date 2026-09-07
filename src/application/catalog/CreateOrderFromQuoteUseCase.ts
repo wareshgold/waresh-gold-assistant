@@ -11,14 +11,19 @@ export class CreateOrderFromQuoteUseCase {
         private readonly customerRepository: CustomerRepository,
     ) {}
 
-    async execute(input: { quoteId: string; customerId?: string }): Promise<Order> {
+    async execute(input: { quoteId: string; customerId?: string; addressId?: string }): Promise<Order> {
         const normalizedQuoteId = input?.quoteId?.trim();
         if (!normalizedQuoteId) throw new Error("شناسه پیش‌فاکتور الزامی است.");
 
         const customerId = input.customerId?.trim() || null;
+        const addressId = input.addressId?.trim() || null;
+
         if (customerId) {
             const customer = await this.customerRepository.findById(customerId);
             if (!customer) throw new Error("حساب کاربری پیدا نشد.");
+            if (!addressId) throw new Error("انتخاب آدرس برای ثبت سفارش الزامی است.");
+        } else if (addressId) {
+            throw new Error("برای استفاده از آدرس باید وارد حساب کاربری شوید.");
         }
 
         const existing = await this.orderRepository.findByQuoteId(normalizedQuoteId);
@@ -26,17 +31,39 @@ export class CreateOrderFromQuoteUseCase {
             if (customerId && existing.customerId !== customerId) {
                 throw new Error("این پیش‌فاکتور قبلاً به حساب کاربری دیگری ثبت شده است.");
             }
+            if (customerId && existing.address?.addressId !== addressId) {
+                throw new Error("این پیش‌فاکتور قبلاً با آدرس دیگری ثبت شده است.");
+            }
             return existing;
         }
 
         const quote = await this.quoteRepository.findById(normalizedQuoteId);
         if (!quote) throw new Error("پیش‌فاکتور پیدا نشد.");
 
+        let address: Order["address"] = null;
+        if (customerId && addressId) {
+            const addresses = await this.customerRepository.listAddresses(customerId);
+            const ownedAddress = addresses.find((item) => item.id === addressId);
+            if (!ownedAddress) throw new Error("آدرس انتخاب‌شده پیدا نشد.");
+
+            address = {
+                addressId: ownedAddress.id,
+                title: ownedAddress.title,
+                recipientName: ownedAddress.recipientName,
+                phone: ownedAddress.phone,
+                province: ownedAddress.province,
+                city: ownedAddress.city,
+                address: ownedAddress.address,
+                postalCode: ownedAddress.postalCode,
+            };
+        }
+
         const now = new Date().toISOString();
         const order: Order = {
             orderId: crypto.randomUUID(),
             quoteId: quote.quoteId,
             customerId,
+            address,
             status: "pending_confirmation",
             createdAt: now,
             updatedAt: now,
