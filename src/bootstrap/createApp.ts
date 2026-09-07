@@ -17,6 +17,8 @@ import { LoginCustomerUseCase } from "../application/auth/LoginCustomerUseCase";
 import { CreateOrderQuoteUseCase, type OrderQuoteItemInput } from "../application/catalog/CreateOrderQuoteUseCase";
 import { GetOrderQuoteUseCase } from "../application/catalog/GetOrderQuoteUseCase";
 import { CreateOrderFromQuoteUseCase } from "../application/catalog/CreateOrderFromQuoteUseCase";
+import { GetOrderUseCase } from "../application/catalog/GetOrderUseCase";
+import { getOrderRoute } from "../interfaces/http/routes/GetOrderRoute";
 import type { CustomerRepository } from "../domain/customer/repositories/CustomerRepository";
 import type { SessionService } from "../domain/auth/providers/SessionService";
 import type { GetProductsUseCase } from "../application/catalog/GetProductsUseCase";
@@ -31,6 +33,7 @@ interface AppContainer {
   createOrderQuoteUseCase: CreateOrderQuoteUseCase;
   getOrderQuoteUseCase: GetOrderQuoteUseCase;
   createOrderFromQuoteUseCase: CreateOrderFromQuoteUseCase;
+  getOrderUseCase: GetOrderUseCase;
   marketProvider: MarketPriceProvider;
   snapshotService: MarketSnapshotService;
   getGoldBubbleDataUseCase: GetGoldBubbleDataUseCase;
@@ -142,6 +145,10 @@ export function createApp(container: AppContainer) {
       const message = error instanceof Error ? error.message : "ثبت سفارش انجام نشد.";
       return c.json({ error: message }, message.includes("پیدا نشد") ? 404 : 400, { "Cache-Control": "no-store" });
     }
+  });
+
+  app.get("/api/v1/orders/:orderId", async (c) => {
+    return getOrderRoute(c.req.raw, container.getOrderUseCase, c.req.param("orderId"));
   });
 
   app.post("/api/v1/calculate/gold-price", async (c) => {
