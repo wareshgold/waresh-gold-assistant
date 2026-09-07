@@ -25,6 +25,7 @@ function createUseCase(): GetOrderUseCase {
     save: async () => undefined,
     findById: async (orderId) => (orderId === order.orderId ? order : null),
     findByQuoteId: async () => null,
+    findByCustomerId: async () => [],
   };
   return new GetOrderUseCase(repository);
 }
@@ -43,6 +44,7 @@ describe("GetOrderUseCase", () => {
       save: async () => undefined,
       findById: async () => null,
       findByQuoteId: async () => null,
+      findByCustomerId: async () => [],
     };
     await expect(new GetOrderUseCase(repository).execute({ orderId: "missing", customerId: "customer-1" })).resolves.toBeNull();
   });
