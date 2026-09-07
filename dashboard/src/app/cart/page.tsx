@@ -24,24 +24,19 @@ export default function CartPage() {
     };
   }, []);
 
-  const products = useMemo(
-    () => cart.flatMap((item) => {
-      const product = PRODUCTS.find((candidate) => candidate.id === item.productId);
-      return product ? [{ item, product }] : [];
-    }),
-    [cart],
-  );
+  const products = useMemo(() => cart.flatMap((item) => {
+    const product = PRODUCTS.find((candidate) => candidate.id === item.productId);
+    return product ? [{ item, product }] : [];
+  }), [cart]);
 
   useEffect(() => {
     let cancelled = false;
-
     async function loadPrices() {
       if (!products.length) {
         setPrices({});
         setLoadingPrices(false);
         return;
       }
-
       setLoadingPrices(true);
       try {
         const market = await getMarketPrice();
@@ -53,8 +48,7 @@ export default function CartPage() {
         if (!cancelled) setLoadingPrices(false);
       }
     }
-
-    loadPrices();
+    void loadPrices();
     return () => { cancelled = true; };
   }, [products]);
 
@@ -77,12 +71,11 @@ export default function CartPage() {
         <div className="max-w-2xl"><p className="text-xs font-bold tracking-[0.2em] text-[#9b7b48]">YOUR CART</p><h1 className="mt-4 text-3xl font-extrabold sm:text-5xl">سبد خرید</h1><p className="mt-4 text-sm leading-8 text-[#70766d]">محصولات انتخابی شما اینجا نگه‌داری می‌شوند. قیمت‌ها بر اساس نرخ جاری بازار محاسبه می‌شوند.</p></div>
 
         {!products.length ? (
-          <div className="mt-10 rounded-[2rem] border border-[#e0dbd1] bg-[#fffdf8] p-8 text-center sm:p-14"><div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#f2eadb] text-2xl text-[#9b753c]">🛒</div><h2 className="mt-5 text-xl font-extrabold">سبد خرید شما خالی است</h2><p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[#85857c]">از بین محصولات وارش یک انتخاب بردارید و بعد به سبد خرید برگردید.</p><Link href="/#products" className="mt-6 inline-flex min-h-12 items-center rounded-full bg-[#25392f] px-6 text-sm font-bold text-white">مشاهده محصولات</Link></div>
+          <div className="mt-10 rounded-[2rem] border border-[#e0dbd1] bg-[#fffdf8] p-8 text-center sm:p-14"><div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#f2eadb] text-2xl text-[#9b753c]">🛒</div><h2 className="mt-5 text-xl font-extrabold">سبد خرید شما خالی است</h2><p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[#85857c]">از بین محصولات وارش یک انتخاب بردارید و بعد به سبد خرید برگردید.</p><Link href="/#products" className="mt-6 inline-flex min-h-12 items-center rounded-full bg-[#25392f] px-6 py-2.5 text-sm font-bold text-white">مشاهده محصولات</Link></div>
         ) : (
           <div className="mt-10 grid gap-5 lg:grid-cols-[1fr_360px] lg:items-start">
             <div className="space-y-3">{products.map(({ item, product }) => <article key={`${item.productId}-${item.variantId}`} className="flex gap-4 rounded-[1.5rem] border border-[#e0dbd1] bg-[#fffdf8] p-4 sm:p-5"><Link href={`/products/${product.id}`} className="h-24 w-20 shrink-0 overflow-hidden rounded-2xl bg-[#eee8dc] sm:h-28 sm:w-24"><img src={product.image} alt={product.name} className="h-full w-full object-cover" /></Link><div className="min-w-0 flex-1"><div className="flex items-start justify-between gap-3"><div><p className="text-[11px] font-bold text-[#a17c45]">{getVariantLabel(product, item.variantId)}</p><Link href={`/products/${product.id}`} className="mt-1 block text-sm font-extrabold leading-7 hover:text-[#8b6732]">{product.name}</Link><p className="mt-1 text-xs text-[#85857c]">{formatWeight(product.weight)}</p></div><button type="button" onClick={() => setCart(removeFromCart(item.productId, item.variantId))} className="text-xs font-bold text-[#9a6258]">حذف</button></div><div className="mt-3 flex items-center justify-between gap-3"><div className="flex items-center rounded-full border border-[#ded8cc] bg-white"><button type="button" onClick={() => setCart(updateCartQuantity(item.productId, item.variantId, item.quantity - 1))} className="h-9 w-9 text-sm">−</button><span className="min-w-8 text-center text-xs font-bold">{item.quantity}</span><button type="button" onClick={() => setCart(updateCartQuantity(item.productId, item.variantId, item.quantity + 1))} className="h-9 w-9 text-sm">+</button></div><p className="text-sm font-extrabold text-[#9b753c]">{prices[product.id] ? formatToman(prices[product.id] * item.quantity) : loadingPrices ? "در حال محاسبه" : "—"}</p></div></div></article>)}</div>
-
-            <aside className="lg:sticky lg:top-28 rounded-[1.75rem] border border-[#ded8cc] bg-[#fffdf8] p-5 shadow-[0_18px_50px_rgba(55,52,43,0.06)] sm:p-6"><p className="text-xs font-bold text-[#929188]">خلاصه سفارش</p><div className="mt-5 flex items-center justify-between text-sm"><span className="text-[#777970]">تعداد</span><strong>{count} عدد</strong></div><div className="mt-3 flex items-center justify-between text-sm"><span className="text-[#777970]">جمع فعلی</span><strong className="text-[#9b753c]">{total > 0 ? formatToman(total) : "—"}</strong></div><div className="mt-5 border-t border-[#e6e0d5] pt-5 text-[11px] leading-6 text-[#88877f]">قیمت نهایی هنگام ادامه فرایند خرید دوباره با نرخ بازار بررسی خواهد شد.</div><button type="button" disabled className="mt-5 min-h-12 w-full rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white opacity-45">ادامه فرایند خرید — به‌زودی</button><Link href="/#products" className="mt-3 flex min-h-11 items-center justify-center rounded-full border border-[#ded8cc] bg-white px-5 text-xs font-bold text-[#62685e]">بازگشت به محصولات</Link></aside>
+            <aside className="lg:sticky lg:top-28 rounded-[1.75rem] border border-[#ded8cc] bg-[#fffdf8] p-5 shadow-[0_18px_50px_rgba(55,52,43,0.06)] sm:p-6"><p className="text-xs font-bold text-[#929188]">خلاصه سفارش</p><div className="mt-5 flex items-center justify-between text-sm"><span className="text-[#777970]">تعداد</span><strong>{count} عدد</strong></div><div className="mt-3 flex items-center justify-between text-sm"><span className="text-[#777970]">جمع فعلی</span><strong className="text-[#9b753c]">{total > 0 ? formatToman(total) : "—"}</strong></div><div className="mt-5 border-t border-[#e6e0d5] pt-5 text-[11px] leading-6 text-[#88877f]">قیمت نهایی هنگام ادامه فرایند خرید دوباره با نرخ بازار بررسی خواهد شد.</div><Link href="/checkout" className="mt-5 flex min-h-12 w-full items-center justify-center rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white shadow-[0_14px_35px_rgba(37,57,47,0.14)] transition hover:-translate-y-0.5 hover:bg-[#1d3028]">ادامه و ثبت سفارش</Link><Link href="/#products" className="mt-3 flex min-h-11 items-center justify-center rounded-full border border-[#ded8cc] bg-white px-5 text-xs font-bold text-[#62685e]">بازگشت به محصولات</Link></aside>
           </div>
         )}
       </section>
