@@ -33,6 +33,7 @@ const order: Order = {
 function createUseCase(): GetOrderUseCase {
   const repository: OrderRepository = {
     save: async () => undefined,
+    updateStatus: async () => undefined,
     findById: async (orderId) => (orderId === order.orderId ? order : null),
     findByQuoteId: async () => null,
     findByCustomerId: async () => [],
@@ -52,6 +53,7 @@ describe("GetOrderUseCase", () => {
   it("returns null for an unknown order", async () => {
     const repository: OrderRepository = {
       save: async () => undefined,
+      updateStatus: async () => undefined,
       findById: async () => null,
       findByQuoteId: async () => null,
       findByCustomerId: async () => [],
