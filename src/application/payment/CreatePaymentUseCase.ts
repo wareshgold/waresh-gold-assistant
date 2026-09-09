@@ -19,13 +19,13 @@ export class CreatePaymentUseCase {
         if (!order) throw new Error("سفارش پیدا نشد.");
         if (order.status !== "confirmed") throw new Error("سفارش برای پرداخت آماده نیست.");
 
-        const existing = await this.paymentRepository.findByOrderId(orderId);
-        if (existing) {
-            if (existing.status === "paid") throw new Error("این سفارش قبلاً پرداخت شده است.");
-            if (existing.status === "pending" || existing.status === "initiated") {
-                throw new Error("برای این سفارش یک پرداخت فعال وجود دارد.");
-            }
+        const latest = await this.paymentRepository.findLatestByOrderId(orderId);
+        if (latest?.status === "paid" || latest?.status === "refunded") {
+            throw new Error("این سفارش قبلاً پرداخت شده است.");
         }
+
+        const active = await this.paymentRepository.findActiveByOrderId(orderId);
+        if (active) throw new Error("برای این سفارش یک پرداخت فعال وجود دارد.");
 
         const now = new Date().toISOString();
         const payment: Payment = {
