@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { createApp } from "./createApp";
 import { CreateOrderFromQuoteUseCase } from "../application/catalog/CreateOrderFromQuoteUseCase";
+import { UpdateOrderStatusUseCase } from "../application/catalog/UpdateOrderStatusUseCase";
 import { MemoryCustomerRepository } from "../infrastructure/customer/MemoryCustomerRepository";
 import { MemoryOrderQuoteRepository } from "../infrastructure/catalog/MemoryOrderQuoteRepository";
 import { MemoryOrderRepository } from "../infrastructure/catalog/MemoryOrderRepository";
@@ -66,6 +67,7 @@ function createTestApp() {
         orderRepository,
         customerRepository,
     );
+    const updateOrderStatusUseCase = new UpdateOrderStatusUseCase(orderRepository);
 
     const sessionService = {
         create: vi.fn(async (customerId: string) => ({
@@ -92,6 +94,7 @@ function createTestApp() {
         createOrderFromQuoteUseCase,
         getOrderUseCase: {} as never,
         listCustomerOrdersUseCase: {} as never,
+        updateOrderStatusUseCase,
         marketProvider: { getCurrentPrice: vi.fn() } as never,
         snapshotService: { getHistory: vi.fn() } as never,
         getGoldBubbleDataUseCase: {} as never,
@@ -103,6 +106,7 @@ function createTestApp() {
         sessionService,
         getProductsUseCase: { execute: vi.fn() } as never,
         getProductUseCase: { execute: vi.fn() } as never,
+        adminApiToken: "test-admin-token",
     };
 
     return { app: createApp(container), customerRepository, quoteRepository, orderRepository, sessionService };
@@ -167,5 +171,97 @@ describe("createApp checkout order route", () => {
         expect(response.status).toBe(401);
         await expect(orderRepository.findByQuoteId(quote.quoteId)).resolves.toBeNull();
         expect(sessionService.get).not.toHaveBeenCalled();
+    });
+});
+
+describe("createApp admin order status route", () => {
+    it("rejects missing admin authentication", async () => {
+        const { app } = createTestApp();
+
+        const response = await app.request("http://localhost/api/v1/admin/orders/order-1/status", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: "confirmed" }),
+        });
+
+        expect(response.status).toBe(401);
+    });
+
+    it("rejects an invalid admin token", async () => {
+        const { app } = createTestApp();
+
+        const response = await app.request("http://localhost/api/v1/admin/orders/order-1/status", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer wrong-token",
+            },
+            body: JSON.stringify({ status: "confirmed" }),
+        });
+
+        expect(response.status).toBe(403);
+    });
+
+    it("updates an order through the authenticated admin route", async () => {
+        const { app, customerRepository, quoteRepository, orderRepository, sessionService } = createTestApp();
+        await customerRepository.save(customer);
+        await quoteRepository.save(quote);
+
+        const createResponse = await app.request("http://localhost/api/v1/orders/from-quote", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Customer-Session": "session-1",
+            },
+            body: JSON.stringify({ quoteId: quote.quoteId }),
+        });
+        expect(createResponse.status).toBe(200);
+
+        const created = await createResponse.json() as { order: { orderId: string; status: string } };
+        expect(created.order.status).toBe("pending_confirmation");
+
+        const updateResponse = await app.request(`http://localhost/api/v1/admin/orders/${created.order.orderId}/status`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer test-admin-token",
+            },
+            body: JSON.stringify({ status: "confirmed" }),
+        });
+
+        expect(updateResponse.status).toBe(200);
+        const updated = await updateResponse.json() as { order: { orderId: string; status: string } };
+        expect(updated.order.orderId).toBe(created.order.orderId);
+        expect(updated.order.status).toBe("confirmed");
+        expect((await orderRepository.findById(created.order.orderId))?.status).toBe("confirmed");
+        expect(sessionService.get).toHaveBeenCalledWith("session-1");
+    });
+
+    it("rejects an invalid lifecycle transition without changing the order", async () => {
+        const { app, customerRepository, quoteRepository, orderRepository } = createTestApp();
+        await customerRepository.save(customer);
+        await quoteRepository.save(quote);
+
+        const createResponse = await app.request("http://localhost/api/v1/orders/from-quote", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Customer-Session": "session-1",
+            },
+            body: JSON.stringify({ quoteId: quote.quoteId }),
+        });
+        const created = await createResponse.json() as { order: { orderId: string } };
+
+        const updateResponse = await app.request(`http://localhost/api/v1/admin/orders/${created.order.orderId}/status`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer test-admin-token",
+            },
+            body: JSON.stringify({ status: "paid" }),
+        });
+
+        expect(updateResponse.status).toBe(409);
+        expect((await orderRepository.findById(created.order.orderId))?.status).toBe("pending_confirmation");
     });
 });
