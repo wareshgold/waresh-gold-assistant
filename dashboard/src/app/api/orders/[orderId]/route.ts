@@ -2,6 +2,8 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { API_BASE_URL } from "@/lib/api";
 
+const UPSTREAM_TIMEOUT_MS = 10_000;
+
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ orderId: string }> },
@@ -20,7 +22,11 @@ export async function GET(
 
     const response = await fetch(
       `${API_BASE_URL}/api/v1/orders/${encodeURIComponent(normalizedOrderId)}`,
-      { cache: "no-store", headers },
+      {
+        cache: "no-store",
+        headers,
+        signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+      },
     );
 
     const payload = await response.json().catch(() => ({ error: "دریافت سفارش انجام نشد." }));
