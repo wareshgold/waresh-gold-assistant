@@ -65,6 +65,7 @@ describe("CreateOrderFromQuoteUseCase race safety", () => {
             findById: async () => null,
             findByQuoteId: async () => winningOrder,
             findByCustomerId: async () => [],
+            findAll: async () => [],
         };
         const customerRepository = {
             findById: async (customerId: string) => customerId === customer.customerId ? customer : null,
