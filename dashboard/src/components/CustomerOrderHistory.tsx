@@ -67,7 +67,8 @@ export default function CustomerOrderHistory() {
   }, []);
 
   useEffect(() => {
-    void loadOrders();
+    const initialLoad = window.setTimeout(() => void loadOrders(), 0);
+    return () => window.clearTimeout(initialLoad);
   }, [loadOrders]);
 
   if (!authenticated) return null;
