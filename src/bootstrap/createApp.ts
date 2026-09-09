@@ -18,7 +18,6 @@ import { CreateOrderQuoteUseCase, type OrderQuoteItemInput } from "../applicatio
 import { GetOrderQuoteUseCase } from "../application/catalog/GetOrderQuoteUseCase";
 import { CreateOrderFromQuoteUseCase } from "../application/catalog/CreateOrderFromQuoteUseCase";
 import { GetOrderUseCase } from "../application/catalog/GetOrderUseCase";
-import { GetAdminOrderUseCase } from "../application/catalog/GetAdminOrderUseCase";
 import { ListCustomerOrdersUseCase } from "../application/catalog/ListCustomerOrdersUseCase";
 import { AddCustomerAddressUseCase } from "../application/customer/AddCustomerAddressUseCase";
 import { RemoveCustomerAddressUseCase } from "../application/customer/RemoveCustomerAddressUseCase";
@@ -42,7 +41,6 @@ interface AppContainer {
   getOrderQuoteUseCase: GetOrderQuoteUseCase;
   createOrderFromQuoteUseCase: CreateOrderFromQuoteUseCase;
   getOrderUseCase: GetOrderUseCase;
-  getAdminOrderUseCase: GetAdminOrderUseCase;
   listCustomerOrdersUseCase: ListCustomerOrdersUseCase;
   updateOrderStatusUseCase: UpdateOrderStatusUseCase;
   marketProvider: MarketPriceProvider;
@@ -64,7 +62,14 @@ const jsonBody = async (c: any): Promise<Record<string, unknown> | null> => {
   return body && typeof body === "object" && !Array.isArray(body) ? body as Record<string, unknown> : null;
 };
 
-const publicCustomer = (customer: any) => ({ customerId: customer.customerId, username: customer.username, phone: customer.phone, nationalId: customer.nationalId, firstName: customer.firstName, lastName: customer.lastName });
+const publicCustomer = (customer: any) => ({
+  customerId: customer.customerId,
+  username: customer.username,
+  phone: customer.phone,
+  nationalId: customer.nationalId,
+  firstName: customer.firstName,
+  lastName: customer.lastName,
+});
 
 function isAdminAuthorized(c: any, configuredToken?: string): Response | null {
   const token = configuredToken?.trim();
@@ -98,7 +103,7 @@ export function createApp(container: AppContainer) {
   app.get("/api/v1/orders/:orderId", async (c) => { const sessionId = c.req.header("X-Customer-Session")?.trim(); let customerId: string | undefined; if (sessionId) { const session = await container.sessionService.get(sessionId); if (!session) return c.json({ error: "نشست کاربری معتبر نیست." }, 401, { "Cache-Control": "no-store" }); customerId = session.customerId; } return getOrderRoute(c.req.raw, container.getOrderUseCase, c.req.param("orderId"), customerId); });
   app.get("/api/v1/orders", async (c) => { const sessionId = c.req.header("X-Customer-Session")?.trim(); if (!sessionId) return c.json({ error: "احراز هویت لازم است." }, 401, { "Cache-Control": "no-store" }); const session = await container.sessionService.get(sessionId); if (!session) return c.json({ error: "نشست کاربری معتبر نیست." }, 401, { "Cache-Control": "no-store" }); return listCustomerOrdersRoute(container.listCustomerOrdersUseCase, session.customerId); });
   app.get("/api/v1/admin/auth/check", (c) => { const unauthorized = isAdminAuthorized(c, container.adminApiToken); if (unauthorized) return unauthorized; return c.json({ ok: true }, 200, { "Cache-Control": "no-store" }); });
-  app.get("/api/v1/admin/orders/:orderId", async (c) => { const unauthorized = isAdminAuthorized(c, container.adminApiToken); if (unauthorized) return unauthorized; return getAdminOrderRoute(container.getAdminOrderUseCase, c.req.param("orderId")); });
+  app.get("/api/v1/admin/orders/:orderId", async (c) => { const unauthorized = isAdminAuthorized(c, container.adminApiToken); if (unauthorized) return unauthorized; return getAdminOrderRoute(container.getOrderUseCase, c.req.param("orderId")); });
   app.post("/api/v1/admin/orders/:orderId/status", async (c) => { const unauthorized = isAdminAuthorized(c, container.adminApiToken); if (unauthorized) return unauthorized; return updateOrderStatusRoute(c.req.raw, container.updateOrderStatusUseCase, c.req.param("orderId")); });
   app.post("/api/v1/calculate/gold-price", async (c) => { const body = await jsonBody(c); if (!body) return c.json({ error: "درخواست نامعتبر است." }, 400); const numberField = (value: unknown): number | null => { const num = typeof value === "string" ? Number(value) : value; return typeof num === "number" && Number.isFinite(num) ? num : null; }; const optionalNumberField = (value: unknown): number | null => value === undefined || value === null || value === "" ? 0 : numberField(value); const weight = numberField(body.weight), goldPrice = numberField(body.goldPrice), laborPercent = optionalNumberField(body.laborPercent), profitPercent = optionalNumberField(body.profitPercent), taxPercent = optionalNumberField(body.taxPercent); if (weight === null || goldPrice === null || laborPercent === null || profitPercent === null || taxPercent === null || weight <= 0 || goldPrice <= 0 || laborPercent < 0 || profitPercent < 0 || taxPercent < 0) return c.json({ error: "مقادیر ورودی معتبر نیستند." }, 400); let discount: number | undefined; if (body.discount !== undefined && body.discount !== null && body.discount !== "") { const parsed = numberField(body.discount); if (parsed === null || parsed < 0) return c.json({ error: "مقادیر ورودی معتبر نیستند." }, 400); discount = parsed; } const result = container.calculateGoldPriceUseCase.execute({ weight, goldPrice, laborPercent, profitPercent, taxPercent, ...(discount !== undefined ? { discount } : {}) }); return c.json({ total: result.total }); });
   app.post("/api/v1/auth/register", async (c) => { const body = await jsonBody(c); if (!body || typeof body.username !== "string" || typeof body.password !== "string" || typeof body.phone !== "string" || typeof body.nationalId !== "string") return c.json({ error: "اطلاعات ثبت‌نام کامل نیست." }, 400); try { const result = await container.registerCustomerUseCase.execute({ username: body.username, password: body.password, phone: body.phone, nationalId: body.nationalId, firstName: typeof body.firstName === "string" ? body.firstName : "", lastName: typeof body.lastName === "string" ? body.lastName : "" }); return c.json({ customer: publicCustomer(result), sessionId: result.session.sessionId, expiresAt: result.session.expiresAt }, 201); } catch (error) { const message = error instanceof Error ? error.message : "ثبت‌نام انجام نشد."; return c.json({ error: message }, message.includes("قبلاً ثبت") ? 409 : 400); } });
