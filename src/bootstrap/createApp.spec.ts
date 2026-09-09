@@ -96,6 +96,7 @@ function createTestApp() {
         listCustomerOrdersUseCase: {} as never,
         listAdminOrdersUseCase: {} as never,
         updateOrderStatusUseCase,
+        verifyPaymentUseCase: {} as never,
         marketProvider: { getCurrentPrice: vi.fn() } as never,
         snapshotService: { getHistory: vi.fn() } as never,
         getGoldBubbleDataUseCase: {} as never,
@@ -126,11 +127,7 @@ describe("createApp checkout order route", () => {
                 "Content-Type": "application/json",
                 "X-Customer-Session": "session-1",
             },
-            body: JSON.stringify({
-                quoteId: quote.quoteId,
-                customerId: "attacker-supplied-id",
-                addressId: address.id,
-            }),
+            body: JSON.stringify({ quoteId: quote.quoteId, customerId: "attacker-supplied-id", addressId: address.id }),
         });
 
         expect(response.status).toBe(200);
@@ -147,10 +144,7 @@ describe("createApp checkout order route", () => {
 
         const response = await app.request("http://localhost/api/v1/orders/from-quote", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-Customer-Session": "missing-session",
-            },
+            headers: { "Content-Type": "application/json", "X-Customer-Session": "missing-session" },
             body: JSON.stringify({ quoteId: quote.quoteId, addressId: address.id }),
         });
 
@@ -178,28 +172,13 @@ describe("createApp checkout order route", () => {
 describe("createApp admin order status route", () => {
     it("rejects missing admin authentication", async () => {
         const { app } = createTestApp();
-
-        const response = await app.request("http://localhost/api/v1/admin/orders/order-1/status", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status: "confirmed" }),
-        });
-
+        const response = await app.request("http://localhost/api/v1/admin/orders/order-1/status", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: "confirmed" }) });
         expect(response.status).toBe(401);
     });
 
     it("rejects an invalid admin token", async () => {
         const { app } = createTestApp();
-
-        const response = await app.request("http://localhost/api/v1/admin/orders/order-1/status", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer wrong-token",
-            },
-            body: JSON.stringify({ status: "confirmed" }),
-        });
-
+        const response = await app.request("http://localhost/api/v1/admin/orders/order-1/status", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer wrong-token" }, body: JSON.stringify({ status: "confirmed" }) });
         expect(response.status).toBe(403);
     });
 
@@ -207,29 +186,11 @@ describe("createApp admin order status route", () => {
         const { app, customerRepository, quoteRepository, orderRepository, sessionService } = createTestApp();
         await customerRepository.save(customer);
         await quoteRepository.save(quote);
-
-        const createResponse = await app.request("http://localhost/api/v1/orders/from-quote", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-Customer-Session": "session-1",
-            },
-            body: JSON.stringify({ quoteId: quote.quoteId }),
-        });
+        const createResponse = await app.request("http://localhost/api/v1/orders/from-quote", { method: "POST", headers: { "Content-Type": "application/json", "X-Customer-Session": "session-1" }, body: JSON.stringify({ quoteId: quote.quoteId }) });
         expect(createResponse.status).toBe(200);
-
         const created = await createResponse.json() as { order: { orderId: string; status: string } };
         expect(created.order.status).toBe("pending_confirmation");
-
-        const updateResponse = await app.request(`http://localhost/api/v1/admin/orders/${created.order.orderId}/status`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer test-admin-token",
-            },
-            body: JSON.stringify({ status: "confirmed" }),
-        });
-
+        const updateResponse = await app.request(`/api/v1/admin/orders/${created.order.orderId}/status`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer test-admin-token" }, body: JSON.stringify({ status: "confirmed" }) });
         expect(updateResponse.status).toBe(200);
         const updated = await updateResponse.json() as { order: { orderId: string; status: string } };
         expect(updated.order.orderId).toBe(created.order.orderId);
@@ -242,26 +203,9 @@ describe("createApp admin order status route", () => {
         const { app, customerRepository, quoteRepository, orderRepository } = createTestApp();
         await customerRepository.save(customer);
         await quoteRepository.save(quote);
-
-        const createResponse = await app.request("http://localhost/api/v1/orders/from-quote", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-Customer-Session": "session-1",
-            },
-            body: JSON.stringify({ quoteId: quote.quoteId }),
-        });
+        const createResponse = await app.request("/api/v1/orders/from-quote", { method: "POST", headers: { "Content-Type": "application/json", "X-Customer-Session": "session-1" }, body: JSON.stringify({ quoteId: quote.quoteId }) });
         const created = await createResponse.json() as { order: { orderId: string } };
-
-        const updateResponse = await app.request(`http://localhost/api/v1/admin/orders/${created.order.orderId}/status`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer test-admin-token",
-            },
-            body: JSON.stringify({ status: "paid" }),
-        });
-
+        const updateResponse = await app.request(`/api/v1/admin/orders/${created.order.orderId}/status`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer test-admin-token" }, body: JSON.stringify({ status: "paid" }) });
         expect(updateResponse.status).toBe(409);
         expect((await orderRepository.findById(created.order.orderId))?.status).toBe("pending_confirmation");
     });
