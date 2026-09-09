@@ -32,4 +32,10 @@ export class MemoryOrderRepository implements OrderRepository {
             .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
             .map((order) => structuredClone(order));
     }
+
+    async findAll(): Promise<Order[]> {
+        return [...this.orders.values()]
+            .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+            .map((order) => structuredClone(order));
+    }
 }
