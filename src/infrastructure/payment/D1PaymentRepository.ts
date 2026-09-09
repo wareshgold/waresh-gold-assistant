@@ -23,11 +23,24 @@ export class D1PaymentRepository implements PaymentRepository {
     }
 
     async findById(paymentId: string): Promise<Payment | null> {
-        return this.findOne("payment_id", paymentId);
+        return this.findOne(
+            `WHERE payment_id = ?1`,
+            paymentId,
+        );
     }
 
-    async findByOrderId(orderId: string): Promise<Payment | null> {
-        return this.findOne("order_id", orderId);
+    async findLatestByOrderId(orderId: string): Promise<Payment | null> {
+        return this.findOne(
+            `WHERE order_id = ?1 ORDER BY created_at DESC LIMIT 1`,
+            orderId,
+        );
+    }
+
+    async findActiveByOrderId(orderId: string): Promise<Payment | null> {
+        return this.findOne(
+            `WHERE order_id = ?1 AND status IN ('pending', 'initiated') ORDER BY created_at DESC LIMIT 1`,
+            orderId,
+        );
     }
 
     async updateStatus(input: {
@@ -40,8 +53,8 @@ export class D1PaymentRepository implements PaymentRepository {
         const result = await this.db.prepare(
             `UPDATE payments
              SET status = ?1, updated_at = ?2,
-                 authority = COALESCE(?3, authority),
-                 reference_id = COALESCE(?4, reference_id)
+                 authority = CASE WHEN ?3 IS NULL THEN authority ELSE ?3 END,
+                 reference_id = CASE WHEN ?4 IS NULL THEN reference_id ELSE ?4 END
              WHERE payment_id = ?5`
         ).bind(
             input.status,
@@ -53,10 +66,10 @@ export class D1PaymentRepository implements PaymentRepository {
         if (!result.meta.changes) throw new Error("پرداخت پیدا نشد.");
     }
 
-    private async findOne(field: "payment_id" | "order_id", value: string): Promise<Payment | null> {
+    private async findOne(whereClause: string, value: string): Promise<Payment | null> {
         const row = await this.db.prepare(
             `SELECT payment_id, order_id, amount, status, gateway, authority, reference_id, created_at, updated_at
-             FROM payments WHERE ${field} = ?1 LIMIT 1`
+             FROM payments ${whereClause}`
         ).bind(value).first<PaymentRow>();
         if (!row) return null;
         return {
