@@ -7,7 +7,18 @@ export async function getOrderRoute(
   customerId?: string,
 ): Promise<Response> {
   try {
-    const order = await getOrderUseCase.execute({ orderId, customerId });
+    const normalizedCustomerId = customerId?.trim();
+    if (!normalizedCustomerId) {
+      return Response.json({ error: "احراز هویت لازم است." }, {
+        status: 401,
+        headers: { "Cache-Control": "no-store" },
+      });
+    }
+
+    const order = await getOrderUseCase.execute({
+      orderId,
+      customerId: normalizedCustomerId,
+    });
 
     if (!order) {
       return Response.json({ error: "سفارش پیدا نشد." }, {
