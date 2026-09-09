@@ -1,8 +1,12 @@
 import type { Order } from "../../domain/catalog/entities/Order";
-import type { OrderRepository } from "../../domain/catalog/repositories/OrderRepository";
+
+type OrderLookupRepository = {
+  findById(orderId: string): Promise<Order | null>;
+  findByCustomerId(customerId: string): Promise<Order[]>;
+};
 
 export class GetOrderUseCase {
-  constructor(private readonly orderRepository: OrderRepository) {}
+  constructor(private readonly orderRepository: OrderLookupRepository) {}
 
   async execute(input: { orderId: string; customerId?: string }): Promise<Order | null> {
     const orderId = input?.orderId?.trim();
