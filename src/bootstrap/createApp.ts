@@ -23,10 +23,12 @@ import { AddCustomerAddressUseCase } from "../application/customer/AddCustomerAd
 import { RemoveCustomerAddressUseCase } from "../application/customer/RemoveCustomerAddressUseCase";
 import { getOrderRoute } from "../interfaces/http/routes/GetOrderRoute";
 import { listCustomerOrdersRoute } from "../interfaces/http/routes/ListCustomerOrdersRoute";
+import { updateOrderStatusRoute } from "../interfaces/http/routes/UpdateOrderStatusRoute";
 import type { CustomerRepository } from "../domain/customer/repositories/CustomerRepository";
 import type { SessionService } from "../domain/auth/providers/SessionService";
 import type { GetProductsUseCase } from "../application/catalog/GetProductsUseCase";
 import type { GetProductUseCase } from "../application/catalog/GetProductUseCase";
+import type { UpdateOrderStatusUseCase } from "../application/catalog/UpdateOrderStatusUseCase";
 
 interface AppContainer {
   telegramWebhookController: TelegramWebhookController;
@@ -39,6 +41,7 @@ interface AppContainer {
   createOrderFromQuoteUseCase: CreateOrderFromQuoteUseCase;
   getOrderUseCase: GetOrderUseCase;
   listCustomerOrdersUseCase: ListCustomerOrdersUseCase;
+  updateOrderStatusUseCase: UpdateOrderStatusUseCase;
   marketProvider: MarketPriceProvider;
   snapshotService: MarketSnapshotService;
   getGoldBubbleDataUseCase: GetGoldBubbleDataUseCase;
@@ -50,6 +53,7 @@ interface AppContainer {
   sessionService: SessionService;
   getProductsUseCase: GetProductsUseCase;
   getProductUseCase: GetProductUseCase;
+  adminApiToken?: string;
 }
 
 const jsonBody = async (c: any): Promise<Record<string, unknown> | null> => {
@@ -168,6 +172,29 @@ export function createApp(container: AppContainer) {
     const session = await container.sessionService.get(sessionId);
     if (!session) return c.json({ error: "نشست کاربری معتبر نیست." }, 401, { "Cache-Control": "no-store" });
     return listCustomerOrdersRoute(container.listCustomerOrdersUseCase, session.customerId);
+  });
+
+  app.post("/api/v1/admin/orders/:orderId/status", async (c) => {
+    const configuredToken = container.adminApiToken?.trim();
+    if (!configuredToken) {
+      return c.json({ error: "احراز هویت ادمین پیکربندی نشده است." }, 503, { "Cache-Control": "no-store" });
+    }
+
+    const authorization = c.req.header("Authorization")?.trim();
+    if (!authorization) {
+      return c.json({ error: "احراز هویت ادمین لازم است." }, 401, { "Cache-Control": "no-store" });
+    }
+
+    const [scheme, token] = authorization.split(/\s+/, 2);
+    if (scheme !== "Bearer" || !token) {
+      return c.json({ error: "فرمت احراز هویت ادمین نامعتبر است." }, 401, { "Cache-Control": "no-store" });
+    }
+
+    if (token !== configuredToken) {
+      return c.json({ error: "دسترسی ادمین مجاز نیست." }, 403, { "Cache-Control": "no-store" });
+    }
+
+    return updateOrderStatusRoute(c.req.raw, container.updateOrderStatusUseCase, c.req.param("orderId"));
   });
 
   app.post("/api/v1/calculate/gold-price", async (c) => {
