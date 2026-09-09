@@ -191,8 +191,9 @@ export default function OrderResultPage() {
               </aside>
             </div>
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              <a href={telegramMessage} target="_blank" rel="noopener noreferrer" className="flex min-h-12 items-center justify-center rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white">پیگیری سفارش در تلگرام</a>
+            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+              <Link href={`/order/${encodeURIComponent(order.orderId)}/tracking`} className="flex min-h-12 items-center justify-center rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white">پیگیری وضعیت سفارش</Link>
+              <a href={telegramMessage} target="_blank" rel="noopener noreferrer" className="flex min-h-12 items-center justify-center rounded-full border border-[#ded8cc] bg-white px-5 py-3.5 text-sm font-bold text-[#62685e]">پیگیری در تلگرام</a>
               <Link href="/account" className="flex min-h-12 items-center justify-center rounded-full border border-[#ded8cc] bg-white px-5 py-3.5 text-sm font-bold text-[#62685e]">مشاهده حساب کاربری</Link>
             </div>
           </div>
