@@ -5,13 +5,13 @@ import { useEffect, useMemo, useState } from "react";
 import {
   formatToman,
   formatWeight,
-  PRODUCTS,
   PRODUCT_CATEGORIES,
+  PRODUCTS,
   type Product,
   type ProductCategory,
 } from "@/data/products";
 import { calculateProductPrices, TELEGRAM_BOT_URL } from "@/lib/api";
-import { fetchCatalogProducts, type CatalogProduct } from "@/lib/catalogApi";
+import { getProducts } from "@/lib/products";
 import WishlistButton from "@/components/WishlistButton";
 
 const priceBands = [
@@ -35,47 +35,6 @@ const giftPriceBands: Record<string, string> = {
   "۲۰ تا ۳۰ میلیون": "20-30",
 };
 
-const FALLBACK_IMAGE = "/waresh-gold-logo-green.png";
-
-function mergeCatalogProducts(catalog: CatalogProduct[]): Product[] {
-  const visualById = new Map(PRODUCTS.map((product) => [String(product.id), product]));
-
-  return catalog.filter((item) => item.active).map((item): Product => {
-    const visual = visualById.get(item.productId);
-    const productId = Number(item.productId);
-    const category = item.category as ProductCategory;
-
-    return {
-      ...(visual ?? {
-        id: productId,
-        name: item.name,
-        category,
-        subcategory: item.subcategory ?? undefined,
-        weight: item.weightGrams,
-        karat: item.karat,
-        laborPercent: item.laborPercent,
-        profitPercent: item.profitPercent,
-        taxPercent: item.taxPercent,
-        icon: "◌",
-        image: FALLBACK_IMAGE,
-        description: "محصول ثبت‌شده در کاتالوگ وارش گلد.",
-        shippingNote: "هزینه ارسال به عهده مشتری می‌باشد.",
-      }),
-      id: productId,
-      sku: item.sku,
-      name: item.name,
-      category,
-      subcategory: item.subcategory ?? undefined,
-      weight: item.weightGrams,
-      karat: item.karat,
-      laborPercent: item.laborPercent,
-      profitPercent: item.profitPercent,
-      taxPercent: item.taxPercent,
-      stockStatus: item.stockStatus,
-    };
-  });
-}
-
 export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice }: ProductCatalogProps) {
   const [category, setCategory] = useState<ProductCategory | "all">("all");
   const [priceBand, setPriceBand] = useState<string>(initialPriceBand);
@@ -86,10 +45,10 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
 
   useEffect(() => {
     let cancelled = false;
-    void fetchCatalogProducts()
-      .then((catalog) => {
+    void getProducts()
+      .then((products) => {
         if (cancelled) return;
-        setCatalogProducts(mergeCatalogProducts(catalog));
+        setCatalogProducts(products);
         setCatalogError(false);
       })
       .catch(() => {
