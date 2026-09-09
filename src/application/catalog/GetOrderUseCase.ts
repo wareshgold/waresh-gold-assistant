@@ -16,6 +16,12 @@ export class GetOrderUseCase {
     return order;
   }
 
+  async executeAdmin(input: { orderId: string }): Promise<Order | null> {
+    const orderId = input?.orderId?.trim();
+    if (!orderId) throw new Error("شناسه سفارش الزامی است.");
+    return this.orderRepository.findById(orderId);
+  }
+
   async listByCustomerId(customerId: string): Promise<Order[]> {
     const normalizedCustomerId = customerId?.trim();
     if (!normalizedCustomerId) throw new Error("Customer ID is required");
