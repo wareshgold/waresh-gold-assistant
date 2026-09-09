@@ -133,16 +133,16 @@ export function createApp(container: AppContainer) {
   app.post("/api/v1/orders/from-quote", async (c) => {
     const body = await jsonBody(c);
     if (!body || typeof body.quoteId !== "string") return c.json({ error: "شناسه پیش‌فاکتور الزامی است." }, 400);
+
     const sessionId = c.req.header("X-Customer-Session")?.trim();
-    let customerId: string | undefined;
-    if (sessionId) {
-      const session = await container.sessionService.get(sessionId);
-      if (!session) return c.json({ error: "نشست کاربری معتبر نیست." }, 401);
-      customerId = session.customerId;
-    }
+    if (!sessionId) return c.json({ error: "احراز هویت لازم است." }, 401);
+
+    const session = await container.sessionService.get(sessionId);
+    if (!session) return c.json({ error: "نشست کاربری معتبر نیست." }, 401);
+
     const addressId = typeof body.addressId === "string" ? body.addressId.trim() : undefined;
     try {
-      const order = await container.createOrderFromQuoteUseCase.execute({ quoteId: body.quoteId, ...(customerId ? { customerId } : {}), ...(addressId ? { addressId } : {}) });
+      const order = await container.createOrderFromQuoteUseCase.execute({ quoteId: body.quoteId, customerId: session.customerId, ...(addressId ? { addressId } : {}) });
       return c.json({ order }, 200, { "Cache-Control": "no-store" });
     } catch (error) {
       const message = error instanceof Error ? error.message : "ثبت سفارش انجام نشد.";
