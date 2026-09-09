@@ -268,6 +268,7 @@ export function createContainer(env: AppEnv) {
         loginCustomerUseCase,
         sessionService: storage.sessionService,
         customerRepository: storage.customerRepository,
+        adminApiToken: env.ADMIN_API_TOKEN,
         waresh_gold_db: env.waresh_gold_db
     };
 }
