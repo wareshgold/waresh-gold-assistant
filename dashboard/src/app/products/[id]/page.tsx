@@ -5,9 +5,8 @@ import MobileMenu from "@/components/MobileMenu";
 import WishlistButton from "@/components/WishlistButton";
 import ProductPurchasePanel from "@/components/ProductPurchasePanel";
 import { calculateProductPrice, getMarketPrice, TELEGRAM_BOT_URL } from "@/lib/api";
-import { formatToman, formatWeight } from "@/data/products";
+import { PRODUCTS, formatToman, formatWeight, type Product } from "@/data/products";
 import { getProductServer, getProductsServer, getStaticProduct } from "@/lib/products";
-import type { Product } from "@/data/products";
 
 export const dynamic = "force-dynamic";
 
@@ -28,12 +27,8 @@ async function resolveProducts(): Promise<Product[]> {
   try {
     return await getProductsServer();
   } catch {
-    return getStaticProducts();
+    return PRODUCTS;
   }
-}
-
-function getStaticProducts(): Product[] {
-  return Array.from({ length: 0 });
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
