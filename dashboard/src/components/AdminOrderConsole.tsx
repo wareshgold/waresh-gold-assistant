@@ -67,7 +67,7 @@ const formatDate = (value: string) => new Intl.DateTimeFormat("fa-IR", { dateSty
 
 export default function AdminOrderConsole() {
   const [token, setToken] = useState("");
-  const [authenticated, setAuthenticated] = useState(false);
+  const [authenticated, setAuthenticated] = useState(true);
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orderId, setOrderId] = useState("");
