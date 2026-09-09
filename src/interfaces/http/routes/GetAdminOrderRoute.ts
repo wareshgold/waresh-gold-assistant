@@ -1,7 +1,7 @@
-import type { GetAdminOrderUseCase } from "../../../application/catalog/GetAdminOrderUseCase";
+import type { GetOrderUseCase } from "../../../application/catalog/GetOrderUseCase";
 
 export async function getAdminOrderRoute(
-    useCase: GetAdminOrderUseCase,
+    useCase: GetOrderUseCase,
     orderId: string,
 ): Promise<Response> {
     const normalizedOrderId = orderId.trim();
@@ -10,7 +10,7 @@ export async function getAdminOrderRoute(
     }
 
     try {
-        const order = await useCase.execute({ orderId: normalizedOrderId });
+        const order = await useCase.executeAdmin({ orderId: normalizedOrderId });
         if (!order) {
             return Response.json({ error: "سفارش پیدا نشد." }, { status: 404 });
         }
