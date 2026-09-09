@@ -23,6 +23,7 @@ import { AddCustomerAddressUseCase } from "../application/customer/AddCustomerAd
 import { RemoveCustomerAddressUseCase } from "../application/customer/RemoveCustomerAddressUseCase";
 import { getOrderRoute } from "../interfaces/http/routes/GetOrderRoute";
 import { listCustomerOrdersRoute } from "../interfaces/http/routes/ListCustomerOrdersRoute";
+import { getAdminOrderRoute } from "../interfaces/http/routes/GetAdminOrderRoute";
 import { updateOrderStatusRoute } from "../interfaces/http/routes/UpdateOrderStatusRoute";
 import type { CustomerRepository } from "../domain/customer/repositories/CustomerRepository";
 import type { SessionService } from "../domain/auth/providers/SessionService";
@@ -70,6 +71,17 @@ const publicCustomer = (customer: any) => ({
   lastName: customer.lastName,
 });
 
+function isAdminAuthorized(c: any, configuredToken?: string): Response | null {
+  const token = configuredToken?.trim();
+  if (!token) return c.json({ error: "احراز هویت ادمین پیکربندی نشده است." }, 503, { "Cache-Control": "no-store" });
+  const authorization = c.req.header("Authorization")?.trim();
+  if (!authorization) return c.json({ error: "احراز هویت ادمین لازم است." }, 401, { "Cache-Control": "no-store" });
+  const [scheme, value] = authorization.split(/\s+/, 2);
+  if (scheme !== "Bearer" || !value) return c.json({ error: "فرمت احراز هویت ادمین نامعتبر است." }, 401, { "Cache-Control": "no-store" });
+  if (value !== token) return c.json({ error: "دسترسی ادمین مجاز نیست." }, 403, { "Cache-Control": "no-store" });
+  return null;
+}
+
 export function createApp(container: AppContainer) {
   const app = new Hono();
   const catalogController = new CatalogController(container.getProductsUseCase, container.getProductUseCase);
@@ -82,22 +94,18 @@ export function createApp(container: AppContainer) {
     const health = await container.healthCheckService.execute();
     return c.json({ service: "waresh-gold-assistant", version: "0.1.0", ...health });
   });
-
   app.get("/system/metrics", async (c) => c.json(await container.systemMetricsController.handle()));
 
   const marketPriceHandler = async (c: any) => {
     const price = await container.marketProvider.getCurrentPrice();
     return c.json({ gold18Price: price.gold18Price, currencyPrice: price.currencyPrice, ouncePrice: price.ouncePrice, updatedAt: price.updatedAt });
   };
-
   app.get("/market/gold-price", marketPriceHandler);
   app.get("/api/v1/market/gold-price", marketPriceHandler);
-
   app.get("/market/gold-bubble", async (c) => {
     const bubble = await container.getGoldBubbleDataUseCase.execute();
     return c.json({ marketPrice: bubble.marketPrice, intrinsicPrice: bubble.intrinsicPrice, bubbleAmount: bubble.bubbleAmount, bubblePercentage: bubble.bubblePercentage, updatedAt: bubble.updatedAt });
   });
-
   app.get("/market/history", async (c) => {
     const limit = Number(c.req.query("limit") ?? 50);
     return c.json({ items: await container.snapshotService.getHistory(limit) });
@@ -119,7 +127,6 @@ export function createApp(container: AppContainer) {
     try { return c.json({ quote: await container.createOrderQuoteUseCase.execute(items) }); }
     catch (error) { return c.json({ error: error instanceof Error ? error.message : "آماده‌سازی سفارش انجام نشد." }, 400); }
   });
-
   app.get("/api/v1/checkout/quote/:quoteId", async (c) => {
     try {
       const quote = await container.getOrderQuoteUseCase.execute(c.req.param("quoteId"));
@@ -137,13 +144,10 @@ export function createApp(container: AppContainer) {
   app.post("/api/v1/orders/from-quote", async (c) => {
     const body = await jsonBody(c);
     if (!body || typeof body.quoteId !== "string") return c.json({ error: "شناسه پیش‌فاکتور الزامی است." }, 400);
-
     const sessionId = c.req.header("X-Customer-Session")?.trim();
     if (!sessionId) return c.json({ error: "احراز هویت لازم است." }, 401);
-
     const session = await container.sessionService.get(sessionId);
     if (!session) return c.json({ error: "نشست کاربری معتبر نیست." }, 401);
-
     const addressId = typeof body.addressId === "string" ? body.addressId.trim() : undefined;
     try {
       const order = await container.createOrderFromQuoteUseCase.execute({ quoteId: body.quoteId, customerId: session.customerId, ...(addressId ? { addressId } : {}) });
@@ -165,7 +169,6 @@ export function createApp(container: AppContainer) {
     }
     return getOrderRoute(c.req.raw, container.getOrderUseCase, c.req.param("orderId"), customerId);
   });
-
   app.get("/api/v1/orders", async (c) => {
     const sessionId = c.req.header("X-Customer-Session")?.trim();
     if (!sessionId) return c.json({ error: "احراز هویت لازم است." }, 401, { "Cache-Control": "no-store" });
@@ -174,26 +177,21 @@ export function createApp(container: AppContainer) {
     return listCustomerOrdersRoute(container.listCustomerOrdersUseCase, session.customerId);
   });
 
+  app.get("/api/v1/admin/auth/check", (c) => {
+    const unauthorized = isAdminAuthorized(c, container.adminApiToken);
+    if (unauthorized) return unauthorized;
+    return c.json({ ok: true }, 200, { "Cache-Control": "no-store" });
+  });
+
+  app.get("/api/v1/admin/orders/:orderId", async (c) => {
+    const unauthorized = isAdminAuthorized(c, container.adminApiToken);
+    if (unauthorized) return unauthorized;
+    return getAdminOrderRoute(container.getOrderUseCase, c.req.param("orderId"));
+  });
+
   app.post("/api/v1/admin/orders/:orderId/status", async (c) => {
-    const configuredToken = container.adminApiToken?.trim();
-    if (!configuredToken) {
-      return c.json({ error: "احراز هویت ادمین پیکربندی نشده است." }, 503, { "Cache-Control": "no-store" });
-    }
-
-    const authorization = c.req.header("Authorization")?.trim();
-    if (!authorization) {
-      return c.json({ error: "احراز هویت ادمین لازم است." }, 401, { "Cache-Control": "no-store" });
-    }
-
-    const [scheme, token] = authorization.split(/\s+/, 2);
-    if (scheme !== "Bearer" || !token) {
-      return c.json({ error: "فرمت احراز هویت ادمین نامعتبر است." }, 401, { "Cache-Control": "no-store" });
-    }
-
-    if (token !== configuredToken) {
-      return c.json({ error: "دسترسی ادمین مجاز نیست." }, 403, { "Cache-Control": "no-store" });
-    }
-
+    const unauthorized = isAdminAuthorized(c, container.adminApiToken);
+    if (unauthorized) return unauthorized;
     return updateOrderStatusRoute(c.req.raw, container.updateOrderStatusUseCase, c.req.param("orderId"));
   });
 
@@ -218,14 +216,12 @@ export function createApp(container: AppContainer) {
       return c.json({ customer: publicCustomer(result), sessionId: result.session.sessionId, expiresAt: result.session.expiresAt }, 201);
     } catch (error) { const message = error instanceof Error ? error.message : "ثبت‌نام انجام نشد."; return c.json({ error: message }, message.includes("قبلاً ثبت") ? 409 : 400); }
   });
-
   app.post("/api/v1/auth/login", async (c) => {
     const body = await jsonBody(c);
     if (!body || typeof body.username !== "string" || typeof body.password !== "string") return c.json({ error: "نام کاربری و رمز عبور الزامی است." }, 400);
     try { const result = await container.loginCustomerUseCase.execute(body.username, body.password); return c.json({ customer: publicCustomer(result), sessionId: result.session.sessionId, expiresAt: result.session.expiresAt }); }
     catch { return c.json({ error: "نام کاربری یا رمز عبور نادرست است." }, 401); }
   });
-
   app.get("/api/v1/auth/me", async (c) => {
     const sessionId = c.req.header("X-Customer-Session")?.trim();
     if (!sessionId) return c.json({ error: "احراز هویت لازم است." }, 401);
@@ -236,13 +232,11 @@ export function createApp(container: AppContainer) {
     const addresses = await container.customerRepository.listAddresses(customer.customerId);
     return c.json({ customer: { ...publicCustomer(customer), addresses } });
   });
-
   app.get("/api/v1/account/addresses", async (c) => {
     const customerId = await getAuthenticatedCustomerId(c);
     if (!customerId) return c.json({ error: "احراز هویت لازم است." }, 401);
     return c.json({ addresses: await container.customerRepository.listAddresses(customerId) });
   });
-
   app.post("/api/v1/account/addresses", async (c) => {
     const customerId = await getAuthenticatedCustomerId(c);
     if (!customerId) return c.json({ error: "احراز هویت لازم است." }, 401);
@@ -254,7 +248,6 @@ export function createApp(container: AppContainer) {
       return c.json({ address }, 201);
     } catch (error) { return c.json({ error: error instanceof Error ? error.message : "ثبت آدرس انجام نشد." }, 400); }
   });
-
   app.delete("/api/v1/account/addresses/:addressId", async (c) => {
     const customerId = await getAuthenticatedCustomerId(c);
     if (!customerId) return c.json({ error: "احراز هویت لازم است." }, 401);
@@ -266,7 +259,6 @@ export function createApp(container: AppContainer) {
       return c.json({ error: message }, message === "Customer address not found" ? 404 : 400);
     }
   });
-
   app.post("/api/v1/auth/logout", async (c) => { const sessionId = c.req.header("X-Customer-Session")?.trim(); if (sessionId) await container.sessionService.revoke(sessionId); return c.json({ ok: true }); });
   app.all("/api/v1/auth/request-otp", (c) => c.json({ error: "OTP فعلاً غیرفعال است." }, 410));
   app.all("/api/v1/auth/verify-otp", (c) => c.json({ error: "OTP فعلاً غیرفعال است." }, 410));
@@ -284,7 +276,6 @@ export function createApp(container: AppContainer) {
       return c.json({ ticks: { last6h: ticks6h?.count ?? 0, last24h: ticks24h?.count ?? 0, lastTick: lastTick ? { price: lastTick.price, direction: lastTick.direction, time: new Date(lastTick.timestamp).toISOString() } : null }, signals: { total: signals?.count ?? 0, last: lastSignal ? { type: lastSignal.signal_type, reason: lastSignal.reason, entryPrice: lastSignal.entry_price, time: new Date(lastSignal.generated_at).toISOString() } : null }, dataCollection: { hasEnoughData: (ticks6h?.count ?? 0) >= 12, status: (ticks6h?.count ?? 0) >= 12 ? "healthy" : "insufficient" } });
     } catch (error) { return c.json({ error: String(error) }, 500); }
   });
-
   app.get("/api/v1/strategy-a/debug", async (c) => {
     try {
       const db = (container as any).waresh_gold_db;
@@ -308,7 +299,6 @@ export function createApp(container: AppContainer) {
       return c.json({ candleCount: candles.length, avgRange: avgRange.toFixed(2), last5Candles: analysis, rejectionReasons: reasons, config: { minBodyRatio: "65%", minSpikeCandles: 3, minSpikeMovePercent: "0.12%", minGapRatio: "15% of avg range", pGapRequired: "YES (mandatory)" } });
     } catch (error) { return c.json({ error: String(error) }, 500); }
   });
-
   app.post("/telegram/webhook", async (c) => container.telegramWebhookController.handle(c));
   return app;
 }
