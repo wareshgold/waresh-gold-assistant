@@ -104,7 +104,10 @@ export default function CartPage() {
     if (!missingCartItems) return;
     const validKeys = new Set(products.map(({ item }) => `${item.productId}:${item.variantId}`));
     const cleanedCart = cart.filter((item) => validKeys.has(`${item.productId}:${item.variantId}`));
-    if (cleanedCart.length !== cart.length) setCart(writeCart(cleanedCart));
+    if (cleanedCart.length !== cart.length) {
+      const timer = window.setTimeout(() => setCart(writeCart(cleanedCart)), 0);
+      return () => window.clearTimeout(timer);
+    }
   }, [cart, missingCartItems, products]);
 
   return (
