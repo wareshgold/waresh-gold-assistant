@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import MobileMenu from "@/components/MobileMenu";
 import { formatToman, formatWeight, type Product } from "@/data/products";
@@ -13,12 +14,7 @@ import type { CustomerAddress } from "@/lib/customerAccount";
 type CheckoutQuote = {
   quoteId: string;
   createdAt: string;
-  market: {
-    gold18Price: number;
-    currencyPrice: number;
-    ouncePrice: number | null;
-    updatedAt: string;
-  };
+  market: { gold18Price: number; currencyPrice: number; ouncePrice: number | null; updatedAt: string };
   items: Array<{
     productId: string;
     variantId: string;
@@ -64,6 +60,7 @@ type CustomerApi = {
 const PRICE_REFRESH_MS = 30_000;
 
 export default function CheckoutPage() {
+  const router = useRouter();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [catalogProducts, setCatalogProducts] = useState<Product[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
@@ -178,10 +175,14 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     let cancelled = false;
-    const loadPrices = async () => { if (!cancelled && !loadingProducts) await refreshPrices(); };
+    const loadPrices = async () => {
+      if (!cancelled && !loadingProducts) await refreshPrices();
+    };
     void loadPrices();
     const interval = window.setInterval(loadPrices, PRICE_REFRESH_MS);
-    const handleVisibilityChange = () => { if (document.visibilityState === "visible") void loadPrices(); };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") void loadPrices();
+    };
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
       cancelled = true;
@@ -241,8 +242,12 @@ export default function CheckoutPage() {
         body: JSON.stringify({ quoteId: quote.quoteId, ...(selectedAddressId ? { addressId: selectedAddressId } : {}) }),
       });
       const data = await response.json().catch(() => null) as { order?: CheckoutOrder; error?: string } | null;
-      if (!response.ok || !data?.order) { setOrderError(true); return; }
+      if (!response.ok || !data?.order) {
+        setOrderError(true);
+        return;
+      }
       setOrder(data.order);
+      router.replace(`/order/${encodeURIComponent(data.order.orderId)}`);
     } catch {
       setOrderError(true);
     } finally {
@@ -273,7 +278,10 @@ export default function CheckoutPage() {
 
   if (!cart.length) {
     return (
-      <main className="min-h-screen bg-[#f5f1e9] text-[#292b26]"><header className="border-b border-[#dedfd7]/80 bg-[#faf8f2]"><div className="waresh-container flex h-[76px] items-center justify-between"><Link href="/" aria-label="وارش گلد"><img src="/waresh-gold-logo-green.png" alt="وارش گلد" className="h-11 w-auto" /></Link><MobileMenu /></div></header><section className="waresh-container py-16 text-center sm:py-24"><p className="text-xs font-bold tracking-[0.2em] text-[#9b7b48]">CHECKOUT</p><h1 className="mt-4 text-3xl font-extrabold sm:text-5xl">سبد خرید خالی است</h1><p className="mx-auto mt-4 max-w-lg text-sm leading-8 text-[#70766d]">برای ثبت سفارش ابتدا یک محصول به سبد خرید اضافه کنید.</p><Link href="/#products" className="mt-7 inline-flex min-h-12 items-center rounded-full bg-[#25392f] px-6 text-sm font-bold text-white">مشاهده محصولات</Link></section></main>
+      <main className="min-h-screen bg-[#f5f1e9] text-[#292b26]">
+        <header className="border-b border-[#dedfd7]/80 bg-[#faf8f2]"><div className="waresh-container flex h-[76px] items-center justify-between"><Link href="/" aria-label="وارش گلد"><img src="/waresh-gold-logo-green.png" alt="وارش گلد" className="h-11 w-auto" /></Link><MobileMenu /></div></header>
+        <section className="waresh-container py-16 text-center sm:py-24"><p className="text-xs font-bold tracking-[0.2em] text-[#9b7b48]">CHECKOUT</p><h1 className="mt-4 text-3xl font-extrabold sm:text-5xl">سبد خرید خالی است</h1><p className="mx-auto mt-4 max-w-lg text-sm leading-8 text-[#70766d]">برای ثبت سفارش ابتدا یک محصول به سبد خرید اضافه کنید.</p><Link href="/#products" className="mt-7 inline-flex min-h-12 items-center rounded-full bg-[#25392f] px-6 text-sm font-bold text-white">مشاهده محصولات</Link></section>
+      </main>
     );
   }
 
@@ -292,7 +300,6 @@ export default function CheckoutPage() {
             {!submitted ? <button type="submit" disabled={loadingProducts || loadingPrices || validatingOrder || priceError || productError || missingProducts || !total} className="mt-6 min-h-13 w-full rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white shadow-[0_14px_35px_rgba(37,57,47,0.14)] transition hover:-translate-y-0.5 hover:bg-[#1d3028] disabled:cursor-not-allowed disabled:opacity-45">{validatingOrder ? "در حال بررسی نهایی قیمت..." : loadingProducts ? "در حال بررسی محصولات..." : loadingPrices ? "در حال بررسی قیمت..." : "ادامه و آماده‌سازی سفارش"}</button> : <div className="mt-6 rounded-[1.5rem] border border-[#cddbcf] bg-[#edf4ee] p-5"><p className="text-sm font-extrabold text-[#35543e]">پیش‌فاکتور آماده است ✓</p><p className="mt-2 text-xs leading-6 text-[#58705f]">پیش‌فاکتور در سرور ذخیره شده و قیمت آن بر اساس نرخ بازار در لحظه صدور ثابت شده است.</p>{!order ? <><button type="button" onClick={() => void handleCreateOrder()} disabled={creatingOrder || (!!customer && !selectedAddressId)} className="mt-4 flex min-h-12 w-full items-center justify-center rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-45">{creatingOrder ? "در حال ثبت سفارش..." : customer && !selectedAddressId ? "ابتدا آدرس ارسال را انتخاب کنید" : "ثبت سفارش"}</button><p className="mt-3 text-center text-[10px] leading-5 text-[#708076]">با ثبت سفارش، همین پیش‌فاکتور به یک سفارش با وضعیت «در انتظار تأیید» تبدیل می‌شود.</p></> : <div className="mt-4 rounded-2xl border border-[#cddbcf] bg-white/70 p-4"><p className="text-xs font-extrabold text-[#35543e]">سفارش با موفقیت ثبت شد ✓</p><p className="mt-2 text-[11px] leading-6 text-[#58705f]">شناسه سفارش: <span dir="ltr" className="font-bold">{order.orderId}</span></p><p className="text-[11px] leading-6 text-[#58705f]">وضعیت: در انتظار تأیید</p>{order.address && <p className="mt-2 text-[11px] leading-6 text-[#58705f]">آدرس: {order.address.title} · {order.address.province}، {order.address.city}</p>}</div>}{order && <a href={telegramMessage} target="_blank" rel="noopener noreferrer" className="mt-4 flex min-h-12 items-center justify-center rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white">ارسال جزئیات در تلگرام</a>}</div>}
             <Link href="/cart" className="mt-3 flex min-h-11 items-center justify-center rounded-full border border-[#ded8cc] bg-white px-5 py-3 text-xs font-bold text-[#62685e]">بازگشت و ویرایش سبد</Link>
           </form>
-
           <aside className="lg:sticky lg:top-28 rounded-[2rem] border border-[#ded8cc] bg-[#fffdf8] p-5 shadow-[0_18px_50px_rgba(55,52,43,0.06)] sm:p-7"><p className="text-xs font-bold text-[#929188]">خلاصه سفارش</p><div className="mt-5 space-y-4">{products.map(({ item, product }) => <div key={`${item.productId}-${item.variantId}`} className="flex gap-3"><img src={product.image} alt="" className="h-16 w-14 shrink-0 rounded-xl object-cover" /><div className="min-w-0 flex-1"><p className="text-xs font-extrabold leading-6">{product.name}</p><p className="text-[10px] text-[#88877f]">{getVariantLabel(product, item.variantId)} · {item.quantity} عدد · {formatWeight(product.weight)}</p><p className="mt-1 text-xs font-bold text-[#9b753c]">{prices[product.id] ? formatToman(prices[product.id] * item.quantity) : loadingPrices ? "در حال محاسبه" : "قیمت در دسترس نیست"}</p></div></div>)}</div><div className="mt-6 border-t border-[#e6e0d5] pt-5"><div className="flex items-center justify-between"><span className="text-sm text-[#777970]">جمع فعلی</span><strong className="text-lg text-[#9b753c]">{total && !priceError ? formatToman(total) : "—"}</strong></div><p className="mt-3 text-[11px] leading-6 text-[#88877f]">این مبلغ برای نمایش فعلی است. هنگام ادامه فرایند، سرور محصول و نرخ بازار را دوباره بررسی و پیش‌فاکتور مستقل صادر می‌کند.</p></div></aside>
         </div>
       </section>
