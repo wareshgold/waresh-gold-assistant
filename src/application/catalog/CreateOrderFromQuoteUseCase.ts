@@ -26,15 +26,7 @@ export class CreateOrderFromQuoteUseCase {
         }
 
         const existing = await this.orderRepository.findByQuoteId(normalizedQuoteId);
-        if (existing) {
-            if (customerId && existing.customerId !== customerId) {
-                throw new Error("این پیش‌فاکتور قبلاً به حساب کاربری دیگری ثبت شده است.");
-            }
-            if (customerId && addressId && existing.address?.addressId !== addressId) {
-                throw new Error("این پیش‌فاکتور قبلاً با آدرس دیگری ثبت شده است.");
-            }
-            return existing;
-        }
+        if (existing) return validateExistingOrder(existing, customerId, addressId);
 
         const quote = await this.quoteRepository.findById(normalizedQuoteId);
         if (!quote) throw new Error("پیش‌فاکتور پیدا نشد.");
@@ -71,9 +63,35 @@ export class CreateOrderFromQuoteUseCase {
             total: quote.total,
         };
 
-        await this.orderRepository.save(order);
+        try {
+            await this.orderRepository.save(order);
+        } catch (error) {
+            if (!isQuoteUniqueConstraintError(error)) throw error;
+
+            const racedOrder = await this.orderRepository.findByQuoteId(normalizedQuoteId);
+            if (!racedOrder) throw error;
+
+            return validateExistingOrder(racedOrder, customerId, addressId);
+        }
+
         return order;
     }
+}
+
+function validateExistingOrder(order: Order, customerId: string | null, addressId: string | null): Order {
+    if (customerId && order.customerId !== customerId) {
+        throw new Error("این پیش‌فاکتور قبلاً به حساب کاربری دیگری ثبت شده است.");
+    }
+    if (customerId && addressId && order.address?.addressId !== addressId) {
+        throw new Error("این پیش‌فاکتور قبلاً با آدرس دیگری ثبت شده است.");
+    }
+    return order;
+}
+
+function isQuoteUniqueConstraintError(error: unknown): boolean {
+    if (!(error instanceof Error)) return false;
+    const message = error.message.toLowerCase();
+    return message.includes("unique constraint") && message.includes("quote_id");
 }
 
 function cloneMarket(quote: OrderQuote) {
