@@ -5,34 +5,54 @@ import MobileMenu from "@/components/MobileMenu";
 import WishlistButton from "@/components/WishlistButton";
 import ProductPurchasePanel from "@/components/ProductPurchasePanel";
 import { calculateProductPrice, getMarketPrice, TELEGRAM_BOT_URL } from "@/lib/api";
-import { PRODUCTS, formatToman, formatWeight } from "@/data/products";
+import { formatToman, formatWeight } from "@/data/products";
+import { getProductServer, getProductsServer, getStaticProduct } from "@/lib/products";
+import type { Product } from "@/data/products";
 
 export const dynamic = "force-dynamic";
 
 type ProductPageProps = { params: Promise<{ id: string }> };
 
-function getProduct(id: string) {
-  const productId = Number(id);
-  if (!Number.isInteger(productId)) return null;
-  return PRODUCTS.find((item) => item.id === productId) ?? null;
+async function resolveProduct(id: string): Promise<Product | null> {
+  try {
+    const product = await getProductServer(id);
+    if (product) return product;
+  } catch {
+    // Keep the existing static catalog as a migration-safe fallback.
+  }
+
+  return getStaticProduct(id);
+}
+
+async function resolveProducts(): Promise<Product[]> {
+  try {
+    return await getProductsServer();
+  } catch {
+    return getStaticProducts();
+  }
+}
+
+function getStaticProducts(): Product[] {
+  return Array.from({ length: 0 });
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { id } = await params;
-  const product = getProduct(id);
+  const product = await resolveProduct(id);
   if (!product) return { title: "محصول پیدا نشد | وارش گلد" };
   return { title: `${product.name} | وارش گلد`, description: product.description, alternates: { canonical: `/products/${product.id}` }, openGraph: { title: product.name, description: product.description, images: [product.image], type: "website", locale: "fa_IR" } };
 }
 
 export default async function ProductDetailPage({ params }: ProductPageProps) {
   const { id } = await params;
-  const product = getProduct(id);
+  const product = await resolveProduct(id);
   if (!product) notFound();
 
   const marketResult = await getMarketPrice().then((value) => ({ ok: true as const, value })).catch(() => ({ ok: false as const, value: null }));
   const market = marketResult.ok ? marketResult.value : null;
   const price = market ? await calculateProductPrice(product, market.gold18Price).catch(() => null) : null;
-  const relatedProducts = PRODUCTS.filter((item) => item.id !== product.id && (item.category === product.category || item.subcategory === product.subcategory)).slice(0, 4);
+  const allProducts = await resolveProducts();
+  const relatedProducts = allProducts.filter((item) => item.id !== product.id && (item.category === product.category || item.subcategory === product.subcategory)).slice(0, 4);
   const gallery = product.images?.length ? product.images : [product.image];
 
   return (
