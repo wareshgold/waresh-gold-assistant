@@ -66,6 +66,7 @@ import { MemoryOrderQuoteRepository } from "../infrastructure/catalog/MemoryOrde
 import { D1OrderRepository } from "../infrastructure/catalog/D1OrderRepository";
 import { MemoryOrderRepository } from "../infrastructure/catalog/MemoryOrderRepository";
 import { CreatePaymentUseCase } from "../application/payment/CreatePaymentUseCase";
+import { VerifyPaymentUseCase } from "../application/payment/VerifyPaymentUseCase";
 import { D1PaymentRepository } from "../infrastructure/payment/D1PaymentRepository";
 import { MemoryPaymentRepository } from "../infrastructure/payment/MemoryPaymentRepository";
 import { MockPaymentGateway } from "../infrastructure/payment/MockPaymentGateway";
@@ -151,6 +152,7 @@ export function createContainer(env: AppEnv) {
         : new MemoryPaymentRepository();
     const paymentGateway = new MockPaymentGateway();
     const createPaymentUseCase = new CreatePaymentUseCase(orderRepository, paymentRepository, paymentGateway);
+    const verifyPaymentUseCase = new VerifyPaymentUseCase(paymentRepository, orderRepository, paymentGateway);
 
     const goldPriceAlertService = new GoldPriceAlertService(new D1GoldPriceAlertRepository(env.waresh_gold_db));
     const bubbleAlertService = new BubbleAlertService(new D1BubbleAlertRepository(env.waresh_gold_db));
@@ -264,6 +266,7 @@ export function createContainer(env: AppEnv) {
         listAdminOrdersUseCase,
         updateOrderStatusUseCase,
         createPaymentUseCase,
+        verifyPaymentUseCase,
         paymentRepository,
         paymentGateway,
         addCustomerAddressUseCase,
