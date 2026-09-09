@@ -66,4 +66,32 @@ describe("CreatePaymentUseCase", () => {
         await useCase.execute({ orderId: "order-1" });
         await expect(useCase.execute({ orderId: "order-1" })).rejects.toThrow("برای این سفارش یک پرداخت فعال وجود دارد.");
     });
+
+    it("allows a new payment after a previous payment has failed", async () => {
+        const repository = new MemoryPaymentRepository();
+        let call = 0;
+        const retryGateway: PaymentGateway = {
+            name: "test",
+            async initiate(input) {
+                call += 1;
+                if (call === 1) throw new Error("gateway unavailable");
+                return { authority: `AUTH-${input.paymentId}`, paymentUrl: "https://pay.test/retry" };
+            },
+            async verify() { return { referenceId: "REF-1" }; },
+        };
+        let id = 0;
+        const useCase = new CreatePaymentUseCase(
+            { findById: async () => order },
+            repository,
+            retryGateway,
+            () => `payment-${++id}`,
+        );
+
+        await expect(useCase.execute({ orderId: "order-1" })).rejects.toThrow("gateway unavailable");
+        const retry = await useCase.execute({ orderId: "order-1" });
+
+        expect(retry.payment.paymentId).toBe("payment-2");
+        expect(retry.payment.status).toBe("initiated");
+        expect((await repository.findById("payment-1"))?.status).toBe("failed");
+    });
 });
