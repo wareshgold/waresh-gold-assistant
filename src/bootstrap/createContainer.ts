@@ -57,6 +57,7 @@ import { GetOrderQuoteUseCase } from "../application/catalog/GetOrderQuoteUseCas
 import { CreateOrderFromQuoteUseCase } from "../application/catalog/CreateOrderFromQuoteUseCase";
 import { GetOrderUseCase } from "../application/catalog/GetOrderUseCase";
 import { ListCustomerOrdersUseCase } from "../application/catalog/ListCustomerOrdersUseCase";
+import { ListAdminOrdersUseCase } from "../application/catalog/ListAdminOrdersUseCase";
 import { UpdateOrderStatusUseCase } from "../application/catalog/UpdateOrderStatusUseCase";
 import { AddCustomerAddressUseCase } from "../application/customer/AddCustomerAddressUseCase";
 import { RemoveCustomerAddressUseCase } from "../application/customer/RemoveCustomerAddressUseCase";
@@ -137,6 +138,7 @@ export function createContainer(env: AppEnv) {
     );
     const getOrderUseCase = new GetOrderUseCase(orderRepository);
     const listCustomerOrdersUseCase = new ListCustomerOrdersUseCase(orderRepository);
+    const listAdminOrdersUseCase = new ListAdminOrdersUseCase(orderRepository);
     const updateOrderStatusUseCase = new UpdateOrderStatusUseCase(orderRepository);
 
     const goldPriceAlertService = new GoldPriceAlertService(new D1GoldPriceAlertRepository(env.waresh_gold_db));
@@ -248,6 +250,7 @@ export function createContainer(env: AppEnv) {
         createOrderFromQuoteUseCase,
         getOrderUseCase,
         listCustomerOrdersUseCase,
+        listAdminOrdersUseCase,
         updateOrderStatusUseCase,
         addCustomerAddressUseCase,
         removeCustomerAddressUseCase,
