@@ -1,7 +1,7 @@
-import type { GetOrderUseCase } from "../../../application/catalog/GetOrderUseCase";
+import type { GetAdminOrderUseCase } from "../../../application/catalog/GetAdminOrderUseCase";
 
 export async function getAdminOrderRoute(
-    useCase: GetOrderUseCase,
+    useCase: GetAdminOrderUseCase,
     orderId: string,
 ): Promise<Response> {
     const normalizedOrderId = orderId.trim();
