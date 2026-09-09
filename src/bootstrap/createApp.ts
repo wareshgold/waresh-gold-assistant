@@ -19,10 +19,12 @@ import { GetOrderQuoteUseCase } from "../application/catalog/GetOrderQuoteUseCas
 import { CreateOrderFromQuoteUseCase } from "../application/catalog/CreateOrderFromQuoteUseCase";
 import { GetOrderUseCase } from "../application/catalog/GetOrderUseCase";
 import { ListCustomerOrdersUseCase } from "../application/catalog/ListCustomerOrdersUseCase";
+import { ListAdminOrdersUseCase } from "../application/catalog/ListAdminOrdersUseCase";
 import { AddCustomerAddressUseCase } from "../application/customer/AddCustomerAddressUseCase";
 import { RemoveCustomerAddressUseCase } from "../application/customer/RemoveCustomerAddressUseCase";
 import { getOrderRoute } from "../interfaces/http/routes/GetOrderRoute";
 import { listCustomerOrdersRoute } from "../interfaces/http/routes/ListCustomerOrdersRoute";
+import { listAdminOrdersRoute } from "../interfaces/http/routes/ListAdminOrdersRoute";
 import { getAdminOrderRoute } from "../interfaces/http/routes/GetAdminOrderRoute";
 import { updateOrderStatusRoute } from "../interfaces/http/routes/UpdateOrderStatusRoute";
 import type { CustomerRepository } from "../domain/customer/repositories/CustomerRepository";
@@ -42,6 +44,7 @@ interface AppContainer {
   createOrderFromQuoteUseCase: CreateOrderFromQuoteUseCase;
   getOrderUseCase: GetOrderUseCase;
   listCustomerOrdersUseCase: ListCustomerOrdersUseCase;
+  listAdminOrdersUseCase: ListAdminOrdersUseCase;
   updateOrderStatusUseCase: UpdateOrderStatusUseCase;
   marketProvider: MarketPriceProvider;
   snapshotService: MarketSnapshotService;
@@ -103,6 +106,7 @@ export function createApp(container: AppContainer) {
   app.get("/api/v1/orders/:orderId", async (c) => { const sessionId = c.req.header("X-Customer-Session")?.trim(); let customerId: string | undefined; if (sessionId) { const session = await container.sessionService.get(sessionId); if (!session) return c.json({ error: "نشست کاربری معتبر نیست." }, 401, { "Cache-Control": "no-store" }); customerId = session.customerId; } return getOrderRoute(c.req.raw, container.getOrderUseCase, c.req.param("orderId"), customerId); });
   app.get("/api/v1/orders", async (c) => { const sessionId = c.req.header("X-Customer-Session")?.trim(); if (!sessionId) return c.json({ error: "احراز هویت لازم است." }, 401, { "Cache-Control": "no-store" }); const session = await container.sessionService.get(sessionId); if (!session) return c.json({ error: "نشست کاربری معتبر نیست." }, 401, { "Cache-Control": "no-store" }); return listCustomerOrdersRoute(container.listCustomerOrdersUseCase, session.customerId); });
   app.get("/api/v1/admin/auth/check", (c) => { const unauthorized = isAdminAuthorized(c, container.adminApiToken); if (unauthorized) return unauthorized; return c.json({ ok: true }, 200, { "Cache-Control": "no-store" }); });
+  app.get("/api/v1/admin/orders", async (c) => { const unauthorized = isAdminAuthorized(c, container.adminApiToken); if (unauthorized) return unauthorized; return listAdminOrdersRoute(container.listAdminOrdersUseCase); });
   app.get("/api/v1/admin/orders/:orderId", async (c) => { const unauthorized = isAdminAuthorized(c, container.adminApiToken); if (unauthorized) return unauthorized; return getAdminOrderRoute(container.getOrderUseCase, c.req.param("orderId")); });
   app.post("/api/v1/admin/orders/:orderId/status", async (c) => { const unauthorized = isAdminAuthorized(c, container.adminApiToken); if (unauthorized) return unauthorized; return updateOrderStatusRoute(c.req.raw, container.updateOrderStatusUseCase, c.req.param("orderId")); });
   app.post("/api/v1/calculate/gold-price", async (c) => { const body = await jsonBody(c); if (!body) return c.json({ error: "درخواست نامعتبر است." }, 400); const numberField = (value: unknown): number | null => { const num = typeof value === "string" ? Number(value) : value; return typeof num === "number" && Number.isFinite(num) ? num : null; }; const optionalNumberField = (value: unknown): number | null => value === undefined || value === null || value === "" ? 0 : numberField(value); const weight = numberField(body.weight), goldPrice = numberField(body.goldPrice), laborPercent = optionalNumberField(body.laborPercent), profitPercent = optionalNumberField(body.profitPercent), taxPercent = optionalNumberField(body.taxPercent); if (weight === null || goldPrice === null || laborPercent === null || profitPercent === null || taxPercent === null || weight <= 0 || goldPrice <= 0 || laborPercent < 0 || profitPercent < 0 || taxPercent < 0) return c.json({ error: "مقادیر ورودی معتبر نیستند." }, 400); let discount: number | undefined; if (body.discount !== undefined && body.discount !== null && body.discount !== "") { const parsed = numberField(body.discount); if (parsed === null || parsed < 0) return c.json({ error: "مقادیر ورودی معتبر نیستند." }, 400); discount = parsed; } const result = container.calculateGoldPriceUseCase.execute({ weight, goldPrice, laborPercent, profitPercent, taxPercent, ...(discount !== undefined ? { discount } : {}) }); return c.json({ total: result.total }); });
