@@ -24,6 +24,7 @@ export interface AppEnv {
 
     OWNER_TELEGRAM_USER_IDS?: string;
 
+    ADMIN_API_TOKEN?: string;
 }
 
 export function getEnv(
@@ -74,7 +75,10 @@ export function getEnv(
             "https://integrate.api.nvidia.com/v1/chat/completions",
 
         ownerTelegramUserIds:
-            env.OWNER_TELEGRAM_USER_IDS
+            env.OWNER_TELEGRAM_USER_IDS,
+
+        adminApiToken:
+            env.ADMIN_API_TOKEN
 
     };
 
