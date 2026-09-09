@@ -1,13 +1,17 @@
 import type { CustomerRepository } from "../../domain/customer/repositories/CustomerRepository";
 import type { Order } from "../../domain/catalog/entities/Order";
 import type { OrderQuote } from "../../domain/catalog/entities/OrderQuote";
-import type { OrderRepository } from "../../domain/catalog/repositories/OrderRepository";
 import type { OrderQuoteRepository } from "../../domain/catalog/repositories/OrderQuoteRepository";
+
+type OrderCreationRepository = {
+    save(order: Order): Promise<void>;
+    findByQuoteId(quoteId: string): Promise<Order | null>;
+};
 
 export class CreateOrderFromQuoteUseCase {
     constructor(
         private readonly quoteRepository: OrderQuoteRepository,
-        private readonly orderRepository: OrderRepository,
+        private readonly orderRepository: OrderCreationRepository,
         private readonly customerRepository: CustomerRepository,
     ) {}
 
