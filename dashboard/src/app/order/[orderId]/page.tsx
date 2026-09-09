@@ -43,11 +43,11 @@ const statusLabel: Record<string, string> = {
   pending: "در انتظار تأیید",
   pending_confirmation: "در انتظار تأیید",
   confirmed: "تأیید شده",
+  paid: "پرداخت شده",
   processing: "در حال آماده‌سازی",
-  ready: "آماده ارسال",
-  shipped: "ارسال شده",
-  delivered: "تحویل شده",
+  completed: "تکمیل شده",
   cancelled: "لغو شده",
+  expired: "منقضی شده",
 };
 
 function formatDate(value: string) {
