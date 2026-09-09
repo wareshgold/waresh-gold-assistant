@@ -13,11 +13,18 @@ export class MemoryPaymentRepository implements PaymentRepository {
         return payment ? { ...payment } : null;
     }
 
-    async findByOrderId(orderId: string): Promise<Payment | null> {
-        for (const payment of this.payments.values()) {
-            if (payment.orderId === orderId) return { ...payment };
-        }
-        return null;
+    async findLatestByOrderId(orderId: string): Promise<Payment | null> {
+        const matches = [...this.payments.values()]
+            .filter((payment) => payment.orderId === orderId)
+            .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+        return matches[0] ? { ...matches[0] } : null;
+    }
+
+    async findActiveByOrderId(orderId: string): Promise<Payment | null> {
+        const matches = [...this.payments.values()]
+            .filter((payment) => payment.orderId === orderId && (payment.status === "pending" || payment.status === "initiated"))
+            .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+        return matches[0] ? { ...matches[0] } : null;
     }
 
     async updateStatus(input: {
