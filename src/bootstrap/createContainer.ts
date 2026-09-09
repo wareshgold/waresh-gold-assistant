@@ -65,8 +65,13 @@ import { D1OrderQuoteRepository } from "../infrastructure/catalog/D1OrderQuoteRe
 import { MemoryOrderQuoteRepository } from "../infrastructure/catalog/MemoryOrderQuoteRepository";
 import { D1OrderRepository } from "../infrastructure/catalog/D1OrderRepository";
 import { MemoryOrderRepository } from "../infrastructure/catalog/MemoryOrderRepository";
+import { CreatePaymentUseCase } from "../application/payment/CreatePaymentUseCase";
+import { D1PaymentRepository } from "../infrastructure/payment/D1PaymentRepository";
+import { MemoryPaymentRepository } from "../infrastructure/payment/MemoryPaymentRepository";
+import { MockPaymentGateway } from "../infrastructure/payment/MockPaymentGateway";
 import type { OrderQuoteRepository } from "../domain/catalog/repositories/OrderQuoteRepository";
 import type { OrderRepository } from "../domain/catalog/repositories/OrderRepository";
+import type { PaymentRepository } from "../domain/payment/repositories/PaymentRepository";
 
 export function createContainer(env: AppEnv) {
     const storage = createStorageModule(env);
@@ -140,6 +145,12 @@ export function createContainer(env: AppEnv) {
     const listCustomerOrdersUseCase = new ListCustomerOrdersUseCase(orderRepository);
     const listAdminOrdersUseCase = new ListAdminOrdersUseCase(orderRepository);
     const updateOrderStatusUseCase = new UpdateOrderStatusUseCase(orderRepository);
+
+    const paymentRepository: PaymentRepository = env.waresh_gold_db
+        ? new D1PaymentRepository(env.waresh_gold_db)
+        : new MemoryPaymentRepository();
+    const paymentGateway = new MockPaymentGateway();
+    const createPaymentUseCase = new CreatePaymentUseCase(orderRepository, paymentRepository, paymentGateway);
 
     const goldPriceAlertService = new GoldPriceAlertService(new D1GoldPriceAlertRepository(env.waresh_gold_db));
     const bubbleAlertService = new BubbleAlertService(new D1BubbleAlertRepository(env.waresh_gold_db));
@@ -252,6 +263,9 @@ export function createContainer(env: AppEnv) {
         listCustomerOrdersUseCase,
         listAdminOrdersUseCase,
         updateOrderStatusUseCase,
+        createPaymentUseCase,
+        paymentRepository,
+        paymentGateway,
         addCustomerAddressUseCase,
         removeCustomerAddressUseCase,
         saveGoldCalculationHistoryUseCase,
