@@ -19,6 +19,10 @@ type CatalogResponse = {
     items?: CatalogProduct[];
 };
 
+type CatalogProductResponse = {
+    product?: CatalogProduct | null;
+};
+
 const BACKEND_URL =
     process.env.WARESH_BACKEND_URL ??
     process.env.NEXT_PUBLIC_API_URL ??
@@ -72,5 +76,6 @@ export async function fetchCatalogProductServer(productId: string): Promise<Cata
     if (response.status === 404) return null;
     if (!response.ok) throw new Error("دریافت محصول از سرویس اصلی ناموفق بود.");
 
-    return (await response.json()) as CatalogProduct;
+    const payload = (await response.json()) as CatalogProductResponse;
+    return payload.product ?? null;
 }
