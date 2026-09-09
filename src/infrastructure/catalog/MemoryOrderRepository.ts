@@ -1,4 +1,4 @@
-import type { Order } from "../../domain/catalog/entities/Order";
+import type { Order, OrderStatus } from "../../domain/catalog/entities/Order";
 import type { OrderRepository } from "../../domain/catalog/repositories/OrderRepository";
 
 export class MemoryOrderRepository implements OrderRepository {
@@ -6,6 +6,12 @@ export class MemoryOrderRepository implements OrderRepository {
 
     async save(order: Order): Promise<void> {
         this.orders.set(order.orderId, structuredClone(order));
+    }
+
+    async updateStatus(orderId: string, status: OrderStatus, updatedAt: string): Promise<void> {
+        const order = this.orders.get(orderId);
+        if (!order) throw new Error("سفارش پیدا نشد.");
+        this.orders.set(orderId, structuredClone({ ...order, status, updatedAt }));
     }
 
     async findById(orderId: string): Promise<Order | null> {
