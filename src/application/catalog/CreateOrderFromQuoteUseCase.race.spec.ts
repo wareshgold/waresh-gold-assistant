@@ -61,6 +61,7 @@ describe("CreateOrderFromQuoteUseCase race safety", () => {
             save: async () => {
                 throw new Error("UNIQUE constraint failed: orders.quote_id");
             },
+            updateStatus: async () => undefined,
             findById: async () => null,
             findByQuoteId: async () => winningOrder,
             findByCustomerId: async () => [],
