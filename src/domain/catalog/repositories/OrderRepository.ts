@@ -6,4 +6,5 @@ export interface OrderRepository {
     findById(orderId: string): Promise<Order | null>;
     findByQuoteId(quoteId: string): Promise<Order | null>;
     findByCustomerId(customerId: string): Promise<Order[]>;
+    findAll(): Promise<Order[]>;
 }
