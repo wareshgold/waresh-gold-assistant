@@ -3,7 +3,8 @@
 **Date:** 2026-09-09
 **Branch:** `feature/website-v2`
 **Milestone:** Payment Foundation
-**Status:** Foundation implemented; production gateway verification intentionally deferred.
+**Implementation commit:** `fac3e5e96f049cc1f074fd1a4ec4147bd6f9afae`
+**Status:** Foundation implemented and wired; production gateway verification intentionally deferred.
 
 ## Current baseline
 
@@ -22,6 +23,7 @@ Payment was introduced as an independent architectural capability:
 - Mock payment gateway
 - D1 `payments` persistence schema
 - Unit coverage for payment creation and duplicate active-payment protection
+- Payment capability wired into `createContainer`
 - Architecture documentation
 
 ## Payment rules
