@@ -67,9 +67,12 @@ export default function OrderTrackingPage() {
   }, [orderId]);
 
   useEffect(() => {
-    void loadOrder();
+    const initialLoad = window.setTimeout(() => void loadOrder(), 0);
     const interval = window.setInterval(() => void loadOrder(true), 30_000);
-    return () => window.clearInterval(interval);
+    return () => {
+      window.clearTimeout(initialLoad);
+      window.clearInterval(interval);
+    };
   }, [loadOrder]);
 
   const currentKey = order ? (statusAliases[order.status] ?? order.status) : "";
