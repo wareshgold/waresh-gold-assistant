@@ -36,6 +36,7 @@ function formatDate(value: string) {
 export default function CustomerOrderHistory() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [authenticated, setAuthenticated] = useState(true);
   const [error, setError] = useState(false);
 
   const loadOrders = useCallback(async () => {
@@ -44,14 +45,21 @@ export default function CustomerOrderHistory() {
     try {
       const response = await fetch("/api/account/orders", { cache: "no-store" });
       const data = await response.json().catch(() => null) as { orders?: Order[] } | null;
+      if (response.status === 401) {
+        setOrders([]);
+        setAuthenticated(false);
+        return;
+      }
+      setAuthenticated(true);
       if (!response.ok || !Array.isArray(data?.orders)) {
         setOrders([]);
-        setError(response.status !== 401);
+        setError(true);
         return;
       }
       setOrders(data.orders);
     } catch {
       setOrders([]);
+      setAuthenticated(true);
       setError(true);
     } finally {
       setLoading(false);
@@ -61,6 +69,8 @@ export default function CustomerOrderHistory() {
   useEffect(() => {
     void loadOrders();
   }, [loadOrders]);
+
+  if (!authenticated) return null;
 
   return (
     <section className="mt-8 rounded-[1.75rem] border border-[#e3ddd2] bg-white p-5 shadow-[0_12px_35px_rgba(55,52,43,0.04)] sm:p-6">
