@@ -16,16 +16,15 @@ type Order = {
 };
 
 const statuses = [
-  { key: "pending", label: "ثبت سفارش", description: "سفارش شما ثبت شده و در حال بررسی است." },
+  { key: "pending_confirmation", label: "ثبت سفارش", description: "سفارش شما ثبت شده و در حال بررسی است." },
   { key: "confirmed", label: "تأیید سفارش", description: "سفارش شما توسط وارش گلد تأیید شده است." },
+  { key: "paid", label: "پرداخت شده", description: "پرداخت سفارش ثبت شده است." },
   { key: "processing", label: "آماده‌سازی", description: "سفارش شما در حال آماده‌سازی است." },
-  { key: "ready", label: "آماده ارسال", description: "سفارش آماده تحویل به شرکت حمل است." },
-  { key: "shipped", label: "ارسال شده", description: "سفارش تحویل شرکت حمل شده است." },
-  { key: "delivered", label: "تحویل شده", description: "سفارش با موفقیت تحویل شده است." },
+  { key: "completed", label: "تکمیل شده", description: "فرآیند سفارش با موفقیت تکمیل شده است." },
 ] as const;
 
 const statusAliases: Record<string, string> = {
-  pending_confirmation: "pending",
+  pending: "pending_confirmation",
 };
 
 function formatDate(value: string) {
@@ -75,14 +74,23 @@ export default function OrderTrackingPage() {
 
   const currentKey = order ? (statusAliases[order.status] ?? order.status) : "";
   const currentIndex = statuses.findIndex((status) => status.key === currentKey);
-  const cancelled = currentKey === "cancelled";
+  const terminal = currentKey === "cancelled" || currentKey === "expired";
 
   const progressText = useMemo(() => {
     if (!order) return "";
-    if (cancelled) return "این سفارش لغو شده است.";
+    if (currentKey === "cancelled") return "این سفارش لغو شده است.";
+    if (currentKey === "expired") return "اعتبار این سفارش به پایان رسیده است.";
     if (currentIndex < 0) return `وضعیت فعلی: ${order.status}`;
     return statuses[currentIndex].description;
-  }, [cancelled, currentIndex, order]);
+  }, [currentIndex, currentKey, order]);
+
+  const currentLabel = currentKey === "cancelled"
+    ? "لغو شده"
+    : currentKey === "expired"
+      ? "منقضی شده"
+      : currentIndex >= 0
+        ? statuses[currentIndex].label
+        : order?.status ?? "—";
 
   return (
     <main className="min-h-screen bg-[#f5f1e9] text-[#292b26]">
@@ -133,16 +141,16 @@ export default function OrderTrackingPage() {
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-[10px] font-bold text-[#708076]">وضعیت فعلی</p>
-                    <p className="mt-1 text-lg font-extrabold text-[#35543e]">{cancelled ? "لغو شده" : currentIndex >= 0 ? statuses[currentIndex].label : order.status}</p>
+                    <p className="mt-1 text-lg font-extrabold text-[#35543e]">{currentLabel}</p>
                   </div>
                   {refreshing ? <span className="text-[10px] text-[#708076]">در حال به‌روزرسانی...</span> : null}
                 </div>
                 <p className="mt-3 text-xs leading-6 text-[#58705f]">{progressText}</p>
               </div>
 
-              {cancelled ? (
+              {terminal ? (
                 <div className="mt-7 rounded-2xl border border-[#e3cfc7] bg-[#fbf1ed] p-5 text-sm leading-7 text-[#80594e]">
-                  وضعیت نهایی این سفارش «لغو شده» است. برای پیگیری بیشتر می‌توانید با پشتیبانی وارش گلد در تماس باشید.
+                  وضعیت نهایی این سفارش «{currentLabel}» است. برای پیگیری بیشتر می‌توانید با پشتیبانی وارش گلد در تماس باشید.
                 </div>
               ) : (
                 <div className="mt-8">
