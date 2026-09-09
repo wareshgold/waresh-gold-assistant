@@ -68,12 +68,17 @@ function createTestApp() {
     );
 
     const sessionService = {
+        create: vi.fn(async (customerId: string) => ({
+            sessionId: "test-session",
+            customerId,
+            expiresAt: "2026-09-08T06:00:00.000Z",
+        })),
         get: vi.fn(async (sessionId: string) => sessionId === "session-1" ? {
             sessionId: "session-1",
             customerId: customer.customerId,
-            createdAt: "2026-09-07T06:00:00.000Z",
             expiresAt: "2026-09-08T06:00:00.000Z",
         } : null),
+        revoke: vi.fn(async (_sessionId: string) => undefined),
     };
 
     const container = {
