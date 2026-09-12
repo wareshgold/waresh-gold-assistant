@@ -32,6 +32,7 @@ const address: CustomerAddress = {
     city: "تهران",
     address: "خیابان نمونه، پلاک ۱",
     postalCode: "1234567890",
+    isDefault: true,
     createdAt: "2026-09-07T06:00:00.000Z",
     updatedAt: "2026-09-07T06:00:00.000Z",
 };
@@ -186,7 +187,7 @@ describe("createApp admin order status route", () => {
         const { app, customerRepository, quoteRepository, orderRepository, sessionService } = createTestApp();
         await customerRepository.save(customer);
         await quoteRepository.save(quote);
-        const createResponse = await app.request("http://localhost/api/v1/orders/from-quote", { method: "POST", headers: { "Content-Type": "application/json", "X-Customer-Session": "session-1" }, body: JSON.stringify({ quoteId: quote.quoteId }) });
+        const createResponse = await app.request("/api/v1/orders/from-quote", { method: "POST", headers: { "Content-Type": "application/json", "X-Customer-Session": "session-1" }, body: JSON.stringify({ quoteId: quote.quoteId }) });
         expect(createResponse.status).toBe(200);
         const created = await createResponse.json() as { order: { orderId: string; status: string } };
         expect(created.order.status).toBe("pending_confirmation");
