@@ -61,6 +61,7 @@ import { ListAdminOrdersUseCase } from "../application/catalog/ListAdminOrdersUs
 import { UpdateOrderStatusUseCase } from "../application/catalog/UpdateOrderStatusUseCase";
 import { AddCustomerAddressUseCase } from "../application/customer/AddCustomerAddressUseCase";
 import { RemoveCustomerAddressUseCase } from "../application/customer/RemoveCustomerAddressUseCase";
+import { SetDefaultCustomerAddressUseCase } from "../application/customer/SetDefaultCustomerAddressUseCase";
 import { D1OrderQuoteRepository } from "../infrastructure/catalog/D1OrderQuoteRepository";
 import { MemoryOrderQuoteRepository } from "../infrastructure/catalog/MemoryOrderQuoteRepository";
 import { D1OrderRepository } from "../infrastructure/catalog/D1OrderRepository";
@@ -91,6 +92,7 @@ export function createContainer(env: AppEnv) {
     const loginCustomerUseCase = new LoginCustomerUseCase(storage.customerRepository, storage.sessionService, passwordHasher);
     const addCustomerAddressUseCase = new AddCustomerAddressUseCase(storage.customerRepository);
     const removeCustomerAddressUseCase = new RemoveCustomerAddressUseCase(storage.customerRepository);
+    const setDefaultCustomerAddressUseCase = new SetDefaultCustomerAddressUseCase(storage.customerRepository);
 
     const ingestOunceTickFromTextUseCase = new IngestOunceTickFromTextUseCase(strategyA.tickRepository);
     const saveGoldCalculationHistoryUseCase = new SaveGoldCalculationHistoryUseCase(storage.goldCalculationHistoryRepository);
@@ -194,12 +196,7 @@ export function createContainer(env: AppEnv) {
     const signalLevelNotifier = new TelegramSignalLevelNotifier(telegram.telegramBotClient);
     const monitorSignalLevelsUseCase = new MonitorSignalLevelsUseCase(
         strategyA.signalRepository,
-        {
-            getCurrentPrice: async (symbol: string) => {
-                const price = await getCurrentGoldPriceUseCase.execute();
-                return price.price;
-            }
-        },
+        { getCurrentPrice: async (symbol: string) => (await getCurrentGoldPriceUseCase.execute()).price },
         signalLevelNotifier,
         async () => {
             const vipUsers = await vip.vipAccessService.listActiveUsers("STRATEGY_A_SIGNALS" as any);
@@ -209,31 +206,10 @@ export function createContainer(env: AppEnv) {
     );
     const signalMonitorJob = new SignalMonitorJob(monitorSignalLevelsUseCase);
 
-    const bubbleAlertSchedulerJob = new BubbleAlertSchedulerJob(
-        bubbleAlertService,
-        market.cachedMarketProvider,
-        gold.goldBubbleCalculator,
-        new TelegramBubbleAlertNotifier(telegram.telegramBotClient)
-    );
-
-    const goldPriceAlertSchedulerJob = new GoldPriceAlertSchedulerJob(
-        goldPriceAlertService,
-        market.cachedMarketProvider,
-        new TelegramGoldPriceAlertNotifier(telegram.telegramBotClient)
-    );
-    const marketReportSchedulerJob = new MarketReportSchedulerJob(
-        marketReportService,
-        market.cachedMarketProvider,
-        getGoldBubbleDataUseCase,
-        getMarketAnalyticsUseCase,
-        new TelegramMarketReportNotifier(telegram.telegramBotClient)
-    );
-
-    const priceTargetAlertSchedulerJob = new PriceTargetAlertSchedulerJob(
-        priceTargetAlertService,
-        getCurrentGoldPriceUseCase,
-        new TelegramPriceTargetAlertNotifier(telegram.telegramBotClient)
-    );
+    const bubbleAlertSchedulerJob = new BubbleAlertSchedulerJob(bubbleAlertService, market.cachedMarketProvider, gold.goldBubbleCalculator, new TelegramBubbleAlertNotifier(telegram.telegramBotClient));
+    const goldPriceAlertSchedulerJob = new GoldPriceAlertSchedulerJob(goldPriceAlertService, market.cachedMarketProvider, new TelegramGoldPriceAlertNotifier(telegram.telegramBotClient));
+    const marketReportSchedulerJob = new MarketReportSchedulerJob(marketReportService, market.cachedMarketProvider, getGoldBubbleDataUseCase, getMarketAnalyticsUseCase, new TelegramMarketReportNotifier(telegram.telegramBotClient));
+    const priceTargetAlertSchedulerJob = new PriceTargetAlertSchedulerJob(priceTargetAlertService, getCurrentGoldPriceUseCase, new TelegramPriceTargetAlertNotifier(telegram.telegramBotClient));
 
     return {
         ...cache,
@@ -271,6 +247,7 @@ export function createContainer(env: AppEnv) {
         paymentGateway,
         addCustomerAddressUseCase,
         removeCustomerAddressUseCase,
+        setDefaultCustomerAddressUseCase,
         saveGoldCalculationHistoryUseCase,
         getGoldCalculationHistoryUseCase,
         ingestOunceTickFromTextUseCase,
