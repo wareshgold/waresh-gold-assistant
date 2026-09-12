@@ -7,6 +7,7 @@ export type CustomerAddress = {
   city: string;
   address: string;
   postalCode: string;
+  isDefault: boolean;
 };
 
 export type CustomerProfile = {
@@ -48,13 +49,13 @@ export function readCustomerProfile(): CustomerProfile | null {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<CustomerProfile>;
-    if (typeof parsed.phone !== "string" || typeof parsed.customerId !== "string" || !parsed.customerId) {
-      return null;
-    }
+    if (typeof parsed.phone !== "string" || typeof parsed.customerId !== "string" || !parsed.customerId) return null;
     return {
       ...emptyProfile(parsed.phone, parsed.customerId),
       ...parsed,
-      addresses: Array.isArray(parsed.addresses) ? parsed.addresses : [],
+      addresses: Array.isArray(parsed.addresses)
+        ? parsed.addresses.map((address) => ({ ...address, isDefault: address.isDefault === true }))
+        : [],
     };
   } catch {
     return null;
