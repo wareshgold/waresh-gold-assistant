@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { AddCustomerAddressUseCase } from "./AddCustomerAddressUseCase";
 import { GetCustomerAccountUseCase } from "./GetCustomerAccountUseCase";
 import { RemoveCustomerAddressUseCase } from "./RemoveCustomerAddressUseCase";
+import { SetDefaultCustomerAddressUseCase } from "./SetDefaultCustomerAddressUseCase";
 import { UpdateCustomerProfileUseCase } from "./UpdateCustomerProfileUseCase";
 import { MemoryCustomerRepository } from "../../infrastructure/customer/MemoryCustomerRepository";
 
@@ -30,6 +31,7 @@ describe("customer account use cases", () => {
         expect(account?.customerId).toBe(customer.customerId);
         expect(account?.addresses).toHaveLength(1);
         expect(account?.addresses[0].title).toBe("خانه");
+        expect(account?.addresses[0].isDefault).toBe(true);
     });
 
     it("updates a persisted address without changing its identity", async () => {
@@ -45,7 +47,7 @@ describe("customer account use cases", () => {
         expect(updated.createdAt).toBe(address.createdAt);
         expect(updated.updatedAt).not.toBe(address.updatedAt);
         expect(account?.addresses).toHaveLength(1);
-        expect(account?.addresses[0]).toMatchObject({ id: address.id, title: "خانه جدید", province: "گیلان", city: "رشت", address: "خیابان جدید", postalCode: "0987654321" });
+        expect(account?.addresses[0]).toMatchObject({ id: address.id, title: "خانه جدید", province: "گیلان", city: "رشت", address: "خیابان جدید", postalCode: "0987654321", isDefault: true });
     });
 
     it("rejects updates for an address owned by another customer", async () => {
@@ -58,6 +60,29 @@ describe("customer account use cases", () => {
         await expect(new AddCustomerAddressUseCase(repository).execute({ customerId: customer.customerId, addressId: address.id, title: "تلاش", recipientName: "Ali Mirzaei", phone: customer.phone, province: "تهران", city: "تهران", address: "نباید تغییر کند", postalCode: "1234567890" })).rejects.toThrow("Customer address not found");
     });
 
+    it("allows exactly one default address and protects ownership", async () => {
+        const repository = new MemoryCustomerRepository();
+        await repository.save(customer);
+        const otherCustomer = { ...customer, customerId: "customer-2", username: "other_gold", phone: "+989121234568", nationalId: "0012345679" };
+        await repository.save(otherCustomer);
+
+        const addAddress = new AddCustomerAddressUseCase(repository);
+        const first = await addAddress.execute({ customerId: customer.customerId, title: "خانه", recipientName: "Ali", phone: customer.phone, province: "تهران", city: "تهران", address: "اول", postalCode: "1234567890" });
+        const second = await addAddress.execute({ customerId: customer.customerId, title: "کار", recipientName: "Ali", phone: customer.phone, province: "گیلان", city: "رشت", address: "دوم", postalCode: "0987654321" });
+        const otherAddress = await addAddress.execute({ customerId: otherCustomer.customerId, title: "دیگری", recipientName: "Other", phone: otherCustomer.phone, province: "تهران", city: "تهران", address: "دیگر", postalCode: "1111111111" });
+
+        const setDefault = new SetDefaultCustomerAddressUseCase(repository);
+        const selected = await setDefault.execute({ customerId: customer.customerId, addressId: second.id });
+        const addresses = await repository.listAddresses(customer.customerId);
+
+        expect(selected.isDefault).toBe(true);
+        expect(addresses.filter((address) => address.isDefault).map((address) => address.id)).toEqual([second.id]);
+        await expect(setDefault.execute({ customerId: customer.customerId, addressId: otherAddress.id })).rejects.toThrow("Customer address not found");
+        expect((await repository.listAddresses(otherCustomer.customerId))[0].id).toBe(otherAddress.id);
+        expect((await repository.listAddresses(otherCustomer.customerId))[0].isDefault).toBe(true);
+        expect(first.isDefault).toBe(true);
+    });
+
     it("updates only the profile fields owned by the use case", async () => {
         const repository = new MemoryCustomerRepository();
         await repository.save(customer);
@@ -68,13 +93,18 @@ describe("customer account use cases", () => {
         expect(updated.customerId).toBe(customer.customerId);
     });
 
-    it("removes an address only when it belongs to the authenticated customer", async () => {
+    it("removes an address only when it belongs to the authenticated customer and promotes a replacement", async () => {
         const repository = new MemoryCustomerRepository();
         await repository.save(customer);
-        const address = await new AddCustomerAddressUseCase(repository).execute({ customerId: customer.customerId, title: "کار", recipientName: "Ali Mirzaei", phone: customer.phone, province: "گیلان", city: "رشت", address: "خیابان نمونه", postalCode: "1234567890" });
-        await new RemoveCustomerAddressUseCase(repository).execute({ customerId: customer.customerId, addressId: address.id });
+        const addAddress = new AddCustomerAddressUseCase(repository);
+        const first = await addAddress.execute({ customerId: customer.customerId, title: "کار", recipientName: "Ali Mirzaei", phone: customer.phone, province: "گیلان", city: "رشت", address: "خیابان نمونه", postalCode: "1234567890" });
+        const second = await addAddress.execute({ customerId: customer.customerId, title: "خانه", recipientName: "Ali Mirzaei", phone: customer.phone, province: "گیلان", city: "رشت", address: "خیابان دوم", postalCode: "0987654321" });
+        await new SetDefaultCustomerAddressUseCase(repository).execute({ customerId: customer.customerId, addressId: first.id });
+        await new RemoveCustomerAddressUseCase(repository).execute({ customerId: customer.customerId, addressId: first.id });
         const account = await new GetCustomerAccountUseCase(repository).execute(customer.customerId);
-        expect(account?.addresses).toEqual([]);
+        expect(account?.addresses).toHaveLength(1);
+        expect(account?.addresses[0].id).toBe(second.id);
+        expect(account?.addresses[0].isDefault).toBe(true);
     });
 
     it("rejects profile updates for an unknown customer", async () => {
