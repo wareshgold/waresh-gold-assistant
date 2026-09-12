@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import MobileMenu from "@/components/MobileMenu";
+import CheckoutResumeRedirect from "@/components/CheckoutResumeRedirect";
 import CustomerAccountPanel from "@/components/CustomerAccountPanel";
 import CustomerOrderHistory from "@/components/CustomerOrderHistory";
 
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 export default function AccountPage() {
   return (
     <main className="min-h-screen bg-[#f5f1e9] text-[#292b26]">
+      <CheckoutResumeRedirect />
       <header className="sticky top-0 z-50 border-b border-[#dedfd7]/80 bg-[#faf8f2]/95 backdrop-blur-xl">
         <div className="waresh-container flex h-[76px] items-center justify-between gap-4">
           <Link href="/" aria-label="وارش گلد" className="shrink-0"><img src="/waresh-gold-logo-green.png" alt="وارش گلد" className="h-11 w-auto object-contain" /></Link>
