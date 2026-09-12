@@ -29,6 +29,7 @@ const customerAddress: CustomerAddress = {
     city: "تهران",
     address: "خیابان نمونه، پلاک ۱",
     postalCode: "1234567890",
+    isDefault: true,
     createdAt: "2026-09-07T06:00:00.000Z",
     updatedAt: "2026-09-07T06:00:00.000Z",
 };
@@ -38,6 +39,7 @@ const foreignAddress: CustomerAddress = {
     id: "address-2",
     customerId: "customer-2",
     title: "آدرس شخص دیگر",
+    isDefault: false,
 };
 
 const quote: OrderQuote = {
@@ -73,6 +75,7 @@ function createUseCase(addresses: CustomerAddress[] = []) {
         save: async () => undefined,
         listAddresses: async (customerId: string) => addresses.filter((address) => address.customerId === customerId),
         saveAddress: async () => undefined,
+        setDefaultAddress: async () => undefined,
         deleteAddress: async () => undefined,
     };
     return {
