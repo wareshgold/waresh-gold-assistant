@@ -34,6 +34,7 @@ type CheckoutOrder = {
 type CustomerApi = { customerId: string; phone: string; firstName: string; lastName: string; addresses?: CustomerAddress[] };
 
 const PRICE_REFRESH_MS = 30_000;
+const CHECKOUT_QUOTE_STORAGE_KEY = "waresh_checkout_quote_id";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -95,6 +96,25 @@ export default function CheckoutPage() {
     void loadAccount(); return () => { cancelled = true; };
   }, []);
 
+  const restoreQuote = useCallback(async (quoteId: string) => {
+    try {
+      const response = await fetch(`/api/checkout/quote?quoteId=${encodeURIComponent(quoteId)}`, { method: "GET", cache: "no-store" });
+      const data = await response.json().catch(() => null) as { quote?: CheckoutQuote } | null;
+      if (!response.ok || !data?.quote) return false;
+      setQuote(data.quote);
+      setSubmitted(true);
+      return true;
+    } catch { return false; }
+  }, []);
+
+  useEffect(() => {
+    const storedQuoteId = window.sessionStorage.getItem(CHECKOUT_QUOTE_STORAGE_KEY);
+    if (!storedQuoteId) return;
+    void restoreQuote(storedQuoteId).then((restored) => {
+      if (!restored) window.sessionStorage.removeItem(CHECKOUT_QUOTE_STORAGE_KEY);
+    });
+  }, [restoreQuote]);
+
   const products = useMemo(() => cart.flatMap((item) => { const product = catalogProducts.find((candidate) => candidate.id === item.productId); return product ? [{ item, product }] : []; }), [cart, catalogProducts]);
 
   const refreshPrices = useCallback(async () => {
@@ -134,6 +154,7 @@ export default function CheckoutPage() {
       const quoteData = await quoteResponse.json().catch(() => null) as { quote?: CheckoutQuote; error?: string } | null;
       if (!quoteResponse.ok || !quoteData?.quote) { setPriceError(true); return; }
       setQuote(quoteData.quote); setSubmitted(true);
+      window.sessionStorage.setItem(CHECKOUT_QUOTE_STORAGE_KEY, quoteData.quote.quoteId);
     } finally { setValidatingOrder(false); }
   };
 
@@ -146,6 +167,7 @@ export default function CheckoutPage() {
       const response = await fetch("/api/orders/from-quote", { method: "POST", headers: { "Content-Type": "application/json" }, cache: "no-store", body: JSON.stringify({ quoteId: quote.quoteId, addressId: selectedAddressId }) });
       const data = await response.json().catch(() => null) as { order?: CheckoutOrder; error?: string } | null;
       if (!response.ok || !data?.order) { setOrderError(true); return; }
+      window.sessionStorage.removeItem(CHECKOUT_QUOTE_STORAGE_KEY);
       setOrder(data.order); router.replace(`/order/${encodeURIComponent(data.order.orderId)}`);
     } catch { setOrderError(true); }
     finally { setCreatingOrder(false); }
