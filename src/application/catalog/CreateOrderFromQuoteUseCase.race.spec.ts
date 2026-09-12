@@ -75,6 +75,7 @@ describe("CreateOrderFromQuoteUseCase race safety", () => {
             save: async () => undefined,
             listAddresses: async () => [],
             saveAddress: async () => undefined,
+            setDefaultAddress: async () => undefined,
             deleteAddress: async () => undefined,
         };
         const useCase = new CreateOrderFromQuoteUseCase(quoteRepository, orderRepository, customerRepository);
