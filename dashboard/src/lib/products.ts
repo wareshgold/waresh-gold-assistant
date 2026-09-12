@@ -63,10 +63,12 @@ export function mergeCatalogProduct(catalogProduct: CatalogProduct | null): Prod
 
 /**
  * Client-side product access. The catalog transport uses the Next.js API route.
+ * Keep the static catalog as a migration-safe fallback when the API is empty.
  */
 export async function getProducts(): Promise<Product[]> {
   const catalog = await fetchCatalogProducts();
-  return mergeCatalogProducts(catalog);
+  const products = mergeCatalogProducts(catalog);
+  return products.length > 0 ? products : PRODUCTS;
 }
 
 /**
@@ -74,7 +76,7 @@ export async function getProducts(): Promise<Product[]> {
  */
 export async function getProduct(productId: string): Promise<Product | null> {
   const catalogProduct = await fetchCatalogProduct(productId);
-  return mergeCatalogProduct(catalogProduct);
+  return mergeCatalogProduct(catalogProduct) ?? getStaticProduct(productId);
 }
 
 /**
@@ -83,7 +85,8 @@ export async function getProduct(productId: string): Promise<Product | null> {
  */
 export async function getProductsServer(): Promise<Product[]> {
   const catalog = await fetchCatalogProductsServer();
-  return mergeCatalogProducts(catalog);
+  const products = mergeCatalogProducts(catalog);
+  return products.length > 0 ? products : PRODUCTS;
 }
 
 /**
@@ -91,7 +94,7 @@ export async function getProductsServer(): Promise<Product[]> {
  */
 export async function getProductServer(productId: string): Promise<Product | null> {
   const catalogProduct = await fetchCatalogProductServer(productId);
-  return mergeCatalogProduct(catalogProduct);
+  return mergeCatalogProduct(catalogProduct) ?? getStaticProduct(productId);
 }
 
 export function getStaticProduct(productId: string): Product | null {
