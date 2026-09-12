@@ -14,6 +14,13 @@ export type AddCustomerAddressInput = {
     isDefault?: boolean;
 };
 
+function nextUpdatedAt(previousUpdatedAt?: string): string {
+    const now = Date.now();
+    const previous = previousUpdatedAt ? Date.parse(previousUpdatedAt) : Number.NaN;
+    const timestamp = Number.isFinite(previous) && previous >= now ? previous + 1 : now;
+    return new Date(timestamp).toISOString();
+}
+
 export class AddCustomerAddressUseCase {
     constructor(private readonly customerRepository: CustomerRepository) {}
 
@@ -23,7 +30,6 @@ export class AddCustomerAddressUseCase {
             throw new Error("Customer account not found");
         }
 
-        const now = new Date().toISOString();
         const title = input.title.trim();
         const recipientName = input.recipientName.trim();
         const phone = input.phone.trim();
@@ -52,13 +58,14 @@ export class AddCustomerAddressUseCase {
                 address: addressText,
                 postalCode,
                 isDefault: input.isDefault === true ? true : existing.isDefault,
-                updatedAt: now,
+                updatedAt: nextUpdatedAt(existing.updatedAt),
             };
 
             await this.customerRepository.saveAddress(updated);
             return updated;
         }
 
+        const now = new Date().toISOString();
         const created: CustomerAddress = {
             id: crypto.randomUUID(),
             customerId: input.customerId,
