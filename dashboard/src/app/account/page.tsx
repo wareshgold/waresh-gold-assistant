@@ -29,7 +29,10 @@ export default function AccountPage() {
       </header>
 
       <section className="waresh-container py-10 sm:py-16 lg:py-20">
-        <div className="mb-6 flex justify-end"><Link href="/account/addresses" className="inline-flex min-h-11 items-center rounded-full border border-[#d9cfc1] bg-white px-5 text-xs font-bold text-[#765728]">مدیریت کامل آدرس‌ها</Link></div>
+        <div className="mb-6 flex flex-wrap justify-end gap-2">
+          <Link href="/account/addresses" className="inline-flex min-h-11 items-center rounded-full border border-[#d9cfc1] bg-white px-5 text-xs font-bold text-[#765728]">مدیریت کامل آدرس‌ها</Link>
+          <Link href="/admin/orders" className="inline-flex min-h-11 items-center rounded-full border border-[#cdbb91] bg-[#fffaf0] px-5 text-xs font-bold text-[#765728]">ورود مدیریت</Link>
+        </div>
         <CustomerAccountPanel />
         <CustomerOrderHistory />
       </section>
