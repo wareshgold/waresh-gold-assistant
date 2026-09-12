@@ -20,37 +20,41 @@ export class CreateOrderFromQuoteUseCase {
         if (!normalizedQuoteId) throw new Error("شناسه پیش‌فاکتور الزامی است.");
 
         const customerId = input.customerId?.trim() || null;
-        const addressId = input.addressId?.trim() || null;
+        const requestedAddressId = input.addressId?.trim() || null;
 
         if (customerId) {
             const customer = await this.customerRepository.findById(customerId);
             if (!customer) throw new Error("حساب کاربری پیدا نشد.");
-        } else if (addressId) {
+        } else if (requestedAddressId) {
             throw new Error("برای استفاده از آدرس باید وارد حساب کاربری شوید.");
         }
 
         const existing = await this.orderRepository.findByQuoteId(normalizedQuoteId);
-        if (existing) return validateExistingOrder(existing, customerId, addressId);
+        if (existing) return validateExistingOrder(existing, customerId, requestedAddressId);
 
         const quote = await this.quoteRepository.findById(normalizedQuoteId);
         if (!quote) throw new Error("پیش‌فاکتور پیدا نشد.");
 
         let address: Order["address"] = null;
-        if (customerId && addressId) {
+        if (customerId) {
             const addresses = await this.customerRepository.listAddresses(customerId);
-            const ownedAddress = addresses.find((item) => item.id === addressId);
-            if (!ownedAddress) throw new Error("آدرس انتخاب‌شده پیدا نشد.");
+            const ownedAddress = requestedAddressId
+                ? addresses.find((item) => item.id === requestedAddressId)
+                : addresses.find((item) => item.isDefault) ?? addresses[0];
 
-            address = {
-                addressId: ownedAddress.id,
-                title: ownedAddress.title,
-                recipientName: ownedAddress.recipientName,
-                phone: ownedAddress.phone,
-                province: ownedAddress.province,
-                city: ownedAddress.city,
-                address: ownedAddress.address,
-                postalCode: ownedAddress.postalCode,
-            };
+            if (requestedAddressId && !ownedAddress) throw new Error("آدرس انتخاب‌شده پیدا نشد.");
+            if (ownedAddress) {
+                address = {
+                    addressId: ownedAddress.id,
+                    title: ownedAddress.title,
+                    recipientName: ownedAddress.recipientName,
+                    phone: ownedAddress.phone,
+                    province: ownedAddress.province,
+                    city: ownedAddress.city,
+                    address: ownedAddress.address,
+                    postalCode: ownedAddress.postalCode,
+                };
+            }
         }
 
         const now = new Date().toISOString();
@@ -75,7 +79,7 @@ export class CreateOrderFromQuoteUseCase {
             const racedOrder = await this.orderRepository.findByQuoteId(normalizedQuoteId);
             if (!racedOrder) throw error;
 
-            return validateExistingOrder(racedOrder, customerId, addressId);
+            return validateExistingOrder(racedOrder, customerId, requestedAddressId);
         }
 
         return order;
