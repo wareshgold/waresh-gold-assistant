@@ -11,7 +11,7 @@ type Customer = {
   addresses?: CustomerAddress[];
 };
 
-type AddressForm = Omit<CustomerAddress, "id" | "customerId" | "createdAt" | "updatedAt">;
+type AddressForm = Omit<CustomerAddress, "id" | "customerId" | "createdAt" | "updatedAt" | "isDefault">;
 
 const emptyAddress: AddressForm = {
   title: "",
@@ -53,9 +53,7 @@ export default function AccountAddressesPage() {
     }
   };
 
-  useEffect(() => {
-    void loadAccount();
-  }, []);
+  useEffect(() => { void loadAccount(); }, []);
 
   const openCreate = () => {
     setEditingId(null);
@@ -87,7 +85,10 @@ export default function AccountAddressesPage() {
   };
 
   const updateField = (field: keyof AddressForm, value: string) => {
-    setForm((current) => ({ ...current, [field]: field === "postalCode" ? value.replace(/\D/g, "").slice(0, 10) : value }));
+    setForm((current) => ({
+      ...current,
+      [field]: field === "postalCode" ? value.replace(/\D/g, "").slice(0, 10) : value,
+    }));
   };
 
   const submitAddress = async () => {
@@ -142,7 +143,7 @@ export default function AccountAddressesPage() {
         return;
       }
       if (editingId === addressId) closeForm();
-      setMessage("آدرس حذف شد.");
+      setMessage(address.isDefault ? "آدرس پیش‌فرض حذف شد و آدرس بعدی به‌صورت خودکار پیش‌فرض شد." : "آدرس حذف شد.");
       await loadAccount();
     } catch {
       setMessage("ارتباط با سرویس آدرس برقرار نشد.");
@@ -164,7 +165,11 @@ export default function AccountAddressesPage() {
       <Header />
       <section className="waresh-container py-10 sm:py-16 lg:py-20">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-          <div><p className="text-xs font-bold tracking-[0.2em] text-[#9b7b48]">DELIVERY ADDRESSES</p><h1 className="mt-3 text-3xl font-extrabold sm:text-5xl">مدیریت آدرس‌ها</h1><p className="mt-3 text-sm leading-7 text-[#70766d]">آدرس‌های ارسال را اضافه، ویرایش یا حذف کنید. هنگام Checkout می‌توانید یکی از آن‌ها را انتخاب کنید.</p></div>
+          <div>
+            <p className="text-xs font-bold tracking-[0.2em] text-[#9b7b48]">DELIVERY ADDRESSES</p>
+            <h1 className="mt-3 text-3xl font-extrabold sm:text-5xl">مدیریت آدرس‌ها</h1>
+            <p className="mt-3 text-sm leading-7 text-[#70766d]">آدرس پیش‌فرض در Checkout به‌صورت خودکار انتخاب می‌شود. با حذف آن، آدرس بعدی به‌صورت خودکار جایگزین می‌شود.</p>
+          </div>
           <div className="flex gap-2"><Link href="/account" className="inline-flex min-h-11 items-center rounded-full border border-[#d9cfc1] bg-white px-5 text-xs font-bold text-[#62685e]">بازگشت به حساب</Link><button type="button" onClick={showForm ? closeForm : openCreate} className="min-h-11 rounded-full bg-[#25392f] px-5 text-xs font-bold text-white">{showForm ? "بستن فرم" : "افزودن آدرس"}</button></div>
         </div>
 
@@ -172,7 +177,7 @@ export default function AccountAddressesPage() {
 
         {message && <p className="mt-5 rounded-2xl bg-[#f5f1e9] p-4 text-xs leading-6 text-[#777970]">{message}</p>}
 
-        <div className="mt-8 space-y-3">{addresses.length ? addresses.map((address) => <article key={address.id} className="rounded-[1.5rem] border border-[#e3ddd2] bg-[#fffdf8] p-5"><div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div><p className="text-sm font-extrabold">{address.title}</p><p className="mt-1 text-xs text-[#777970]">{address.recipientName} · <span dir="ltr">{address.phone}</span></p><p className="mt-3 text-xs leading-7 text-[#62685e]">{address.province}، {address.city}، {address.address}</p><p className="mt-1 text-[10px] text-[#99978f]">کد پستی: <span dir="ltr">{address.postalCode}</span></p></div><div className="flex shrink-0 gap-2"><button type="button" onClick={() => openEdit(address)} disabled={saving || deletingId !== null} className="min-h-10 rounded-full border border-[#d9cfc1] bg-white px-4 text-[11px] font-bold text-[#765728] disabled:opacity-50">ویرایش</button><button type="button" onClick={() => void removeAddress(address.id)} disabled={saving || deletingId !== null} className="min-h-10 rounded-full border border-[#e1cbc4] bg-white px-4 text-[11px] font-bold text-[#94675f] disabled:opacity-50">{deletingId === address.id ? "در حال حذف..." : "حذف"}</button></div></div></article>) : <div className="rounded-[1.5rem] border border-dashed border-[#d9d0c2] bg-[#fffdf8] p-8 text-center"><p className="text-sm font-extrabold">هنوز آدرسی ثبت نشده است.</p><p className="mt-2 text-xs leading-6 text-[#777970]">یک آدرس ذخیره کنید تا در Checkout با یک انتخاب سریع از آن استفاده کنید.</p><button type="button" onClick={openCreate} className="mt-5 min-h-11 rounded-full bg-[#25392f] px-5 text-xs font-bold text-white">افزودن اولین آدرس</button></div>}</div>
+        <div className="mt-8 space-y-3">{addresses.length ? addresses.map((address) => <article key={address.id} className={`rounded-[1.5rem] border bg-[#fffdf8] p-5 ${address.isDefault ? "border-[#c6a66b] shadow-[0_12px_35px_rgba(155,123,72,0.08)]" : "border-[#e3ddd2]"}`}><div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><p className="text-sm font-extrabold">{address.title}</p>{address.isDefault && <span className="rounded-full bg-[#f3e8d2] px-3 py-1 text-[10px] font-extrabold text-[#765728]">پیش‌فرض</span>}</div><p className="mt-1 text-xs text-[#777970]">{address.recipientName} · <span dir="ltr">{address.phone}</span></p><p className="mt-3 text-xs leading-7 text-[#62685e]">{address.province}، {address.city}، {address.address}</p><p className="mt-1 text-[10px] text-[#99978f]">کد پستی: <span dir="ltr">{address.postalCode}</span></p></div><div className="flex shrink-0 gap-2"><button type="button" onClick={() => openEdit(address)} disabled={saving || deletingId !== null} className="min-h-10 rounded-full border border-[#d9cfc1] bg-white px-4 text-[11px] font-bold text-[#765728] disabled:opacity-50">ویرایش</button><button type="button" onClick={() => void removeAddress(address.id)} disabled={saving || deletingId !== null} className="min-h-10 rounded-full border border-[#e1cbc4] bg-white px-4 text-[11px] font-bold text-[#94675f] disabled:opacity-50">{deletingId === address.id ? "در حال حذف..." : "حذف"}</button></div></div></article>) : <div className="rounded-[1.5rem] border border-dashed border-[#d9d0c2] bg-[#fffdf8] p-8 text-center"><p className="text-sm font-extrabold">هنوز آدرسی ثبت نشده است.</p><p className="mt-2 text-xs leading-6 text-[#777970]">یک آدرس ذخیره کنید تا در Checkout با یک انتخاب سریع از آن استفاده کنید.</p><button type="button" onClick={openCreate} className="mt-5 min-h-11 rounded-full bg-[#25392f] px-5 text-xs font-bold text-white">افزودن اولین آدرس</button></div>}</div>
       </section>
     </main>
   );
