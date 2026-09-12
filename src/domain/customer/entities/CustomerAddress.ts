@@ -8,6 +8,7 @@ export type CustomerAddress = {
     city: string;
     address: string;
     postalCode: string;
+    isDefault: boolean;
     createdAt: string;
     updatedAt: string;
 };
