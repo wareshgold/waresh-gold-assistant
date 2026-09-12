@@ -9,5 +9,6 @@ export interface CustomerRepository {
     save(customer: Customer): Promise<void>;
     listAddresses(customerId: string): Promise<CustomerAddress[]>;
     saveAddress(address: CustomerAddress): Promise<void>;
+    setDefaultAddress(customerId: string, addressId: string): Promise<void>;
     deleteAddress(customerId: string, addressId: string): Promise<void>;
 }
