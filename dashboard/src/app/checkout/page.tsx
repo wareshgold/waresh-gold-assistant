@@ -129,7 +129,7 @@ export default function CheckoutPage() {
         if (response.ok && data?.customer) {
           setCustomer(data.customer);
           const addresses = data.customer.addresses ?? [];
-          setSelectedAddressId((current) => current || addresses[0]?.id || "");
+          setSelectedAddressId((current) => current || addresses.find((address) => address.isDefault)?.id || addresses[0]?.id || "");
           setName((current) => current || `${data.customer?.firstName ?? ""} ${data.customer?.lastName ?? ""}`.trim());
           setPhone((current) => current || data.customer?.phone || "");
         } else {
