@@ -25,6 +25,7 @@ type AddressRow = {
     city: string;
     address: string;
     postal_code: string;
+    is_default: number;
     created_at: string;
     updated_at: string;
 };
@@ -54,6 +55,7 @@ const mapAddress = (row: AddressRow): CustomerAddress => ({
     city: row.city,
     address: row.address,
     postalCode: row.postal_code,
+    isDefault: row.is_default === 1,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
 });
@@ -104,27 +106,44 @@ export class D1CustomerRepository implements CustomerRepository {
 
     async listAddresses(customerId: string): Promise<CustomerAddress[]> {
         const result = await this.db.prepare(`
-            SELECT id, customer_id, title, recipient_name, phone, province, city, address, postal_code, created_at, updated_at
-            FROM customer_addresses WHERE customer_id = ? ORDER BY created_at DESC
+            SELECT id, customer_id, title, recipient_name, phone, province, city, address, postal_code, is_default, created_at, updated_at
+            FROM customer_addresses WHERE customer_id = ? ORDER BY is_default DESC, created_at DESC
         `).bind(customerId).all<AddressRow>();
         return result.results.map(mapAddress);
     }
 
     async saveAddress(address: CustomerAddress): Promise<void> {
-        await this.db.prepare(`
+        const statements = [];
+        if (address.isDefault) {
+            statements.push(this.db.prepare("UPDATE customer_addresses SET is_default = 0 WHERE customer_id = ? AND id <> ?").bind(address.customerId, address.id));
+        }
+        statements.push(this.db.prepare(`
             INSERT INTO customer_addresses
-                (id, customer_id, title, recipient_name, phone, province, city, address, postal_code, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (id, customer_id, title, recipient_name, phone, province, city, address, postal_code, is_default, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET title = excluded.title, recipient_name = excluded.recipient_name,
                 phone = excluded.phone, province = excluded.province, city = excluded.city, address = excluded.address,
-                postal_code = excluded.postal_code, updated_at = excluded.updated_at
+                postal_code = excluded.postal_code, is_default = excluded.is_default, updated_at = excluded.updated_at
         `).bind(
             address.id, address.customerId, address.title, address.recipientName, address.phone,
-            address.province, address.city, address.address, address.postalCode, address.createdAt, address.updatedAt,
-        ).run();
+            address.province, address.city, address.address, address.postalCode, address.isDefault ? 1 : 0,
+            address.createdAt, address.updatedAt,
+        ));
+        await this.db.batch(statements);
+    }
+
+    async setDefaultAddress(customerId: string, addressId: string): Promise<void> {
+        await this.db.batch([
+            this.db.prepare("UPDATE customer_addresses SET is_default = 0 WHERE customer_id = ?").bind(customerId),
+            this.db.prepare("UPDATE customer_addresses SET is_default = 1, updated_at = ? WHERE id = ? AND customer_id = ?").bind(new Date().toISOString(), addressId, customerId),
+        ]);
     }
 
     async deleteAddress(customerId: string, addressId: string): Promise<void> {
+        const existing = await this.db.prepare("SELECT is_default FROM customer_addresses WHERE id = ? AND customer_id = ?").bind(addressId, customerId).first<{ is_default: number }>();
         await this.db.prepare("DELETE FROM customer_addresses WHERE id = ? AND customer_id = ?").bind(addressId, customerId).run();
+        if (existing?.is_default === 1) {
+            await this.db.prepare("UPDATE customer_addresses SET is_default = 1, updated_at = ? WHERE id = (SELECT id FROM customer_addresses WHERE customer_id = ? ORDER BY created_at DESC LIMIT 1)").bind(new Date().toISOString(), customerId).run();
+        }
     }
 }
