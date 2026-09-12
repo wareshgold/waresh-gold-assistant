@@ -24,6 +24,18 @@ export type AuthenticatedPasswordCustomer = {
 
 const normalize = (value: string) => value.trim();
 
+const normalizeDigits = (value: string) => value
+    .replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))
+    .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)));
+
+const normalizeIranianMobile = (value: string) => {
+    const normalized = normalizeDigits(normalize(value)).replace(/[\s()-]/g, "");
+    if (/^09\d{9}$/.test(normalized)) return `+98${normalized.slice(1)}`;
+    if (/^00989\d{9}$/.test(normalized)) return `+${normalized.slice(2)}`;
+    if (/^989\d{9}$/.test(normalized)) return `+${normalized}`;
+    return normalized;
+};
+
 export class RegisterCustomerUseCase {
     constructor(
         private readonly customers: CustomerRepository,
@@ -34,8 +46,8 @@ export class RegisterCustomerUseCase {
     async execute(input: RegisterCustomerInput): Promise<AuthenticatedPasswordCustomer> {
         const username = normalize(input.username).toLowerCase();
         const password = input.password;
-        const phone = normalize(input.phone);
-        const nationalId = normalize(input.nationalId);
+        const phone = normalizeIranianMobile(input.phone);
+        const nationalId = normalizeDigits(normalize(input.nationalId)).replace(/\s/g, "");
 
         if (!/^[a-z0-9_]{3,32}$/.test(username)) throw new Error("نام کاربری معتبر نیست.");
         if (password.length < 8 || password.length > 128) throw new Error("رمز عبور باید حداقل ۸ کاراکتر باشد.");
