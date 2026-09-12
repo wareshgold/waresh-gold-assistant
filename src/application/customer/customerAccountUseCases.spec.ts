@@ -32,6 +32,32 @@ describe("customer account use cases", () => {
         expect(account?.addresses[0].title).toBe("خانه");
     });
 
+    it("updates a persisted address without changing its identity", async () => {
+        const repository = new MemoryCustomerRepository();
+        await repository.save(customer);
+        const addAddress = new AddCustomerAddressUseCase(repository);
+        const address = await addAddress.execute({ customerId: customer.customerId, title: "خانه", recipientName: "Ali Mirzaei", phone: customer.phone, province: "تهران", city: "تهران", address: "خیابان قدیم", postalCode: "1234567890" });
+
+        const updated = await addAddress.execute({ customerId: customer.customerId, addressId: address.id, title: "خانه جدید", recipientName: "Ali Mirzaei", phone: customer.phone, province: "گیلان", city: "رشت", address: "خیابان جدید", postalCode: "0987654321" });
+        const account = await new GetCustomerAccountUseCase(repository).execute(customer.customerId);
+
+        expect(updated.id).toBe(address.id);
+        expect(updated.createdAt).toBe(address.createdAt);
+        expect(updated.updatedAt).not.toBe(address.updatedAt);
+        expect(account?.addresses).toHaveLength(1);
+        expect(account?.addresses[0]).toMatchObject({ id: address.id, title: "خانه جدید", province: "گیلان", city: "رشت", address: "خیابان جدید", postalCode: "0987654321" });
+    });
+
+    it("rejects updates for an address owned by another customer", async () => {
+        const repository = new MemoryCustomerRepository();
+        await repository.save(customer);
+        const otherCustomer = { ...customer, customerId: "customer-2", username: "other_gold", phone: "+989121234568", nationalId: "0012345679" };
+        await repository.save(otherCustomer);
+        const address = await new AddCustomerAddressUseCase(repository).execute({ customerId: otherCustomer.customerId, title: "خانه", recipientName: "Other", phone: otherCustomer.phone, province: "تهران", city: "تهران", address: "خیابان نمونه", postalCode: "1234567890" });
+
+        await expect(new AddCustomerAddressUseCase(repository).execute({ customerId: customer.customerId, addressId: address.id, title: "تلاش", recipientName: "Ali Mirzaei", phone: customer.phone, province: "تهران", city: "تهران", address: "نباید تغییر کند", postalCode: "1234567890" })).rejects.toThrow("Customer address not found");
+    });
+
     it("updates only the profile fields owned by the use case", async () => {
         const repository = new MemoryCustomerRepository();
         await repository.save(customer);
