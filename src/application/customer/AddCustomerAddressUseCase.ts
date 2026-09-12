@@ -11,6 +11,7 @@ export type AddCustomerAddressInput = {
     city: string;
     address: string;
     postalCode: string;
+    isDefault?: boolean;
 };
 
 export class AddCustomerAddressUseCase {
@@ -35,13 +36,11 @@ export class AddCustomerAddressUseCase {
             throw new Error("اطلاعات آدرس کامل نیست.");
         }
 
-        if (input.addressId?.trim()) {
-            const existing = (await this.customerRepository.listAddresses(input.customerId))
-                .find((candidate) => candidate.id === input.addressId?.trim());
+        const addresses = await this.customerRepository.listAddresses(input.customerId);
 
-            if (!existing) {
-                throw new Error("Customer address not found");
-            }
+        if (input.addressId?.trim()) {
+            const existing = addresses.find((candidate) => candidate.id === input.addressId?.trim());
+            if (!existing) throw new Error("Customer address not found");
 
             const updated: CustomerAddress = {
                 ...existing,
@@ -52,6 +51,7 @@ export class AddCustomerAddressUseCase {
                 city,
                 address: addressText,
                 postalCode,
+                isDefault: input.isDefault === true ? true : existing.isDefault,
                 updatedAt: now,
             };
 
@@ -69,6 +69,7 @@ export class AddCustomerAddressUseCase {
             city,
             address: addressText,
             postalCode,
+            isDefault: input.isDefault === true || addresses.length === 0,
             createdAt: now,
             updatedAt: now,
         };
