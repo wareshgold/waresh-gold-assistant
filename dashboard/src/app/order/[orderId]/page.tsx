@@ -25,7 +25,10 @@ type Order = {
   createdAt: string;
   updatedAt: string;
   total: number;
-  market?: { gold18Price?: number };
+  market?: {
+    gold18Price?: number;
+    updatedAt?: string;
+  };
   items?: OrderItem[];
   address?: {
     addressId: string;
@@ -172,7 +175,12 @@ export default function OrderResultPage() {
                     <span className="text-sm text-[#777970]">مبلغ نهایی</span>
                     <strong className="text-xl text-[#9b753c]">{formatToman(order.total)}</strong>
                   </div>
-                  {order.market?.gold18Price ? <p className="mt-2 text-[10px] text-[#99978f]">نرخ طلای ۱۸ عیار هنگام ثبت: {formatToman(order.market.gold18Price)}</p> : null}
+                  {order.market?.gold18Price ? (
+                    <div className="mt-2 space-y-1 text-[10px] text-[#99978f]">
+                      <p>نرخ طلای ۱۸ عیار هنگام ثبت: {formatToman(order.market.gold18Price)}</p>
+                      {order.market.updatedAt ? <p>زمان آخرین به‌روزرسانی نرخ: {formatDate(order.market.updatedAt)}</p> : null}
+                    </div>
+                  ) : null}
                 </div>
               </section>
 
