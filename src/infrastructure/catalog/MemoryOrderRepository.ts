@@ -14,6 +14,13 @@ export class MemoryOrderRepository implements OrderRepository {
         this.orders.set(orderId, structuredClone({ ...order, status, updatedAt }));
     }
 
+    async cancelForCustomer(orderId: string, customerId: string, fromStatuses: readonly OrderStatus[], updatedAt: string): Promise<boolean> {
+        const order = this.orders.get(orderId);
+        if (!order || order.customerId !== customerId || !fromStatuses.includes(order.status)) return false;
+        this.orders.set(orderId, structuredClone({ ...order, status: "cancelled", updatedAt }));
+        return true;
+    }
+
     async findById(orderId: string): Promise<Order | null> {
         const order = this.orders.get(orderId);
         return order ? structuredClone(order) : null;
