@@ -7,7 +7,7 @@ import MobileMenu from "@/components/MobileMenu";
 import { formatToman, formatWeight, type Product } from "@/data/products";
 import { getVariantLabel } from "@/data/productVariants";
 import { calculateCurrentProductPrices, TELEGRAM_BOT_URL } from "@/lib/api";
-import { CART_CHANGE_EVENT, getCartCount, readCart, type CartItem } from "@/lib/cart";
+import { CART_CHANGE_EVENT, clearCart, getCartCount, readCart, type CartItem } from "@/lib/cart";
 import { getProducts } from "@/lib/products";
 import type { CustomerAddress } from "@/lib/customerAccount";
 
@@ -175,6 +175,7 @@ export default function CheckoutPage() {
       const response = await fetch("/api/orders/from-quote", { method: "POST", headers: { "Content-Type": "application/json" }, cache: "no-store", body: JSON.stringify({ quoteId: quote.quoteId, addressId: selectedAddressId }) });
       const data = await response.json().catch(() => null) as { order?: CheckoutOrder; error?: string } | null;
       if (!response.ok || !data?.order) { setOrderError(true); return; }
+      clearCart();
       window.sessionStorage.removeItem(CHECKOUT_QUOTE_STORAGE_KEY);
       setOrder(data.order); router.replace(`/order/${encodeURIComponent(data.order.orderId)}`);
     } catch { setOrderError(true); }
