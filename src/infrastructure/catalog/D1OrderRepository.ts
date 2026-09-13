@@ -35,6 +35,15 @@ export class D1OrderRepository implements OrderRepository {
         if (!result.meta.changes) throw new Error("سفارش پیدا نشد.");
     }
 
+    async cancelForCustomer(orderId: string, customerId: string, fromStatuses: readonly OrderStatus[], updatedAt: string): Promise<boolean> {
+        if (fromStatuses.length === 0) return false;
+        const placeholders = fromStatuses.map((_, index) => `?${index + 4}`).join(", ");
+        const result = await this.db.prepare(
+            `UPDATE orders SET status = ?1, updated_at = ?2 WHERE order_id = ?3 AND customer_id = ?4 AND status IN (${placeholders})`
+        ).bind("cancelled", updatedAt, orderId, customerId, ...fromStatuses).run();
+        return Boolean(result.meta.changes);
+    }
+
     async findById(orderId: string): Promise<Order | null> {
         return this.findOne("order_id", orderId);
     }
