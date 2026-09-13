@@ -79,7 +79,7 @@ export default function CustomerWishlist() {
             <article key={product.productId} className="rounded-2xl border border-[#e4ded2] bg-[#fcfaf6] p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <Link href={`/product/${product.productId}`} className="font-black text-[#292b26] hover:underline">{product.name}</Link>
+                  <Link href={`/products/${product.productId}`} className="font-black text-[#292b26] hover:underline">{product.name}</Link>
                   <p className="mt-1 text-xs text-[#85867d]">{product.weightGrams} گرم · {stockLabel[product.stockStatus]}</p>
                 </div>
                 <button type="button" onClick={() => void remove(product.productId)} className="rounded-full border border-[#decfc0] px-3 py-1.5 text-xs font-bold text-[#8b4939]">حذف</button>
