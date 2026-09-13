@@ -14,10 +14,24 @@ Payment backend foundation is implemented and type-safe:
 - `POST /api/v1/payments/:paymentId/verify` is already wired in the HTTP application.
 - The test container includes the payment use cases.
 
+## Security hardening completed
+
+Payment creation now requires an authenticated customer session and verifies that the persisted order belongs to that customer before creating a payment.
+
+- Missing/invalid customer session is rejected at the HTTP boundary.
+- A customer cannot create a payment for another customer's order.
+- Ownership is re-checked inside `CreatePaymentUseCase`, keeping the business rule independent from HTTP.
+- No payment record is created when the ownership check fails.
+- Payment verification remains a gateway-authority flow and is not coupled to the customer's browser session.
+
 ## Validation
+
+Before this security hardening, the Website V2 baseline was:
 
 - Vitest: **71 test files passed / 254 tests passed**.
 - TypeScript: **`pnpm exec tsc --noEmit` passed** after fixing the test container.
+
+New payment ownership tests have been added. Local test/typecheck execution is intentionally left to the user's normal `git pull` workflow.
 
 ## Deliberately deferred
 
