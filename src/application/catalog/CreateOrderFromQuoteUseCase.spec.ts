@@ -150,6 +150,34 @@ describe("CreateOrderFromQuoteUseCase", () => {
         await expect(orderRepository.findById(order.orderId)).resolves.toEqual(order);
     });
 
+    it("keeps the original address snapshot when the customer's address changes later", async () => {
+        const mutableAddress = { ...customerAddress };
+        const { useCase, quoteRepository, orderRepository } = createUseCase([mutableAddress]);
+        await quoteRepository.save(quote);
+
+        const order = await useCase.execute({
+            quoteId: quote.quoteId,
+            customerId: customer.customerId,
+            addressId: mutableAddress.id,
+        });
+
+        mutableAddress.address = "آدرس جدید، پلاک ۹۹";
+        mutableAddress.city = "رشت";
+        mutableAddress.postalCode = "9876543210";
+
+        await expect(orderRepository.findById(order.orderId)).resolves.toEqual(order);
+        expect(order.address).toEqual({
+            addressId: customerAddress.id,
+            title: customerAddress.title,
+            recipientName: customerAddress.recipientName,
+            phone: customerAddress.phone,
+            province: customerAddress.province,
+            city: customerAddress.city,
+            address: customerAddress.address,
+            postalCode: customerAddress.postalCode,
+        });
+    });
+
     it("rejects an address that is not owned by the authenticated customer", async () => {
         const { useCase, quoteRepository } = createUseCase([customerAddress]);
         await quoteRepository.save(quote);
