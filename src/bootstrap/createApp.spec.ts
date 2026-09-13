@@ -111,6 +111,9 @@ function createTestApp() {
         sessionService,
         getProductsUseCase: { execute: vi.fn() } as never,
         getProductUseCase: { execute: vi.fn() } as never,
+        addWishlistItemUseCase: {} as never,
+        listWishlistUseCase: {} as never,
+        removeWishlistItemUseCase: {} as never,
         adminApiToken: "test-admin-token",
     };
 
@@ -126,10 +129,7 @@ describe("createApp checkout order route", () => {
 
         const response = await app.request("http://localhost/api/v1/orders/from-quote", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-Customer-Session": "session-1",
-            },
+            headers: { "Content-Type": "application/json", "X-Customer-Session": "session-1" },
             body: JSON.stringify({ quoteId: quote.quoteId, customerId: "attacker-supplied-id", addressId: address.id }),
         });
 
@@ -144,13 +144,7 @@ describe("createApp checkout order route", () => {
     it("rejects an invalid customer session before creating an order", async () => {
         const { app, quoteRepository, orderRepository, sessionService } = createTestApp();
         await quoteRepository.save(quote);
-
-        const response = await app.request("http://localhost/api/v1/orders/from-quote", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "X-Customer-Session": "missing-session" },
-            body: JSON.stringify({ quoteId: quote.quoteId, addressId: address.id }),
-        });
-
+        const response = await app.request("http://localhost/api/v1/orders/from-quote", { method: "POST", headers: { "Content-Type": "application/json", "X-Customer-Session": "missing-session" }, body: JSON.stringify({ quoteId: quote.quoteId, addressId: address.id }) });
         expect(response.status).toBe(401);
         await expect(orderRepository.findByQuoteId(quote.quoteId)).resolves.toBeNull();
         expect(sessionService.get).toHaveBeenCalledWith("missing-session");
@@ -159,13 +153,7 @@ describe("createApp checkout order route", () => {
     it("rejects a missing customer session before creating an order", async () => {
         const { app, quoteRepository, orderRepository, sessionService } = createTestApp();
         await quoteRepository.save(quote);
-
-        const response = await app.request("http://localhost/api/v1/orders/from-quote", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ quoteId: quote.quoteId, addressId: address.id }),
-        });
-
+        const response = await app.request("http://localhost/api/v1/orders/from-quote", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ quoteId: quote.quoteId, addressId: address.id }) });
         expect(response.status).toBe(401);
         await expect(orderRepository.findByQuoteId(quote.quoteId)).resolves.toBeNull();
         expect(sessionService.get).not.toHaveBeenCalled();
