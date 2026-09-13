@@ -122,4 +122,81 @@ describe("CreatePaymentUseCase", () => {
         expect(retry.payment.status).toBe("initiated");
         expect(retry.payment.authority).toBe("AUTH-payment-1");
     });
+
+    it("clears stale authority and reference data before retrying", async () => {
+        const repository = new MemoryPaymentRepository();
+        await repository.save({
+            paymentId: "payment-1",
+            orderId: "order-1",
+            amount: order.total,
+            status: "failed",
+            gateway: "test",
+            authority: "STALE-AUTH",
+            referenceId: "STALE-REF",
+            createdAt: "2026-09-09T10:01:00.000Z",
+            updatedAt: "2026-09-09T10:02:00.000Z",
+        });
+        const retryGateway: PaymentGateway = {
+            name: "test",
+            async initiate(input) {
+                const stored = await repository.findById(input.paymentId);
+                expect(stored?.authority).toBeNull();
+                expect(stored?.referenceId).toBeNull();
+                return { authority: "AUTH-NEW", paymentUrl: "https://pay.test/new" };
+            },
+            async verify() { return { referenceId: "REF-NEW" }; },
+        };
+        const useCase = new CreatePaymentUseCase(
+            { findById: async () => order },
+            repository,
+            retryGateway,
+        );
+
+        const result = await useCase.execute({ orderId: "order-1", customerId: "customer-1" });
+
+        expect(result.payment.authority).toBe("AUTH-NEW");
+        expect(result.payment.referenceId).toBeNull();
+    });
+
+    it("allows only one concurrent retry to claim a failed payment", async () => {
+        const repository = new MemoryPaymentRepository();
+        let initiateCalls = 0;
+        const retryGateway: PaymentGateway = {
+            name: "test",
+            async initiate(input) {
+                initiateCalls += 1;
+                await new Promise((resolve) => setTimeout(resolve, 10));
+                return { authority: `AUTH-${input.paymentId}`, paymentUrl: "https://pay.test/retry" };
+            },
+            async verify() { return { referenceId: "REF-1" }; },
+        };
+        const useCase = new CreatePaymentUseCase(
+            { findById: async () => order },
+            repository,
+            retryGateway,
+            () => "payment-1",
+        );
+
+        await repository.save({
+            paymentId: "payment-1",
+            orderId: "order-1",
+            amount: order.total,
+            status: "failed",
+            gateway: "test",
+            authority: "STALE-AUTH",
+            referenceId: "STALE-REF",
+            createdAt: "2026-09-09T10:01:00.000Z",
+            updatedAt: "2026-09-09T10:02:00.000Z",
+        });
+
+        const results = await Promise.allSettled([
+            useCase.execute({ orderId: "order-1", customerId: "customer-1" }),
+            useCase.execute({ orderId: "order-1", customerId: "customer-1" }),
+        ]);
+
+        expect(results.filter((result) => result.status === "fulfilled")).toHaveLength(1);
+        expect(results.filter((result) => result.status === "rejected")).toHaveLength(1);
+        expect(initiateCalls).toBe(1);
+        expect((await repository.findById("payment-1"))?.status).toBe("initiated");
+    });
 });
