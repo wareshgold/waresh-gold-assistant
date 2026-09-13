@@ -30,7 +30,7 @@ class FakeOrderRepository implements OrderRepository {
 
     async save(): Promise<void> {}
     async updateStatus(): Promise<void> {}
-    async findById(): Promise<Order | null> { return this.order ? structuredClone(this.order) : null; }
+    async findById(_orderId: string): Promise<Order | null> { return this.order ? structuredClone(this.order) : null; }
     async findByQuoteId(): Promise<Order | null> { return null; }
     async findByCustomerId(): Promise<Order[]> { return []; }
     async findAll(): Promise<Order[]> { return []; }
