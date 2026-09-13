@@ -24,7 +24,7 @@ const gateway: PaymentGateway = {
 };
 
 describe("CreatePaymentUseCase", () => {
-    it("creates an initiated payment for a confirmed order", async () => {
+    it("creates an initiated payment for a confirmed order owned by the customer", async () => {
         const repository = new MemoryPaymentRepository();
         const useCase = new CreatePaymentUseCase(
             { findById: async () => order },
@@ -33,13 +33,40 @@ describe("CreatePaymentUseCase", () => {
             () => "payment-1",
         );
 
-        const result = await useCase.execute({ orderId: "order-1" });
+        const result = await useCase.execute({ orderId: "order-1", customerId: "customer-1" });
 
         expect(result.payment.paymentId).toBe("payment-1");
         expect(result.payment.status).toBe("initiated");
         expect(result.payment.amount).toBe(5000000);
         expect(result.payment.authority).toBe("AUTH-1");
         expect(result.paymentUrl).toBe("https://pay.test/AUTH-1");
+    });
+
+    it("rejects payment creation for another customer's order", async () => {
+        const repository = new MemoryPaymentRepository();
+        const useCase = new CreatePaymentUseCase(
+            { findById: async () => order },
+            repository,
+            gateway,
+            () => "payment-1",
+        );
+
+        await expect(useCase.execute({ orderId: "order-1", customerId: "customer-2" }))
+            .rejects.toThrow("این سفارش متعلق به حساب کاربری شما نیست.");
+        expect(await repository.findById("payment-1")).toBeNull();
+    });
+
+    it("rejects payment creation without a customer identity", async () => {
+        const repository = new MemoryPaymentRepository();
+        const useCase = new CreatePaymentUseCase(
+            { findById: async () => order },
+            repository,
+            gateway,
+            () => "payment-1",
+        );
+
+        await expect(useCase.execute({ orderId: "order-1", customerId: "" }))
+            .rejects.toThrow("احراز هویت لازم است.");
     });
 
     it("rejects orders that are not confirmed", async () => {
@@ -51,7 +78,7 @@ describe("CreatePaymentUseCase", () => {
             () => "payment-1",
         );
 
-        await expect(useCase.execute({ orderId: "order-1" })).rejects.toThrow("سفارش برای پرداخت آماده نیست.");
+        await expect(useCase.execute({ orderId: "order-1", customerId: "customer-1" })).rejects.toThrow("سفارش برای پرداخت آماده نیست.");
     });
 
     it("prevents a second active payment for the same order", async () => {
@@ -63,8 +90,8 @@ describe("CreatePaymentUseCase", () => {
             () => "payment-1",
         );
 
-        await useCase.execute({ orderId: "order-1" });
-        await expect(useCase.execute({ orderId: "order-1" })).rejects.toThrow("برای این سفارش یک پرداخت فعال وجود دارد.");
+        await useCase.execute({ orderId: "order-1", customerId: "customer-1" });
+        await expect(useCase.execute({ orderId: "order-1", customerId: "customer-1" })).rejects.toThrow("برای این سفارش یک پرداخت فعال وجود دارد.");
     });
 
     it("allows a new payment after a previous payment has failed", async () => {
@@ -87,8 +114,8 @@ describe("CreatePaymentUseCase", () => {
             () => `payment-${++id}`,
         );
 
-        await expect(useCase.execute({ orderId: "order-1" })).rejects.toThrow("gateway unavailable");
-        const retry = await useCase.execute({ orderId: "order-1" });
+        await expect(useCase.execute({ orderId: "order-1", customerId: "customer-1" })).rejects.toThrow("gateway unavailable");
+        const retry = await useCase.execute({ orderId: "order-1", customerId: "customer-1" });
 
         expect(retry.payment.paymentId).toBe("payment-2");
         expect(retry.payment.status).toBe("initiated");
