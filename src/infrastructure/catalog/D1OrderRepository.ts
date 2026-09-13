@@ -62,7 +62,7 @@ export class D1OrderRepository implements OrderRepository {
     async findAll(): Promise<Order[]> {
         const rows = await this.db.prepare(
             `SELECT order_id FROM orders ORDER BY created_at DESC`
-        ).bind().all<{ order_id: string }>();
+        ).all<{ order_id: string }>();
         return this.loadOrders(rows.results.map((row) => row.order_id));
     }
 
