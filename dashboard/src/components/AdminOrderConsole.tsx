@@ -67,7 +67,8 @@ const formatDate = (value: string) => new Intl.DateTimeFormat("fa-IR", { dateSty
 
 export default function AdminOrderConsole() {
   const [token, setToken] = useState("");
-  const [authenticated, setAuthenticated] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [authChecking, setAuthChecking] = useState(true);
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orderId, setOrderId] = useState("");
@@ -77,6 +78,41 @@ export default function AdminOrderConsole() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const checkSession = async () => {
+      setAuthChecking(true);
+      try {
+        const response = await fetch("/api/admin/auth", { cache: "no-store" });
+        if (cancelled) return;
+
+        if (response.ok) {
+          setAuthenticated(true);
+          setError("");
+        } else if (response.status === 401) {
+          setAuthenticated(false);
+        } else {
+          const data = await response.json().catch(() => null) as { error?: string } | null;
+          setAuthenticated(false);
+          setError(data?.error ?? "بررسی نشست ادمین انجام نشد.");
+        }
+      } catch {
+        if (!cancelled) {
+          setAuthenticated(false);
+          setError("ارتباط با سرویس احراز هویت ادمین برقرار نشد.");
+        }
+      } finally {
+        if (!cancelled) setAuthChecking(false);
+      }
+    };
+
+    void checkSession();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const loadOrders = useCallback(async (showLoading = true) => {
     if (showLoading) setLoading(true);
@@ -161,6 +197,16 @@ export default function AdminOrderConsole() {
       return order.orderId.toLowerCase().includes(query) || (order.customerId ?? "").toLowerCase().includes(query) || (order.address?.recipientName ?? "").toLowerCase().includes(query);
     });
   }, [orders, search, statusFilter]);
+
+  if (authChecking) {
+    return (
+      <section className="mx-auto max-w-xl rounded-3xl border border-[#ded7c8] bg-[#fffdf8] p-6 text-center shadow-sm sm:p-8">
+        <p className="text-xs font-bold tracking-[0.18em] text-[#8a7041]">ADMIN</p>
+        <h1 className="mt-2 text-2xl font-black text-[#292b26]">مدیریت سفارش‌ها</h1>
+        <p className="mt-4 text-sm text-[#6d7168]">در حال بررسی نشست ادمین...</p>
+      </section>
+    );
+  }
 
   if (!authenticated) {
     return (
