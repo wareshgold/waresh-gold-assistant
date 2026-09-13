@@ -24,11 +24,13 @@ import { AddCustomerAddressUseCase } from "../application/customer/AddCustomerAd
 import { RemoveCustomerAddressUseCase } from "../application/customer/RemoveCustomerAddressUseCase";
 import { CreatePaymentUseCase } from "../application/payment/CreatePaymentUseCase";
 import { VerifyPaymentUseCase } from "../application/payment/VerifyPaymentUseCase";
+import { CancelCustomerOrderUseCase } from "../application/catalog/CancelCustomerOrderUseCase";
 import { getOrderRoute } from "../interfaces/http/routes/GetOrderRoute";
 import { listCustomerOrdersRoute } from "../interfaces/http/routes/ListCustomerOrdersRoute";
 import { listAdminOrdersRoute } from "../interfaces/http/routes/ListAdminOrdersRoute";
 import { getAdminOrderRoute } from "../interfaces/http/routes/GetAdminOrderRoute";
 import { updateOrderStatusRoute } from "../interfaces/http/routes/UpdateOrderStatusRoute";
+import { cancelCustomerOrderRoute } from "../interfaces/http/routes/CancelCustomerOrderRoute";
 import { createPaymentRoute } from "../interfaces/http/routes/CreatePaymentRoute";
 import { verifyPaymentRoute } from "../interfaces/http/routes/VerifyPaymentRoute";
 import type { CustomerRepository } from "../domain/customer/repositories/CustomerRepository";
@@ -50,6 +52,7 @@ interface AppContainer {
   listCustomerOrdersUseCase: ListCustomerOrdersUseCase;
   listAdminOrdersUseCase: ListAdminOrdersUseCase;
   updateOrderStatusUseCase: UpdateOrderStatusUseCase;
+  cancelCustomerOrderUseCase: CancelCustomerOrderUseCase;
   createPaymentUseCase: CreatePaymentUseCase;
   verifyPaymentUseCase: VerifyPaymentUseCase;
   marketProvider: MarketPriceProvider;
@@ -113,6 +116,7 @@ export function createApp(container: AppContainer) {
   app.post("/api/v1/orders/from-quote", async (c) => { const body = await jsonBody(c); if (!body || typeof body.quoteId !== "string") return c.json({ error: "شناسه پیش‌فاکتور الزامی است." }, 400); const sessionId = c.req.header("X-Customer-Session")?.trim(); if (!sessionId) return c.json({ error: "احراز هویت لازم است." }, 401); const session = await container.sessionService.get(sessionId); if (!session) return c.json({ error: "نشست کاربری معتبر نیست." }, 401); const addressId = typeof body.addressId === "string" ? body.addressId.trim() : undefined; try { const order = await container.createOrderFromQuoteUseCase.execute({ quoteId: body.quoteId, customerId: session.customerId, ...(addressId ? { addressId } : {}) }); return c.json({ order }, 200, { "Cache-Control": "no-store" }); } catch (error) { const message = error instanceof Error ? error.message : "ثبت سفارش انجام نشد."; const status = message.includes("پیدا نشد") ? 404 : message.includes("دیگری") ? 409 : 400; return c.json({ error: message }, status, { "Cache-Control": "no-store" }); } });
   app.get("/api/v1/orders/:orderId", async (c) => { const sessionId = c.req.header("X-Customer-Session")?.trim(); let customerId: string | undefined; if (sessionId) { const session = await container.sessionService.get(sessionId); if (!session) return c.json({ error: "نشست کاربری معتبر نیست." }, 401, { "Cache-Control": "no-store" }); customerId = session.customerId; } return getOrderRoute(c.req.raw, container.getOrderUseCase, c.req.param("orderId"), customerId); });
   app.get("/api/v1/orders", async (c) => { const sessionId = c.req.header("X-Customer-Session")?.trim(); if (!sessionId) return c.json({ error: "احراز هویت لازم است." }, 401, { "Cache-Control": "no-store" }); const session = await container.sessionService.get(sessionId); if (!session) return c.json({ error: "نشست کاربری معتبر نیست." }, 401, { "Cache-Control": "no-store" }); return listCustomerOrdersRoute(container.listCustomerOrdersUseCase, session.customerId); });
+  app.post("/api/v1/orders/:orderId/cancel", async (c) => { const customerId = await getAuthenticatedCustomerId(c); if (!customerId) return c.json({ error: "احراز هویت لازم است." }, 401, { "Cache-Control": "no-store" }); return cancelCustomerOrderRoute(container.cancelCustomerOrderUseCase, c.req.param("orderId"), customerId); });
   app.post("/api/v1/payments", async (c) => { const customerId = await getAuthenticatedCustomerId(c); return createPaymentRoute(c.req.raw, container.createPaymentUseCase, customerId); });
   app.post("/api/v1/payments/:paymentId/verify", async (c) => verifyPaymentRoute(c.req.raw, container.verifyPaymentUseCase, c.req.param("paymentId")));
   app.get("/api/v1/admin/auth/check", (c) => { const unauthorized = isAdminAuthorized(c, container.adminApiToken); if (unauthorized) return unauthorized; return c.json({ ok: true }, 200, { "Cache-Control": "no-store" }); });
