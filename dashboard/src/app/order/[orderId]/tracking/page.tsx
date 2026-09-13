@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import MobileMenu from "@/components/MobileMenu";
+import CancelCustomerOrderButton from "@/components/CancelCustomerOrderButton";
 import { formatToman } from "@/data/products";
 
 type Order = {
@@ -78,6 +79,7 @@ export default function OrderTrackingPage() {
   const currentKey = order ? (statusAliases[order.status] ?? order.status) : "";
   const currentIndex = statuses.findIndex((status) => status.key === currentKey);
   const terminal = currentKey === "cancelled" || currentKey === "expired";
+  const canCancel = currentKey === "pending_confirmation" || currentKey === "confirmed";
 
   const progressText = useMemo(() => {
     if (!order) return "";
@@ -178,10 +180,11 @@ export default function OrderTrackingPage() {
                 </div>
               )}
 
-              <div className="mt-8 grid gap-3 border-t border-[#e6e0d5] pt-6 sm:grid-cols-3">
+              <div className="mt-8 grid gap-3 border-t border-[#e6e0d5] pt-6 sm:grid-cols-4">
                 <Link href={`/order/${encodeURIComponent(order.orderId)}`} className="flex min-h-12 items-center justify-center rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white">جزئیات سفارش</Link>
                 <button type="button" onClick={() => void loadOrder(true)} disabled={refreshing} className="min-h-12 rounded-full border border-[#ded8cc] bg-white px-5 py-3.5 text-sm font-bold text-[#62685e] disabled:opacity-50">به‌روزرسانی وضعیت</button>
                 <Link href="/account" className="flex min-h-12 items-center justify-center rounded-full border border-[#ded8cc] bg-white px-5 py-3.5 text-sm font-bold text-[#62685e]">حساب کاربری</Link>
+                {canCancel ? <CancelCustomerOrderButton orderId={order.orderId} onCancelled={() => void loadOrder(true)} /> : null}
               </div>
               <p className="mt-4 text-center text-[10px] text-[#aaa79d]">آخرین به‌روزرسانی: {formatDate(order.updatedAt)} · وضعیت هر ۳۰ ثانیه بررسی می‌شود.</p>
             </div>
