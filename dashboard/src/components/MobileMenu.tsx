@@ -7,9 +7,12 @@ import { createPortal } from "react-dom";
 import { TELEGRAM_BOT_URL } from "@/lib/api";
 import { clearCustomerProfile, readCustomerProfile, saveCustomerProfile, type CustomerProfile } from "@/lib/customerAccount";
 
-type CustomerApi = { customerId: string; username: string; phone: string; firstName: string; lastName: string; addresses?: CustomerProfile["addresses"] };
+type CustomerApi = { customerId: string; customerNumber?: string; username: string; phone: string; firstName: string; lastName: string; addresses?: CustomerProfile["addresses"] };
 
 const links = [["محصولات", "/#products"], ["هدیه", "/#gifts"], ["قیمت امروز", "/#prices"], ["ابزار طلا", "/tools"], ["درباره وارش", "/about"], ["حساب کاربری", "/account"]] as const;
+
+const getDisplayCustomerNumber = (profile: CustomerProfile) =>
+  profile.customerNumber ?? `WG-${profile.customerId.replace(/-/g, "").slice(0, 12).toUpperCase()}`;
 
 export default function MobileMenu() {
   const [open, setOpen] = useState(false);
@@ -40,6 +43,7 @@ export default function MobileMenu() {
   }, [open]);
 
   const displayName = profile ? (`${profile.firstName} ${profile.lastName}`.trim() || profile.username || "مشتری وارش") : "";
+  const displayCustomerNumber = profile ? getDisplayCustomerNumber(profile) : "";
   const menu = open ? (
     <div className="waresh-mobile-menu-root fixed inset-0 z-[2147483647] isolate overflow-hidden bg-[#faf8f2]">
       <button type="button" className="waresh-mobile-menu-backdrop absolute inset-0 z-0 bg-[#14251e]/72 backdrop-blur-sm" onClick={() => setOpen(false)} aria-label="بستن منو" />
@@ -48,7 +52,7 @@ export default function MobileMenu() {
           <Link href="/" onClick={() => setOpen(false)} aria-label="صفحه اصلی وارش گلد" className="shrink-0"><Image src="/waresh-gold-logo-green.png" alt="وارش گلد" width={165} height={44} className="h-11 w-auto" /></Link>
           <button type="button" onClick={() => setOpen(false)} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#d8d2c7] text-[22px] leading-none text-[#39453d] transition hover:bg-white" aria-label="بستن منو">×</button>
         </div>
-        {profile ? <Link href="/account" onClick={() => setOpen(false)} className="mt-5 rounded-2xl border border-[#d9c69e] bg-[#fffaf0] p-4"><p className="text-[10px] font-bold tracking-[0.16em] text-[#9b7b48]">حساب کاربری</p><p className="mt-2 text-sm font-extrabold text-[#263b31]">{displayName}</p><p className="mt-1 text-[11px] text-[#777970]" dir="ltr">@{profile.username}</p></Link> : null}
+        {profile ? <Link href="/account" onClick={() => setOpen(false)} className="mt-5 rounded-2xl border border-[#d9c69e] bg-[#fffaf0] p-4"><p className="text-[10px] font-bold tracking-[0.16em] text-[#9b7b48]">حساب کاربری</p><p className="mt-2 text-sm font-extrabold text-[#263b31]">{displayName}</p><p className="mt-1 text-[11px] text-[#777970]" dir="ltr">{displayCustomerNumber}</p></Link> : null}
         <nav className="flex flex-1 flex-col justify-center gap-0.5" aria-label="منوی اصلی سایت">
           {links.map(([label, href]) => <Link key={href} href={href} onClick={() => setOpen(false)} className="flex min-h-[62px] items-center border-b border-[#e7e3d9] text-[22px] font-extrabold text-[#29332d] transition-colors hover:text-[#987238] active:text-[#987238]">{label}</Link>)}
         </nav>

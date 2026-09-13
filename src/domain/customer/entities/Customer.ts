@@ -1,5 +1,6 @@
 export type Customer = {
     customerId: string;
+    customerNumber?: string;
     username: string;
     phone: string;
     nationalId: string;

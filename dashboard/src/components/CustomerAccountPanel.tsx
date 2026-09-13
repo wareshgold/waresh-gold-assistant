@@ -12,6 +12,7 @@ import {
 
 type CustomerApi = {
   customerId: string;
+  customerNumber?: string;
   username: string;
   phone: string;
   nationalId: string;
@@ -20,8 +21,12 @@ type CustomerApi = {
   addresses?: CustomerProfile["addresses"];
 };
 
+const getDisplayCustomerNumber = (customer: CustomerApi | CustomerProfile) =>
+  customer.customerNumber ?? `WG-${customer.customerId.replace(/-/g, "").slice(0, 12).toUpperCase()}`;
+
 const toProfile = (customer: CustomerApi): CustomerProfile => ({
   customerId: customer.customerId,
+  customerNumber: customer.customerNumber ?? getDisplayCustomerNumber(customer),
   username: customer.username,
   phone: customer.phone,
   firstName: customer.firstName,
@@ -164,7 +169,7 @@ export default function CustomerAccountPanel() {
           <div className="mt-3 grid gap-2 text-xs text-[#777970] sm:grid-cols-3">
             <p><span className="text-[#aaa69c]">نام کاربری:</span> <strong dir="ltr" className="text-[#55584f]">{profile.username || "—"}</strong></p>
             <p><span className="text-[#aaa69c]">موبایل:</span> <strong dir="ltr" className="text-[#55584f]">{profile.phone}</strong></p>
-            <p><span className="text-[#aaa69c]">شناسه مشتری:</span> <strong dir="ltr" className="text-[#55584f]">{profile.customerId}</strong></p>
+            <p><span className="text-[#aaa69c]">شناسه مشتری:</span> <strong dir="ltr" className="text-[#55584f]">{getDisplayCustomerNumber(profile)}</strong></p>
           </div>
         </div>
         <button type="button" onClick={logout} disabled={loading} className="min-h-11 rounded-full border border-[#dfcfc1] px-5 text-xs font-bold text-[#895e52] disabled:opacity-60">خروج از حساب</button>

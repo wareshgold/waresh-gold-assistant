@@ -4,6 +4,7 @@ import type { CustomerRepository } from "../../domain/customer/repositories/Cust
 
 type CustomerRow = {
     customer_id: string;
+    customer_number: string | null;
     username: string;
     phone: string;
     national_id: string;
@@ -30,10 +31,11 @@ type AddressRow = {
     updated_at: string;
 };
 
-const CUSTOMER_COLUMNS = `customer_id, username, phone, national_id, first_name, last_name, password_hash, password_salt, created_at, updated_at`;
+const CUSTOMER_COLUMNS = `customer_id, customer_number, username, phone, national_id, first_name, last_name, password_hash, password_salt, created_at, updated_at`;
 
 const mapCustomer = (row: CustomerRow): Customer => ({
     customerId: row.customer_id,
+    ...(row.customer_number ? { customerNumber: row.customer_number } : {}),
     username: row.username,
     phone: row.phone,
     nationalId: row.national_id,
@@ -86,9 +88,10 @@ export class D1CustomerRepository implements CustomerRepository {
     async save(customer: Customer): Promise<void> {
         await this.db.prepare(`
             INSERT INTO customers
-                (customer_id, username, phone, national_id, first_name, last_name, password_hash, password_salt, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (customer_id, customer_number, username, phone, national_id, first_name, last_name, password_hash, password_salt, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(customer_id) DO UPDATE SET
+                customer_number = excluded.customer_number,
                 username = excluded.username,
                 phone = excluded.phone,
                 national_id = excluded.national_id,
@@ -98,7 +101,7 @@ export class D1CustomerRepository implements CustomerRepository {
                 password_salt = excluded.password_salt,
                 updated_at = excluded.updated_at
         `).bind(
-            customer.customerId, customer.username, customer.phone, customer.nationalId,
+            customer.customerId, customer.customerNumber ?? null, customer.username, customer.phone, customer.nationalId,
             customer.firstName, customer.lastName, customer.passwordHash, customer.passwordSalt,
             customer.createdAt, customer.updatedAt,
         ).run();

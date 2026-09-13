@@ -12,6 +12,7 @@ export type CustomerAddress = {
 
 export type CustomerProfile = {
   customerId: string;
+  customerNumber?: string;
   username: string;
   phone: string;
   firstName: string;
@@ -56,6 +57,7 @@ export function readCustomerProfile(): CustomerProfile | null {
       ...emptyProfile(parsed.phone, parsed.customerId, typeof parsed.username === "string" ? parsed.username : ""),
       ...parsed,
       username: typeof parsed.username === "string" ? parsed.username : "",
+      customerNumber: typeof parsed.customerNumber === "string" ? parsed.customerNumber : undefined,
       addresses: Array.isArray(parsed.addresses)
         ? parsed.addresses.map((address) => ({ ...address, isDefault: address.isDefault === true }))
         : [],

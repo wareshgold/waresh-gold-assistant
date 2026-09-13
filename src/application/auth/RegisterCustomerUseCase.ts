@@ -14,6 +14,7 @@ export type RegisterCustomerInput = {
 
 export type AuthenticatedPasswordCustomer = {
     customerId: string;
+    customerNumber?: string;
     username: string;
     phone: string;
     nationalId: string;
@@ -35,6 +36,9 @@ const normalizeIranianMobile = (value: string) => {
     if (/^989\d{9}$/.test(normalized)) return `+${normalized}`;
     return normalized;
 };
+
+const createCustomerNumber = (customerId: string) =>
+    `WG-${customerId.replace(/-/g, "").slice(0, 12).toUpperCase()}`;
 
 export class RegisterCustomerUseCase {
     constructor(
@@ -58,9 +62,11 @@ export class RegisterCustomerUseCase {
         if (await this.customers.findByNationalId(nationalId)) throw new Error("این کد ملی قبلاً ثبت شده است.");
 
         const now = new Date().toISOString();
+        const customerId = crypto.randomUUID();
         const credentials = await this.passwordHasher.hash(password);
         const customer: Customer = {
-            customerId: crypto.randomUUID(),
+            customerId,
+            customerNumber: createCustomerNumber(customerId),
             username,
             phone,
             nationalId,
