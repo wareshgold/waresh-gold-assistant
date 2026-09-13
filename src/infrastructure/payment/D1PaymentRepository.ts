@@ -43,6 +43,15 @@ export class D1PaymentRepository implements PaymentRepository {
         );
     }
 
+    async claimFailedForRetry(input: { paymentId: string; updatedAt: string }): Promise<boolean> {
+        const result = await this.db.prepare(
+            `UPDATE payments
+             SET status = 'pending', updated_at = ?1, authority = NULL, reference_id = NULL
+             WHERE payment_id = ?2 AND status = 'failed'`
+        ).bind(input.updatedAt, input.paymentId).run();
+        return result.meta.changes === 1;
+    }
+
     async updateStatus(input: {
         paymentId: string;
         status: PaymentStatus;

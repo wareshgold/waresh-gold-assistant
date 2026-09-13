@@ -27,6 +27,19 @@ export class MemoryPaymentRepository implements PaymentRepository {
         return matches[0] ? { ...matches[0] } : null;
     }
 
+    async claimFailedForRetry(input: { paymentId: string; updatedAt: string }): Promise<boolean> {
+        const payment = this.payments.get(input.paymentId);
+        if (!payment || payment.status !== "failed") return false;
+        this.payments.set(input.paymentId, {
+            ...payment,
+            status: "pending",
+            authority: null,
+            referenceId: null,
+            updatedAt: input.updatedAt,
+        });
+        return true;
+    }
+
     async updateStatus(input: {
         paymentId: string;
         status: PaymentStatus;

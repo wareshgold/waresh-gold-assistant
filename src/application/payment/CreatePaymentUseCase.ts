@@ -31,19 +31,36 @@ export class CreatePaymentUseCase {
         if (active) throw new Error("برای این سفارش یک پرداخت فعال وجود دارد.");
 
         const now = new Date().toISOString();
-        const payment: Payment = {
-            paymentId: this.idGenerator(),
-            orderId,
-            amount: order.total,
-            status: "pending",
-            gateway: this.paymentGateway.name,
-            authority: null,
-            referenceId: null,
-            createdAt: now,
-            updatedAt: now,
-        };
+        let payment: Payment;
 
-        await this.paymentRepository.save(payment);
+        if (latest?.status === "failed") {
+            const claimed = await this.paymentRepository.claimFailedForRetry({
+                paymentId: latest.paymentId,
+                updatedAt: now,
+            });
+            if (!claimed) throw new Error("برای این سفارش یک پرداخت فعال وجود دارد.");
+            payment = {
+                ...latest,
+                status: "pending",
+                authority: null,
+                referenceId: null,
+                updatedAt: now,
+            };
+        } else {
+            payment = {
+                paymentId: this.idGenerator(),
+                orderId,
+                amount: order.total,
+                status: "pending",
+                gateway: this.paymentGateway.name,
+                authority: null,
+                referenceId: null,
+                createdAt: now,
+                updatedAt: now,
+            };
+            await this.paymentRepository.save(payment);
+        }
+
         try {
             const initiation = await this.paymentGateway.initiate({
                 paymentId: payment.paymentId,

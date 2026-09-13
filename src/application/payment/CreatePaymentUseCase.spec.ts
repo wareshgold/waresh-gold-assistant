@@ -94,7 +94,7 @@ describe("CreatePaymentUseCase", () => {
         await expect(useCase.execute({ orderId: "order-1", customerId: "customer-1" })).rejects.toThrow("برای این سفارش یک پرداخت فعال وجود دارد.");
     });
 
-    it("allows a new payment after a previous payment has failed", async () => {
+    it("reuses the failed payment record for a retry", async () => {
         const repository = new MemoryPaymentRepository();
         let call = 0;
         const retryGateway: PaymentGateway = {
@@ -106,19 +106,20 @@ describe("CreatePaymentUseCase", () => {
             },
             async verify() { return { referenceId: "REF-1" }; },
         };
-        let id = 0;
         const useCase = new CreatePaymentUseCase(
             { findById: async () => order },
             repository,
             retryGateway,
-            () => `payment-${++id}`,
+            () => "payment-1",
         );
 
         await expect(useCase.execute({ orderId: "order-1", customerId: "customer-1" })).rejects.toThrow("gateway unavailable");
+        expect((await repository.findById("payment-1"))?.status).toBe("failed");
+
         const retry = await useCase.execute({ orderId: "order-1", customerId: "customer-1" });
 
-        expect(retry.payment.paymentId).toBe("payment-2");
+        expect(retry.payment.paymentId).toBe("payment-1");
         expect(retry.payment.status).toBe("initiated");
-        expect((await repository.findById("payment-1"))?.status).toBe("failed");
+        expect(retry.payment.authority).toBe("AUTH-payment-1");
     });
 });
