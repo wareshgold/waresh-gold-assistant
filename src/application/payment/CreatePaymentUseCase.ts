@@ -11,12 +11,15 @@ export class CreatePaymentUseCase {
         private readonly idGenerator: () => string = () => crypto.randomUUID(),
     ) {}
 
-    async execute(input: { orderId: string }): Promise<{ payment: Payment; paymentUrl: string }> {
+    async execute(input: { orderId: string; customerId: string }): Promise<{ payment: Payment; paymentUrl: string }> {
         const orderId = input?.orderId?.trim();
+        const customerId = input?.customerId?.trim();
         if (!orderId) throw new Error("شناسه سفارش الزامی است.");
+        if (!customerId) throw new Error("احراز هویت لازم است.");
 
         const order = await this.orderReader.findById(orderId);
         if (!order) throw new Error("سفارش پیدا نشد.");
+        if (order.customerId !== customerId) throw new Error("این سفارش متعلق به حساب کاربری شما نیست.");
         if (order.status !== "confirmed") throw new Error("سفارش برای پرداخت آماده نیست.");
 
         const latest = await this.paymentRepository.findLatestByOrderId(orderId);
