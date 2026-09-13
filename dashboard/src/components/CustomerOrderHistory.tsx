@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { formatToman } from "@/data/products";
+import CancelCustomerOrderButton from "@/components/CancelCustomerOrderButton";
 
 type OrderItem = {
   name: string;
@@ -96,6 +97,7 @@ export default function CustomerOrderHistory() {
         <div className="mt-5 space-y-3">
           {orders.map((order) => {
             const itemCount = (order.items ?? []).reduce((sum, item) => sum + item.quantity, 0);
+            const canCancel = order.status === "pending_confirmation" || order.status === "confirmed";
             return (
               <article key={order.orderId} className="rounded-2xl border border-[#e6e0d5] bg-[#fffdf8] p-4 sm:p-5">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -110,6 +112,7 @@ export default function CustomerOrderHistory() {
                     <strong className="text-sm text-[#9b753c]">{formatToman(order.total)}</strong>
                     <Link href={`/order/${encodeURIComponent(order.orderId)}`} className="inline-flex min-h-10 items-center justify-center rounded-full border border-[#ded8cc] bg-white px-4 text-xs font-bold text-[#62685e]">جزئیات</Link>
                     <Link href={`/order/${encodeURIComponent(order.orderId)}/tracking`} className="inline-flex min-h-10 items-center justify-center rounded-full bg-[#25392f] px-4 text-xs font-bold text-white">پیگیری</Link>
+                    {canCancel ? <CancelCustomerOrderButton orderId={order.orderId} onCancelled={() => void loadOrders()} /> : null}
                   </div>
                 </div>
                 {order.items?.length ? <p className="mt-3 border-t border-[#eee9df] pt-3 text-[10px] leading-6 text-[#88877f]">{order.items.slice(0, 2).map((item) => `${item.name} × ${item.quantity}`).join(" · ")}{order.items.length > 2 ? " · …" : ""}</p> : null}
