@@ -95,6 +95,7 @@ function createTestApp() {
         createOrderFromQuoteUseCase,
         getOrderUseCase: {} as never,
         listCustomerOrdersUseCase: {} as never,
+        cancelCustomerOrderUseCase: {} as never,
         listAdminOrdersUseCase: {} as never,
         updateOrderStatusUseCase,
         createPaymentUseCase: {} as never,
