@@ -1,14 +1,15 @@
-import type { OrderStatus } from "../../domain/catalog/entities/Order";
 import type { Payment } from "../../domain/payment/entities/Payment";
 import type { PaymentGateway } from "../../domain/payment/gateways/PaymentGateway";
 import type { PaymentRepository } from "../../domain/payment/repositories/PaymentRepository";
 import type { OrderRepository } from "../../domain/catalog/repositories/OrderRepository";
+import type { PaymentSettlementRepository } from "./PaymentSettlementRepository";
 
 export class VerifyPaymentUseCase {
     constructor(
         private readonly paymentRepository: PaymentRepository,
-        private readonly orderRepository: Pick<OrderRepository, "findById" | "updateStatus">,
+        private readonly orderRepository: Pick<OrderRepository, "findById">,
         private readonly paymentGateway: PaymentGateway,
+        private readonly settlementRepository: PaymentSettlementRepository,
     ) {}
 
     async execute(input: { paymentId: string; authority: string }): Promise<Payment> {
@@ -35,15 +36,12 @@ export class VerifyPaymentUseCase {
         });
 
         const updatedAt = new Date().toISOString();
-        await this.paymentRepository.updateStatus({
+        await this.settlementRepository.settle({
             paymentId: payment.paymentId,
-            status: "paid",
-            updatedAt,
+            orderId: payment.orderId,
             referenceId: verification.referenceId,
+            updatedAt,
         });
-
-        const paidStatus: OrderStatus = "paid";
-        await this.orderRepository.updateStatus(payment.orderId, paidStatus, updatedAt);
 
         return {
             ...payment,
