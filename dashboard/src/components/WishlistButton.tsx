@@ -6,11 +6,12 @@ type WishlistButtonProps = {
   productId: number | string;
   size?: "sm" | "md";
   className?: string;
+  onActiveChange?: (active: boolean) => void;
 };
 
 type WishlistResponse = { items?: Array<{ productId: string }>; error?: string };
 
-export default function WishlistButton({ productId, size = "md", className = "" }: WishlistButtonProps) {
+export default function WishlistButton({ productId, size = "md", className = "", onActiveChange }: WishlistButtonProps) {
   const [active, setActive] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -22,11 +23,14 @@ export default function WishlistButton({ productId, size = "md", className = "" 
         return response.json() as Promise<WishlistResponse>;
       })
       .then((payload) => {
-        if (!cancelled) setActive(Boolean(payload?.items?.some((item) => item.productId === String(productId))));
+        if (cancelled) return;
+        const nextActive = Boolean(payload?.items?.some((item) => item.productId === String(productId)));
+        setActive(nextActive);
+        onActiveChange?.(nextActive);
       })
       .catch(() => undefined);
     return () => { cancelled = true; };
-  }, [productId]);
+  }, [productId, onActiveChange]);
 
   const toggle = async () => {
     if (busy) return;
@@ -45,7 +49,9 @@ export default function WishlistButton({ productId, size = "md", className = "" 
         return;
       }
       if (!response.ok) throw new Error(payload.error || "عملیات علاقه‌مندی انجام نشد.");
-      setActive(!active);
+      const nextActive = !active;
+      setActive(nextActive);
+      onActiveChange?.(nextActive);
     } catch (error) {
       window.alert(error instanceof Error ? error.message : "عملیات علاقه‌مندی انجام نشد.");
     } finally {
