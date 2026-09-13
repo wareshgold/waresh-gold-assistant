@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import MobileMenu from "@/components/MobileMenu";
+import CancelCustomerOrderButton from "@/components/CancelCustomerOrderButton";
 import { formatToman } from "@/data/products";
 import { TELEGRAM_BOT_URL } from "@/lib/api";
 
@@ -146,6 +147,7 @@ export default function OrderResultPage() {
   }, [order]);
 
   const orderState = order ? getOrderState(order.status) : null;
+  const canCancel = order?.status === "pending_confirmation" || order?.status === "confirmed";
 
   return (
     <main className="min-h-screen bg-[#f5f1e9] text-[#292b26]">
@@ -237,10 +239,11 @@ export default function OrderResultPage() {
               </aside>
             </div>
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            <div className="mt-6 grid gap-3 sm:grid-cols-4">
               <Link href={`/order/${encodeURIComponent(order.orderId)}/tracking`} className="flex min-h-12 items-center justify-center rounded-full bg-[#25392f] px-5 py-3.5 text-sm font-bold text-white">پیگیری وضعیت سفارش</Link>
               <a href={telegramMessage} target="_blank" rel="noopener noreferrer" className="flex min-h-12 items-center justify-center rounded-full border border-[#ded8cc] bg-white px-5 py-3.5 text-sm font-bold text-[#62685e]">پیگیری در تلگرام</a>
               <Link href="/account" className="flex min-h-12 items-center justify-center rounded-full border border-[#ded8cc] bg-white px-5 py-3.5 text-sm font-bold text-[#62685e]">مشاهده حساب کاربری</Link>
+              {canCancel ? <CancelCustomerOrderButton orderId={order.orderId} onCancelled={() => window.location.reload()} /> : null}
             </div>
           </div>
         )}
