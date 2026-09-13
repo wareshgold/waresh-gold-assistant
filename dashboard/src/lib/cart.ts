@@ -89,6 +89,10 @@ export function writeCart(items: CartItem[]): CartItem[] {
   return normalized;
 }
 
+export function clearCart(): CartItem[] {
+  return writeCart([]);
+}
+
 export function addToCart(item: CartItem): CartItem[] {
   if (!isValidCartItem(item)) return readCart();
 
