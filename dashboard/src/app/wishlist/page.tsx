@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import MobileMenu from "@/components/MobileMenu";
 import WishlistButton from "@/components/WishlistButton";
 
@@ -30,13 +30,25 @@ export default function WishlistPage() {
     void fetch("/api/account/wishlist", { cache: "no-store" })
       .then(async (response) => {
         const payload = await response.json().catch(() => ({}));
+        if (response.status === 401) {
+          window.location.href = `/account?returnTo=${encodeURIComponent(window.location.pathname)}`;
+          return null;
+        }
         if (!response.ok) throw new Error(typeof payload.error === "string" ? payload.error : "دریافت علاقه‌مندی‌ها انجام نشد.");
         return payload as { items?: WishlistItem[] };
       })
-      .then((payload) => { if (!cancelled) setItems(Array.isArray(payload.items) ? payload.items : []); })
+      .then((payload) => {
+        if (!cancelled && payload) setItems(Array.isArray(payload.items) ? payload.items : []);
+      })
       .catch((err) => { if (!cancelled) setError(err instanceof Error ? err.message : "دریافت علاقه‌مندی‌ها انجام نشد."); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
+  }, []);
+
+  const handleActiveChange = useCallback((productId: string, active: boolean) => {
+    if (!active) {
+      setItems((current) => current.filter((item) => item.productId !== productId));
+    }
   }, []);
 
   return (
@@ -78,7 +90,11 @@ export default function WishlistPage() {
                     <Link href={`/products/${product.productId}`} className="text-lg font-extrabold text-[#292c27] hover:underline">{product.name}</Link>
                     <p className="mt-2 text-xs text-[#85857c]">{product.weightGrams} گرم · {stockLabel[product.stockStatus]}</p>
                   </div>
-                  <WishlistButton productId={product.productId} size="sm" />
+                  <WishlistButton
+                    productId={product.productId}
+                    size="sm"
+                    onActiveChange={(active) => handleActiveChange(product.productId, active)}
+                  />
                 </div>
                 <Link href={`/products/${product.productId}`} className="mt-5 flex min-h-11 items-center justify-center rounded-full bg-[#25392f] px-4 py-3 text-sm font-bold text-white">مشاهده محصول ←</Link>
               </article>
