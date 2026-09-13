@@ -58,6 +58,42 @@ function formatDate(value: string) {
   return Number.isNaN(date.getTime()) ? "—" : date.toLocaleString("fa-IR");
 }
 
+function getOrderState(status: string) {
+  if (status === "cancelled") {
+    return {
+      terminal: true,
+      title: "این سفارش لغو شده است",
+      description: "این سفارش در حال حاضر قابل ادامه نیست. برای پیگیری بیشتر می‌توانید با پشتیبانی وارش گلد در تماس باشید.",
+      containerClass: "border-[#e3cfc7] bg-[#fbf1ed]",
+      iconClass: "bg-[#80594e]",
+      titleClass: "text-[#80594e]",
+      textClass: "text-[#80594e]",
+    };
+  }
+
+  if (status === "expired") {
+    return {
+      terminal: true,
+      title: "اعتبار این سفارش به پایان رسیده است",
+      description: "این سفارش منقضی شده و برای ادامه نیاز به ثبت سفارش جدید دارد.",
+      containerClass: "border-[#e3cfc7] bg-[#fbf1ed]",
+      iconClass: "bg-[#80594e]",
+      titleClass: "text-[#80594e]",
+      textClass: "text-[#80594e]",
+    };
+  }
+
+  return {
+    terminal: false,
+    title: "سفارش شما با موفقیت ثبت شد",
+    description: "سفارش شما ثبت شده و در وضعیت فعلی قرار دارد.",
+    containerClass: "border-[#cddbcf] bg-[#edf4ee]",
+    iconClass: "bg-[#35543e]",
+    titleClass: "text-[#35543e]",
+    textClass: "text-[#58705f]",
+  };
+}
+
 export default function OrderResultPage() {
   const params = useParams<{ orderId: string }>();
   const orderId = typeof params?.orderId === "string" ? params.orderId : "";
@@ -109,6 +145,8 @@ export default function OrderResultPage() {
     return `${TELEGRAM_BOT_URL}?text=${encodeURIComponent(lines.join("\n"))}`;
   }, [order]);
 
+  const orderState = order ? getOrderState(order.status) : null;
+
   return (
     <main className="min-h-screen bg-[#f5f1e9] text-[#292b26]">
       <header className="border-b border-[#dedfd7]/80 bg-[#faf8f2]">
@@ -139,11 +177,11 @@ export default function OrderResultPage() {
           </div>
         ) : (
           <div className="mx-auto max-w-3xl">
-            <div className="rounded-[2rem] border border-[#cddbcf] bg-[#edf4ee] p-6 text-center shadow-[0_18px_50px_rgba(55,52,43,0.05)] sm:p-9">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#35543e] text-2xl text-white">✓</div>
+            <div className={`rounded-[2rem] border p-6 text-center shadow-[0_18px_50px_rgba(55,52,43,0.05)] sm:p-9 ${orderState?.containerClass ?? "border-[#cddbcf] bg-[#edf4ee]"}`}>
+              <div className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full text-2xl text-white ${orderState?.iconClass ?? "bg-[#35543e]"}`}>{orderState?.terminal ? "!" : "✓"}</div>
               <p className="mt-5 text-xs font-bold tracking-[0.2em] text-[#708076]">ORDER RESULT</p>
-              <h1 className="mt-3 text-3xl font-extrabold text-[#35543e] sm:text-5xl">سفارش شما با موفقیت ثبت شد</h1>
-              <p className="mt-4 text-sm leading-7 text-[#58705f]">سفارش شما ثبت شده و در وضعیت «{statusLabel[order.status] ?? order.status}» قرار دارد.</p>
+              <h1 className={`mt-3 text-3xl font-extrabold sm:text-5xl ${orderState?.titleClass ?? "text-[#35543e]"}`}>{orderState?.title}</h1>
+              <p className={`mt-4 text-sm leading-7 ${orderState?.textClass ?? "text-[#58705f]"}`}>{orderState?.description} وضعیت فعلی: «{statusLabel[order.status] ?? order.status}».</p>
               <div className="mt-6 inline-flex flex-col items-center rounded-2xl bg-white/75 px-6 py-4">
                 <span className="text-[10px] text-[#88877f]">شناسه سفارش</span>
                 <strong dir="ltr" className="mt-1 text-lg text-[#25392f]">{order.orderId}</strong>
