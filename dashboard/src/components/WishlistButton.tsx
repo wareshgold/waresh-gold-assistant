@@ -2,54 +2,55 @@
 
 import { useEffect, useState } from "react";
 
-const STORAGE_KEY = "waresh-wishlist";
-const WISHLIST_CHANGE_EVENT = "waresh:wishlist-change";
-
 type WishlistButtonProps = {
-  productId: number;
+  productId: number | string;
   size?: "sm" | "md";
   className?: string;
 };
 
-function readWishlist(): number[] {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed: unknown = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter((value): value is number => Number.isInteger(value));
-  } catch {
-    return [];
-  }
-}
+type WishlistResponse = { items?: Array<{ productId: string }>; error?: string };
 
 export default function WishlistButton({ productId, size = "md", className = "" }: WishlistButtonProps) {
   const [active, setActive] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    const syncWishlistState = () => {
-      setActive(readWishlist().includes(productId));
-    };
-
-    syncWishlistState();
-    window.addEventListener(WISHLIST_CHANGE_EVENT, syncWishlistState);
-    window.addEventListener("storage", syncWishlistState);
-
-    return () => {
-      window.removeEventListener(WISHLIST_CHANGE_EVENT, syncWishlistState);
-      window.removeEventListener("storage", syncWishlistState);
-    };
+    let cancelled = false;
+    void fetch("/api/account/wishlist", { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) return null;
+        return response.json() as Promise<WishlistResponse>;
+      })
+      .then((payload) => {
+        if (!cancelled) setActive(Boolean(payload?.items?.some((item) => item.productId === String(productId))));
+      })
+      .catch(() => undefined);
+    return () => { cancelled = true; };
   }, [productId]);
 
-  const toggle = () => {
-    const wishlist = readWishlist();
-    const next = wishlist.includes(productId)
-      ? wishlist.filter((id) => id !== productId)
-      : [...wishlist, productId];
-
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    setActive(next.includes(productId));
-    window.dispatchEvent(new CustomEvent(WISHLIST_CHANGE_EVENT, { detail: next }));
+  const toggle = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const response = active
+        ? await fetch(`/api/account/wishlist/${encodeURIComponent(String(productId))}`, { method: "DELETE" })
+        : await fetch("/api/account/wishlist", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ productId: String(productId) }),
+          });
+      const payload = await response.json().catch(() => ({})) as WishlistResponse;
+      if (response.status === 401) {
+        window.location.href = `/account?returnTo=${encodeURIComponent(window.location.pathname)}`;
+        return;
+      }
+      if (!response.ok) throw new Error(payload.error || "عملیات علاقه‌مندی انجام نشد.");
+      setActive(!active);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : "عملیات علاقه‌مندی انجام نشد.");
+    } finally {
+      setBusy(false);
+    }
   };
 
   const dimensions = size === "sm" ? "h-10 w-10" : "h-11 w-11";
@@ -57,11 +58,13 @@ export default function WishlistButton({ productId, size = "md", className = "" 
   return (
     <button
       type="button"
-      onClick={toggle}
+      onClick={() => void toggle()}
+      disabled={busy}
       aria-pressed={active}
+      aria-busy={busy}
       aria-label={active ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"}
       title={active ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"}
-      className={`inline-flex ${dimensions} shrink-0 items-center justify-center rounded-full border border-[#ded8cc] bg-white/90 text-lg text-[#9b753c] shadow-sm backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:border-[#cdb27c] hover:bg-[#fbf6ea] ${active ? "border-[#cdb27c] bg-[#f7efdf] text-[#8f682f]" : ""} ${className}`}
+      className={`inline-flex ${dimensions} shrink-0 items-center justify-center rounded-full border border-[#ded8cc] bg-white/90 text-lg text-[#9b753c] shadow-sm backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:border-[#cdb27c] hover:bg-[#fbf6ea] disabled:cursor-wait disabled:opacity-60 ${active ? "border-[#cdb27c] bg-[#f7efdf] text-[#8f682f]" : ""} ${className}`}
     >
       <span aria-hidden="true">{active ? "♥" : "♡"}</span>
     </button>
