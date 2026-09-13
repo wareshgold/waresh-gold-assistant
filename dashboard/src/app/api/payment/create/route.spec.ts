@@ -1,10 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const fetchMock = vi.fn();
-const cookieMock = vi.fn();
+const mocks = vi.hoisted(() => ({
+    fetchMock: vi.fn(),
+    cookieMock: vi.fn(),
+}));
 
 vi.mock("next/headers", () => ({
-    cookies: cookieMock,
+    cookies: mocks.cookieMock,
 }));
 
 vi.mock("@/lib/api", () => ({
@@ -15,14 +17,14 @@ import { POST } from "./route";
 
 describe("POST /api/payment/create", () => {
     beforeEach(() => {
-        vi.stubGlobal("fetch", fetchMock);
-        fetchMock.mockReset();
-        cookieMock.mockReset();
-        cookieMock.mockResolvedValue({ get: vi.fn().mockReturnValue({ value: "session-1" }) });
+        vi.stubGlobal("fetch", mocks.fetchMock);
+        mocks.fetchMock.mockReset();
+        mocks.cookieMock.mockReset();
+        mocks.cookieMock.mockResolvedValue({ get: vi.fn().mockReturnValue({ value: "session-1" }) });
     });
 
     it("requires the customer session", async () => {
-        cookieMock.mockResolvedValue({ get: vi.fn().mockReturnValue(undefined) });
+        mocks.cookieMock.mockResolvedValue({ get: vi.fn().mockReturnValue(undefined) });
 
         const response = await POST(new Request("https://site.test/api/payment/create", {
             method: "POST",
@@ -32,11 +34,11 @@ describe("POST /api/payment/create", () => {
 
         expect(response.status).toBe(401);
         expect(await response.json()).toEqual({ error: "احراز هویت لازم است." });
-        expect(fetchMock).not.toHaveBeenCalled();
+        expect(mocks.fetchMock).not.toHaveBeenCalled();
     });
 
     it("forwards only the order id and customer session to the backend", async () => {
-        fetchMock.mockResolvedValue(new Response(JSON.stringify({ payment: { paymentId: "payment-1" }, paymentUrl: "https://pay.test/1" }), {
+        mocks.fetchMock.mockResolvedValue(new Response(JSON.stringify({ payment: { paymentId: "payment-1" }, paymentUrl: "https://pay.test/1" }), {
             status: 201,
             headers: { "content-type": "application/json" },
         }));
@@ -49,7 +51,7 @@ describe("POST /api/payment/create", () => {
 
         expect(response.status).toBe(201);
         expect(await response.json()).toEqual({ payment: { paymentId: "payment-1" }, paymentUrl: "https://pay.test/1" });
-        expect(fetchMock).toHaveBeenCalledWith(
+        expect(mocks.fetchMock).toHaveBeenCalledWith(
             "https://api.example.test/api/v1/payments",
             expect.objectContaining({
                 method: "POST",
@@ -63,7 +65,7 @@ describe("POST /api/payment/create", () => {
     });
 
     it("preserves backend status and payload", async () => {
-        fetchMock.mockResolvedValue(new Response(JSON.stringify({ error: "این سفارش قبلاً پرداخت شده است." }), {
+        mocks.fetchMock.mockResolvedValue(new Response(JSON.stringify({ error: "این سفارش قبلاً پرداخت شده است." }), {
             status: 409,
             headers: { "content-type": "application/json" },
         }));
@@ -80,7 +82,7 @@ describe("POST /api/payment/create", () => {
     });
 
     it("returns 503 when the backend is unavailable", async () => {
-        fetchMock.mockRejectedValue(new Error("upstream unavailable"));
+        mocks.fetchMock.mockRejectedValue(new Error("upstream unavailable"));
 
         const response = await POST(new Request("https://site.test/api/payment/create", {
             method: "POST",
