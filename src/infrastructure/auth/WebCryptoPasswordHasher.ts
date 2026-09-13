@@ -1,6 +1,6 @@
 import type { PasswordHasher } from "../../domain/auth/providers/PasswordHasher";
 
-const ITERATIONS = 120_000;
+const ITERATIONS = 100_000;
 const KEY_LENGTH = 256;
 const HASH_ALGORITHM = "SHA-256";
 
