@@ -12,6 +12,7 @@ export type CustomerAddress = {
 
 export type CustomerProfile = {
   customerId: string;
+  username: string;
   phone: string;
   firstName: string;
   lastName: string;
@@ -21,8 +22,9 @@ export type CustomerProfile = {
 const STORAGE_KEY = "waresh-customer-account";
 const ACCOUNT_CHANGE_EVENT = "waresh:account-change";
 
-const emptyProfile = (phone = "", customerId = ""): CustomerProfile => ({
+const emptyProfile = (phone = "", customerId = "", username = ""): CustomerProfile => ({
   customerId,
+  username,
   phone,
   firstName: "",
   lastName: "",
@@ -51,8 +53,9 @@ export function readCustomerProfile(): CustomerProfile | null {
     const parsed = JSON.parse(raw) as Partial<CustomerProfile>;
     if (typeof parsed.phone !== "string" || typeof parsed.customerId !== "string" || !parsed.customerId) return null;
     return {
-      ...emptyProfile(parsed.phone, parsed.customerId),
+      ...emptyProfile(parsed.phone, parsed.customerId, typeof parsed.username === "string" ? parsed.username : ""),
       ...parsed,
+      username: typeof parsed.username === "string" ? parsed.username : "",
       addresses: Array.isArray(parsed.addresses)
         ? parsed.addresses.map((address) => ({ ...address, isDefault: address.isDefault === true }))
         : [],
