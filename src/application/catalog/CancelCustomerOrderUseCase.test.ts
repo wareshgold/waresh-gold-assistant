@@ -78,4 +78,18 @@ describe("CancelCustomerOrderUseCase", () => {
         await expect(useCase.execute({ orderId: "order-1", customerId: "customer-1" }))
             .rejects.toThrow("انتقال وضعیت سفارش از paid به cancelled مجاز نیست.");
     });
+
+    it("allows only one of two concurrent cancellation attempts to win", async () => {
+        const repository = new FakeOrderRepository(makeOrder("pending_confirmation"));
+        const useCase = new CancelCustomerOrderUseCase(repository);
+
+        const results = await Promise.allSettled([
+            useCase.execute({ orderId: "order-1", customerId: "customer-1" }),
+            useCase.execute({ orderId: "order-1", customerId: "customer-1" }),
+        ]);
+
+        expect(results.filter((result) => result.status === "fulfilled")).toHaveLength(1);
+        expect(results.filter((result) => result.status === "rejected")).toHaveLength(1);
+        expect((await repository.findById("order-1"))?.status).toBe("cancelled");
+    });
 });
