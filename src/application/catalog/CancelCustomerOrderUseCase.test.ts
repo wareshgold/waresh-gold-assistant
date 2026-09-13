@@ -22,7 +22,11 @@ const makeOrder = (status: Order["status"] = "pending_confirmation"): Order => (
 });
 
 class FakeOrderRepository implements OrderRepository {
-    constructor(private order: Order | null) {}
+    public order: Order | null;
+
+    constructor(order: Order | null) {
+        this.order = order;
+    }
 
     async save(): Promise<void> {}
     async updateStatus(): Promise<void> {}
@@ -65,16 +69,13 @@ describe("CancelCustomerOrderUseCase", () => {
 
     it("rejects a concurrent state change instead of overwriting it", async () => {
         const repository = new FakeOrderRepository(makeOrder("pending_confirmation"));
-        const originalCancel = repository.cancelForCustomer.bind(repository);
         repository.cancelForCustomer = async () => {
-            repository["order"] = { ...makeOrder("paid"), updatedAt: "2026-09-13T10:01:00.000Z" };
+            repository.order = { ...makeOrder("paid"), updatedAt: "2026-09-13T10:01:00.000Z" };
             return false;
         };
         const useCase = new CancelCustomerOrderUseCase(repository);
 
         await expect(useCase.execute({ orderId: "order-1", customerId: "customer-1" }))
             .rejects.toThrow("انتقال وضعیت سفارش از paid به cancelled مجاز نیست.");
-
-        repository.cancelForCustomer = originalCancel;
     });
 });
