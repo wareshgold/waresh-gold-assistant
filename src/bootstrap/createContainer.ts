@@ -59,6 +59,7 @@ import { GetOrderUseCase } from "../application/catalog/GetOrderUseCase";
 import { ListCustomerOrdersUseCase } from "../application/catalog/ListCustomerOrdersUseCase";
 import { ListAdminOrdersUseCase } from "../application/catalog/ListAdminOrdersUseCase";
 import { UpdateOrderStatusUseCase } from "../application/catalog/UpdateOrderStatusUseCase";
+import { CancelCustomerOrderUseCase } from "../application/catalog/CancelCustomerOrderUseCase";
 import { AddCustomerAddressUseCase } from "../application/customer/AddCustomerAddressUseCase";
 import { RemoveCustomerAddressUseCase } from "../application/customer/RemoveCustomerAddressUseCase";
 import { SetDefaultCustomerAddressUseCase } from "../application/customer/SetDefaultCustomerAddressUseCase";
@@ -151,6 +152,7 @@ export function createContainer(env: AppEnv) {
     const listCustomerOrdersUseCase = new ListCustomerOrdersUseCase(orderRepository);
     const listAdminOrdersUseCase = new ListAdminOrdersUseCase(orderRepository);
     const updateOrderStatusUseCase = new UpdateOrderStatusUseCase(orderRepository);
+    const cancelCustomerOrderUseCase = new CancelCustomerOrderUseCase(orderRepository);
 
     const paymentRepository: PaymentRepository = env.waresh_gold_db
         ? new D1PaymentRepository(env.waresh_gold_db)
@@ -252,6 +254,7 @@ export function createContainer(env: AppEnv) {
         listCustomerOrdersUseCase,
         listAdminOrdersUseCase,
         updateOrderStatusUseCase,
+        cancelCustomerOrderUseCase,
         createPaymentUseCase,
         verifyPaymentUseCase,
         paymentRepository,
