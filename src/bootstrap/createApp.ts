@@ -33,11 +33,15 @@ import { updateOrderStatusRoute } from "../interfaces/http/routes/UpdateOrderSta
 import { cancelCustomerOrderRoute } from "../interfaces/http/routes/CancelCustomerOrderRoute";
 import { createPaymentRoute } from "../interfaces/http/routes/CreatePaymentRoute";
 import { verifyPaymentRoute } from "../interfaces/http/routes/VerifyPaymentRoute";
+import { listWishlistRoute, addWishlistItemRoute, removeWishlistItemRoute } from "../interfaces/http/routes/WishlistRoutes";
 import type { CustomerRepository } from "../domain/customer/repositories/CustomerRepository";
 import type { SessionService } from "../domain/auth/providers/SessionService";
 import type { GetProductsUseCase } from "../application/catalog/GetProductsUseCase";
 import type { GetProductUseCase } from "../application/catalog/GetProductUseCase";
 import type { UpdateOrderStatusUseCase } from "../application/catalog/UpdateOrderStatusUseCase";
+import type { AddWishlistItemUseCase } from "../application/customer/AddWishlistItemUseCase";
+import type { ListWishlistUseCase } from "../application/customer/ListWishlistUseCase";
+import type { RemoveWishlistItemUseCase } from "../application/customer/RemoveWishlistItemUseCase";
 
 interface AppContainer {
   telegramWebhookController: TelegramWebhookController;
@@ -66,6 +70,9 @@ interface AppContainer {
   sessionService: SessionService;
   getProductsUseCase: GetProductsUseCase;
   getProductUseCase: GetProductUseCase;
+  addWishlistItemUseCase: AddWishlistItemUseCase;
+  listWishlistUseCase: ListWishlistUseCase;
+  removeWishlistItemUseCase: RemoveWishlistItemUseCase;
   adminApiToken?: string;
 }
 
@@ -130,6 +137,9 @@ export function createApp(container: AppContainer) {
   app.get("/api/v1/account/addresses", async (c) => { const customerId = await getAuthenticatedCustomerId(c); if (!customerId) return c.json({ error: "احراز هویت لازم است." }, 401); return c.json({ addresses: await container.customerRepository.listAddresses(customerId) }); });
   app.post("/api/v1/account/addresses", async (c) => { const customerId = await getAuthenticatedCustomerId(c); if (!customerId) return c.json({ error: "احراز هویت لازم است." }, 401); const body = await jsonBody(c); const fields = ["title", "recipientName", "phone", "province", "city", "address", "postalCode"] as const; if (!body || fields.some((field) => typeof body[field] !== "string" || !(body[field] as string).trim())) return c.json({ error: "اطلاعات آدرس کامل نیست." }, 400); try { const address = await container.addCustomerAddressUseCase.execute({ customerId, title: body.title as string, recipientName: body.recipientName as string, phone: body.phone as string, province: body.province as string, city: body.city as string, address: body.address as string, postalCode: body.postalCode as string }); return c.json({ address }, 201); } catch (error) { return c.json({ error: error instanceof Error ? error.message : "ثبت آدرس انجام نشد." }, 400); } });
   app.delete("/api/v1/account/addresses/:addressId", async (c) => { const customerId = await getAuthenticatedCustomerId(c); if (!customerId) return c.json({ error: "احراز هویت لازم است." }, 401); try { await container.removeCustomerAddressUseCase.execute({ customerId, addressId: c.req.param("addressId") }); return c.json({ ok: true }); } catch (error) { const message = error instanceof Error ? error.message : "حذف آدرس انجام نشد."; return c.json({ error: message }, message === "Customer address not found" ? 404 : 400); } });
+  app.get("/api/v1/account/wishlist", async (c) => { const customerId = await getAuthenticatedCustomerId(c); if (!customerId) return c.json({ error: "احراز هویت لازم است." }, 401, { "Cache-Control": "no-store" }); return listWishlistRoute(container.listWishlistUseCase, customerId); });
+  app.post("/api/v1/account/wishlist", async (c) => { const customerId = await getAuthenticatedCustomerId(c); if (!customerId) return c.json({ error: "احراز هویت لازم است." }, 401, { "Cache-Control": "no-store" }); const body = await jsonBody(c); if (!body || typeof body.productId !== "string") return c.json({ error: "شناسه محصول الزامی است." }, 400); return addWishlistItemRoute(container.addWishlistItemUseCase, customerId, body.productId); });
+  app.delete("/api/v1/account/wishlist/:productId", async (c) => { const customerId = await getAuthenticatedCustomerId(c); if (!customerId) return c.json({ error: "احراز هویت لازم است." }, 401, { "Cache-Control": "no-store" }); return removeWishlistItemRoute(container.removeWishlistItemUseCase, customerId, c.req.param("productId")); });
   app.post("/api/v1/auth/logout", async (c) => { const sessionId = c.req.header("X-Customer-Session")?.trim(); if (sessionId) await container.sessionService.revoke(sessionId); return c.json({ ok: true }); });
   app.all("/api/v1/auth/request-otp", (c) => c.json({ error: "OTP فعلاً غیرفعال است." }, 410));
   app.all("/api/v1/auth/verify-otp", (c) => c.json({ error: "OTP فعلاً غیرفعال است." }, 410));
