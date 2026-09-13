@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import MobileMenu from "@/components/MobileMenu";
 import CancelCustomerOrderButton from "@/components/CancelCustomerOrderButton";
+import ReorderButton from "@/components/ReorderButton";
 import { formatToman } from "@/data/products";
 import { TELEGRAM_BOT_URL } from "@/lib/api";
 
@@ -148,6 +149,8 @@ export default function OrderResultPage() {
 
   const orderState = order ? getOrderState(order.status) : null;
   const canCancel = order?.status === "pending_confirmation" || order?.status === "confirmed";
+  const canReorder = order?.status === "cancelled" || order?.status === "completed";
+  const reorderItems = canReorder ? (order?.items ?? []).map(({ productId, variantId, quantity }) => ({ productId, variantId, quantity })) : [];
 
   return (
     <main className="min-h-screen bg-[#f5f1e9] text-[#292b26]">
@@ -245,6 +248,21 @@ export default function OrderResultPage() {
               <Link href="/account" className="flex min-h-12 items-center justify-center rounded-full border border-[#ded8cc] bg-white px-5 py-3.5 text-sm font-bold text-[#62685e]">مشاهده حساب کاربری</Link>
               {canCancel ? <CancelCustomerOrderButton orderId={order.orderId} onCancelled={() => window.location.reload()} /> : null}
             </div>
+
+            {canReorder ? (
+              <div className="mt-4 rounded-[2rem] border border-[#e1d6bc] bg-[#fffaf0] p-5 sm:p-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-xs font-bold text-[#9b7b48]">خرید دوباره</p>
+                    <h2 className="mt-1 text-sm font-extrabold text-[#3d4039]">می‌خواهید همین اقلام را دوباره سفارش دهید؟</h2>
+                    <p className="mt-1 text-[11px] leading-6 text-[#777970]">قیمت قبلی استفاده نمی‌شود؛ محصولات و مدل‌ها دوباره از کاتالوگ بررسی می‌شوند و قیمت جاری در سبد خرید محاسبه خواهد شد.</p>
+                  </div>
+                  <div className="w-full sm:w-52">
+                    <ReorderButton items={reorderItems} />
+                  </div>
+                </div>
+              </div>
+            ) : null}
           </div>
         )}
       </section>
