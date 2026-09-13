@@ -42,6 +42,7 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [catalogError, setCatalogError] = useState(false);
   const [pricing, setPricing] = useState<PricingState>(null);
+  const [pricingError, setPricingError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -63,15 +64,22 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
   useEffect(() => {
     if (!liveGoldPrice || liveGoldPrice <= 0 || catalogProducts.length === 0) return;
     let cancelled = false;
-    void calculateProductPrices(catalogProducts, liveGoldPrice).then((prices) => {
-      if (cancelled) return;
-      setPricing({
-        goldPrice: liveGoldPrice,
-        products: Object.fromEntries(
-          Object.entries(prices).map(([id, finalPrice]) => [Number(id), { finalPrice }]),
-        ),
+    setPricingError(false);
+    void calculateProductPrices(catalogProducts, liveGoldPrice)
+      .then((prices) => {
+        if (cancelled) return;
+        const complete = Object.keys(prices).length === catalogProducts.length;
+        setPricing({
+          goldPrice: liveGoldPrice,
+          products: Object.fromEntries(
+            Object.entries(prices).map(([id, finalPrice]) => [Number(id), { finalPrice }]),
+          ),
+        });
+        setPricingError(!complete);
+      })
+      .catch(() => {
+        if (!cancelled) setPricingError(true);
       });
-    });
     return () => { cancelled = true; };
   }, [catalogProducts, liveGoldPrice]);
 
@@ -152,6 +160,7 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
           {catalogLoading && <span className="rounded-full bg-[#f5f1e8] px-3 py-1.5 font-semibold text-[#8a806f]">در حال دریافت کاتالوگ</span>}
           {catalogError && <span className="rounded-full bg-[#f7eee6] px-3 py-1.5 font-semibold text-[#9a6647]">نمایش موقت اطلاعات کاتالوگ</span>}
           {isPricingLoading && <span className="rounded-full bg-[#f5f1e8] px-3 py-1.5 font-semibold text-[#8a806f]">در حال به‌روزرسانی قیمت‌ها</span>}
+          {!isPricingLoading && pricingError && <span className="rounded-full bg-[#f7eee6] px-3 py-1.5 font-semibold text-[#9a6647]">قیمت برخی محصولات در دسترس نیست</span>}
           {activeFilterCount > 0 && <p className="rounded-full bg-[#f2eadb] px-3 py-1.5 font-semibold text-[#92713e]">{activeFilterCount} فیلتر فعال</p>}
         </div>
       </div>
@@ -179,7 +188,7 @@ export default function ProductCatalog({ initialPriceBand = "all", liveGoldPrice
                 <div className="mt-auto border-t border-[#ebe6dc] pt-4 sm:mt-6 sm:pt-5">
                   <div className="flex items-end justify-between gap-4">
                     <div><p className="text-xs text-[#96968d]">وزن</p><p className="mt-1 text-sm font-bold text-[#55584f]">{formatWeight(product.weight)}</p></div>
-                    <div className="text-left" dir="rtl"><p className="text-[10px] font-semibold text-[#aaa397]">قیمت با نرخ لحظه‌ای</p>{productPricing ? <p className="mt-1 text-base font-extrabold text-[#9b753c] sm:text-lg">{formatToman(productPricing.finalPrice)}</p> : <p className="mt-2 text-xs text-[#a09d94]">در حال دریافت قیمت</p>}</div>
+                    <div className="text-left" dir="rtl"><p className="text-[10px] font-semibold text-[#aaa397]">قیمت با نرخ لحظه‌ای</p>{productPricing ? <p className="mt-1 text-base font-extrabold text-[#9b753c] sm:text-lg">{formatToman(productPricing.finalPrice)}</p> : <p className="mt-2 text-xs text-[#a09d94]">{isPricingLoading ? "در حال دریافت قیمت" : "قیمت موقتاً در دسترس نیست"}</p>}</div>
                   </div>
                   {productPricing && <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#8b8b82]"><span>اجرت {product.laborPercent}٪</span><span>سود {product.profitPercent}٪</span>{product.taxPercent > 0 && <span>مالیات {product.taxPercent}٪</span>}</div>}
                 </div>
