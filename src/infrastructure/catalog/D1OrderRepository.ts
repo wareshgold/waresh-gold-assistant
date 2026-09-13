@@ -37,7 +37,7 @@ export class D1OrderRepository implements OrderRepository {
 
     async cancelForCustomer(orderId: string, customerId: string, fromStatuses: readonly OrderStatus[], updatedAt: string): Promise<boolean> {
         if (fromStatuses.length === 0) return false;
-        const placeholders = fromStatuses.map((_, index) => `?${index + 4}`).join(", ");
+        const placeholders = fromStatuses.map((_, index) => `?${index + 5}`).join(", ");
         const result = await this.db.prepare(
             `UPDATE orders SET status = ?1, updated_at = ?2 WHERE order_id = ?3 AND customer_id = ?4 AND status IN (${placeholders})`
         ).bind("cancelled", updatedAt, orderId, customerId, ...fromStatuses).run();
@@ -62,7 +62,7 @@ export class D1OrderRepository implements OrderRepository {
     async findAll(): Promise<Order[]> {
         const rows = await this.db.prepare(
             `SELECT order_id FROM orders ORDER BY created_at DESC`
-        ).all<{ order_id: string }>();
+        ).bind().all<{ order_id: string }>();
         return this.loadOrders(rows.results.map((row) => row.order_id));
     }
 
