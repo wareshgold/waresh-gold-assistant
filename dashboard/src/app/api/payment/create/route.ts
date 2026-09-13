@@ -37,8 +37,12 @@ export async function POST(request: Request) {
         );
     }
 
-    const orderId = body && typeof body === "object" && !Array.isArray(body) && typeof (body as Record<string, unknown>).orderId === "string"
-        ? (body as Record<string, unknown>).orderId.trim()
+    const bodyRecord = body && typeof body === "object" && !Array.isArray(body)
+        ? body as Record<string, unknown>
+        : null;
+    const orderIdValue = bodyRecord?.orderId;
+    const orderId = typeof orderIdValue === "string"
+        ? orderIdValue.trim()
         : "";
 
     if (!orderId) {
