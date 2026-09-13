@@ -69,6 +69,9 @@ function createTestApp() {
         customerRepository,
     );
     const updateOrderStatusUseCase = new UpdateOrderStatusUseCase(orderRepository);
+    const addWishlistItemUseCase = { execute: vi.fn(async ({ customerId, productId }: { customerId: string; productId: string }) => ({ customerId, productId })) };
+    const listWishlistUseCase = { execute: vi.fn(async (customerId: string) => [{ customerId, productId: "8" }]) };
+    const removeWishlistItemUseCase = { execute: vi.fn(async (_input: { customerId: string; productId: string }) => undefined) };
 
     const sessionService = {
         create: vi.fn(async (customerId: string) => ({
@@ -111,13 +114,13 @@ function createTestApp() {
         sessionService,
         getProductsUseCase: { execute: vi.fn() } as never,
         getProductUseCase: { execute: vi.fn() } as never,
-        addWishlistItemUseCase: {} as never,
-        listWishlistUseCase: {} as never,
-        removeWishlistItemUseCase: {} as never,
+        addWishlistItemUseCase: addWishlistItemUseCase as never,
+        listWishlistUseCase: listWishlistUseCase as never,
+        removeWishlistItemUseCase: removeWishlistItemUseCase as never,
         adminApiToken: "test-admin-token",
     };
 
-    return { app: createApp(container), customerRepository, quoteRepository, orderRepository, sessionService };
+    return { app: createApp(container), customerRepository, quoteRepository, orderRepository, sessionService, addWishlistItemUseCase, listWishlistUseCase, removeWishlistItemUseCase };
 }
 
 describe("createApp checkout order route", () => {
@@ -199,5 +202,50 @@ describe("createApp admin order status route", () => {
         const updateResponse = await app.request(`/api/v1/admin/orders/${created.order.orderId}/status`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer test-admin-token" }, body: JSON.stringify({ status: "paid" }) });
         expect(updateResponse.status).toBe(409);
         expect((await orderRepository.findById(created.order.orderId))?.status).toBe("pending_confirmation");
+    });
+});
+
+describe("createApp wishlist routes", () => {
+    it("rejects wishlist access without a customer session", async () => {
+        const { app, listWishlistUseCase } = createTestApp();
+        const response = await app.request("/api/v1/account/wishlist");
+        expect(response.status).toBe(401);
+        expect(listWishlistUseCase.execute).not.toHaveBeenCalled();
+    });
+
+    it("uses the authenticated customer for list, add, and remove", async () => {
+        const { app, addWishlistItemUseCase, listWishlistUseCase, removeWishlistItemUseCase } = createTestApp();
+        const headers = { "X-Customer-Session": "session-1", "Content-Type": "application/json" };
+
+        const listResponse = await app.request("/api/v1/account/wishlist", { headers });
+        expect(listResponse.status).toBe(200);
+        expect(await listResponse.json()).toEqual({ items: [{ customerId: customer.customerId, productId: "8" }] });
+
+        const addResponse = await app.request("/api/v1/account/wishlist", {
+            method: "POST",
+            headers,
+            body: JSON.stringify({ productId: "8", customerId: "attacker-supplied-id" }),
+        });
+        expect(addResponse.status).toBe(201);
+        expect(await addResponse.json()).toEqual({ item: { customerId: customer.customerId, productId: "8" } });
+
+        const removeResponse = await app.request("/api/v1/account/wishlist/8", { method: "DELETE", headers });
+        expect(removeResponse.status).toBe(200);
+        expect(await removeResponse.json()).toEqual({ ok: true });
+
+        expect(listWishlistUseCase.execute).toHaveBeenCalledWith(customer.customerId);
+        expect(addWishlistItemUseCase.execute).toHaveBeenCalledWith({ customerId: customer.customerId, productId: "8" });
+        expect(removeWishlistItemUseCase.execute).toHaveBeenCalledWith({ customerId: customer.customerId, productId: "8" });
+    });
+
+    it("rejects a wishlist add without a product id", async () => {
+        const { app, addWishlistItemUseCase } = createTestApp();
+        const response = await app.request("/api/v1/account/wishlist", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-Customer-Session": "session-1" },
+            body: JSON.stringify({}),
+        });
+        expect(response.status).toBe(400);
+        expect(addWishlistItemUseCase.execute).not.toHaveBeenCalled();
     });
 });
