@@ -4,6 +4,7 @@ import MobileMenu from "@/components/MobileMenu";
 import CheckoutResumeRedirect from "@/components/CheckoutResumeRedirect";
 import CustomerAccountPanel from "@/components/CustomerAccountPanel";
 import CustomerOrderHistory from "@/components/CustomerOrderHistory";
+import CustomerWishlist from "@/components/CustomerWishlist";
 
 export const metadata: Metadata = {
   title: "حساب کاربری | وارش گلد",
@@ -34,6 +35,7 @@ export default function AccountPage() {
         </div>
         <CustomerAccountPanel />
         <CustomerOrderHistory />
+        <CustomerWishlist />
       </section>
 
       <footer className="bg-[#1f2d26] py-10 text-white"><div className="waresh-container flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"><div><img src="/waresh-gold-logo-white.jpg" alt="وارش گلد" className="h-10 w-auto object-contain" /><p className="mt-3 text-xs text-white/45">فروشگاه طلا و ابزارهای دقیق وارش؛ ریشه شمالی، نگاه رو به آینده.</p></div><Link href="/" className="text-sm text-white/65">بازگشت به فروشگاه</Link></div></footer>
