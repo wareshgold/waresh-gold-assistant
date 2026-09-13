@@ -70,10 +70,13 @@ import { CreatePaymentUseCase } from "../application/payment/CreatePaymentUseCas
 import { VerifyPaymentUseCase } from "../application/payment/VerifyPaymentUseCase";
 import { D1PaymentRepository } from "../infrastructure/payment/D1PaymentRepository";
 import { MemoryPaymentRepository } from "../infrastructure/payment/MemoryPaymentRepository";
+import { D1PaymentSettlementRepository } from "../infrastructure/payment/D1PaymentSettlementRepository";
+import { MemoryPaymentSettlementRepository } from "../infrastructure/payment/MemoryPaymentSettlementRepository";
 import { MockPaymentGateway } from "../infrastructure/payment/MockPaymentGateway";
 import type { OrderQuoteRepository } from "../domain/catalog/repositories/OrderQuoteRepository";
 import type { OrderRepository } from "../domain/catalog/repositories/OrderRepository";
 import type { PaymentRepository } from "../domain/payment/repositories/PaymentRepository";
+import type { PaymentSettlementRepository } from "../application/payment/PaymentSettlementRepository";
 
 export function createContainer(env: AppEnv) {
     const storage = createStorageModule(env);
@@ -152,9 +155,17 @@ export function createContainer(env: AppEnv) {
     const paymentRepository: PaymentRepository = env.waresh_gold_db
         ? new D1PaymentRepository(env.waresh_gold_db)
         : new MemoryPaymentRepository();
+    const paymentSettlementRepository: PaymentSettlementRepository = env.waresh_gold_db
+        ? new D1PaymentSettlementRepository(env.waresh_gold_db)
+        : new MemoryPaymentSettlementRepository(paymentRepository, orderRepository);
     const paymentGateway = new MockPaymentGateway();
     const createPaymentUseCase = new CreatePaymentUseCase(orderRepository, paymentRepository, paymentGateway);
-    const verifyPaymentUseCase = new VerifyPaymentUseCase(paymentRepository, orderRepository, paymentGateway);
+    const verifyPaymentUseCase = new VerifyPaymentUseCase(
+        paymentRepository,
+        orderRepository,
+        paymentGateway,
+        paymentSettlementRepository,
+    );
 
     const goldPriceAlertService = new GoldPriceAlertService(new D1GoldPriceAlertRepository(env.waresh_gold_db));
     const bubbleAlertService = new BubbleAlertService(new D1BubbleAlertRepository(env.waresh_gold_db));
