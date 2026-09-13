@@ -97,6 +97,7 @@ function createTestApp() {
         listCustomerOrdersUseCase: {} as never,
         listAdminOrdersUseCase: {} as never,
         updateOrderStatusUseCase,
+        createPaymentUseCase: {} as never,
         verifyPaymentUseCase: {} as never,
         marketProvider: { getCurrentPrice: vi.fn() } as never,
         snapshotService: { getHistory: vi.fn() } as never,
