@@ -69,9 +69,14 @@ export async function POST(request: Request, context: RouteContext) {
         );
     }
 
-    const authority = body && typeof body === "object" && !Array.isArray(body) && typeof (body as Record<string, unknown>).authority === "string"
-        ? (body as Record<string, unknown>).authority.trim()
-        : "";
+    let authority = "";
+    if (body && typeof body === "object" && !Array.isArray(body)) {
+        const authorityValue = (body as Record<string, unknown>).authority;
+        if (typeof authorityValue === "string") {
+            authority = authorityValue.trim();
+        }
+    }
+
     const { paymentId } = await context.params;
     return proxyVerification(paymentId.trim(), authority);
 }
