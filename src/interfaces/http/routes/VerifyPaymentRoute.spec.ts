@@ -61,11 +61,32 @@ async function buildFixture() {
 }
 
 describe("verifyPaymentRoute", () => {
+    it("returns 401 when customer authentication is missing", async () => {
+        const fixture = await buildFixture();
+
+        const response = await verifyPaymentRoute(request({ authority: "AUTH-1" }), fixture.useCase, "payment-1", null);
+
+        expect(response.status).toBe(401);
+        expect(await response.json()).toEqual({ error: "احراز هویت لازم است." });
+        expect(fixture.getVerifyCalls()).toBe(0);
+    });
+
+    it("returns 403 when the authenticated customer does not own the payment", async () => {
+        const fixture = await buildFixture();
+
+        const response = await verifyPaymentRoute(request({ authority: "AUTH-1" }), fixture.useCase, "payment-1", "customer-2");
+
+        expect(response.status).toBe(403);
+        expect(await response.json()).toEqual({ error: "دسترسی به این پرداخت مجاز نیست." });
+        expect(fixture.getVerifyCalls()).toBe(0);
+        expect((await fixture.paymentRepository.findById("payment-1"))?.status).toBe("initiated");
+    });
+
     it("returns 200 and is idempotent after the first successful verification", async () => {
         const fixture = await buildFixture();
 
-        const first = await verifyPaymentRoute(request({ authority: "AUTH-1" }), fixture.useCase, "payment-1");
-        const second = await verifyPaymentRoute(request({ authority: "AUTH-1" }), fixture.useCase, "payment-1");
+        const first = await verifyPaymentRoute(request({ authority: "AUTH-1" }), fixture.useCase, "payment-1", "customer-1");
+        const second = await verifyPaymentRoute(request({ authority: "AUTH-1" }), fixture.useCase, "payment-1", "customer-1");
         const firstBody = await first.json() as { payment: { status: string; referenceId: string } };
         const secondBody = await second.json() as { payment: { status: string; referenceId: string } };
 
@@ -81,7 +102,7 @@ describe("verifyPaymentRoute", () => {
     it("returns 400 for an invalid authority without settling the payment", async () => {
         const fixture = await buildFixture();
 
-        const response = await verifyPaymentRoute(request({ authority: "WRONG" }), fixture.useCase, "payment-1");
+        const response = await verifyPaymentRoute(request({ authority: "WRONG" }), fixture.useCase, "payment-1", "customer-1");
 
         expect(response.status).toBe(400);
         expect(await response.json()).toEqual({ error: "شناسه پرداخت معتبر نیست." });
@@ -92,7 +113,7 @@ describe("verifyPaymentRoute", () => {
     it("returns 404 when the payment does not exist", async () => {
         const fixture = await buildFixture();
 
-        const response = await verifyPaymentRoute(request({ authority: "AUTH-1" }), fixture.useCase, "missing");
+        const response = await verifyPaymentRoute(request({ authority: "AUTH-1" }), fixture.useCase, "missing", "customer-1");
 
         expect(response.status).toBe(404);
         expect(await response.json()).toEqual({ error: "پرداخت پیدا نشد." });
@@ -101,7 +122,7 @@ describe("verifyPaymentRoute", () => {
     it("returns 400 when the authority is missing", async () => {
         const fixture = await buildFixture();
 
-        const response = await verifyPaymentRoute(request({}), fixture.useCase, "payment-1");
+        const response = await verifyPaymentRoute(request({}), fixture.useCase, "payment-1", "customer-1");
 
         expect(response.status).toBe(400);
         expect(await response.json()).toEqual({ error: "شناسه تراکنش درگاه الزامی است." });
