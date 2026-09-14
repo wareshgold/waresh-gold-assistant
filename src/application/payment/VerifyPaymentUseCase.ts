@@ -12,24 +12,21 @@ export class VerifyPaymentUseCase {
         private readonly settlementRepository: PaymentSettlementRepository,
     ) {}
 
-    async execute(input: { paymentId: string; authority: string; customerId: string }): Promise<Payment> {
+    async execute(input: { paymentId: string; authority: string }): Promise<Payment> {
         const paymentId = input?.paymentId?.trim();
         const authority = input?.authority?.trim();
-        const customerId = input?.customerId?.trim();
         if (!paymentId) throw new Error("شناسه پرداخت الزامی است.");
         if (!authority) throw new Error("شناسه تراکنش درگاه الزامی است.");
-        if (!customerId) throw new Error("احراز هویت لازم است.");
 
         const payment = await this.paymentRepository.findById(paymentId);
         if (!payment) throw new Error("پرداخت پیدا نشد.");
 
-        const order = await this.orderRepository.findById(payment.orderId);
-        if (!order) throw new Error("سفارش پرداخت پیدا نشد.");
-        if (order.customerId !== customerId) throw new Error("دسترسی به این پرداخت مجاز نیست.");
-
         if (payment.status === "paid") return payment;
         if (payment.status !== "initiated") throw new Error("این پرداخت قابل تأیید نیست.");
         if (!payment.authority || payment.authority !== authority) throw new Error("شناسه پرداخت معتبر نیست.");
+
+        const order = await this.orderRepository.findById(payment.orderId);
+        if (!order) throw new Error("سفارش پرداخت پیدا نشد.");
         if (order.status !== "confirmed") throw new Error("سفارش برای تأیید پرداخت آماده نیست.");
 
         const verification = await this.paymentGateway.verify({
