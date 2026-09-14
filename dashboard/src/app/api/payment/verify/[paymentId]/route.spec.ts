@@ -1,6 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const fetchMock = vi.fn();
+const cookiesMock = vi.fn(async () => ({
+    get: vi.fn((name: string) => name === "waresh_customer_session" ? { value: "session-1" } : undefined),
+}));
+
+vi.mock("next/headers", () => ({
+    cookies: cookiesMock,
+}));
 
 vi.mock("@/lib/api", () => ({
     API_BASE_URL: "https://api.example.test",
@@ -22,6 +29,7 @@ describe("payment verification proxy", () => {
     beforeEach(() => {
         vi.stubGlobal("fetch", fetchMock);
         fetchMock.mockReset();
+        cookiesMock.mockClear();
     });
 
     it("forwards payment id and authority to the backend", async () => {
@@ -39,6 +47,7 @@ describe("payment verification proxy", () => {
             expect.objectContaining({
                 method: "POST",
                 body: JSON.stringify({ authority: "AUTH-1" }),
+                headers: expect.objectContaining({ "X-Customer-Session": "session-1" }),
             }),
         );
     });
@@ -57,7 +66,10 @@ describe("payment verification proxy", () => {
         expect(response.status).toBe(200);
         expect(fetchMock).toHaveBeenCalledWith(
             "https://api.example.test/api/v1/payments/payment-1/verify",
-            expect.objectContaining({ body: JSON.stringify({ authority: "AUTH-GET" }) }),
+            expect.objectContaining({
+                body: JSON.stringify({ authority: "AUTH-GET" }),
+                headers: expect.objectContaining({ "X-Customer-Session": "session-1" }),
+            }),
         );
     });
 
