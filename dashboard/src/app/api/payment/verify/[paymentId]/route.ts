@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { API_BASE_URL } from "@/lib/api";
 
 const MAX_BODY_BYTES = 16 * 1024;
@@ -10,7 +11,7 @@ type RouteContext = {
     params: Promise<{ paymentId: string }>;
 };
 
-async function proxyVerification(paymentId: string, authority: string) {
+async function proxyVerification(paymentId: string, authority: string, sessionId: string | undefined) {
     if (!paymentId) {
         return NextResponse.json(
             { error: "شناسه پرداخت الزامی است." },
@@ -25,10 +26,20 @@ async function proxyVerification(paymentId: string, authority: string) {
         );
     }
 
+    if (!sessionId) {
+        return NextResponse.json(
+            { error: "احراز هویت لازم است." },
+            { status: 401, headers: { "Cache-Control": "no-store" } },
+        );
+    }
+
     try {
         const response = await fetch(`${API_BASE_URL}/api/v1/payments/${encodeURIComponent(paymentId)}/verify`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "X-Customer-Session": sessionId,
+            },
             body: JSON.stringify({ authority }),
             cache: "no-store",
             signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
@@ -77,12 +88,14 @@ export async function POST(request: Request, context: RouteContext) {
         }
     }
 
+    const sessionId = (await cookies()).get("waresh_customer_session")?.value?.trim();
     const { paymentId } = await context.params;
-    return proxyVerification(paymentId.trim(), authority);
+    return proxyVerification(paymentId.trim(), authority, sessionId);
 }
 
 export async function GET(request: Request, context: RouteContext) {
     const authority = new URL(request.url).searchParams.get("authority")?.trim() ?? "";
+    const sessionId = (await cookies()).get("waresh_customer_session")?.value?.trim();
     const { paymentId } = await context.params;
-    return proxyVerification(paymentId.trim(), authority);
+    return proxyVerification(paymentId.trim(), authority, sessionId);
 }
