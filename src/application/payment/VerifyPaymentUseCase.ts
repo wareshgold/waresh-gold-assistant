@@ -23,13 +23,13 @@ export class VerifyPaymentUseCase {
         const payment = await this.paymentRepository.findById(paymentId);
         if (!payment) throw new Error("پرداخت پیدا نشد.");
 
-        if (payment.status === "paid") return payment;
-        if (payment.status !== "initiated") throw new Error("این پرداخت قابل تأیید نیست.");
-        if (!payment.authority || payment.authority !== authority) throw new Error("شناسه پرداخت معتبر نیست.");
-
         const order = await this.orderRepository.findById(payment.orderId);
         if (!order) throw new Error("سفارش پرداخت پیدا نشد.");
         if (order.customerId !== customerId) throw new Error("دسترسی به این پرداخت مجاز نیست.");
+
+        if (payment.status === "paid") return payment;
+        if (payment.status !== "initiated") throw new Error("این پرداخت قابل تأیید نیست.");
+        if (!payment.authority || payment.authority !== authority) throw new Error("شناسه پرداخت معتبر نیست.");
         if (order.status !== "confirmed") throw new Error("سفارش برای تأیید پرداخت آماده نیست.");
 
         const verification = await this.paymentGateway.verify({
