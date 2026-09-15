@@ -7,6 +7,8 @@ export interface PaymentRepository {
     findLatestByOrderId(orderId: string): Promise<Payment | null>;
     findActiveByOrderId(orderId: string): Promise<Payment | null>;
     claimFailedForRetry(input: { paymentId: string; updatedAt: string }): Promise<boolean>;
+    claimForVerification(input: { paymentId: string; updatedAt: string }): Promise<boolean>;
+    releaseVerification(input: { paymentId: string; updatedAt: string }): Promise<boolean>;
     updateStatus(input: {
         paymentId: string;
         status: PaymentStatus;
