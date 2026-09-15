@@ -8,6 +8,13 @@ export class MemoryPaymentRepository implements PaymentRepository {
         this.payments.set(payment.paymentId, { ...payment });
     }
 
+    async createPendingIfNoActive(payment: Payment): Promise<boolean> {
+        const active = await this.findActiveByOrderId(payment.orderId);
+        if (active) return false;
+        this.payments.set(payment.paymentId, { ...payment, status: "pending", authority: null, referenceId: null });
+        return true;
+    }
+
     async findById(paymentId: string): Promise<Payment | null> {
         const payment = this.payments.get(paymentId);
         return payment ? { ...payment } : null;
