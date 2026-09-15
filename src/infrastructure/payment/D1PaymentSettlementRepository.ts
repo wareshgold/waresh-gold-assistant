@@ -15,7 +15,7 @@ export class D1PaymentSettlementRepository implements PaymentSettlementRepositor
                  SET status = 'paid', updated_at = ?1, reference_id = ?2
                  WHERE payment_id = ?3
                    AND order_id = ?4
-                   AND status = 'initiated'
+                   AND status = 'verifying'
                    AND EXISTS (
                        SELECT 1 FROM orders
                        WHERE order_id = ?4 AND status = 'confirmed'
