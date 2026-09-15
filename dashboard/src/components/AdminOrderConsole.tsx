@@ -44,8 +44,8 @@ const labels: Record<OrderStatus, string> = {
 const nextStatuses: Record<OrderStatus, OrderStatus[]> = {
   pending_confirmation: ["confirmed", "cancelled", "expired"],
   confirmed: ["paid", "cancelled", "expired"],
-  paid: ["processing", "cancelled"],
-  processing: ["completed", "cancelled"],
+  paid: ["processing"],
+  processing: ["completed"],
   completed: [],
   cancelled: [],
   expired: [],
@@ -213,7 +213,7 @@ export default function AdminOrderConsole() {
       <section className="mx-auto max-w-xl rounded-3xl border border-[#ded7c8] bg-[#fffdf8] p-6 shadow-sm sm:p-8">
         <p className="text-xs font-bold tracking-[0.18em] text-[#8a7041]">ADMIN</p>
         <h1 className="mt-2 text-2xl font-black text-[#292b26]">مدیریت سفارش‌ها</h1>
-        <p className="mt-3 text-sm leading-7 text-[#6d7168]">برای ورود، توکن ادمین را وارد کنید. توکن در مرورگر ذخیره نمی‌شود و فقط در نشست HttpOnly استفاده می‌شود.</p>
+        <p className="mt-3 text-sm leading-7 text-[#6d7168]">برای ورود، توکن ادمین را وارد کنید. توکن به‌صورت HttpOnly در نشست مرورگر نگهداری می‌شود و جاوااسکریپت صفحه به آن دسترسی ندارد.</p>
         <input value={token} onChange={(event) => setToken(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") void login(); }} type="password" placeholder="ADMIN_API_TOKEN" className="mt-6 min-h-12 w-full rounded-2xl border border-[#d8d5ca] bg-white px-4 text-left outline-none focus:border-[#9a7b43]" dir="ltr" />
         <button type="button" onClick={() => void login()} disabled={loading || !token.trim()} className="mt-3 min-h-12 w-full rounded-2xl bg-[#1f2d26] px-5 text-sm font-bold text-white disabled:opacity-50">{loading ? "در حال بررسی..." : "ورود به پنل"}</button>
         {error && <p className="mt-4 rounded-2xl bg-red-50 p-4 text-sm text-red-700">{error}</p>}
