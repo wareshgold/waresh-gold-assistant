@@ -9,9 +9,21 @@ export class MemoryPaymentRepository implements PaymentRepository {
     }
 
     async createPendingIfNoActive(payment: Payment): Promise<boolean> {
-        const active = await this.findActiveByOrderId(payment.orderId);
+        // Keep the check-and-insert synchronous within this in-memory adapter so
+        // concurrent callers cannot interleave between the check and the write.
+        const active = [...this.payments.values()].some(
+            (existing) =>
+                existing.orderId === payment.orderId &&
+                (existing.status === "pending" || existing.status === "initiated"),
+        );
         if (active) return false;
-        this.payments.set(payment.paymentId, { ...payment, status: "pending", authority: null, referenceId: null });
+
+        this.payments.set(payment.paymentId, {
+            ...payment,
+            status: "pending",
+            authority: null,
+            referenceId: null,
+        });
         return true;
     }
 
