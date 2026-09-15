@@ -11,9 +11,7 @@ describe("OrderStatusTransition", () => {
         ["confirmed", "cancelled"],
         ["confirmed", "expired"],
         ["paid", "processing"],
-        ["paid", "cancelled"],
         ["processing", "completed"],
-        ["processing", "cancelled"],
     ];
 
     it.each(allowed)("allows %s -> %s", (from, to) => {
@@ -24,7 +22,9 @@ describe("OrderStatusTransition", () => {
     it.each([
         ["pending_confirmation", "paid"],
         ["confirmed", "processing"],
+        ["paid", "cancelled"],
         ["paid", "completed"],
+        ["processing", "cancelled"],
         ["processing", "paid"],
         ["completed", "cancelled"],
         ["cancelled", "confirmed"],
