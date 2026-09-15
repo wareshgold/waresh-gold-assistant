@@ -75,14 +75,15 @@ describe("UpdateOrderStatusUseCase", () => {
         });
     });
 
-    it("rejects a stale update after another request has already changed the status", async () => {
+    it("rejects a second transition after another request has already changed the status", async () => {
         const repository = new MemoryOrderRepository();
         await repository.save({ ...order, status: "confirmed" });
         const useCase = new UpdateOrderStatusUseCase(repository);
 
         await useCase.execute({ orderId: order.orderId, status: "paid" });
 
-        await expect(useCase.execute({ orderId: order.orderId, status: "cancelled" })).rejects.toThrow("وضعیت سفارش دیگر مجاز نیست");
+        await expect(useCase.execute({ orderId: order.orderId, status: "cancelled" }))
+            .rejects.toThrow("انتقال وضعیت سفارش از paid به cancelled مجاز نیست.");
         await expect(repository.findById(order.orderId)).resolves.toMatchObject({ status: "paid" });
     });
 });
