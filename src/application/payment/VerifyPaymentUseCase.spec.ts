@@ -118,6 +118,38 @@ describe("VerifyPaymentUseCase", () => {
         await expect(useCase.execute({ paymentId: "payment-1", authority: "AUTH-1", customerId: "customer-2" })).rejects.toThrow("دسترسی به این پرداخت مجاز نیست.");
     });
 
+    it("allows only one concurrent gateway verification", async () => {
+        const paymentRepository = new MemoryPaymentRepository();
+        const orderRepository = new MemoryOrderRepository();
+        await orderRepository.save(order);
+        await saveInitiatedPayment(paymentRepository);
+
+        let gatewayCalls = 0;
+        const concurrentGateway: PaymentGateway = {
+            name: "test",
+            async initiate() { return { authority: "AUTH-1", paymentUrl: "https://pay.test/AUTH-1" }; },
+            async verify() {
+                gatewayCalls += 1;
+                await new Promise((resolve) => setTimeout(resolve, 10));
+                return { referenceId: "REF-1" };
+            },
+        };
+
+        const settlementRepository = new MemoryPaymentSettlementRepository(paymentRepository, orderRepository);
+        const useCase = new VerifyPaymentUseCase(paymentRepository, orderRepository, concurrentGateway, settlementRepository);
+
+        const results = await Promise.allSettled([
+            useCase.execute({ paymentId: "payment-1", authority: "AUTH-1", customerId: "customer-1" }),
+            useCase.execute({ paymentId: "payment-1", authority: "AUTH-1", customerId: "customer-1" }),
+        ]);
+
+        expect(gatewayCalls).toBe(1);
+        expect(results.filter((result) => result.status === "fulfilled")).toHaveLength(1);
+        expect(results.filter((result) => result.status === "rejected")).toHaveLength(1);
+        expect((await paymentRepository.findById("payment-1"))?.status).toBe("paid");
+        expect((await orderRepository.findById("order-1"))?.status).toBe("paid");
+    });
+
     it("restores the payment when the order transition fails", async () => {
         const paymentRepository = new MemoryPaymentRepository();
         const orderRepository = new FailingOrderRepository();
