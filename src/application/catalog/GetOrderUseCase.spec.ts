@@ -52,6 +52,11 @@ describe("GetOrderUseCase", () => {
     await expect(createUseCase().execute({ orderId: "order-1", customerId: "customer-2" })).resolves.toBeNull();
   });
 
+  it("rejects customer order lookup without a customer identity", async () => {
+    await expect(createUseCase().execute({ orderId: "order-1" })).rejects.toThrow("Customer ID is required");
+    await expect(createUseCase().execute({ orderId: "order-1", customerId: "   " })).rejects.toThrow("Customer ID is required");
+  });
+
   it("returns null for an unknown order", async () => {
     const repository: OrderRepository = {
       save: async () => undefined,
