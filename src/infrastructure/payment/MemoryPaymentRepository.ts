@@ -14,7 +14,7 @@ export class MemoryPaymentRepository implements PaymentRepository {
         const active = [...this.payments.values()].some(
             (existing) =>
                 existing.orderId === payment.orderId &&
-                (existing.status === "pending" || existing.status === "initiated"),
+                (existing.status === "pending" || existing.status === "initiated" || existing.status === "verifying"),
         );
         if (active) return false;
 
@@ -41,7 +41,7 @@ export class MemoryPaymentRepository implements PaymentRepository {
 
     async findActiveByOrderId(orderId: string): Promise<Payment | null> {
         const matches = [...this.payments.values()]
-            .filter((payment) => payment.orderId === orderId && (payment.status === "pending" || payment.status === "initiated"))
+            .filter((payment) => payment.orderId === orderId && (payment.status === "pending" || payment.status === "initiated" || payment.status === "verifying"))
             .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
         return matches[0] ? { ...matches[0] } : null;
     }
@@ -54,6 +54,28 @@ export class MemoryPaymentRepository implements PaymentRepository {
             status: "pending",
             authority: null,
             referenceId: null,
+            updatedAt: input.updatedAt,
+        });
+        return true;
+    }
+
+    async claimForVerification(input: { paymentId: string; updatedAt: string }): Promise<boolean> {
+        const payment = this.payments.get(input.paymentId);
+        if (!payment || payment.status !== "initiated") return false;
+        this.payments.set(input.paymentId, {
+            ...payment,
+            status: "verifying",
+            updatedAt: input.updatedAt,
+        });
+        return true;
+    }
+
+    async releaseVerification(input: { paymentId: string; updatedAt: string }): Promise<boolean> {
+        const payment = this.payments.get(input.paymentId);
+        if (!payment || payment.status !== "verifying") return false;
+        this.payments.set(input.paymentId, {
+            ...payment,
+            status: "initiated",
             updatedAt: input.updatedAt,
         });
         return true;
