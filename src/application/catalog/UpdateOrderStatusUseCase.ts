@@ -14,7 +14,10 @@ export class UpdateOrderStatusUseCase {
 
         const status = transitionOrderStatus(order.status, input.status);
         const updatedAt = new Date().toISOString();
-        await this.orderRepository.updateStatus(orderId, status, updatedAt);
+        const updated = await this.orderRepository.updateStatus(orderId, order.status, status, updatedAt);
+        if (!updated) {
+            throw new Error("وضعیت سفارش دیگر مجاز نیست؛ سفارش توسط درخواست دیگری تغییر کرده است.");
+        }
 
         return { ...order, status, updatedAt };
     }
