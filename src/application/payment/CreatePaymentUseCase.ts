@@ -58,7 +58,8 @@ export class CreatePaymentUseCase {
                 createdAt: now,
                 updatedAt: now,
             };
-            await this.paymentRepository.save(payment);
+            const created = await this.paymentRepository.createPendingIfNoActive(payment);
+            if (!created) throw new Error("برای این سفارش یک پرداخت فعال وجود دارد.");
         }
 
         try {
