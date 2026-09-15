@@ -17,14 +17,18 @@ export async function GET(
     }
 
     const sessionId = (await cookies()).get("waresh_customer_session")?.value;
-    const headers: HeadersInit = {};
-    if (sessionId) headers["X-Customer-Session"] = sessionId;
+    if (!sessionId) {
+      return NextResponse.json(
+        { error: "احراز هویت لازم است." },
+        { status: 401, headers: { "Cache-Control": "no-store" } },
+      );
+    }
 
     const response = await fetch(
       `${API_BASE_URL}/api/v1/orders/${encodeURIComponent(normalizedOrderId)}`,
       {
         cache: "no-store",
-        headers,
+        headers: { "X-Customer-Session": sessionId },
         signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
       },
     );
