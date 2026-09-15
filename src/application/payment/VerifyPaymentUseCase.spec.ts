@@ -166,7 +166,7 @@ describe("VerifyPaymentUseCase", () => {
 });
 
 class FailingOrderRepository extends MemoryOrderRepository {
-    async updateStatus(): Promise<void> {
+    async updateStatus(_orderId: string, _expectedStatus: Order["status"], _status: Order["status"], _updatedAt: string): Promise<boolean> {
         throw new Error("order transition failed");
     }
 }
