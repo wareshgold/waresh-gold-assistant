@@ -94,6 +94,37 @@ describe("CreatePaymentUseCase", () => {
         await expect(useCase.execute({ orderId: "order-1", customerId: "customer-1" })).rejects.toThrow("برای این سفارش یک پرداخت فعال وجود دارد.");
     });
 
+    it("prevents concurrent initial payment creation from creating two active payments", async () => {
+        const repository = new MemoryPaymentRepository();
+        let id = 0;
+        let initiateCalls = 0;
+        const concurrentGateway: PaymentGateway = {
+            name: "test",
+            async initiate(input) {
+                initiateCalls += 1;
+                await new Promise((resolve) => setTimeout(resolve, 10));
+                return { authority: `AUTH-${input.paymentId}`, paymentUrl: `https://pay.test/${input.paymentId}` };
+            },
+            async verify() { return { referenceId: "REF-1" }; },
+        };
+        const useCase = new CreatePaymentUseCase(
+            { findById: async () => order },
+            repository,
+            concurrentGateway,
+            () => `payment-${++id}`,
+        );
+
+        const results = await Promise.allSettled([
+            useCase.execute({ orderId: "order-1", customerId: "customer-1" }),
+            useCase.execute({ orderId: "order-1", customerId: "customer-1" }),
+        ]);
+
+        expect(results.filter((result) => result.status === "fulfilled")).toHaveLength(1);
+        expect(results.filter((result) => result.status === "rejected")).toHaveLength(1);
+        expect(initiateCalls).toBe(1);
+        expect(await repository.findActiveByOrderId("order-1")).not.toBeNull();
+    });
+
     it("reuses the failed payment record for a retry", async () => {
         const repository = new MemoryPaymentRepository();
         let call = 0;
