@@ -19,6 +19,16 @@ const customer: Customer = {
     updatedAt: "2026-09-07T06:00:00.000Z",
 };
 
+const secondCustomer: Customer = {
+    ...customer,
+    customerId: "customer-2",
+    username: "second-user",
+    phone: "09121111111",
+    nationalId: "0012345679",
+    firstName: "Second",
+    lastName: "Test",
+};
+
 const customerAddress: CustomerAddress = {
     id: "address-1",
     customerId: customer.customerId,
@@ -68,7 +78,11 @@ function createUseCase(addresses: CustomerAddress[] = []) {
     const quoteRepository = new MemoryOrderQuoteRepository();
     const orderRepository = new MemoryOrderRepository();
     const customerRepository = {
-        findById: async (customerId: string) => customerId === customer.customerId ? customer : null,
+        findById: async (customerId: string) => {
+            if (customerId === customer.customerId) return customer;
+            if (customerId === secondCustomer.customerId) return secondCustomer;
+            return null;
+        },
         findByPhone: async () => null,
         findByUsername: async () => null,
         findByNationalId: async () => null,
@@ -206,7 +220,7 @@ describe("CreateOrderFromQuoteUseCase", () => {
 
         await useCase.execute({ quoteId: quote.quoteId, customerId: customer.customerId });
 
-        await expect(useCase.execute({ quoteId: quote.quoteId, customerId: "customer-2" }))
+        await expect(useCase.execute({ quoteId: quote.quoteId, customerId: secondCustomer.customerId }))
             .rejects.toThrow("این پیش‌فاکتور قبلاً به حساب کاربری دیگری ثبت شده است");
     });
 
