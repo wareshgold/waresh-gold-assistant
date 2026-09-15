@@ -22,6 +22,27 @@ export class D1PaymentRepository implements PaymentRepository {
         ).run();
     }
 
+    async createPendingIfNoActive(payment: Payment): Promise<boolean> {
+        const result = await this.db.prepare(
+            `INSERT INTO payments
+                (payment_id, order_id, amount, status, gateway, authority, reference_id, created_at, updated_at)
+             SELECT ?1, ?2, ?3, 'pending', ?4, NULL, NULL, ?5, ?6
+             WHERE NOT EXISTS (
+                 SELECT 1 FROM payments
+                 WHERE order_id = ?2
+                   AND status IN ('pending', 'initiated')
+             )`
+        ).bind(
+            payment.paymentId,
+            payment.orderId,
+            payment.amount,
+            payment.gateway,
+            payment.createdAt,
+            payment.updatedAt,
+        ).run();
+        return result.meta.changes === 1;
+    }
+
     async findById(paymentId: string): Promise<Payment | null> {
         return this.findOne(
             `WHERE payment_id = ?1`,
