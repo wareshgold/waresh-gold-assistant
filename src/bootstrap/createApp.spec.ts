@@ -110,6 +110,7 @@ function createTestApp() {
         loginCustomerUseCase: {} as never,
         addCustomerAddressUseCase: {} as never,
         removeCustomerAddressUseCase: {} as never,
+        setDefaultCustomerAddressUseCase: {} as never,
         customerRepository,
         sessionService,
         getProductsUseCase: { execute: vi.fn() } as never,
