@@ -52,7 +52,7 @@ export default function MockPaymentPage() {
           <p className="text-xs font-bold tracking-[0.2em] text-[#9b7b48]">MOCK PAYMENT</p>
           <h1 className="mt-4 text-2xl font-extrabold">اطلاعات پرداخت ناقص است</h1>
           <p className="mt-4 text-sm leading-7 text-[#777970]">برای ادامه پرداخت، از صفحه سفارش دوباره وارد درگاه شوید.</p>
-          <Link href="/account/orders" className="mt-7 inline-flex min-h-12 items-center justify-center rounded-full bg-[#25392f] px-6 text-sm font-bold text-white">بازگشت به سفارش‌ها</Link>
+          <Link href="/account" className="mt-7 inline-flex min-h-12 items-center justify-center rounded-full bg-[#25392f] px-6 text-sm font-bold text-white">بازگشت به حساب کاربری</Link>
         </div>
       </main>
     );
