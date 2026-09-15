@@ -94,6 +94,56 @@ describe("CreatePaymentUseCase", () => {
         await expect(useCase.execute({ orderId: "order-1", customerId: "customer-1" })).rejects.toThrow("برای این سفارش یک پرداخت فعال وجود دارد.");
     });
 
+    it("rejects duplicate creation after a payment is already paid", async () => {
+        const repository = new MemoryPaymentRepository();
+        await repository.save({
+            paymentId: "payment-1",
+            orderId: "order-1",
+            amount: order.total,
+            status: "paid",
+            gateway: "test",
+            authority: "AUTH-1",
+            referenceId: "REF-1",
+            createdAt: "2026-09-09T10:01:00.000Z",
+            updatedAt: "2026-09-09T10:02:00.000Z",
+        });
+        const useCase = new CreatePaymentUseCase(
+            { findById: async () => order },
+            repository,
+            gateway,
+            () => "payment-2",
+        );
+
+        await expect(useCase.execute({ orderId: "order-1", customerId: "customer-1" }))
+            .rejects.toThrow("این سفارش قبلاً پرداخت شده است.");
+        expect(await repository.findById("payment-2")).toBeNull();
+    });
+
+    it("blocks creation while an existing payment is being verified", async () => {
+        const repository = new MemoryPaymentRepository();
+        await repository.save({
+            paymentId: "payment-1",
+            orderId: "order-1",
+            amount: order.total,
+            status: "verifying",
+            gateway: "test",
+            authority: "AUTH-1",
+            referenceId: null,
+            createdAt: "2026-09-09T10:01:00.000Z",
+            updatedAt: "2026-09-09T10:02:00.000Z",
+        });
+        const useCase = new CreatePaymentUseCase(
+            { findById: async () => order },
+            repository,
+            gateway,
+            () => "payment-2",
+        );
+
+        await expect(useCase.execute({ orderId: "order-1", customerId: "customer-1" }))
+            .rejects.toThrow("برای این سفارش یک پرداخت فعال وجود دارد.");
+        expect(await repository.findById("payment-2")).toBeNull();
+    });
+
     it("prevents concurrent initial payment creation from creating two active payments", async () => {
         const repository = new MemoryPaymentRepository();
         let id = 0;
