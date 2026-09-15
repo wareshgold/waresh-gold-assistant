@@ -30,7 +30,13 @@ export class MemoryPaymentSettlementRepository implements PaymentSettlementRepos
         });
 
         try {
-            await this.orderRepository.updateStatus(input.orderId, "paid", input.updatedAt);
+            const updated = await this.orderRepository.updateStatus(
+                input.orderId,
+                "confirmed",
+                "paid",
+                input.updatedAt,
+            );
+            if (!updated) throw new Error("order transition failed");
         } catch (error) {
             await this.paymentRepository.updateStatus({
                 paymentId: payment.paymentId,
