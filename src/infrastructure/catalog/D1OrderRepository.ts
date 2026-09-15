@@ -28,11 +28,11 @@ export class D1OrderRepository implements OrderRepository {
         ]);
     }
 
-    async updateStatus(orderId: string, status: OrderStatus, updatedAt: string): Promise<void> {
+    async updateStatus(orderId: string, expectedStatus: OrderStatus, status: OrderStatus, updatedAt: string): Promise<boolean> {
         const result = await this.db.prepare(
-            `UPDATE orders SET status = ?1, updated_at = ?2 WHERE order_id = ?3`
-        ).bind(status, updatedAt, orderId).run();
-        if (!result.meta.changes) throw new Error("سفارش پیدا نشد.");
+            `UPDATE orders SET status = ?1, updated_at = ?2 WHERE order_id = ?3 AND status = ?4`
+        ).bind(status, updatedAt, orderId, expectedStatus).run();
+        return Boolean(result.meta.changes);
     }
 
     async cancelForCustomer(orderId: string, customerId: string, fromStatuses: readonly OrderStatus[], updatedAt: string): Promise<boolean> {
