@@ -18,7 +18,7 @@ export class MemoryPaymentSettlementRepository implements PaymentSettlementRepos
         const order = await this.orderRepository.findById(input.orderId);
         if (!payment || payment.orderId !== input.orderId) throw new Error("پرداخت پیدا نشد.");
         if (!order) throw new Error("سفارش پرداخت پیدا نشد.");
-        if (payment.status !== "initiated" || order.status !== "confirmed") {
+        if (payment.status !== "verifying" || order.status !== "confirmed") {
             throw new Error("تسویه پرداخت انجام نشد.");
         }
 
