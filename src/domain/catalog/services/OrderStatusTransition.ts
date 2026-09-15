@@ -3,8 +3,8 @@ import type { OrderStatus } from "../entities/Order";
 const transitions: Record<OrderStatus, readonly OrderStatus[]> = {
     pending_confirmation: ["confirmed", "cancelled", "expired"],
     confirmed: ["paid", "cancelled", "expired"],
-    paid: ["processing", "cancelled"],
-    processing: ["completed", "cancelled"],
+    paid: ["processing"],
+    processing: ["completed"],
     completed: [],
     cancelled: [],
     expired: [],
