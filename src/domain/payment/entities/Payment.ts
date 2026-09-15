@@ -1,6 +1,7 @@
 export type PaymentStatus =
     | "pending"
     | "initiated"
+    | "verifying"
     | "paid"
     | "failed"
     | "cancelled"
