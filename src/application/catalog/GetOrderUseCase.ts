@@ -12,11 +12,12 @@ export class GetOrderUseCase {
     const orderId = input?.orderId?.trim();
     if (!orderId) throw new Error("Order ID is required");
 
+    const customerId = input.customerId?.trim();
+    if (!customerId) throw new Error("Customer ID is required");
+
     const order = await this.orderRepository.findById(orderId);
     if (!order) return null;
-
-    const customerId = input.customerId?.trim();
-    if (order.customerId && order.customerId !== customerId) return null;
+    if (order.customerId !== customerId) return null;
     return order;
   }
 
