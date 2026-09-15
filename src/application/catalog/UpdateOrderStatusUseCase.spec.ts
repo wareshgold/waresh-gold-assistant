@@ -56,4 +56,33 @@ describe("UpdateOrderStatusUseCase", () => {
         const useCase = new UpdateOrderStatusUseCase(new MemoryOrderRepository());
         await expect(useCase.execute({ orderId: "missing", status: "confirmed" })).rejects.toThrow("سفارش پیدا نشد");
     });
+
+    it("allows only one winner when two requests update the same order concurrently", async () => {
+        const repository = new MemoryOrderRepository();
+        await repository.save({ ...order, status: "confirmed" });
+        const useCase = new UpdateOrderStatusUseCase(repository);
+
+        const results = await Promise.allSettled([
+            useCase.execute({ orderId: order.orderId, status: "paid" }),
+            useCase.execute({ orderId: order.orderId, status: "cancelled" }),
+        ]);
+
+        expect(results.filter((result) => result.status === "fulfilled")).toHaveLength(1);
+        expect(results.filter((result) => result.status === "rejected")).toHaveLength(1);
+        await expect(repository.findById(order.orderId)).resolves.toMatchObject({
+            orderId: order.orderId,
+            status: expect.stringMatching(/^(paid|cancelled)$/),
+        });
+    });
+
+    it("rejects a stale update after another request has already changed the status", async () => {
+        const repository = new MemoryOrderRepository();
+        await repository.save({ ...order, status: "confirmed" });
+        const useCase = new UpdateOrderStatusUseCase(repository);
+
+        await useCase.execute({ orderId: order.orderId, status: "paid" });
+
+        await expect(useCase.execute({ orderId: order.orderId, status: "cancelled" })).rejects.toThrow("وضعیت سفارش دیگر مجاز نیست");
+        await expect(repository.findById(order.orderId)).resolves.toMatchObject({ status: "paid" });
+    });
 });
