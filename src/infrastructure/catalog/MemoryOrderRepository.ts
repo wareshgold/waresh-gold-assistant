@@ -8,10 +8,11 @@ export class MemoryOrderRepository implements OrderRepository {
         this.orders.set(order.orderId, structuredClone(order));
     }
 
-    async updateStatus(orderId: string, status: OrderStatus, updatedAt: string): Promise<void> {
+    async updateStatus(orderId: string, expectedStatus: OrderStatus, status: OrderStatus, updatedAt: string): Promise<boolean> {
         const order = this.orders.get(orderId);
-        if (!order) throw new Error("سفارش پیدا نشد.");
+        if (!order || order.status !== expectedStatus) return false;
         this.orders.set(orderId, structuredClone({ ...order, status, updatedAt }));
+        return true;
     }
 
     async cancelForCustomer(orderId: string, customerId: string, fromStatuses: readonly OrderStatus[], updatedAt: string): Promise<boolean> {
