@@ -199,4 +199,33 @@ describe("CreateOrderFromQuoteUseCase", () => {
         expect(second).toEqual(first);
         expect(await orderRepository.findByQuoteId(quote.quoteId)).toEqual(first);
     });
+
+    it("does not let another customer replay an already-consumed quote", async () => {
+        const { useCase, quoteRepository } = createUseCase();
+        await quoteRepository.save(quote);
+
+        await useCase.execute({ quoteId: quote.quoteId, customerId: customer.customerId });
+
+        await expect(useCase.execute({ quoteId: quote.quoteId, customerId: "customer-2" }))
+            .rejects.toThrow("این پیش‌فاکتور قبلاً به حساب کاربری دیگری ثبت شده است");
+    });
+
+    it("does not let a replay change the address snapshot", async () => {
+        const { useCase, quoteRepository } = createUseCase([customerAddress]);
+        await quoteRepository.save(quote);
+
+        const first = await useCase.execute({
+            quoteId: quote.quoteId,
+            customerId: customer.customerId,
+            addressId: customerAddress.id,
+        });
+
+        await expect(useCase.execute({
+            quoteId: quote.quoteId,
+            customerId: customer.customerId,
+            addressId: "address-2",
+        })).rejects.toThrow("این پیش‌فاکتور قبلاً با آدرس دیگری ثبت شده است");
+
+        expect(first.address?.addressId).toBe(customerAddress.id);
+    });
 });
