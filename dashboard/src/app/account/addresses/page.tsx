@@ -55,7 +55,7 @@ export default function AccountAddressesPage() {
     if (defaultingId || address.isDefault) return;
     setDefaultingId(address.id); setMessage("");
     try {
-      const response = await fetch("/api/account/addresses", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ ...address, addressId:address.id, isDefault:true }) });
+      const response = await fetch(`/api/account/addresses/${encodeURIComponent(address.id)}`, { method:"PATCH" });
       const data = await response.json().catch(() => null) as { address?: CustomerAddress; error?: string } | null;
       if (!response.ok || !data?.address) { setMessage(data?.error ?? "تغییر آدرس پیش‌فرض انجام نشد."); return; }
       setMessage(`«${address.title}» به‌عنوان آدرس پیش‌فرض انتخاب شد.`); await loadAccount();
