@@ -32,25 +32,45 @@ export class VerifyPaymentUseCase {
         if (!payment.authority || payment.authority !== authority) throw new Error("شناسه پرداخت معتبر نیست.");
         if (order.status !== "confirmed") throw new Error("سفارش برای تأیید پرداخت آماده نیست.");
 
-        const verification = await this.paymentGateway.verify({
+        const verifyingAt = new Date().toISOString();
+        const claimed = await this.paymentRepository.claimForVerification({
             paymentId: payment.paymentId,
-            authority,
-            amount: payment.amount,
+            updatedAt: verifyingAt,
         });
 
-        const updatedAt = new Date().toISOString();
-        await this.settlementRepository.settle({
-            paymentId: payment.paymentId,
-            orderId: payment.orderId,
-            referenceId: verification.referenceId,
-            updatedAt,
-        });
+        if (!claimed) {
+            const current = await this.paymentRepository.findById(payment.paymentId);
+            if (current?.status === "paid") return current;
+            throw new Error("این پرداخت در حال تأیید است.");
+        }
 
-        return {
-            ...payment,
-            status: "paid",
-            referenceId: verification.referenceId,
-            updatedAt,
-        };
+        try {
+            const verification = await this.paymentGateway.verify({
+                paymentId: payment.paymentId,
+                authority,
+                amount: payment.amount,
+            });
+
+            const updatedAt = new Date().toISOString();
+            await this.settlementRepository.settle({
+                paymentId: payment.paymentId,
+                orderId: payment.orderId,
+                referenceId: verification.referenceId,
+                updatedAt,
+            });
+
+            return {
+                ...payment,
+                status: "paid",
+                referenceId: verification.referenceId,
+                updatedAt,
+            };
+        } catch (error) {
+            await this.paymentRepository.releaseVerification({
+                paymentId: payment.paymentId,
+                updatedAt: new Date().toISOString(),
+            });
+            throw error;
+        }
     }
 }
