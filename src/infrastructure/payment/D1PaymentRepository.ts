@@ -30,7 +30,7 @@ export class D1PaymentRepository implements PaymentRepository {
              WHERE NOT EXISTS (
                  SELECT 1 FROM payments
                  WHERE order_id = ?2
-                   AND status IN ('pending', 'initiated')
+                   AND status IN ('pending', 'initiated', 'verifying')
              )`
         ).bind(
             payment.paymentId,
@@ -59,7 +59,7 @@ export class D1PaymentRepository implements PaymentRepository {
 
     async findActiveByOrderId(orderId: string): Promise<Payment | null> {
         return this.findOne(
-            `WHERE order_id = ?1 AND status IN ('pending', 'initiated') ORDER BY created_at DESC LIMIT 1`,
+            `WHERE order_id = ?1 AND status IN ('pending', 'initiated', 'verifying') ORDER BY created_at DESC LIMIT 1`,
             orderId,
         );
     }
@@ -69,6 +69,24 @@ export class D1PaymentRepository implements PaymentRepository {
             `UPDATE payments
              SET status = 'pending', updated_at = ?1, authority = NULL, reference_id = NULL
              WHERE payment_id = ?2 AND status = 'failed'`
+        ).bind(input.updatedAt, input.paymentId).run();
+        return result.meta.changes === 1;
+    }
+
+    async claimForVerification(input: { paymentId: string; updatedAt: string }): Promise<boolean> {
+        const result = await this.db.prepare(
+            `UPDATE payments
+             SET status = 'verifying', updated_at = ?1
+             WHERE payment_id = ?2 AND status = 'initiated'`
+        ).bind(input.updatedAt, input.paymentId).run();
+        return result.meta.changes === 1;
+    }
+
+    async releaseVerification(input: { paymentId: string; updatedAt: string }): Promise<boolean> {
+        const result = await this.db.prepare(
+            `UPDATE payments
+             SET status = 'initiated', updated_at = ?1
+             WHERE payment_id = ?2 AND status = 'verifying'`
         ).bind(input.updatedAt, input.paymentId).run();
         return result.meta.changes === 1;
     }
