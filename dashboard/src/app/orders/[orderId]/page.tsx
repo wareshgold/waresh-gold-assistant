@@ -13,6 +13,13 @@ type OrderStatus =
   | "cancelled"
   | "expired";
 
+type StatusHistoryEntry = {
+  orderId: string;
+  fromStatus: OrderStatus | null;
+  toStatus: OrderStatus;
+  changedAt: string;
+};
+
 type Order = {
   orderId: string;
   quoteId: string;
@@ -125,8 +132,36 @@ function OrderTimeline({ status, updatedAt }: { status: OrderStatus; updatedAt: 
   );
 }
 
+function StatusHistory({ history }: { history: StatusHistoryEntry[] }) {
+  if (history.length === 0) return null;
+
+  return (
+    <section className="mt-6 rounded-[2rem] border border-[#e0dbd1] bg-[#fffdf8] p-6 shadow-[0_18px_50px_rgba(55,52,43,0.05)] sm:p-8" aria-label="تاریخچه وضعیت سفارش">
+      <div>
+        <p className="text-xs font-bold tracking-[0.18em] text-[#9b7b48]">STATUS HISTORY</p>
+        <h2 className="mt-2 text-xl font-extrabold">تاریخچه تغییر وضعیت</h2>
+      </div>
+      <ol className="mt-6 divide-y divide-[#ece7dd]">
+        {history.map((entry, index) => (
+          <li key={`${entry.changedAt}-${entry.toStatus}-${index}`} className="flex items-center justify-between gap-4 py-4 first:pt-0 last:pb-0">
+            <div>
+              <p className="text-sm font-extrabold">{statusLabels[entry.toStatus]}</p>
+              <p className="mt-1 text-xs text-[#858980]">
+                {entry.fromStatus ? `${statusLabels[entry.fromStatus]} ← ` : "ثبت اولیه سفارش · "}
+                {formatDate(entry.changedAt)}
+              </p>
+            </div>
+            <span className="shrink-0 rounded-full bg-[#f0ece3] px-3 py-1.5 text-[10px] font-bold text-[#765728]">مرحله {index + 1}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
 export default function OrderPage({ params }: { params: Promise<{ orderId: string }> }) {
   const [order, setOrder] = useState<Order | null>(null);
+  const [statusHistory, setStatusHistory] = useState<StatusHistoryEntry[]>([]);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -135,13 +170,14 @@ export default function OrderPage({ params }: { params: Promise<{ orderId: strin
     void params.then(async ({ orderId }) => {
       try {
         const response = await fetch(`/api/orders/${encodeURIComponent(orderId)}`, { cache: "no-store" });
-        const data = (await response.json().catch(() => null)) as { order?: Order } | null;
+        const data = (await response.json().catch(() => null)) as { order?: Order; statusHistory?: StatusHistoryEntry[] } | null;
         if (!active) return;
         if (!response.ok || !data?.order) {
           setError(true);
           return;
         }
         setOrder(data.order);
+        setStatusHistory(Array.isArray(data.statusHistory) ? data.statusHistory : []);
       } catch {
         if (active) setError(true);
       } finally {
@@ -179,6 +215,7 @@ export default function OrderPage({ params }: { params: Promise<{ orderId: strin
             <h1 className="mt-4 text-3xl font-extrabold sm:text-5xl">پیگیری سفارش</h1>
 
             <OrderTimeline status={order.status} updatedAt={order.updatedAt} />
+            <StatusHistory history={statusHistory} />
 
             <div className="mt-6 rounded-[2rem] border border-[#e0dbd1] bg-[#fffdf8] p-6 shadow-[0_18px_50px_rgba(55,52,43,0.05)] sm:p-8">
               <div className="flex flex-wrap items-center justify-between gap-4">
