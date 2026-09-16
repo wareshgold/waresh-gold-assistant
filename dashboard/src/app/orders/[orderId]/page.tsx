@@ -13,6 +13,13 @@ type OrderStatus =
   | "cancelled"
   | "expired";
 
+type StatusHistoryEntry = {
+  orderId: string;
+  fromStatus: OrderStatus | null;
+  toStatus: OrderStatus;
+  changedAt: string;
+};
+
 type Order = {
   orderId: string;
   quoteId: string;
@@ -55,6 +62,8 @@ const timelineIndex: Record<Exclude<OrderStatus, "cancelled" | "expired">, numbe
   processing: 3,
   completed: 4,
 };
+
+const cancellableStatuses: ReadonlySet<OrderStatus> = new Set(["pending_confirmation", "confirmed"]);
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("fa-IR", {
@@ -125,23 +134,54 @@ function OrderTimeline({ status, updatedAt }: { status: OrderStatus; updatedAt: 
   );
 }
 
+function StatusHistory({ history }: { history: StatusHistoryEntry[] }) {
+  if (history.length === 0) return null;
+
+  return (
+    <section className="mt-6 rounded-[2rem] border border-[#e0dbd1] bg-[#fffdf8] p-6 shadow-[0_18px_50px_rgba(55,52,43,0.05)] sm:p-8" aria-label="تاریخچه وضعیت سفارش">
+      <div>
+        <p className="text-xs font-bold tracking-[0.18em] text-[#9b7b48]">STATUS HISTORY</p>
+        <h2 className="mt-2 text-xl font-extrabold">تاریخچه تغییر وضعیت</h2>
+      </div>
+      <ol className="mt-6 divide-y divide-[#ece7dd]">
+        {history.map((entry, index) => (
+          <li key={`${entry.changedAt}-${entry.toStatus}-${index}`} className="flex items-center justify-between gap-4 py-4 first:pt-0 last:pb-0">
+            <div>
+              <p className="text-sm font-extrabold">{statusLabels[entry.toStatus]}</p>
+              <p className="mt-1 text-xs text-[#858980]">
+                {entry.fromStatus ? `${statusLabels[entry.fromStatus]} ← ` : "ثبت اولیه سفارش · "}
+                {formatDate(entry.changedAt)}
+              </p>
+            </div>
+            <span className="shrink-0 rounded-full bg-[#f0ece3] px-3 py-1.5 text-[10px] font-bold text-[#765728]">مرحله {index + 1}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
 export default function OrderPage({ params }: { params: Promise<{ orderId: string }> }) {
   const [order, setOrder] = useState<Order | null>(null);
+  const [statusHistory, setStatusHistory] = useState<StatusHistoryEntry[]>([]);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
     void params.then(async ({ orderId }) => {
       try {
         const response = await fetch(`/api/orders/${encodeURIComponent(orderId)}`, { cache: "no-store" });
-        const data = (await response.json().catch(() => null)) as { order?: Order } | null;
+        const data = (await response.json().catch(() => null)) as { order?: Order; statusHistory?: StatusHistoryEntry[] } | null;
         if (!active) return;
         if (!response.ok || !data?.order) {
           setError(true);
           return;
         }
         setOrder(data.order);
+        setStatusHistory(Array.isArray(data.statusHistory) ? data.statusHistory : []);
       } catch {
         if (active) setError(true);
       } finally {
@@ -152,6 +192,46 @@ export default function OrderPage({ params }: { params: Promise<{ orderId: strin
       active = false;
     };
   }, [params]);
+
+  async function handleCancel() {
+    if (!order || !cancellableStatuses.has(order.status) || cancelling) return;
+
+    const confirmed = window.confirm("این سفارش لغو می‌شود و این عملیات قابل بازگشت نیست. ادامه می‌دهید؟");
+    if (!confirmed) return;
+
+    setCancelling(true);
+    setCancelError(null);
+
+    try {
+      const response = await fetch(`/api/orders/${encodeURIComponent(order.orderId)}/cancel`, {
+        method: "POST",
+        cache: "no-store",
+      });
+      const data = (await response.json().catch(() => null)) as {
+        order?: Order;
+        error?: string;
+      } | null;
+
+      if (!response.ok || !data?.order) {
+        setCancelError(data?.error ?? "لغو سفارش انجام نشد.");
+        return;
+      }
+
+      setOrder(data.order);
+      const refresh = await fetch(`/api/orders/${encodeURIComponent(data.order.orderId)}`, { cache: "no-store" });
+      const refreshed = (await refresh.json().catch(() => null)) as { order?: Order; statusHistory?: StatusHistoryEntry[] } | null;
+      if (refresh.ok && refreshed?.order) {
+        setOrder(refreshed.order);
+        setStatusHistory(Array.isArray(refreshed.statusHistory) ? refreshed.statusHistory : []);
+      } else {
+        setCancelError("سفارش لغو شد، اما دریافت تاریخچه جدید انجام نشد. صفحه را دوباره بارگذاری کنید.");
+      }
+    } catch {
+      setCancelError("ارتباط با سرویس سفارش برقرار نشد.");
+    } finally {
+      setCancelling(false);
+    }
+  }
 
   return (
     <main className="min-h-screen bg-[#f5f1e9] text-[#292b26]">
@@ -179,6 +259,7 @@ export default function OrderPage({ params }: { params: Promise<{ orderId: strin
             <h1 className="mt-4 text-3xl font-extrabold sm:text-5xl">پیگیری سفارش</h1>
 
             <OrderTimeline status={order.status} updatedAt={order.updatedAt} />
+            <StatusHistory history={statusHistory} />
 
             <div className="mt-6 rounded-[2rem] border border-[#e0dbd1] bg-[#fffdf8] p-6 shadow-[0_18px_50px_rgba(55,52,43,0.05)] sm:p-8">
               <div className="flex flex-wrap items-center justify-between gap-4">
@@ -193,6 +274,22 @@ export default function OrderPage({ params }: { params: Promise<{ orderId: strin
                 <div className="rounded-xl bg-[#f7f3eb] px-4 py-3">ثبت سفارش: <span className="font-bold text-[#4c514a]">{formatDate(order.createdAt)}</span></div>
                 <div className="rounded-xl bg-[#f7f3eb] px-4 py-3">آخرین تغییر: <span className="font-bold text-[#4c514a]">{formatDate(order.updatedAt)}</span></div>
               </div>
+
+              {cancellableStatuses.has(order.status) ? (
+                <div className="mt-6 rounded-2xl border border-[#eadfd5] bg-[#fbf5ef] p-5">
+                  <p className="text-sm font-extrabold">نیازی به این سفارش ندارید؟</p>
+                  <p className="mt-2 text-xs leading-6 text-[#777b72]">تا قبل از پرداخت، سفارش از طرف شما قابل لغو است.</p>
+                  {cancelError ? <p className="mt-3 text-xs font-bold text-[#9a493e]">{cancelError}</p> : null}
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    disabled={cancelling}
+                    className="mt-4 rounded-full border border-[#9a493e] px-5 py-2.5 text-xs font-extrabold text-[#9a493e] transition hover:bg-[#9a493e] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {cancelling ? "در حال لغو سفارش..." : "لغو سفارش"}
+                  </button>
+                </div>
+              ) : null}
 
               <div className="mt-7 divide-y divide-[#ece7dd]">
                 {order.items.map((item) => (

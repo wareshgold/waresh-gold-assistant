@@ -19,55 +19,31 @@ const order = {
   total: 0,
 };
 
+const statusHistory = [
+  { orderId: "order-1", fromStatus: null, toStatus: "pending_confirmation" as const, changedAt: "2026-09-09T07:00:00.000Z" },
+  { orderId: "order-1", fromStatus: "pending_confirmation" as const, toStatus: "confirmed" as const, changedAt: "2026-09-09T08:00:00.000Z" },
+];
+
 describe("getOrderRoute", () => {
   it("rejects unauthenticated order detail requests", async () => {
-    const getOrderUseCase = {
-      execute: vi.fn(),
-    };
-
-    const response = await getOrderRoute(
-      new Request("http://localhost/api/v1/orders/order-1"),
-      getOrderUseCase as never,
-      "order-1",
-    );
-
+    const getOrderUseCase = { executeWithHistory: vi.fn() };
+    const response = await getOrderRoute(new Request("http://localhost/api/v1/orders/order-1"), getOrderUseCase as never, "order-1");
     expect(response.status).toBe(401);
     expect(await response.json()).toEqual({ error: "احراز هویت لازم است." });
-    expect(getOrderUseCase.execute).not.toHaveBeenCalled();
+    expect(getOrderUseCase.executeWithHistory).not.toHaveBeenCalled();
   });
 
-  it("passes the authenticated customer identity to the use case", async () => {
-    const getOrderUseCase = {
-      execute: vi.fn(async () => order),
-    };
-
-    const response = await getOrderRoute(
-      new Request("http://localhost/api/v1/orders/order-1"),
-      getOrderUseCase as never,
-      "order-1",
-      " customer-1 ",
-    );
-
+  it("returns the order and status history for the authenticated owner", async () => {
+    const getOrderUseCase = { executeWithHistory: vi.fn(async () => ({ order, statusHistory })) };
+    const response = await getOrderRoute(new Request("http://localhost/api/v1/orders/order-1"), getOrderUseCase as never, "order-1", " customer-1 ");
     expect(response.status).toBe(200);
-    expect(getOrderUseCase.execute).toHaveBeenCalledWith({
-      orderId: "order-1",
-      customerId: "customer-1",
-    });
-    expect(await response.json()).toEqual({ order });
+    expect(getOrderUseCase.executeWithHistory).toHaveBeenCalledWith({ orderId: "order-1", customerId: "customer-1" });
+    expect(await response.json()).toEqual({ order, statusHistory });
   });
 
-  it("does not reveal another customer's order", async () => {
-    const getOrderUseCase = {
-      execute: vi.fn(async () => null),
-    };
-
-    const response = await getOrderRoute(
-      new Request("http://localhost/api/v1/orders/order-1"),
-      getOrderUseCase as never,
-      "order-1",
-      "customer-2",
-    );
-
+  it("does not reveal another customer's order or history", async () => {
+    const getOrderUseCase = { executeWithHistory: vi.fn(async () => null) };
+    const response = await getOrderRoute(new Request("http://localhost/api/v1/orders/order-1"), getOrderUseCase as never, "order-1", "customer-2");
     expect(response.status).toBe(404);
     expect(await response.json()).toEqual({ error: "سفارش پیدا نشد." });
   });

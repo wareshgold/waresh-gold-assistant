@@ -34,6 +34,7 @@ class FakeOrderRepository implements OrderRepository {
     async findByQuoteId(): Promise<Order | null> { return null; }
     async findByCustomerId(): Promise<Order[]> { return []; }
     async findAll(): Promise<Order[]> { return []; }
+    async getStatusHistory(): Promise<[]> { return []; }
 
     async cancelForCustomer(orderId: string, customerId: string, fromStatuses: readonly Order["status"][], updatedAt: string): Promise<boolean> {
         if (!this.order || this.order.orderId !== orderId || this.order.customerId !== customerId || !fromStatuses.includes(this.order.status)) return false;

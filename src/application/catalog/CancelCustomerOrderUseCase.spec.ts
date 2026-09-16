@@ -37,6 +37,17 @@ describe("CancelCustomerOrderUseCase", () => {
         await expect(repository.findById(baseOrder.orderId)).resolves.toMatchObject({ status: "cancelled" });
     });
 
+    it("records the cancellation in status history", async () => {
+        const { useCase, repository } = await createUseCase();
+
+        await useCase.execute({ orderId: baseOrder.orderId, customerId: "customer-1" });
+
+        await expect(repository.getStatusHistory(baseOrder.orderId)).resolves.toEqual([
+            expect.objectContaining({ fromStatus: null, toStatus: "pending_confirmation" }),
+            expect.objectContaining({ fromStatus: "pending_confirmation", toStatus: "cancelled" }),
+        ]);
+    });
+
     it("rejects cancellation by another customer without changing the order", async () => {
         const { useCase, repository } = await createUseCase();
 
@@ -44,6 +55,7 @@ describe("CancelCustomerOrderUseCase", () => {
             .rejects.toThrow("دسترسی به این سفارش مجاز نیست");
 
         await expect(repository.findById(baseOrder.orderId)).resolves.toMatchObject({ status: "pending_confirmation" });
+        await expect(repository.getStatusHistory(baseOrder.orderId)).resolves.toHaveLength(1);
     });
 
     it("rejects cancellation of an already paid order", async () => {
@@ -59,5 +71,26 @@ describe("CancelCustomerOrderUseCase", () => {
         await useCase.execute({ orderId: baseOrder.orderId, customerId: "customer-1" });
 
         await expect(repository.findById(baseOrder.orderId)).resolves.toMatchObject({ status: "cancelled" });
+        await expect(repository.getStatusHistory(baseOrder.orderId)).resolves.toHaveLength(2);
+    });
+
+    it("rejects a cancellation race without adding a second history entry", async () => {
+        const repository = new MemoryOrderRepository();
+        await repository.save(baseOrder);
+        const originalCancel = repository.cancelForCustomer.bind(repository);
+        let firstCall = true;
+        repository.cancelForCustomer = async (...args) => {
+            if (firstCall) {
+                firstCall = false;
+                await originalCancel(...args);
+            }
+            return false;
+        };
+
+        const useCase = new CancelCustomerOrderUseCase(repository);
+
+        await expect(useCase.execute({ orderId: baseOrder.orderId, customerId: "customer-1" }))
+            .rejects.toThrow("وضعیت سفارش در حین لغو تغییر کرده است");
+        await expect(repository.getStatusHistory(baseOrder.orderId)).resolves.toHaveLength(2);
     });
 });

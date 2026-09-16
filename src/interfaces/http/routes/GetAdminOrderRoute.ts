@@ -10,11 +10,11 @@ export async function getAdminOrderRoute(
     }
 
     try {
-        const order = await useCase.executeAdmin({ orderId: normalizedOrderId });
-        if (!order) {
+        const details = await useCase.executeAdminWithHistory({ orderId: normalizedOrderId });
+        if (!details) {
             return Response.json({ error: "سفارش پیدا نشد." }, { status: 404 });
         }
-        return Response.json({ order }, { status: 200, headers: { "Cache-Control": "no-store" } });
+        return Response.json(details, { status: 200, headers: { "Cache-Control": "no-store" } });
     } catch (error) {
         return Response.json(
             { error: error instanceof Error ? error.message : "دریافت سفارش انجام نشد." },

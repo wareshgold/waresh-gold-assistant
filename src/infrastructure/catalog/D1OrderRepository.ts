@@ -1,5 +1,5 @@
 import type { Order, OrderStatus } from "../../domain/catalog/entities/Order";
-import type { OrderRepository } from "../../domain/catalog/repositories/OrderRepository";
+import type { OrderRepository, OrderStatusHistoryEntry } from "../../domain/catalog/repositories/OrderRepository";
 
 export class D1OrderRepository implements OrderRepository {
     constructor(private readonly db: D1Database) {}
@@ -25,6 +25,10 @@ export class D1OrderRepository implements OrderRepository {
                     (order_id, product_id, variant_id, sku, name, quantity, weight_grams, unit_price, line_total)
                  VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)`
             ).bind(order.orderId, item.productId, item.variantId, item.sku, item.name, item.quantity, item.weightGrams, item.unitPrice, item.lineTotal)),
+            this.db.prepare(
+                `INSERT INTO order_status_history (order_id, from_status, to_status, changed_at)
+                 VALUES (?1, NULL, ?2, ?3)`
+            ).bind(order.orderId, order.status, order.createdAt),
         ]);
     }
 
@@ -64,6 +68,21 @@ export class D1OrderRepository implements OrderRepository {
             `SELECT order_id FROM orders ORDER BY created_at DESC`
         ).all<{ order_id: string }>();
         return this.loadOrders(rows.results.map((row) => row.order_id));
+    }
+
+    async getStatusHistory(orderId: string): Promise<OrderStatusHistoryEntry[]> {
+        const rows = await this.db.prepare(
+            `SELECT order_id, from_status, to_status, changed_at
+             FROM order_status_history
+             WHERE order_id = ?1
+             ORDER BY id ASC`
+        ).bind(orderId).all<OrderStatusHistoryRow>();
+        return rows.results.map((row) => ({
+            orderId: row.order_id,
+            fromStatus: row.from_status as OrderStatus | null,
+            toStatus: row.to_status as OrderStatus,
+            changedAt: row.changed_at,
+        }));
     }
 
     private async loadOrders(orderIds: string[]): Promise<Order[]> {
@@ -124,4 +143,11 @@ type OrderRow = {
 type OrderItemRow = {
     product_id: string; variant_id: string; sku: string; name: string; quantity: number;
     weight_grams: number; unit_price: number; line_total: number;
+};
+
+type OrderStatusHistoryRow = {
+    order_id: string;
+    from_status: string | null;
+    to_status: string;
+    changed_at: string;
 };

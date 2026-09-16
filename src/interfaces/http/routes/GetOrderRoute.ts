@@ -15,19 +15,19 @@ export async function getOrderRoute(
       });
     }
 
-    const order = await getOrderUseCase.execute({
+    const details = await getOrderUseCase.executeWithHistory({
       orderId,
       customerId: normalizedCustomerId,
     });
 
-    if (!order) {
+    if (!details) {
       return Response.json({ error: "سفارش پیدا نشد." }, {
         status: 404,
         headers: { "Cache-Control": "no-store" },
       });
     }
 
-    return Response.json({ order }, {
+    return Response.json(details, {
       status: 200,
       headers: { "Cache-Control": "no-store" },
     });
