@@ -7,6 +7,7 @@ on:
       - feature/vip-foundation
       - fix/vip-strategy-a-production-readiness
       - feature/website-v2
+      - feature/website-v2-order-fulfillment
   pull_request:
     branches:
       - main
