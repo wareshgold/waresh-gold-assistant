@@ -1,5 +1,12 @@
 import type { Order, OrderStatus } from "../entities/Order";
 
+export type OrderStatusHistoryEntry = {
+    orderId: string;
+    fromStatus: OrderStatus | null;
+    toStatus: OrderStatus;
+    changedAt: string;
+};
+
 export interface OrderRepository {
     save(order: Order): Promise<void>;
     updateStatus(orderId: string, expectedStatus: OrderStatus, status: OrderStatus, updatedAt: string): Promise<boolean>;
@@ -8,4 +15,5 @@ export interface OrderRepository {
     findByQuoteId(quoteId: string): Promise<Order | null>;
     findByCustomerId(customerId: string): Promise<Order[]>;
     findAll(): Promise<Order[]>;
+    getStatusHistory(orderId: string): Promise<OrderStatusHistoryEntry[]>;
 }
