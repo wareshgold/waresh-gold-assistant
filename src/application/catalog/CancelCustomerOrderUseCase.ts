@@ -23,7 +23,11 @@ export class CancelCustomerOrderUseCase {
         if (!cancelled) {
             const current = await this.orderRepository.findById(orderId);
             if (!current) throw new Error("سفارش پیدا نشد.");
-            transitionOrderStatus(current.status, "cancelled");
+
+            if ((CANCELLABLE_STATUSES as readonly string[]).includes(current.status)) {
+                transitionOrderStatus(current.status, "cancelled");
+            }
+
             throw new Error("وضعیت سفارش در حین لغو تغییر کرده است. دوباره تلاش کنید.");
         }
 
