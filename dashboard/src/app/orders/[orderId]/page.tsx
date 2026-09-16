@@ -195,6 +195,10 @@ export default function OrderPage({ params }: { params: Promise<{ orderId: strin
 
   async function handleCancel() {
     if (!order || !cancellableStatuses.has(order.status) || cancelling) return;
+
+    const confirmed = window.confirm("این سفارش لغو می‌شود و این عملیات قابل بازگشت نیست. ادامه می‌دهید؟");
+    if (!confirmed) return;
+
     setCancelling(true);
     setCancelError(null);
 
@@ -220,7 +224,7 @@ export default function OrderPage({ params }: { params: Promise<{ orderId: strin
         setOrder(refreshed.order);
         setStatusHistory(Array.isArray(refreshed.statusHistory) ? refreshed.statusHistory : []);
       } else {
-        setStatusHistory((current) => current);
+        setCancelError("سفارش لغو شد، اما دریافت تاریخچه جدید انجام نشد. صفحه را دوباره بارگذاری کنید.");
       }
     } catch {
       setCancelError("ارتباط با سرویس سفارش برقرار نشد.");
