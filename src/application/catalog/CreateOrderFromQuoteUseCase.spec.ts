@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Customer } from "../../domain/customer/entities/Customer";
 import type { CustomerAddress } from "../../domain/customer/entities/CustomerAddress";
 import type { OrderQuote } from "../../domain/catalog/entities/OrderQuote";
+import type { Product } from "../../domain/catalog/entities/Product";
 import { MemoryOrderQuoteRepository } from "../../infrastructure/catalog/MemoryOrderQuoteRepository";
 import { MemoryOrderRepository } from "../../infrastructure/catalog/MemoryOrderRepository";
 import { CreateOrderFromQuoteUseCase } from "./CreateOrderFromQuoteUseCase";
@@ -52,9 +53,27 @@ const foreignAddress: CustomerAddress = {
     isDefault: false,
 };
 
+const product: Product = {
+    productId: "8",
+    sku: "WG-0008",
+    name: "آویز ستاره",
+    category: "آویز",
+    subcategory: null,
+    weightGrams: 1.2,
+    karat: 18,
+    laborPercent: 6,
+    profitPercent: 7,
+    taxPercent: 0,
+    stockStatus: "in-stock",
+    active: true,
+    createdAt: "2026-09-07T06:00:00.000Z",
+    updatedAt: "2026-09-07T06:00:00.000Z",
+};
+
 const quote: OrderQuote = {
     quoteId: "quote-1",
-    createdAt: "2026-09-07T06:00:00.000Z",
+    createdAt: new Date().toISOString(),
+    expiresAt: new Date(Date.now() + 60_000).toISOString(),
     market: {
         gold18Price: 23_549_000,
         currencyPrice: 1_000_000,
@@ -74,7 +93,7 @@ const quote: OrderQuote = {
     total: 64_102_262,
 };
 
-function createUseCase(addresses: CustomerAddress[] = []) {
+function createUseCase(addresses: CustomerAddress[] = [], currentProduct: Product | null = product) {
     const quoteRepository = new MemoryOrderQuoteRepository();
     const orderRepository = new MemoryOrderRepository();
     const customerRepository = {
@@ -92,8 +111,12 @@ function createUseCase(addresses: CustomerAddress[] = []) {
         setDefaultAddress: async () => undefined,
         deleteAddress: async () => undefined,
     };
+    const productRepository = {
+        listActive: async () => currentProduct ? [currentProduct] : [],
+        findById: async () => currentProduct,
+    };
     return {
-        useCase: new CreateOrderFromQuoteUseCase(quoteRepository, orderRepository, customerRepository),
+        useCase: new CreateOrderFromQuoteUseCase(quoteRepository, orderRepository, customerRepository, productRepository),
         quoteRepository,
         orderRepository,
     };
@@ -241,5 +264,34 @@ describe("CreateOrderFromQuoteUseCase", () => {
         })).rejects.toThrow("این پیش‌فاکتور قبلاً با آدرس دیگری ثبت شده است");
 
         expect(first.address?.addressId).toBe(customerAddress.id);
+    });
+
+    it("rejects an expired quote before creating an order", async () => {
+        const { useCase, quoteRepository } = createUseCase();
+        await quoteRepository.save({
+            ...quote,
+            expiresAt: new Date(Date.now() - 1_000).toISOString(),
+        });
+
+        await expect(useCase.execute({ quoteId: quote.quoteId }))
+            .rejects.toThrow("اعتبار پیش‌فاکتور به پایان رسیده است");
+    });
+
+    it("revalidates product availability when converting a quote to an order", async () => {
+        const unavailableProduct = { ...product, stockStatus: "out-of-stock" as const };
+        const { useCase, quoteRepository } = createUseCase([], unavailableProduct);
+        await quoteRepository.save(quote);
+
+        await expect(useCase.execute({ quoteId: quote.quoteId }))
+            .rejects.toThrow("محصول «آویز ستاره» دیگر موجود نیست");
+    });
+
+    it("revalidates product activity when converting a quote to an order", async () => {
+        const inactiveProduct = { ...product, active: false };
+        const { useCase, quoteRepository } = createUseCase([], inactiveProduct);
+        await quoteRepository.save(quote);
+
+        await expect(useCase.execute({ quoteId: quote.quoteId }))
+            .rejects.toThrow("محصول 8 دیگر قابل سفارش نیست");
     });
 });
