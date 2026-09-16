@@ -192,14 +192,53 @@ export default function AdminOrderConsole() {
     await loadOrderById(orderId);
   }
 
+  async function refreshSelectedOrder(orderIdToRefresh: string) {
+    const response = await fetch(`/api/admin/orders/${encodeURIComponent(orderIdToRefresh)}`, { cache: "no-store" });
+    const data = await response.json().catch(() => null) as OrderDetails & { error?: string } | null;
+    if (response.status === 401) {
+      setAuthenticated(false);
+      setSelectedOrder(null);
+      throw new Error("نشست ادمین معتبر نیست.");
+    }
+    if (!response.ok || !data?.order) throw new Error(data?.error ?? "بازخوانی سفارش انجام نشد.");
+
+    const details = {
+      order: data.order,
+      statusHistory: Array.isArray(data.statusHistory) ? data.statusHistory : [],
+    };
+    setSelectedOrder(details);
+    setOrders((current) => current.map((item) => item.orderId === details.order.orderId ? details.order : item));
+    setOrderId(details.order.orderId);
+    setSelectedStatus("");
+    return details;
+  }
+
   async function updateStatus() {
-    if (!selectedOrder || !selectedStatus) return;
+    if (!selectedOrder || !selectedStatus || loading) return;
     const currentOrder = selectedOrder.order;
+    const requestedStatus = selectedStatus;
+
+    if (requestedStatus === "cancelled" || requestedStatus === "expired") {
+      const confirmed = window.confirm(`این عملیات وضعیت سفارش را به «${labels[requestedStatus]}» تغییر می‌دهد و قابل بازگشت نیست. ادامه می‌دهید؟`);
+      if (!confirmed) return;
+    }
+
     setLoading(true); setError(""); setMessage("");
     try {
-      const response = await fetch(`/api/admin/orders/${encodeURIComponent(currentOrder.orderId)}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: selectedStatus }) });
+      const response = await fetch(`/api/admin/orders/${encodeURIComponent(currentOrder.orderId)}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: requestedStatus }) });
       const data = await response.json().catch(() => null) as { order?: Order; error?: string } | null;
-      if (response.status === 401) { setAuthenticated(false); throw new Error("نشست ادمین معتبر نیست."); }
+
+      if (response.status === 401) {
+        setAuthenticated(false);
+        throw new Error("نشست ادمین معتبر نیست.");
+      }
+
+      if (response.status === 409) {
+        const conflictMessage = data?.error ?? "وضعیت سفارش توسط درخواست دیگری تغییر کرده است.";
+        await refreshSelectedOrder(currentOrder.orderId);
+        throw new Error(`${conflictMessage} وضعیت فعلی و Timeline دوباره دریافت شد.`);
+      }
+
       if (!response.ok || !data?.order) throw new Error(data?.error ?? "تغییر وضعیت سفارش انجام نشد.");
 
       setOrders((current) => current.map((item) => item.orderId === data.order!.orderId ? data.order! : item));
@@ -306,7 +345,7 @@ export default function AdminOrderConsole() {
               </div>
             </div>
 
-            <div className="mt-5 border-t border-[#e7e2d7] pt-5"><p className="text-sm font-bold">تغییر وضعیت</p>{available.length === 0 ? <p className="mt-3 text-sm text-[#858a81]">این سفارش در وضعیت نهایی قرار دارد و transition دیگری ندارد.</p> : <div className="mt-3 space-y-3"><select value={selectedStatus} onChange={(event) => setSelectedStatus(event.target.value as OrderStatus)} className="min-h-12 w-full rounded-2xl border border-[#d8d5ca] bg-white px-4"><option value="">وضعیت جدید را انتخاب کنید</option>{available.map((status) => <option key={status} value={status}>{labels[status]}</option>)}</select><button type="button" onClick={() => void updateStatus()} disabled={loading || !selectedStatus} className="min-h-12 w-full rounded-2xl bg-[#8a7041] px-6 text-sm font-bold text-white disabled:opacity-50">ثبت وضعیت جدید</button></div>}</div>
+            <div className="mt-5 border-t border-[#e7e2d7] pt-5"><p className="text-sm font-bold">تغییر وضعیت</p>{available.length === 0 ? <p className="mt-3 text-sm text-[#858a81]">این سفارش در وضعیت نهایی قرار دارد و transition دیگری ندارد.</p> : <div className="mt-3 space-y-3"><select value={selectedStatus} onChange={(event) => setSelectedStatus(event.target.value as OrderStatus)} disabled={loading} className="min-h-12 w-full rounded-2xl border border-[#d8d5ca] bg-white px-4 disabled:opacity-50"><option value="">وضعیت جدید را انتخاب کنید</option>{available.map((status) => <option key={status} value={status}>{labels[status]}</option>)}</select><button type="button" onClick={() => void updateStatus()} disabled={loading || !selectedStatus} className="min-h-12 w-full rounded-2xl bg-[#8a7041] px-6 text-sm font-bold text-white disabled:opacity-50">{loading ? "در حال ثبت وضعیت..." : "ثبت وضعیت جدید"}</button></div>}</div>
           </article> : <div className="rounded-3xl border border-dashed border-[#d8d5ca] bg-[#fffdf8] p-10 text-center text-sm leading-7 text-[#858a81]">برای مشاهده جزئیات، یک سفارش را از لیست انتخاب کنید.</div>}
         </div>
       </div>
