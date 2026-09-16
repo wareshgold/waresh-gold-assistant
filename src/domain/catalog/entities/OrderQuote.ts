@@ -19,7 +19,15 @@ export type OrderQuoteMarketSnapshot = {
 export type OrderQuote = {
     quoteId: string;
     createdAt: string;
+    expiresAt: string;
     market: OrderQuoteMarketSnapshot;
     items: OrderQuoteLine[];
     total: number;
 };
+
+export const ORDER_QUOTE_TTL_MS = 5 * 60 * 1000;
+
+export function isOrderQuoteExpired(quote: Pick<OrderQuote, "expiresAt">, now = new Date()): boolean {
+    const expiresAt = Date.parse(quote.expiresAt);
+    return !Number.isFinite(expiresAt) || expiresAt <= now.getTime();
+}
