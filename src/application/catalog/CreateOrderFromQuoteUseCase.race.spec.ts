@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Customer } from "../../domain/customer/entities/Customer";
 import type { Order } from "../../domain/catalog/entities/Order";
+import type { Product } from "../../domain/catalog/entities/Product";
 import { MemoryOrderQuoteRepository } from "../../infrastructure/catalog/MemoryOrderQuoteRepository";
 import { CreateOrderFromQuoteUseCase } from "./CreateOrderFromQuoteUseCase";
 
@@ -19,7 +20,8 @@ const customer: Customer = {
 
 const quote = {
     quoteId: "quote-race",
-    createdAt: "2026-09-07T06:00:00.000Z",
+    createdAt: new Date().toISOString(),
+    expiresAt: new Date(Date.now() + 60_000).toISOString(),
     market: {
         gold18Price: 23_549_000,
         currencyPrice: 1_000_000,
@@ -37,6 +39,23 @@ const quote = {
         lineTotal: 32_051_131,
     }],
     total: 32_051_131,
+};
+
+const product: Product = {
+    productId: "8",
+    sku: "WG-0008",
+    name: "آویز ستاره",
+    category: "آویز",
+    subcategory: null,
+    weightGrams: 1.2,
+    karat: 18,
+    laborPercent: 6,
+    profitPercent: 7,
+    taxPercent: 0,
+    stockStatus: "in-stock",
+    active: true,
+    createdAt: "2026-09-07T06:00:00.000Z",
+    updatedAt: "2026-09-07T06:00:00.000Z",
 };
 
 describe("CreateOrderFromQuoteUseCase race safety", () => {
@@ -78,7 +97,16 @@ describe("CreateOrderFromQuoteUseCase race safety", () => {
             setDefaultAddress: async () => undefined,
             deleteAddress: async () => undefined,
         };
-        const useCase = new CreateOrderFromQuoteUseCase(quoteRepository, orderRepository, customerRepository);
+        const productRepository = {
+            listActive: async () => [product],
+            findById: async () => product,
+        };
+        const useCase = new CreateOrderFromQuoteUseCase(
+            quoteRepository,
+            orderRepository,
+            customerRepository,
+            productRepository,
+        );
 
         await expect(useCase.execute({
             quoteId: quote.quoteId,
