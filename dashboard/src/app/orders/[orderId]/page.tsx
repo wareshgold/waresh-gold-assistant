@@ -63,6 +63,8 @@ const timelineIndex: Record<Exclude<OrderStatus, "cancelled" | "expired">, numbe
   completed: 4,
 };
 
+const cancellableStatuses: ReadonlySet<OrderStatus> = new Set(["pending_confirmation", "confirmed"]);
+
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("fa-IR", {
     dateStyle: "medium",
@@ -164,6 +166,8 @@ export default function OrderPage({ params }: { params: Promise<{ orderId: strin
   const [statusHistory, setStatusHistory] = useState<StatusHistoryEntry[]>([]);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -188,6 +192,42 @@ export default function OrderPage({ params }: { params: Promise<{ orderId: strin
       active = false;
     };
   }, [params]);
+
+  async function handleCancel() {
+    if (!order || !cancellableStatuses.has(order.status) || cancelling) return;
+    setCancelling(true);
+    setCancelError(null);
+
+    try {
+      const response = await fetch(`/api/orders/${encodeURIComponent(order.orderId)}/cancel`, {
+        method: "POST",
+        cache: "no-store",
+      });
+      const data = (await response.json().catch(() => null)) as {
+        order?: Order;
+        error?: string;
+      } | null;
+
+      if (!response.ok || !data?.order) {
+        setCancelError(data?.error ?? "لغو سفارش انجام نشد.");
+        return;
+      }
+
+      setOrder(data.order);
+      const refresh = await fetch(`/api/orders/${encodeURIComponent(data.order.orderId)}`, { cache: "no-store" });
+      const refreshed = (await refresh.json().catch(() => null)) as { order?: Order; statusHistory?: StatusHistoryEntry[] } | null;
+      if (refresh.ok && refreshed?.order) {
+        setOrder(refreshed.order);
+        setStatusHistory(Array.isArray(refreshed.statusHistory) ? refreshed.statusHistory : []);
+      } else {
+        setStatusHistory((current) => current);
+      }
+    } catch {
+      setCancelError("ارتباط با سرویس سفارش برقرار نشد.");
+    } finally {
+      setCancelling(false);
+    }
+  }
 
   return (
     <main className="min-h-screen bg-[#f5f1e9] text-[#292b26]">
@@ -230,6 +270,22 @@ export default function OrderPage({ params }: { params: Promise<{ orderId: strin
                 <div className="rounded-xl bg-[#f7f3eb] px-4 py-3">ثبت سفارش: <span className="font-bold text-[#4c514a]">{formatDate(order.createdAt)}</span></div>
                 <div className="rounded-xl bg-[#f7f3eb] px-4 py-3">آخرین تغییر: <span className="font-bold text-[#4c514a]">{formatDate(order.updatedAt)}</span></div>
               </div>
+
+              {cancellableStatuses.has(order.status) ? (
+                <div className="mt-6 rounded-2xl border border-[#eadfd5] bg-[#fbf5ef] p-5">
+                  <p className="text-sm font-extrabold">نیازی به این سفارش ندارید؟</p>
+                  <p className="mt-2 text-xs leading-6 text-[#777b72]">تا قبل از پرداخت، سفارش از طرف شما قابل لغو است.</p>
+                  {cancelError ? <p className="mt-3 text-xs font-bold text-[#9a493e]">{cancelError}</p> : null}
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    disabled={cancelling}
+                    className="mt-4 rounded-full border border-[#9a493e] px-5 py-2.5 text-xs font-extrabold text-[#9a493e] transition hover:bg-[#9a493e] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {cancelling ? "در حال لغو سفارش..." : "لغو سفارش"}
+                  </button>
+                </div>
+              ) : null}
 
               <div className="mt-7 divide-y divide-[#ece7dd]">
                 {order.items.map((item) => (
