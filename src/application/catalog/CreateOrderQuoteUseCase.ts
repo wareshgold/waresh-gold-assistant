@@ -1,6 +1,7 @@
 import type { ProductRepository } from "../../domain/catalog/repositories/ProductRepository";
 import type { OrderQuoteRepository } from "../../domain/catalog/repositories/OrderQuoteRepository";
 import type { OrderQuote } from "../../domain/catalog/entities/OrderQuote";
+import { ORDER_QUOTE_TTL_MS } from "../../domain/catalog/entities/OrderQuote";
 import type { MarketPriceProvider } from "../../domain/market/providers/MarketPriceProvider";
 import type { CalculateGoldPriceUseCase } from "../gold/CalculateGoldPriceUseCase";
 
@@ -78,9 +79,11 @@ export class CreateOrderQuoteUseCase {
             });
         }
 
+        const createdAt = new Date();
         const quote: OrderQuote = {
             quoteId: crypto.randomUUID(),
-            createdAt: new Date().toISOString(),
+            createdAt: createdAt.toISOString(),
+            expiresAt: new Date(createdAt.getTime() + ORDER_QUOTE_TTL_MS).toISOString(),
             market: {
                 gold18Price: market.gold18Price,
                 currencyPrice: market.currencyPrice,
