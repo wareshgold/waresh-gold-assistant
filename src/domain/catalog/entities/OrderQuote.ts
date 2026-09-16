@@ -30,6 +30,7 @@ export const ORDER_QUOTE_TTL_MS = 5 * 60 * 1000;
 export function getOrderQuoteExpiresAt(quote: Pick<OrderQuote, "createdAt" | "expiresAt">): string {
     if (quote.expiresAt) return quote.expiresAt;
     const createdAt = Date.parse(quote.createdAt);
+    if (!Number.isFinite(createdAt)) return new Date(0).toISOString();
     return new Date(createdAt + ORDER_QUOTE_TTL_MS).toISOString();
 }
 
