@@ -33,6 +33,26 @@ describe("UpdateOrderStatusUseCase", () => {
         await expect(repository.findById(order.orderId)).resolves.toEqual(updated);
     });
 
+    it("records the complete fulfillment lifecycle in status history", async () => {
+        const repository = new MemoryOrderRepository();
+        await repository.save({ ...order, status: "paid" });
+        const useCase = new UpdateOrderStatusUseCase(repository);
+
+        await useCase.execute({ orderId: order.orderId, status: "processing" });
+        await useCase.execute({ orderId: order.orderId, status: "completed" });
+
+        await expect(repository.getStatusHistory(order.orderId)).resolves.toEqual([
+            {
+                orderId: order.orderId,
+                fromStatus: null,
+                toStatus: "paid",
+                changedAt: order.createdAt,
+            },
+            expect.objectContaining({ fromStatus: "paid", toStatus: "processing" }),
+            expect.objectContaining({ fromStatus: "processing", toStatus: "completed" }),
+        ]);
+    });
+
     it("rejects an invalid transition without changing the order", async () => {
         const repository = new MemoryOrderRepository();
         await repository.save(order);
@@ -40,6 +60,7 @@ describe("UpdateOrderStatusUseCase", () => {
 
         await expect(useCase.execute({ orderId: order.orderId, status: "paid" })).rejects.toThrow();
         await expect(repository.findById(order.orderId)).resolves.toEqual(order);
+        await expect(repository.getStatusHistory(order.orderId)).resolves.toHaveLength(1);
     });
 
     it("keeps completed orders terminal", async () => {
@@ -50,6 +71,7 @@ describe("UpdateOrderStatusUseCase", () => {
 
         await expect(useCase.execute({ orderId: order.orderId, status: "cancelled" })).rejects.toThrow();
         await expect(repository.findById(order.orderId)).resolves.toEqual(completed);
+        await expect(repository.getStatusHistory(order.orderId)).resolves.toHaveLength(1);
     });
 
     it("rejects unknown orders", async () => {
@@ -73,6 +95,7 @@ describe("UpdateOrderStatusUseCase", () => {
             orderId: order.orderId,
             status: expect.stringMatching(/^(paid|cancelled)$/),
         });
+        await expect(repository.getStatusHistory(order.orderId)).resolves.toHaveLength(2);
     });
 
     it("rejects a second transition after another request has already changed the status", async () => {
@@ -85,5 +108,6 @@ describe("UpdateOrderStatusUseCase", () => {
         await expect(useCase.execute({ orderId: order.orderId, status: "cancelled" }))
             .rejects.toThrow("انتقال وضعیت سفارش از paid به cancelled مجاز نیست.");
         await expect(repository.findById(order.orderId)).resolves.toMatchObject({ status: "paid" });
+        await expect(repository.getStatusHistory(order.orderId)).resolves.toHaveLength(2);
     });
 });
