@@ -39,6 +39,12 @@ function createUseCase(): GetOrderUseCase {
     findByCustomerId: async () => [],
     findAll: async () => [],
     cancelForCustomer: async () => false,
+    getStatusHistory: async () => [{
+      orderId: order.orderId,
+      fromStatus: null,
+      toStatus: order.status,
+      changedAt: order.createdAt,
+    }],
   };
   return new GetOrderUseCase(repository);
 }
@@ -50,6 +56,22 @@ describe("GetOrderUseCase", () => {
 
   it("hides a customer-linked order from another customer", async () => {
     await expect(createUseCase().execute({ orderId: "order-1", customerId: "customer-2" })).resolves.toBeNull();
+  });
+
+  it("retrieves a customer-safe order with status history", async () => {
+    await expect(createUseCase().executeWithHistory({ orderId: "order-1", customerId: "customer-1" })).resolves.toEqual({
+      order,
+      statusHistory: [{
+        orderId: order.orderId,
+        fromStatus: null,
+        toStatus: order.status,
+        changedAt: order.createdAt,
+      }],
+    });
+  });
+
+  it("does not expose history for another customer", async () => {
+    await expect(createUseCase().executeWithHistory({ orderId: "order-1", customerId: "customer-2" })).resolves.toBeNull();
   });
 
   it("rejects customer order lookup without a customer identity", async () => {
@@ -66,6 +88,8 @@ describe("GetOrderUseCase", () => {
       findByCustomerId: async () => [],
       findAll: async () => [],
       cancelForCustomer: async () => false,
+      updateStatus: async () => false,
+      getStatusHistory: async () => [],
     };
     await expect(new GetOrderUseCase(repository).execute({ orderId: "missing", customerId: "customer-1" })).resolves.toBeNull();
   });
