@@ -1,4 +1,5 @@
 import type { OrderQuote } from "../../domain/catalog/entities/OrderQuote";
+import { isOrderQuoteExpired } from "../../domain/catalog/entities/OrderQuote";
 import type { OrderQuoteRepository } from "../../domain/catalog/repositories/OrderQuoteRepository";
 
 export class GetOrderQuoteUseCase {
@@ -10,6 +11,8 @@ export class GetOrderQuoteUseCase {
             throw new Error("شناسه پیش‌فاکتور معتبر نیست.");
         }
 
-        return this.orderQuoteRepository.findById(normalizedQuoteId);
+        const quote = await this.orderQuoteRepository.findById(normalizedQuoteId);
+        if (!quote || isOrderQuoteExpired(quote)) return null;
+        return quote;
     }
 }
