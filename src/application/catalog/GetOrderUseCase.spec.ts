@@ -88,7 +88,6 @@ describe("GetOrderUseCase", () => {
       findByCustomerId: async () => [],
       findAll: async () => [],
       cancelForCustomer: async () => false,
-      updateStatus: async () => false,
       getStatusHistory: async () => [],
     };
     await expect(new GetOrderUseCase(repository).execute({ orderId: "missing", customerId: "customer-1" })).resolves.toBeNull();
