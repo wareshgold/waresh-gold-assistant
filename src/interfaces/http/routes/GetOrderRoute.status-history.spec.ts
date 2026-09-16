@@ -28,7 +28,7 @@ describe("getOrderRoute status history", () => {
         } as never;
 
         const response = await getOrderRoute(new Request("https://example.test/api/orders/order-1"), getOrderUseCase, "order-1", "customer-1");
-        const body = await response.json();
+        const body = await response.json() as { order: typeof order; statusHistory: typeof history };
 
         expect(response.status).toBe(200);
         expect(response.headers.get("Cache-Control")).toBe("no-store");
@@ -42,7 +42,7 @@ describe("getOrderRoute status history", () => {
         } as never;
 
         const response = await getOrderRoute(new Request("https://example.test/api/orders/order-1"), getOrderUseCase, "order-1", "customer-2");
-        const body = await response.json();
+        const body = await response.json() as { error: string };
 
         expect(response.status).toBe(404);
         expect(body).toEqual({ error: "سفارش پیدا نشد." });
