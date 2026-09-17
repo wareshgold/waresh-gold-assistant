@@ -19,7 +19,22 @@ export type OrderQuoteMarketSnapshot = {
 export type OrderQuote = {
     quoteId: string;
     createdAt: string;
+    expiresAt?: string;
     market: OrderQuoteMarketSnapshot;
     items: OrderQuoteLine[];
     total: number;
 };
+
+export const ORDER_QUOTE_TTL_MS = 5 * 60 * 1000;
+
+export function getOrderQuoteExpiresAt(quote: Pick<OrderQuote, "createdAt" | "expiresAt">): string {
+    if (quote.expiresAt) return quote.expiresAt;
+    const createdAt = Date.parse(quote.createdAt);
+    if (!Number.isFinite(createdAt)) return new Date(0).toISOString();
+    return new Date(createdAt + ORDER_QUOTE_TTL_MS).toISOString();
+}
+
+export function isOrderQuoteExpired(quote: Pick<OrderQuote, "createdAt" | "expiresAt">, now = new Date()): boolean {
+    const expiresAt = Date.parse(getOrderQuoteExpiresAt(quote));
+    return !Number.isFinite(expiresAt) || expiresAt <= now.getTime();
+}

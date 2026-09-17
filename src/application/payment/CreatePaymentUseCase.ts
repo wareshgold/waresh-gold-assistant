@@ -1,6 +1,7 @@
 import type { Order } from "../../domain/catalog/entities/Order";
 import type { Payment } from "../../domain/payment/entities/Payment";
 import type { PaymentGateway } from "../../domain/payment/gateways/PaymentGateway";
+import { transitionPaymentStatus } from "../../domain/payment/services/PaymentStatusTransition";
 import type { PaymentRepository } from "../../domain/payment/repositories/PaymentRepository";
 
 export class CreatePaymentUseCase {
@@ -41,7 +42,7 @@ export class CreatePaymentUseCase {
             if (!claimed) throw new Error("برای این سفارش یک پرداخت فعال وجود دارد.");
             payment = {
                 ...latest,
-                status: "pending",
+                status: transitionPaymentStatus("failed", "pending"),
                 authority: null,
                 referenceId: null,
                 updatedAt: now,
@@ -70,12 +71,13 @@ export class CreatePaymentUseCase {
             });
             const initiated: Payment = {
                 ...payment,
-                status: "initiated",
+                status: transitionPaymentStatus(payment.status, "initiated"),
                 authority: initiation.authority,
                 updatedAt: new Date().toISOString(),
             };
             await this.paymentRepository.updateStatus({
                 paymentId: initiated.paymentId,
+                expectedStatus: payment.status,
                 status: initiated.status,
                 updatedAt: initiated.updatedAt,
                 authority: initiated.authority,
@@ -85,7 +87,8 @@ export class CreatePaymentUseCase {
             const failedAt = new Date().toISOString();
             await this.paymentRepository.updateStatus({
                 paymentId: payment.paymentId,
-                status: "failed",
+                expectedStatus: payment.status,
+                status: transitionPaymentStatus(payment.status, "failed"),
                 updatedAt: failedAt,
             });
             throw error;
