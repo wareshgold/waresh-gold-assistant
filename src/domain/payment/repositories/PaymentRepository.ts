@@ -11,6 +11,7 @@ export interface PaymentRepository {
     releaseVerification(input: { paymentId: string; updatedAt: string }): Promise<boolean>;
     updateStatus(input: {
         paymentId: string;
+        expectedStatus?: PaymentStatus;
         status: PaymentStatus;
         updatedAt: string;
         authority?: string | null;
