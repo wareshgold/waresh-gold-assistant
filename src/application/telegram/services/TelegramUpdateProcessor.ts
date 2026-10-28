@@ -190,6 +190,7 @@ export class TelegramUpdateProcessor {
 
         if (
             this.ingestOunceTickFromTextUseCase &&
+            message.source === "channel_post" &&
             message.text.trim()
         ) {
             const tick =

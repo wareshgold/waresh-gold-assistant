@@ -31,6 +31,11 @@ export class TelegramPriceParser {
         const gold18Price =
             this.extractNumber(
                 normalized,
+                /تومان\s*\/\s*گرم\s*طلای\s*18\s*عیار\s*([\d,]+)/i
+            )
+            ??
+            this.extractNumber(
+                normalized,
                 /طلای\s*18\s*عیار\s*:\s*([\d,]+)/i
             )
             ??
@@ -42,6 +47,11 @@ export class TelegramPriceParser {
 
 
         const currencyPrice =
+            this.extractNumber(
+                normalized,
+                /دلار\s*آمریکا\s*تومان\s*\/\s*واحد\s*([\d,]+)/i
+            )
+            ??
             this.extractNumber(
                 normalized,
                 /دلار(?:\s*تهران)?\s*:\s*([\d,]+)/i
@@ -166,6 +176,17 @@ export class TelegramPriceParser {
         text: string
     ): Date {
 
+        const isoTimestampMatch = text.match(
+            /(?:UTC\s*[·:]?\s*)?(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z)/
+        );
+
+        if (isoTimestampMatch) {
+            const timestamp = new Date(isoTimestampMatch[1]);
+
+            if (!Number.isNaN(timestamp.getTime())) {
+                return timestamp;
+            }
+        }
 
         const timeMatch =
             text.match(
