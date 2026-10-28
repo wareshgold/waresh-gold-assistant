@@ -31,6 +31,11 @@ export class TelegramPriceParser {
         const gold18Price =
             this.extractNumber(
                 normalized,
+                /تومان\s*\/\s*گرم\s*طلای\s*18\s*عیار\s*([\d,]+)/i
+            )
+            ??
+            this.extractNumber(
+                normalized,
                 /طلای\s*18\s*عیار\s*:\s*([\d,]+)/i
             )
             ??
@@ -42,6 +47,11 @@ export class TelegramPriceParser {
 
 
         const currencyPrice =
+            this.extractNumber(
+                normalized,
+                /دلار\s*آمریکا\s*تومان\s*\/\s*واحد\s*([\d,]+)/i
+            )
+            ??
             this.extractNumber(
                 normalized,
                 /دلار(?:\s*تهران)?\s*:\s*([\d,]+)/i
