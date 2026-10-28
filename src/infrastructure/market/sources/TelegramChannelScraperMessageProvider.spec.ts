@@ -82,6 +82,43 @@ describe("TelegramChannelScraperMessageProvider", () => {
 
     });
 
+    it("should accept TomanNama dashboard-style gold and dollar prices", async () => {
+        const telegramHtml = `
+        <div class="tgme_widget_message_text">
+            📌 در یک نگاه<br/>
+            🇺🇸 دلار آمریکا<br/>
+            تومان / واحد<br/>
+            269,835<br/>
+            ✨ طلای ۱۸ عیار<br/>
+            تومان / گرم طلای ۱۸ عیار<br/>
+            26,339,789<br/>
+            🪙 سکه امامی<br/>
+            تومان / قطعه<br/>
+            267,394,000<br/>
+            🕒 UTC · 2026-10-28T08:55:20Z
+        </div>
+        `;
+
+        vi.stubGlobal(
+            "fetch",
+            vi.fn(async () => ({
+                ok: true,
+                text: async () => telegramHtml
+            }))
+        );
+
+        const provider = new TelegramChannelScraperMessageProvider(
+            "https://t.me/s/TomanNama"
+        );
+
+        const result = await provider.getLatestMessage();
+
+        expect(result).toContain("269,835");
+        expect(result).toContain("26,339,789");
+    });
+
+
+
 
 
 });
