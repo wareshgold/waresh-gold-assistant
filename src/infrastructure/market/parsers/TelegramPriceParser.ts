@@ -176,6 +176,17 @@ export class TelegramPriceParser {
         text: string
     ): Date {
 
+        const isoTimestampMatch = text.match(
+            /(?:UTC\s*[·:]?\s*)?(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z)/
+        );
+
+        if (isoTimestampMatch) {
+            const timestamp = new Date(isoTimestampMatch[1]);
+
+            if (!Number.isNaN(timestamp.getTime())) {
+                return timestamp;
+            }
+        }
 
         const timeMatch =
             text.match(
