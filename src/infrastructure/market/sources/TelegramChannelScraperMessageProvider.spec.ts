@@ -5,6 +5,8 @@ import {
 }
 from "./TelegramChannelScraperMessageProvider";
 
+import { TelegramPriceParser } from "../parsers/TelegramPriceParser";
+
 
 
 describe("TelegramChannelScraperMessageProvider", () => {
@@ -115,6 +117,11 @@ describe("TelegramChannelScraperMessageProvider", () => {
 
         expect(result).toContain("269,835");
         expect(result).toContain("26,339,789");
+
+        const parsed = TelegramPriceParser.parse(result);
+        expect(parsed.gold18Price).toBe(26_339_789);
+        expect(parsed.currencyPrice).toBe(269_835);
+        expect(parsed.updatedAt.toISOString()).toBe("2026-10-28T08:55:20.000Z");
     });
 
 
