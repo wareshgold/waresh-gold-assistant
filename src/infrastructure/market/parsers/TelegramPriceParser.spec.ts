@@ -31,6 +31,14 @@ describe("TelegramPriceParser", () => {
         expect(price.updatedAt.toISOString()).toBe("2026-10-28T14:31:00.000Z");
     });
 
+    it("rejects price posts without a timestamp instead of marking them as current", () => {
+        expect(() => TelegramPriceParser.parse(`
+🔻 طلای ۱۸ عیار: ۲۶،۳۸۴،۰۰۰ تومان
+🔺 دلار تهران: ۲۶۹،۵۰۰ تومان
+🔺 اونس طلا: ۴،۰۳۶ دلار
+`)).toThrow("timestamp is required");
+    });
+
     it("rejects Ecogold posts that no longer contain a currency price", () => {
         expect(() => TelegramPriceParser.parse(`
 🔻طلای ۱۸ عیار: 26,384,000 تومان
