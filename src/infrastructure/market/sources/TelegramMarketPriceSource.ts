@@ -1,169 +1,54 @@
 import {
     MarketPriceSource,
     MarketPriceResult
-}
-from "../../../domain/market/providers/MarketPriceSource";
+} from "../../../domain/market/providers/MarketPriceSource";
+import { MarketMessageProvider } from "./MarketMessageProvider";
+import { TelegramPriceParser } from "../parsers/TelegramPriceParser";
+import { RetryPolicy } from "../../resilience/RetryPolicy";
+import { TimeoutPolicy } from "../../resilience/TimeoutPolicy";
 
+export class TelegramMarketPriceSource implements MarketPriceSource {
+    private readonly retryPolicy = new RetryPolicy({
+        maxAttempts: 1,
+        delayMs: 0
+    });
 
-import {
-    MarketMessageProvider
-}
-from "./MarketMessageProvider";
+    private readonly timeoutPolicy = new TimeoutPolicy({
+        timeoutMs: 30000
+    });
 
-
-import {
-    TelegramPriceParser
-}
-from "../parsers/TelegramPriceParser";
-
-
-import {
-    RetryPolicy
-}
-from "../../resilience/RetryPolicy";
-
-
-import {
-    TimeoutPolicy
-}
-from "../../resilience/TimeoutPolicy";
-
-
-
-export class TelegramMarketPriceSource
-implements MarketPriceSource {
-
-
-
-    private readonly retryPolicy:
-        RetryPolicy;
-
-
-
-    private readonly timeoutPolicy:
-        TimeoutPolicy;
-
-
+    private readonly maxPriceAgeMs = 90 * 60 * 1000;
 
     constructor(
+        private readonly messageProvider: MarketMessageProvider
+    ) {}
 
-        private readonly messageProvider:
-            MarketMessageProvider
+    async getPrice(): Promise<MarketPriceResult> {
+        return this.retryPolicy.execute(async () => {
+            return this.timeoutPolicy.execute(async () => {
+                const message = await this.messageProvider.getLatestMessage();
+                const parsed = TelegramPriceParser.parse(message);
+                const ageMs = Date.now() - parsed.updatedAt.getTime();
 
-    ){
+                if (ageMs > this.maxPriceAgeMs) {
+                    throw new Error(
+                        `Telegram market price is stale (${Math.floor(ageMs / 60000)} minutes old)`
+                    );
+                }
 
+                if (ageMs < -5 * 60 * 1000) {
+                    throw new Error("Telegram market price timestamp is in the future");
+                }
 
-        this.retryPolicy =
+                console.log("TELEGRAM PARSED:", parsed);
 
-            new RetryPolicy({
-
-                maxAttempts: 1,
-
-                delayMs: 0
-
+                return {
+                    gold18Price: parsed.gold18Price,
+                    currencyPrice: parsed.currencyPrice,
+                    ouncePrice: parsed.ouncePrice,
+                    updatedAt: parsed.updatedAt
+                };
             });
-
-
-
-        this.timeoutPolicy =
-
-            new TimeoutPolicy({
-
-                timeoutMs: 30000
-
-            });
-
-
+        });
     }
-
-
-
-
-    async getPrice():
-        Promise<MarketPriceResult> {
-
-
-
-        return this.retryPolicy.execute(
-
-            async () => {
-
-
-                return this.timeoutPolicy.execute(
-
-                    async () => {
-
-
-
-                        const message =
-
-                            await this.messageProvider
-                                .getLatestMessage();
-
-
-
-                        console.log(
-                            "TELEGRAM RAW MESSAGE:",
-                            message
-                        );
-
-
-
-                        const parsed =
-
-                            TelegramPriceParser.parse(
-                                message
-                            );
-
-
-
-                        console.log(
-                            "TELEGRAM PARSED:",
-                            parsed
-                        );
-
-
-
-                        return {
-
-
-                            gold18Price:
-
-                                parsed.gold18Price,
-
-
-
-                            currencyPrice:
-
-                                parsed.currencyPrice,
-
-
-
-                            ouncePrice:
-
-                                parsed.ouncePrice,
-
-
-
-                            updatedAt:
-
-                                parsed.updatedAt
-
-
-                        };
-
-
-                    }
-
-                );
-
-
-            }
-
-        );
-
-
-    }
-
-
 }
