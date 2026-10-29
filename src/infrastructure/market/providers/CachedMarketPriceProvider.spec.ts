@@ -22,8 +22,7 @@ describe("CachedMarketPriceProvider freshness guard", () => {
         const cache = new MemoryCacheStore();
         await cache.set(
             "market:current-price",
-            new MarketPrice(25_000_000, 260_000, 4_000, new Date(NOW.getTime() - 13 * 60 * 60 * 1000)),
-            1800
+            new MarketPrice(25_000_000, 260_000, 4_000, new Date(NOW.getTime() - 13 * 60 * 60 * 1000))
         );
 
         const provider: MarketPriceProvider = {
