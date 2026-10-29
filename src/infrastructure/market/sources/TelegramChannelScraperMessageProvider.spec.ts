@@ -54,4 +54,28 @@ describe("TelegramChannelScraperMessageProvider", () => {
             "Latest Telegram gold-price message has no dollar/tether price"
         );
     });
+    it("accepts the current ontimeprice-style Persian message", async () => {
+        const html = `
+<div class="tgme_widget_message_text">
+▫️ دلار: ۲۷۰،۶۸۰ تومان<br>
+🔹 تتر: ۲۷۰،۸۴۷ تومان<br>
+🔹 انس طلا: ۴،۰۲۶.۹۳ دلار<br>
+🔻 طلای ۱۸ عیار: ۲۶،۱۸۶،۸۰۰ تومان<br>
+🕰️ ۷ آبان ۱۴۰۵ - ۱۵:۳۰
+</div>
+`;
+        vi.stubGlobal("fetch", vi.fn(async () => ({
+            ok: true,
+            text: async () => html
+        })));
+
+        const provider = new TelegramChannelScraperMessageProvider(
+            "https://t.me/s/ontimeprice"
+        );
+
+        const result = await provider.getLatestMessage();
+        expect(result).toContain("۲۶،۱۸۶،۸۰۰");
+        expect(result).toContain("۲۷۰،۶۸۰");
+    });
+
 });
