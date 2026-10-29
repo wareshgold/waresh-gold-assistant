@@ -12,6 +12,7 @@ export interface AppEnv {
     NVIDIA_API_KEY?: string;
     NVIDIA_API_URL?: string;
     OWNER_TELEGRAM_USER_IDS?: string;
+    ADMIN_API_TOKEN?: string;
 }
 
 export function getEnv(env: AppEnv) {
@@ -28,6 +29,7 @@ export function getEnv(env: AppEnv) {
         marketSourceRetryDelayMs: Number(env.MARKET_SOURCE_RETRY_DELAY_MS ?? "200"),
         nvidiaApiKey: env.NVIDIA_API_KEY,
         nvidiaApiUrl: env.NVIDIA_API_URL ?? "https://integrate.api.nvidia.com/v1/chat/completions",
-        ownerTelegramUserIds: env.OWNER_TELEGRAM_USER_IDS
+        ownerTelegramUserIds: env.OWNER_TELEGRAM_USER_IDS,
+        adminApiToken: env.ADMIN_API_TOKEN
     };
 }
