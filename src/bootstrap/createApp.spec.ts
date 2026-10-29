@@ -5,6 +5,7 @@ import { UpdateOrderStatusUseCase } from "../application/catalog/UpdateOrderStat
 import { MemoryCustomerRepository } from "../infrastructure/customer/MemoryCustomerRepository";
 import { MemoryOrderQuoteRepository } from "../infrastructure/catalog/MemoryOrderQuoteRepository";
 import { MemoryOrderRepository } from "../infrastructure/catalog/MemoryOrderRepository";
+import { MemoryProductRepository } from "../infrastructure/catalog/MemoryProductRepository";
 import type { Customer } from "../domain/customer/entities/Customer";
 import type { CustomerAddress } from "../domain/customer/entities/CustomerAddress";
 import type { OrderQuote } from "../domain/catalog/entities/OrderQuote";
@@ -39,7 +40,8 @@ const address: CustomerAddress = {
 
 const quote: OrderQuote = {
     quoteId: "quote-1",
-    createdAt: "2026-09-07T06:00:00.000Z",
+    createdAt: new Date().toISOString(),
+    expiresAt: new Date(Date.now() + 60_000).toISOString(),
     market: {
         gold18Price: 23_549_000,
         currencyPrice: 1_000_000,
@@ -63,10 +65,12 @@ function createTestApp() {
     const customerRepository = new MemoryCustomerRepository();
     const quoteRepository = new MemoryOrderQuoteRepository();
     const orderRepository = new MemoryOrderRepository();
+    const productRepository = new MemoryProductRepository();
     const createOrderFromQuoteUseCase = new CreateOrderFromQuoteUseCase(
         quoteRepository,
         orderRepository,
         customerRepository,
+        productRepository,
     );
     const updateOrderStatusUseCase = new UpdateOrderStatusUseCase(orderRepository);
     const addWishlistItemUseCase = { execute: vi.fn(async ({ customerId, productId }: { customerId: string; productId: string }) => ({ customerId, productId })) };

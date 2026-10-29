@@ -83,6 +83,7 @@ export class MemoryPaymentRepository implements PaymentRepository {
 
     async updateStatus(input: {
         paymentId: string;
+        expectedStatus?: PaymentStatus;
         status: PaymentStatus;
         updatedAt: string;
         authority?: string | null;
@@ -90,6 +91,9 @@ export class MemoryPaymentRepository implements PaymentRepository {
     }): Promise<void> {
         const payment = this.payments.get(input.paymentId);
         if (!payment) throw new Error("پرداخت پیدا نشد.");
+        if (input.expectedStatus && payment.status !== input.expectedStatus) {
+            throw new Error("وضعیت پرداخت در حین عملیات تغییر کرده است.");
+        }
         this.payments.set(input.paymentId, {
             ...payment,
             status: input.status,

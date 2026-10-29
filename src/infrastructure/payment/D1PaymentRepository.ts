@@ -44,17 +44,11 @@ export class D1PaymentRepository implements PaymentRepository {
     }
 
     async findById(paymentId: string): Promise<Payment | null> {
-        return this.findOne(
-            `WHERE payment_id = ?1`,
-            paymentId,
-        );
+        return this.findOne(`WHERE payment_id = ?1`, paymentId);
     }
 
     async findLatestByOrderId(orderId: string): Promise<Payment | null> {
-        return this.findOne(
-            `WHERE order_id = ?1 ORDER BY created_at DESC LIMIT 1`,
-            orderId,
-        );
+        return this.findOne(`WHERE order_id = ?1 ORDER BY created_at DESC LIMIT 1`, orderId);
     }
 
     async findActiveByOrderId(orderId: string): Promise<Payment | null> {
@@ -93,6 +87,7 @@ export class D1PaymentRepository implements PaymentRepository {
 
     async updateStatus(input: {
         paymentId: string;
+        expectedStatus?: PaymentStatus;
         status: PaymentStatus;
         updatedAt: string;
         authority?: string | null;
@@ -103,15 +98,20 @@ export class D1PaymentRepository implements PaymentRepository {
              SET status = ?1, updated_at = ?2,
                  authority = CASE WHEN ?3 IS NULL THEN authority ELSE ?3 END,
                  reference_id = CASE WHEN ?4 IS NULL THEN reference_id ELSE ?4 END
-             WHERE payment_id = ?5`
+             WHERE payment_id = ?5
+               AND (?6 IS NULL OR status = ?6)`
         ).bind(
             input.status,
             input.updatedAt,
             input.authority ?? null,
             input.referenceId ?? null,
             input.paymentId,
+            input.expectedStatus ?? null,
         ).run();
-        if (!result.meta.changes) throw new Error("پرداخت پیدا نشد.");
+        if (!result.meta.changes) {
+            if (input.expectedStatus) throw new Error("وضعیت پرداخت در حین عملیات تغییر کرده است.");
+            throw new Error("پرداخت پیدا نشد.");
+        }
     }
 
     private async findOne(whereClause: string, value: string): Promise<Payment | null> {

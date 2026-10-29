@@ -147,6 +147,7 @@ export function createContainer(env: AppEnv) {
         orderQuoteRepository,
         orderRepository,
         storage.customerRepository,
+        catalog.productRepository,
     );
     const getOrderUseCase = new GetOrderUseCase(orderRepository);
     const listCustomerOrdersUseCase = new ListCustomerOrdersUseCase(orderRepository);

@@ -1,7 +1,9 @@
 import type { CustomerRepository } from "../../domain/customer/repositories/CustomerRepository";
 import type { Order } from "../../domain/catalog/entities/Order";
 import type { OrderQuote } from "../../domain/catalog/entities/OrderQuote";
+import { isOrderQuoteExpired } from "../../domain/catalog/entities/OrderQuote";
 import type { OrderQuoteRepository } from "../../domain/catalog/repositories/OrderQuoteRepository";
+import type { ProductRepository } from "../../domain/catalog/repositories/ProductRepository";
 
 type OrderCreationRepository = {
     save(order: Order): Promise<void>;
@@ -13,6 +15,7 @@ export class CreateOrderFromQuoteUseCase {
         private readonly quoteRepository: OrderQuoteRepository,
         private readonly orderRepository: OrderCreationRepository,
         private readonly customerRepository: CustomerRepository,
+        private readonly productRepository: ProductRepository,
     ) {}
 
     async execute(input: { quoteId: string; customerId?: string; addressId?: string }): Promise<Order> {
@@ -34,6 +37,9 @@ export class CreateOrderFromQuoteUseCase {
 
         const quote = await this.quoteRepository.findById(normalizedQuoteId);
         if (!quote) throw new Error("پیش‌فاکتور پیدا نشد.");
+        if (isOrderQuoteExpired(quote)) throw new Error("اعتبار پیش‌فاکتور به پایان رسیده است.");
+
+        await this.validateProducts(quote);
 
         let address: Order["address"] = null;
         if (customerId) {
@@ -83,6 +89,23 @@ export class CreateOrderFromQuoteUseCase {
         }
 
         return order;
+    }
+
+    private async validateProducts(quote: OrderQuote): Promise<void> {
+        const products = await Promise.all(
+            quote.items.map((item) => this.productRepository.findById(item.productId)),
+        );
+
+        for (let index = 0; index < quote.items.length; index += 1) {
+            const item = quote.items[index];
+            const product = products[index];
+            if (!product || !product.active) {
+                throw new Error(`محصول ${item.productId} دیگر قابل سفارش نیست.`);
+            }
+            if (product.stockStatus === "out-of-stock") {
+                throw new Error(`محصول «${item.name}» دیگر موجود نیست.`);
+            }
+        }
     }
 }
 
