@@ -75,6 +75,14 @@ export class TelegramPriceParser {
     }
 
     private static extractDateTime(text: string): Date | null {
+        const telegramTimestampMatch = text.match(
+            /Telegram timestamp\s*:\s*(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2}))/
+        );
+        if (telegramTimestampMatch) {
+            const timestamp = new Date(telegramTimestampMatch[1]);
+            if (Number.isFinite(timestamp.getTime())) return timestamp;
+        }
+
         const timeMatch = text.match(/ساعت\s*[:：]\s*(\d{1,2}):(\d{1,2})/);
         const dateMatch = text.match(/تاریخ\s*[:：]\s*(\d{4})\/(\d{1,2})\/(\d{1,2})/);
 
