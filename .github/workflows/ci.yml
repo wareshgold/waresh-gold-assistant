@@ -12,6 +12,7 @@ on:
   pull_request:
     branches:
       - main
+      - feature/website-v2
 
 permissions:
   contents: read
