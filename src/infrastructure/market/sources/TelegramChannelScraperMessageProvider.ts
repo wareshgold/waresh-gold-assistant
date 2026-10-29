@@ -25,7 +25,7 @@ export class TelegramChannelScraperMessageProvider implements MarketMessageProvi
             });
 
             if (!response.ok) {
-                throw new Error(`Telegram HTTP ${response.status}`);
+                throw new Error("Telegram HTTP " + response.status);
             }
 
             const html = await response.text();
@@ -34,14 +34,24 @@ export class TelegramChannelScraperMessageProvider implements MarketMessageProvi
                     /<div class="tgme_widget_message_text[^>]*>([\s\S]*?)<\/div>/g
                 )
             ];
+            const timestamps = [
+                ...html.matchAll(/<time\b[^>]*datetime=["']([^"']+)["'][^>]*>/gi)
+            ];
 
             if (messages.length === 0) {
                 throw new Error("Telegram message not found");
             }
 
             for (let i = messages.length - 1; i >= 0; i--) {
-                const message = this.cleanHtmlMessage(messages[i][1]);
-                if (!message) continue;
+                const body = this.cleanHtmlMessage(messages[i][1]);
+                if (!body) continue;
+
+                // Telegram renders message timestamps outside the text div.
+                // Carry that trusted server timestamp into the parser input.
+                const timestamp = timestamps[i]?.[1];
+                const message = timestamp
+                    ? body + "\nTelegram timestamp: " + timestamp
+                    : body;
 
                 try {
                     TelegramPriceParser.parse(message);
@@ -52,8 +62,8 @@ export class TelegramChannelScraperMessageProvider implements MarketMessageProvi
                     // newest gold-price post has dropped its currency line.
                     // Throwing lets CompositeMarketPriceProvider try the fallback source.
                     if (
-                        this.looksLikeGoldPriceMessage(message) &&
-                        !this.hasCurrencyPrice(message)
+                        this.looksLikeGoldPriceMessage(body) &&
+                        !this.hasCurrencyPrice(body)
                     ) {
                         throw new Error(
                             "Latest Telegram gold-price message has no dollar/tether price"
