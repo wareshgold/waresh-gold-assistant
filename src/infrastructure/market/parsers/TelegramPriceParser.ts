@@ -53,11 +53,16 @@ export class TelegramPriceParser {
             throw new Error("Invalid Telegram price message: gold and currency prices are required");
         }
 
+        const updatedAt = this.extractDateTime(normalized);
+        if (!updatedAt) {
+            throw new Error("Invalid Telegram price message: timestamp is required");
+        }
+
         return new MarketPrice(
             gold18Price,
             currencyPrice,
             ouncePrice,
-            this.extractDateTime(normalized)
+            updatedAt
         );
     }
 
@@ -69,7 +74,7 @@ export class TelegramPriceParser {
         return Number.isFinite(value) && value > 0 ? value : null;
     }
 
-    private static extractDateTime(text: string): Date {
+    private static extractDateTime(text: string): Date | null {
         const timeMatch = text.match(/ساعت\s*[:：]\s*(\d{1,2}):(\d{1,2})/);
         const dateMatch = text.match(/تاریخ\s*[:：]\s*(\d{4})\/(\d{1,2})\/(\d{1,2})/);
 
@@ -102,7 +107,7 @@ export class TelegramPriceParser {
             }
         }
 
-        return new Date();
+        return null;
     }
 
     private static jalaliDateToUtc(
