@@ -17,10 +17,9 @@ export class TelegramMarketPriceSource implements MarketPriceSource {
         timeoutMs: 30000
     });
 
-    private readonly maxPriceAgeMs = 90 * 60 * 1000;
-
     constructor(
-        private readonly messageProvider: MarketMessageProvider
+        private readonly messageProvider: MarketMessageProvider,
+        private readonly maxPriceAgeMs: number = 90 * 60 * 1000
     ) {}
 
     async getPrice(): Promise<MarketPriceResult> {
