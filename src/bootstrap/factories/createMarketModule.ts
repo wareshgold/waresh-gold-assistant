@@ -89,7 +89,8 @@ export function createMarketModule(
         if (fallbackUrl !== env.TELEGRAM_MARKET_SOURCE_URL) {
             sources.push(
                 new TelegramMarketPriceSource(
-                    new TelegramChannelScraperMessageProvider(fallbackUrl)
+                    new TelegramChannelScraperMessageProvider(fallbackUrl),
+                    12 * 60 * 60 * 1000
                 )
             );
         }
