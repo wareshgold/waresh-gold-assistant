@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { TelegramChannelScraperMessageProvider } from "./TelegramChannelScraperMessageProvider";
+import { TelegramPriceParser } from "../parsers/TelegramPriceParser";
 
 describe("TelegramChannelScraperMessageProvider", () => {
     afterEach(() => {
@@ -37,6 +38,26 @@ describe("TelegramChannelScraperMessageProvider", () => {
 
         expect(result).toContain("18,500,000");
         expect(result).toContain("188,000");
+    });
+
+    it("uses Telegram's outer time metadata when the message body has no timestamp", async () => {
+        const html = `
+<div class="tgme_widget_message_text">▫️ دلار: ۲۶۹،۵۰۰ تومان<br>🔻 انس طلا: ۴،۰۶۲.۲۹ دلار<br>▫️ طلای ۱۸ عیار: ۲۶،۴۰۸،۴۰۰ تومان</div>
+<a class="tgme_widget_message_date"><time datetime="2026-10-29T07:02:00+00:00">07:02</time></a>
+`;
+        vi.stubGlobal("fetch", vi.fn(async () => ({
+            ok: true,
+            text: async () => html
+        })));
+
+        const provider = new TelegramChannelScraperMessageProvider(
+            "https://t.me/s/ontimeprice"
+        );
+        const message = await provider.getLatestMessage();
+        const price = TelegramPriceParser.parse(message);
+
+        expect(price.gold18Price).toBe(26408400);
+        expect(price.updatedAt.toISOString()).toBe("2026-10-29T07:02:00.000Z");
     });
 
     it("does not fall back to an older price when the newest gold post omits currency", async () => {
