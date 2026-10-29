@@ -20,6 +20,9 @@ describe("TelegramMarketPriceSource", () => {
 
 
 
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date("2026-10-28T08:00:00.000Z"));
+
         const messageProvider:
             MarketMessageProvider = {
 
@@ -34,6 +37,8 @@ describe("TelegramMarketPriceSource", () => {
 دلار تهران: 187,790 تومان
 
 انس طلا: 3350 دلار
+ساعت: ۱۱:۰۰
+تاریخ: ۱۴۰۵/۰۸/۰۶
 
                     `;
 
