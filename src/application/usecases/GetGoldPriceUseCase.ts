@@ -7,7 +7,9 @@ from "../../domain/market/providers/MarketPriceProvider";
 import { GetCurrentMarketPriceUseCase }
 from "../market/GetCurrentMarketPriceUseCase";
 
-import { formatPrice } from "../../shared/utils/number";;
+import { formatPrice, formatWithCommas } from "../../shared/utils/number";
+import { TelegramFooter } from "../telegram/presentation/TelegramFooter";
+import { TelegramDateFormatter } from "../telegram/presentation/TelegramDateFormatter";
 
 
 
@@ -29,8 +31,6 @@ export class GetGoldPriceUseCase {
 
 
 
-
-
     async execute():
 
         Promise<ApplicationResponse> {
@@ -40,12 +40,8 @@ export class GetGoldPriceUseCase {
         const price =
 
             "execute" in this.priceSource
-
                 ? await this.priceSource.execute()
-
                 : await this.priceSource.getCurrentPrice();
-
-
 
 
 
@@ -53,12 +49,9 @@ export class GetGoldPriceUseCase {
 
         return {
 
-
             type:
 
                 "text",
-
-
 
 
 
@@ -72,35 +65,34 @@ export class GetGoldPriceUseCase {
 
                     "💰 طلای ۱۸ عیار:",
 
-                    `${this.formatNumber(price.gold18Price)} تومان`,
+                    `${this.formatToman(price.gold18Price)} تومان`,
 
                     "",
 
                     "💵 دلار:",
 
-                    `${this.formatNumber(price.currencyPrice)} تومان`,
+                    `${this.formatToman(price.currencyPrice)} تومان`,
 
                     "",
 
-                    "🌎 اونس جهانی:",
+                    "🌎 انس جهانی:",
 
                     `${
                         price.ouncePrice !== null
-                            ? this.formatNumber(price.ouncePrice)
+                            ? this.formatOunce(price.ouncePrice)
                             : "ناموجود"
                     } دلار`,
 
-                    "",
-
-                    "🕒 بروزرسانی:",
-
+                    "",                    "🕒 بروزرسانی:",
                     price.updatedAt.toLocaleString(
                         "fa-IR",
                         {
                             timeZone:
                                 "Asia/Tehran"
                         }
-                    )
+                    ),
+                    "",
+                    TelegramFooter.FOOTER
 
                 ].join("\n"),
 
@@ -109,7 +101,6 @@ export class GetGoldPriceUseCase {
 
 
             metadata: {
-
 
                 gold18Price:
 
@@ -139,10 +130,16 @@ export class GetGoldPriceUseCase {
 
     }
 
-    private formatNumber(
+    private formatToman(
         value: number
     ): string {
         return formatPrice(value);
+    }
+
+    private formatOunce(
+        value: number
+    ): string {
+        return formatWithCommas(value, 2);
     }
 
 

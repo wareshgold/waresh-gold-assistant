@@ -1,18 +1,16 @@
-import { formatWithCommas } from "../../../shared/utils/number";
+import { formatWithCommas, formatGrouped } from "../../../shared/utils/number";
 
+/**
+ * Single authority for numeric rendering in Telegram outputs.
+ * Uses English commas (en-US) for consistent display and copy behavior.
+ */
 export class TelegramNumberFormatter {
     format(value: number, maximumFractionDigits = 0): string {
-        if (maximumFractionDigits > 0) {
-            const fixed = value.toFixed(maximumFractionDigits);
-            const [intPart, decPart] = fixed.split(".");
-            const formatted = formatWithCommas(Number(intPart));
-            return `${formatted}.${decPart}`;
-        }
-        return formatWithCommas(Math.round(value));
+        return formatWithCommas(value, maximumFractionDigits);
     }
 
     formatCode(value: number): string {
-        return `<code>${this.format(value)}</code>`;
+        return `<code>${formatGrouped(Math.round(value))}</code>`;
     }
 
     copyValue(value: number): string {
@@ -20,11 +18,11 @@ export class TelegramNumberFormatter {
     }
 
     money(value: number): string {
-        return `${this.formatCode(value)} تومان`;
+        return `${this.format(value)} تومان`;
     }
 
     compactMoney(value: number): string {
-        return `${this.formatCode(value)} تومان`;
+        return `${this.format(value)} تومان`;
     }
 
     weight(value: number): string {
@@ -33,5 +31,9 @@ export class TelegramNumberFormatter {
 
     percent(value: number): string {
         return `${this.format(value, 2)}٪`;
+    }
+
+    percentRtl(value: number): string {
+        return `${this.format(value, 2)}٪ \u200F`;
     }
 }

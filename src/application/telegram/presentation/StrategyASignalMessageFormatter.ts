@@ -1,4 +1,5 @@
 import { StrategyASignal } from "../../../domain/strategy-a/entities/StrategyASignal";
+import { formatWithCommas, formatGrouped } from "../../../shared/utils/number";
 
 export class StrategyASignalMessageFormatter {
     format(signal: StrategyASignal): string {
@@ -6,7 +7,7 @@ export class StrategyASignalMessageFormatter {
         const isActionable = signal.isActionable();
 
         const lines: string[] = [
-            `${direction.icon} <b>سیگنال Strategy A</b>`,
+            direction.icon + " <b>سیگنال Strategy A</b>",
             "",
             `بازار: ${signal.symbol}  •  تایم‌فریم: ${signal.timeframe}`,
             `نسخه: ${signal.strategyVersion}`,
@@ -16,16 +17,16 @@ export class StrategyASignalMessageFormatter {
             lines.push(
                 `جهت: <b>${direction.label}</b>`,
                 "",
-                `ورود   <code>${this.formatNumber(signal.entryPrice)}</code>`,
-                `حد ضرر <code>${this.formatNumber(signal.stopLoss)}</code>`,
-                `هدف    <code>${this.formatNumber(signal.takeProfit)}</code>`,
+                `ورود   ${this.copyablePrice(signal.entryPrice)}`,
+                `حد ضرر ${this.copyablePrice(signal.stopLoss)}`,
+                `هدف    ${this.copyablePrice(signal.takeProfit)}`,
                 "",
-                `ریسک به بازده: 1:${this.formatNumber(signal.riskReward)}`,
-                `اطمینان: ${Math.round(signal.confidence * 100)}٪`,
+                `ریسک به بازده: 1:${formatWithCommas(signal.riskReward, 1)}`,
+                `اطمینان: ${formatWithCommas(Math.round(signal.confidence * 100))}٪`,
             );
         } else {
             lines.push(
-                `وضعیت: <b>انتظار</b>`,
+                "وضعیت: <b>انتظار</b>",
             );
         }
 
@@ -48,9 +49,11 @@ export class StrategyASignalMessageFormatter {
         }
     }
 
-    private formatNumber(value: number): string {
-        return new Intl.NumberFormat("en-US", {
-            maximumFractionDigits: 2,
-        }).format(value);
+    /**
+     * Trading levels stay copyable: Latin digits with "," grouping
+     * inside a <code> block so they work when pasted into any tool.
+     */
+    private copyablePrice(value: number): string {
+        return "<code>" + formatGrouped(value, 2) + "</code>";
     }
 }

@@ -27,6 +27,8 @@ import {
     NavigationAction,
 } from "../../navigation/NavigationAction";
 
+import { TelegramFooter } from "../../presentation/TelegramFooter";
+
 
 
 
@@ -140,12 +142,8 @@ implements TelegramCallbackHandler {
 
                 type:
 
-                    "text",
-
-
-                content:
-
-                    "🟡 Waresh Gold",
+                    "text",                content:
+                    TelegramFooter.FOOTER,
 
 
 

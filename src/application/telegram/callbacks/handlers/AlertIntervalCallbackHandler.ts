@@ -11,7 +11,7 @@ export class AlertIntervalCallbackHandler implements TelegramCallbackHandler {
 
     canHandle(context: TelegramCallbackContext): boolean {
         return context.callback.namespace === "alerts"
-            && ["1h", "6h", "12h", "off", "price-target"].includes(context.callback.action);
+            && ["1h", "6h", "12h", "off", "price-target", "market-analysis", "my-alerts"].includes(context.callback.action);
     }
 
     async execute(context: TelegramCallbackContext): Promise<TelegramCommandResponse> {
@@ -46,6 +46,61 @@ export class AlertIntervalCallbackHandler implements TelegramCallbackHandler {
                         ],
                         [
                             { text: "🔕 خاموش کردن", actionId: "alerts:off" }
+                        ]
+                    ]
+                }
+            };
+        }
+
+        if (value === "my-alerts") {
+            const current = await this.alertService.get(userId);
+            const status = current?.enabled
+                ? `فعال • هر ${current.intervalHours} ساعت`
+                : "غیرفعال";
+            const lastSent = current?.lastNotifiedAt
+                ? `📬 آخرین ارسال: ${current.lastNotifiedAt}`
+                : "📬 آخرین ارسال: ---";
+
+            return {
+                type: "text",
+                content: [
+                    "🔔 <b>هشدارهای من</b>",
+                    "",
+                    `✅ وضعیت: <b>${status}</b>`,
+                    lastSent,
+                    "",
+                    `🕐 ${now}`
+                ].join("\n"),
+                replyMarkup: {
+                    type: "INLINE",
+                    rows: [
+                        [
+                            { text: "🔔 تنظیم اعلان قیمت", actionId: "alerts:price-target" }
+                        ],
+                        [
+                            { text: "🫧 هشدار حباب", actionId: "alerts:bubble" }
+                        ],
+                        [
+                            { text: "📊 تحلیل بازار", actionId: "analytics" }
+                        ]
+                    ]
+                }
+            };
+        }
+
+        if (value === "market-analysis") {
+            return {
+                type: "text",
+                content: [
+                    "📊 <b>تحلیل بازار</b>",
+                    "",
+                    "برای دریافت تحلیل بازار از منوی زیر استفاده کنید:"
+                ].join("\n"),
+                replyMarkup: {
+                    type: "INLINE",
+                    rows: [
+                        [
+                            { text: "📊 تحلیل بازار", actionId: "analytics" }
                         ]
                     ]
                 }

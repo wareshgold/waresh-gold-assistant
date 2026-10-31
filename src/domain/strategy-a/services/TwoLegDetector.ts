@@ -22,38 +22,17 @@ export class TwoLegDetector {
         spike: Spike,
         config: StrategyAConfiguration
     ): TwoLeg | null {
-        const afterStart =
-            spike.endIndex + 1;
+        const fromIndex = spike.endIndex + 1;
 
-        if (
-            afterStart >=
-            candles.length - 2
-        ) {
-            return null;
-        }
-
-        const correction =
-            candles.slice(afterStart);
-
-        if (correction.length < 3) {
+        if (fromIndex < 0 || fromIndex >= candles.length - 2) {
             return null;
         }
 
         if (spike.direction === "BUY") {
-            return this.detectBullishCorrection(
-                candles,
-                spike,
-                afterStart,
-                config
-            );
+            return this.detectBullishCorrection(candles, spike, fromIndex, config);
         }
 
-        return this.detectBearishCorrection(
-            candles,
-            spike,
-            afterStart,
-            config
-        );
+        return this.detectBearishCorrection(candles, spike, fromIndex, config);
     }
 
     private detectBullishCorrection(
@@ -64,15 +43,16 @@ export class TwoLegDetector {
     ): TwoLeg | null {
         let leg1End: number | null = null;
 
-        for (
-            let i = fromIndex + 1;
-            i < candles.length;
-            i++
-        ) {
-            const prev = candles[i - 1];
-            const curr = candles[i];
+        for (let i = fromIndex; i < candles.length - 2; i++) {
+            const previous = candles[i - 1];
+            const current = candles[i];
+            const next = candles[i + 1];
 
-            if (curr.low < prev.low) {
+            const localLow =
+                current.low < previous.low &&
+                (next.high > current.high || next.close > current.close);
+
+            if (localLow) {
                 leg1End = i;
                 break;
             }
@@ -85,42 +65,51 @@ export class TwoLegDetector {
         const leg1: SwingLeg = {
             startIndex: fromIndex,
             endIndex: leg1End,
-            startPrice:
-                candles[fromIndex].high,
-            endPrice:
-                candles[leg1End].low
+            startPrice: candles[fromIndex].high,
+            endPrice: candles[leg1End].low
         };
 
-        let completionIndex = leg1End;
+        let retracementIndex: number | null = null;
 
-        for (
-            let i = leg1End + 1;
-            i < candles.length;
-            i++
-        ) {
+        for (let i = leg1End + 1; i < candles.length - 1; i++) {
             if (
-                candles[i].low <
-                candles[completionIndex].low
+                candles[i].high > candles[leg1End].high ||
+                candles[i].close > candles[leg1End].close
             ) {
-                completionIndex = i;
-            } else {
+                retracementIndex = i;
                 break;
             }
         }
 
+        if (retracementIndex === null) {
+            return null;
+        }
+
+        let completionIndex: number | null = null;
+
+        for (let i = retracementIndex + 1; i < candles.length; i++) {
+            if (candles[i].low < candles[leg1End].low) {
+                completionIndex = i;
+                break;
+            }
+        }
+
+        if (completionIndex === null) {
+            return null;
+        }
+
         const leg2: SwingLeg = {
-            startIndex: leg1End,
+            startIndex: retracementIndex,
             endIndex: completionIndex,
-            startPrice:
-                candles[leg1End].high,
-            endPrice:
-                candles[completionIndex].low
+            startPrice: candles[retracementIndex].high,
+            endPrice: candles[completionIndex].low
         };
 
         return this.buildTwoLeg(
             spike,
             leg1,
             leg2,
+            candles[completionIndex].close,
             config
         );
     }
@@ -133,15 +122,16 @@ export class TwoLegDetector {
     ): TwoLeg | null {
         let leg1End: number | null = null;
 
-        for (
-            let i = fromIndex + 1;
-            i < candles.length;
-            i++
-        ) {
-            const prev = candles[i - 1];
-            const curr = candles[i];
+        for (let i = fromIndex; i < candles.length - 2; i++) {
+            const previous = candles[i - 1];
+            const current = candles[i];
+            const next = candles[i + 1];
 
-            if (curr.high > prev.high) {
+            const localHigh =
+                current.high > previous.high &&
+                (next.low < current.low || next.close < current.close);
+
+            if (localHigh) {
                 leg1End = i;
                 break;
             }
@@ -154,42 +144,51 @@ export class TwoLegDetector {
         const leg1: SwingLeg = {
             startIndex: fromIndex,
             endIndex: leg1End,
-            startPrice:
-                candles[fromIndex].low,
-            endPrice:
-                candles[leg1End].high
+            startPrice: candles[fromIndex].low,
+            endPrice: candles[leg1End].high
         };
 
-        let completionIndex = leg1End;
+        let retracementIndex: number | null = null;
 
-        for (
-            let i = leg1End + 1;
-            i < candles.length;
-            i++
-        ) {
+        for (let i = leg1End + 1; i < candles.length - 1; i++) {
             if (
-                candles[i].high >
-                candles[completionIndex].high
+                candles[i].low < candles[leg1End].low ||
+                candles[i].close < candles[leg1End].close
             ) {
-                completionIndex = i;
-            } else {
+                retracementIndex = i;
                 break;
             }
         }
 
+        if (retracementIndex === null) {
+            return null;
+        }
+
+        let completionIndex: number | null = null;
+
+        for (let i = retracementIndex + 1; i < candles.length; i++) {
+            if (candles[i].high > candles[leg1End].high) {
+                completionIndex = i;
+                break;
+            }
+        }
+
+        if (completionIndex === null) {
+            return null;
+        }
+
         const leg2: SwingLeg = {
-            startIndex: leg1End,
+            startIndex: retracementIndex,
             endIndex: completionIndex,
-            startPrice:
-                candles[leg1End].low,
-            endPrice:
-                candles[completionIndex].high
+            startPrice: candles[retracementIndex].low,
+            endPrice: candles[completionIndex].high
         };
 
         return this.buildTwoLeg(
             spike,
             leg1,
             leg2,
+            candles[completionIndex].close,
             config
         );
     }
@@ -198,33 +197,28 @@ export class TwoLegDetector {
         spike: Spike,
         leg1: SwingLeg,
         leg2: SwingLeg,
+        completionPrice: number,
         config: StrategyAConfiguration
     ): TwoLeg | null {
-        const spikeRange =
-            Math.abs(
-                spike.endPrice - spike.startPrice
-            );
+        const spikeRange = Math.abs(spike.endPrice - spike.startPrice);
 
         if (spikeRange <= 0) {
             return null;
         }
 
-        const completionPrice =
-            leg2.endPrice;
+        const retraced = spike.direction === "BUY"
+            ? spike.endPrice - completionPrice
+            : completionPrice - spike.endPrice;
 
-        const retraced =
-            spike.direction === "BUY"
-                ? spike.endPrice - completionPrice
-                : completionPrice - spike.endPrice;
+        if (retraced <= 0) {
+            return null;
+        }
 
-        const retracementPercent =
-            (retraced / spikeRange) * 100;
+        const retracementPercent = (retraced / spikeRange) * 100;
 
         if (
-            retracementPercent <
-                config.minRetracementPercent ||
-            retracementPercent >
-                config.maxRetracementPercent
+            retracementPercent < config.minRetracementPercent ||
+            retracementPercent > config.maxRetracementPercent
         ) {
             return null;
         }
@@ -234,8 +228,7 @@ export class TwoLegDetector {
             leg2,
             retracementPercent,
             completionPrice,
-            completionIndex:
-                leg2.endIndex
+            completionIndex: leg2.endIndex
         };
     }
 }

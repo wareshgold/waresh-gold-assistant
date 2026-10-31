@@ -6,7 +6,8 @@ import {
     GoldPriceAlertNotifier
 } from "../../application/jobs/GoldPriceAlertSchedulerJob";
 
-import { formatPrice } from "../../shared/utils/number";
+import { formatWithCommas } from "../../shared/utils/number";
+import { TelegramFooter } from "../../application/telegram/presentation/TelegramFooter";
 
 export class TelegramGoldPriceAlertNotifier
 implements GoldPriceAlertNotifier {
@@ -21,20 +22,23 @@ implements GoldPriceAlertNotifier {
         ouncePrice: number | null,
         updatedAt: Date
     ): Promise<void> {
-        const price = (value: number) =>
-            `<code>${formatPrice(value)}</code>`;
-
         await this.botClient.sendMessage({
             chatId: userId,
             parseMode: "HTML",
             text: [
-                "🔔 اعلان قیمت طلا",
+                "🔔 <b>اعلان قیمت طلا</b>",
                 "",
-                `🟡 طلای ۱۸ عیار: ${price(gold18Price)} تومان`,
-                `💵 دلار: ${price(currencyPrice)} تومان`,
-                `🌎 اونس جهانی: ${ouncePrice === null ? "ناموجود" : `${price(ouncePrice)} دلار`}`,
+                "🟡 طلای ۱۸ عیار:",
+                `${formatWithCommas(gold18Price)} تومان`,
                 "",
-                `🕒 بروزرسانی: ${updatedAt.toLocaleString("fa-IR", { timeZone: "Asia/Tehran" })}`
+                "💵 دلار:",
+                `${formatWithCommas(currencyPrice)} تومان`,
+                "",
+                "🌎 انس جهانی:",
+                `${ouncePrice === null ? "ناموجود" : `${formatWithCommas(ouncePrice, 2)} دلار`}`,
+                "",
+                `🕒 بروزرسانی: ${updatedAt.toLocaleString("fa-IR", { timeZone: "Asia/Tehran" })}`,
+                TelegramFooter.FOOTER
             ].join("\n")
         });
     }

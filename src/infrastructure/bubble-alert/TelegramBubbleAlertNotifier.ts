@@ -2,6 +2,8 @@ import { BubbleAlertNotifier } from "../../application/jobs/BubbleAlertScheduler
 import { GoldBubbleResult } from "../../domain/market/services/GoldBubbleCalculator";
 import { TelegramBotClient } from "../telegram/TelegramBotClient";
 import { TelegramNumberFormatter } from "../../application/telegram/presentation/TelegramNumberFormatter";
+import { formatWithCommas } from "../../shared/utils/number";
+import { TelegramFooter } from "../../application/telegram/presentation/TelegramFooter";
 
 export class TelegramBubbleAlertNotifier implements BubbleAlertNotifier {
     private readonly numberFormatter = new TelegramNumberFormatter();
@@ -22,16 +24,24 @@ export class TelegramBubbleAlertNotifier implements BubbleAlertNotifier {
         const text = [
             `${icon} <b>هشدار حباب طلا</b>`,
             "",
-            `⚠️ حباب طلا از آستانه رد شد!`,
+            "⚠️ حباب طلا از آستانه رد شد!",
             "",
-            `🫧 حباب: <b>${bubblePercent >= 0 ? "+" : ""}${bubblePercent.toFixed(2)}٪</b> (${label})`,
-            `💰 قیمت بازار: ${this.numberFormatter.money(bubbleResult.marketPrice)}`,
-            `💎 قیمت ذاتی: ${this.numberFormatter.money(bubbleResult.intrinsicPrice)}`,
-            `📊 مبلغ حباب: ${this.numberFormatter.money(bubbleResult.bubbleAmount)}`,
+            "🫧 وضعیت حباب:",
+            `<b>${bubblePercent >= 0 ? "+" : ""}${formatWithCommas(bubblePercent, 2)}٪</b> (${label})`,
             "",
-            `💡 ${alertType === "POSITIVE"
+            "💰 قیمت بازار:",
+            this.numberFormatter.money(bubbleResult.marketPrice),
+            "",
+            "💎 قیمت ذاتی:",
+            this.numberFormatter.money(bubbleResult.intrinsicPrice),
+            "",
+            "📊 مبلغ حباب:",
+            this.numberFormatter.money(bubbleResult.bubbleAmount),
+            "",
+            `            💡 ${alertType === "POSITIVE"
                 ? "قیمت بازار بالاتر از ارزش ذاتی هست — احتیاط کنید!"
-                : "قیمت بازار پایین‌تر از ارزش ذاتی هست — فرصت خرید ممکن باشد."}`
+                : "قیمت بازار پایین‌تر از ارزش ذاتی هست — فرصت خرید ممکن باشد."}`,
+            TelegramFooter.FOOTER
         ].join("\n");
 
         try {

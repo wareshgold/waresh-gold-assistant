@@ -14,6 +14,11 @@ import {
     TelegramDateTimeFormatter
 } from "../../application/telegram/presentation/TelegramDateTimeFormatter";
 
+import {
+    formatWithCommas,
+    formatGrouped
+} from "../../shared/utils/number";
+
 export class TelegramSignalLevelNotifier
     implements SignalLevelNotifier {
 
@@ -87,6 +92,12 @@ export class TelegramSignalLevelNotifier
         const pnlIcon =
             pnl >= 0 ? "📈" : "📉";
 
+        const pnlSign =
+            pnl >= 0 ? "+" : "-";
+
+        const pnlAbs =
+            Math.abs(pnl);
+
         const now =
             this.dateTimeFormatter.format();
 
@@ -96,13 +107,13 @@ export class TelegramSignalLevelNotifier
             `بازار: ${signal.symbol}  •  تایم‌فریم: ${signal.timeframe}`,
             `جهت: ${direction}`,
             "",
-            `ورود   <code>${signal.entryPrice}</code>`,
-            `قیمت فعلی <code>${currentPrice}</code>`,
+            `ورود   <code>${formatGrouped(signal.entryPrice)}</code>`,
+            `قیمت فعلی <code>${formatGrouped(currentPrice)}</code>`,
             hitType === "TP_HIT"
-                ? `هدف   <code>${signal.takeProfit}</code>`
-                : `حد ضرر <code>${signal.stopLoss}</code>`,
+                ? `هدف   <code>${formatGrouped(signal.takeProfit)}</code>`
+                : `حد ضرر <code>${formatGrouped(signal.stopLoss)}</code>`,
             "",
-            `${pnlIcon} سود/ضرر: <code>${pnl >= 0 ? "+" : ""}${pnl.toFixed(2)}</code> (${pnlPercent >= 0 ? "+" : ""}${pnlPercent.toFixed(2)}٪)`,
+            `${pnlIcon} سود/ضرر: <code>${pnlSign}${formatGrouped(pnlAbs, 2)}</code> (${pnlSign}${formatWithCommas(Math.abs(pnlPercent), 2)}٪)`,
             "",
             `🕐 ${now}`
         ].join("\n");

@@ -23,6 +23,7 @@ export class TelegramActionCatalog {
         { id: "assistant.help", command: "/help", callbackEnabled: true },
         { id: "strategy.strategy-a", command: "/strategy-a", callbackEnabled: true },
         { id: "alerts.market-analysis", command: "/analytics", callbackEnabled: true },
+        { id: "alerts.reports", command: "/reports", callbackEnabled: true },
         { id: "alerts.price-target", command: "/alerts", callbackEnabled: true },
         { id: "alerts.my-alerts", command: "/my-alerts", callbackEnabled: true },
         { id: "alerts.periodic-price", command: "/alerts", callbackEnabled: true },

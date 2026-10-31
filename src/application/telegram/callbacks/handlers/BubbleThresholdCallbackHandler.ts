@@ -3,6 +3,7 @@ import { TelegramCallbackContext } from "../TelegramCallbackContext";
 import { TelegramCommandResponse } from "../../commands/TelegramCommandHandler";
 import { BubbleAlertService } from "../../../bubble-alert/BubbleAlertService";
 import { TelegramDateTimeFormatter } from "../../presentation/TelegramDateTimeFormatter";
+import { formatPrice } from "../../../../shared/utils/number";
 
 export class BubbleThresholdCallbackHandler implements TelegramCallbackHandler {
     private readonly dateTimeFormatter = new TelegramDateTimeFormatter();
@@ -39,9 +40,9 @@ export class BubbleThresholdCallbackHandler implements TelegramCallbackHandler {
                 content: [
                     "🫧 <b>هشدار حباب طلا فعال شد</b>",
                     "",
-                    `آستانه: <b>${threshold}٪</b>`,
+                    `آستانه: <b>${formatPrice(threshold)}٪</b>`,
                     "",
-                    `وقتی حباب طلا بیش از ${threshold}٪ بشه، بهتون اعلان میدیم.`,
+                    `وقتی حباب طلا بیش از ${formatPrice(threshold)}٪ بشه، بهتون اعلان میدیم.`,
                     "",
                     "⚠️ بین ساعت ۱۲ شب تا ۶ صبح اعلان ارسال نمی‌شود.",
                     "",

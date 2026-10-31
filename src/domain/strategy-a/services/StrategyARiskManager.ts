@@ -58,9 +58,8 @@ export class StrategyARiskManager {
     }
 
     private calculateStopLoss(spike: Spike, entryPrice: number): StopLoss {
-        const price = spike.direction === "BUY"
-            ? spike.extremeLow
-            : spike.extremeHigh;
+        // Strategy A defines Point A as the start of the original spike.
+        const price = spike.startPrice;
 
         return {
             price,

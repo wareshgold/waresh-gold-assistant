@@ -3,13 +3,15 @@ import { TelegramCommandHandler } from "../TelegramCommandHandler";
 import { PriceTargetAlertService } from "../../../price-target-alert/PriceTargetAlertService";
 import { TelegramDateTimeFormatter } from "../../presentation/TelegramDateTimeFormatter";
 import { TelegramNumberFormatter } from "../../presentation/TelegramNumberFormatter";
+import { TelegramSessionStore } from "../../state/TelegramSessionStore";
 
 export class PriceTargetAlertCommandHandler implements TelegramCommandHandler {
     private readonly dateTimeFormatter = new TelegramDateTimeFormatter();
     private readonly numberFormatter = new TelegramNumberFormatter();
 
     constructor(
-        private readonly alertService: PriceTargetAlertService
+        private readonly alertService: PriceTargetAlertService,
+        private readonly sessionStore?: TelegramSessionStore
     ) {}
 
     metadata() {
@@ -59,6 +61,17 @@ export class PriceTargetAlertCommandHandler implements TelegramCommandHandler {
         if (actionId === "price-target-above" || actionId === "price-target-below") {
             const direction = actionId === "price-target-above" ? "ABOVE" : "BELOW";
             const dirLabel = direction === "ABOVE" ? "بالاتر از" : "پایین‌تر از";
+
+            // Save session state so the conversation flow can pick up the input
+            if (this.sessionStore) {
+                await this.sessionStore.save({
+                    userId,
+                    state: "price-target-awaiting-input",
+                    data: { direction },
+                    updatedAt: Date.now()
+                });
+            }
+
             return {
                 type: "text" as const,
                 content: [
@@ -70,11 +83,7 @@ export class PriceTargetAlertCommandHandler implements TelegramCommandHandler {
                     "مثال: <code>23000000</code>",
                     "",
                     "⚠️ قیمت باید به تومان باشد"
-                ].join("\n"),
-                metadata: {
-                    awaitingInput: "price-target-input",
-                    direction
-                }
+                ].join("\n")
             };
         }
 
@@ -100,7 +109,7 @@ export class PriceTargetAlertCommandHandler implements TelegramCommandHandler {
                     "✅ <b>هشدار ثبت شد!</b>",
                     "",
                     `📍 هشدار: قیمت طلا ${dirLabel}`,
-                    `💰 قیمت هدف: ${this.numberFormatter.money(targetPrice)} تومان`,
+                    `💰 قیمت هدف: ${this.numberFormatter.money(targetPrice)}`,
                     "",
                     "وقتی قیمت به هدف رسید، بهتون اعلان میدیم.",
                     "🔔 اعلان یک‌بار مصرفه — بعد از اعلان حذف میشه.",
@@ -142,7 +151,7 @@ export class PriceTargetAlertCommandHandler implements TelegramCommandHandler {
 
         const alertList = alerts.map((alert, i) => {
             const dirLabel = alert.direction === "ABOVE" ? "⬆️ بالاتر از" : "⬇️ پایین‌تر از";
-            return `${i + 1}. ${dirLabel} ${this.numberFormatter.money(alert.targetPrice)} تومان`;
+            return `${i + 1}. ${dirLabel} ${this.numberFormatter.money(alert.targetPrice)}`;
         }).join("\n");
 
         const cancelButtons = alerts.map(alert => ({
